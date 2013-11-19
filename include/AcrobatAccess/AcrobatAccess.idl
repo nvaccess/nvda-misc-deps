@@ -1,0 +1,581 @@
+/* AcrobatAccess.idl : IDL source for AcrobatAccess.dll
+ *
+ * This file will be processed by the MIDL tool to
+ * produce the type library (AcrobatAccess.tlb) and marshalling code.
+*/
+/*************************************************************************
+*
+* ADOBE CONFIDENTIAL
+* ___________________
+*
+*  (c) Copyright 2000-2004, 2006 Adobe Systems Incorporated
+*  All Rights Reserved.
+*
+* NOTICE:  All information contained herein is, and remains
+* the property of Adobe Systems Incorporated and its suppliers,
+* if any.  The intellectual and technical concepts contained
+* herein are proprietary to Adobe Systems Incorporated and its
+* suppliers and may be covered by U.S. and Foreign Patents,
+* patents in process, and are protected by trade secret or copyright law.
+* Dissemination of this information or reproduction of this material
+* is strictly forbidden unless prior written permission is obtained
+* from Adobe Systems Incorporated.
+**************************************************************************/
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "oleidl.idl";
+#if _MSC_VER >=1310
+import "oleacc.idl";		//ajc - get the real definition of IAccessible from Microsoft
+#endif
+
+#ifdef TRUSTED_AT
+	import "ProtDoc.idl";
+#endif
+
+[
+	object,
+	uuid(81f9b44f-ba3a-4f5d-9b51-090c74a9b3a4),
+	dual,
+	helpstring("IAccID Interface"),
+	pointer_default(unique)
+]
+   interface IAccID : IUnknown
+{
+	[id(22), helpstring("method get_accID")] HRESULT get_accID([out, retval] long *pID);
+   };
+
+[
+	object,
+	uuid(B4848E37-7C66-40a6-9F66-D3A9BC8F4636),
+	dual,
+	helpstring("ISelectText Interface"),
+	pointer_default(unique)
+]
+   interface ISelectText : IUnknown
+{
+	[id(23), helpstring("method selectText")] HRESULT selectText([in] long startID, [in] long startCharIndex, [in] long stopID, [in] long stopCharIndex);
+};
+
+#if _MSC_VER <= 1200
+[
+	object,
+	uuid(618736e0-3c3d-11cf-810c-00aa00389b71),
+	dual,
+	helpstring("IAccessible Interface"),
+	pointer_default(unique)
+]
+interface IAccessible : IDispatch
+{
+	[id(1), helpstring("method get_accParent")] HRESULT get_accParent([out, retval] IDispatch **ppDispParent);
+	[id(2), helpstring("method get_accChildCount")] HRESULT get_accChildCount([out, retval] long *pCountChildren);
+	[id(3), helpstring("method get_accChild")] HRESULT get_accChild([in] VARIANT varChildID, [out, retval] IDispatch ** ppDispChild);
+	[id(4), helpstring("method get_accName")] HRESULT get_accName([in] VARIANT varID, [out, retval] BSTR* pszName);
+	[id(5), helpstring("method get_accValue")] HRESULT get_accValue([in] VARIANT varID, [out, retval] BSTR *pszValue);
+	[id(6), helpstring("method get_accDescription")] HRESULT get_accDescription([in] VARIANT varID, [out, retval] BSTR *pszDescription);
+	[id(7), helpstring("method get_accRole")] HRESULT get_accRole([in] VARIANT varID, [out, retval] VARIANT *pvarRole);
+	[id(8), helpstring("method get_accState")] HRESULT get_accState([in] VARIANT varID, [out, retval] VARIANT *pvarState);
+	[id(9), helpstring("method get_accHelp")] HRESULT get_accHelp([in] VARIANT varID, [out, retval] BSTR *pszHelp);
+	[id(10), helpstring("method get_accHelpTopic")] HRESULT get_accHelpTopic([out] BSTR *pszHelpFile, [in] VARIANT varChild, [out, retval] long *pidTopic);
+	[id(11), helpstring("method get_accKeyboardShortcut")] HRESULT get_accKeyboardShortcut([in] VARIANT varID, [out, retval] BSTR *pszKeyboardShortcut);
+	[id(12), helpstring("method get_accFocus")] HRESULT get_accFocus([out, retval] VARIANT *pvarID);
+	[id(13), helpstring("method get_accSelection")] HRESULT get_accSelection([out, retval] VARIANT *pvarChildren);
+	[id(14), helpstring("method get_accDefaultAction")] HRESULT get_accDefaultAction([in] VARIANT varID, [out, retval] BSTR *pszDefaultAction);
+	[id(15), helpstring("method accSelect")] HRESULT accSelect([in] long flagsSelect, [in] VARIANT varID);
+	[id(16), helpstring("method accLocation")] HRESULT accLocation([out] long *pxLeft, [out] long *pyTop, [out] long *pcxWidth, [out] long *pcyHeight, [in] VARIANT varID);
+	[id(17), helpstring("method accNavigate")] HRESULT accNavigate([in] long navDir, [in] VARIANT varStart, [out, retval]  VARIANT *pvarEnd);
+	[id(18), helpstring("method accHitTest")] HRESULT accHitTest([in] long xLeft, [in] long yTop, [out, retval] VARIANT *pvarID);
+	[id(19), helpstring("method accDoDefaultAction")] HRESULT accDoDefaultAction([in] VARIANT varID);
+	[id(20), helpstring("method put_accName")] HRESULT put_accName([in] VARIANT varID, [in] BSTR szName);
+	[id(21), helpstring("method put_accValue")] HRESULT put_accValue([in] VARIANT varID, [in] BSTR szValue);
+};
+#endif
+
+typedef enum
+{
+	CPDDomNode_Document				= 1,
+	CPDDomNode_Page					= 2,
+	CPDDomNode_StructElement		= 3,
+	CPDDomNode_Text					= 4,
+	CPDDomNode_Word					= 5,
+	CPDDomNode_Char					= 6,
+	CPDDomNode_Graphic				= 7,
+	CPDDomNode_Link					= 8,
+	CPDDomNode_PushButtonField		= 9,
+	CPDDomNode_TextEditField		=10,
+	CPDDomNode_StaticTextField		=11,
+	CPDDomNode_ListboxField			=12,
+	CPDDomNode_ComboboxField		=13,
+	CPDDomNode_CheckboxField		=14,
+	CPDDomNode_RadioButtonField		=15,
+	CPDDomNode_SignatureField		=16,
+	CPDDomNode_OtherField			=17,
+	CPDDomNode_Comment				=18,
+	CPDDomNode_TextComment			=19,
+	CPDDomNode_Other				=20,
+	CPDDomNode_LineSeg				=21,
+	CPDDomNode_WordSeg				=22,
+	CPDDomNode_BarCode				=23
+} CPDDomNodeType;
+
+typedef enum
+{
+	PDDOM_FONTATTR_ITALIC 	= 0x1,
+	PDDOM_FONTATTR_SMALLCAP = 0x2,
+	PDDOM_FONTATTR_ALLCAP	= 0x4,
+	PDDOM_FONTATTR_SCRIPT	= 0x8,
+	PDDOM_FONTATTR_BOLD	= 0x10,
+	PDDOM_FONTATTR_LIGHT	= 0x20
+} PDDOM_FontStyle;
+
+typedef enum
+{
+	FontInfo_Unchecked		= 1,
+	FontInfo_NoInfo			= 2,
+	FontInfo_MixedInfo		= 3,
+	FontInfo_Valid			= 4
+} FontInfoState;
+
+typedef enum
+{
+	DocState_OK				= 0,
+	DocState_Protected		= 1,
+	DocState_Empty			= 2,
+	DocState_Unavailable	= 3
+} DocState;
+
+typedef enum
+{
+	Relationship_Descendant	= 0,
+	Relationship_Ancestor	= 1,
+	Relationship_Before		= 2,
+	Relationship_After		= 3,
+	Relationship_Equal		= 4,
+	Relationship_None		= 5
+} NodeRelationship;
+
+[
+	helpstring("IPDDomNode Interface"),
+    object,
+	dual,
+    uuid(5007373a-20d7-458f-9ffb-abc900e3a831),
+	pointer_default(unique)
+]
+
+interface IPDDomNode : IDispatch
+{
+
+    HRESULT GetParent
+    (
+        [out, retval] IPDDomNode **ppDispParent
+    );
+
+    HRESULT GetType
+    (
+		[out, retval] long *pNodeType
+    );
+
+    HRESULT GetChildCount
+    (
+        [out, retval] long *pCountChildren
+    );
+
+    HRESULT GetChild
+    (
+		[in] long index,
+        [out, retval] IPDDomNode **ppDispChild
+    );
+
+    HRESULT GetName
+    (
+        [out, retval] BSTR *pszName
+    );
+
+    HRESULT GetValue
+    (
+        [out, retval] BSTR *pszName
+    );
+
+    HRESULT IsSame
+    (
+	    [in] IPDDomNode *node,
+	    [out, retval] BOOL *isSame
+    );
+
+    HRESULT GetTextContent
+    (
+        [out, retval] BSTR *pszText
+    );
+
+    HRESULT GetLocation
+    (
+		[out] long *pxLeft, 
+		[out] long *pyTop, 
+		[out] long *pcxWidth, 
+		[out] long *pcyHeight
+    );
+
+    HRESULT GetFontInfo
+    (
+		[out] long *fontStatus,
+        [out] BSTR *pszName,
+        [out] float *fontSize,
+		[out] long *fontFlags, 
+		[out] float *red,
+ 		[out] float *green,
+		[out] float *blue
+    );
+
+    HRESULT GetFromID
+    (
+		[in] BSTR id,
+        [out, retval] IPDDomNode **ppDispNode
+    );
+
+    HRESULT GetIAccessible
+    (
+		 [out, retval] IAccessible **ppDispIAccessible
+    );
+
+    HRESULT ScrollTo
+    (
+    );
+
+    HRESULT GetTextInLines
+    (
+		[in] BOOL visibleOnly,
+        [out, retval] IPDDomNode **ppDisp
+    );
+
+}
+
+[
+	helpstring("IPDDomNodeExt Interface"),
+	object,
+	dual,
+	uuid(4A894040-247E-4aff-BB08-3489E9905235),
+	pointer_default(unique)
+]
+
+interface IPDDomNodeExt : IUnknown
+{
+	HRESULT GetState([out, retval] long *pState);
+
+	HRESULT Navigate([in] long navDir, [out, retval] IPDDomNode **ppEnd);
+
+	HRESULT SetFocus();
+
+	HRESULT GetIndex([out, retval] long *pIndex);
+
+	HRESULT GetPageNum([out]long *firstPage, [out]long *lastPage);
+
+	HRESULT DoDefaultAction();
+
+    HRESULT ScrollToEx(BOOL favorLeft, BOOL favorTop );
+
+	HRESULT Relationship([in] IPDDomNode *node, [out] long *pRel);
+
+}
+
+[
+	helpstring("IPDDomElement Interface"),
+    object,
+    dual,
+	uuid(198f17ae-b921-4308-9543-288d426a5c2b),
+    pointer_default(unique)
+]
+
+interface IPDDomElement : IPDDomNode
+{
+
+    HRESULT GetTagName
+    (
+        [out, retval] BSTR *pszTagName
+    );
+
+    HRESULT GetStdName
+    (
+        [out, retval] BSTR *pszStdName /*perhaps this should be a enum */
+    );
+
+    HRESULT GetID
+    (
+        [out, retval] BSTR *pszId
+    );
+
+   HRESULT GetAttribute
+    (
+		[in] BSTR pszAttr,
+ 		[in] BSTR pszOwner,
+		[out, retval] BSTR *pszAttrVal
+    );
+
+}
+
+[
+ 	helpstring("IPDDomWord Interface"),
+	object,
+    dual,
+	uuid(03c2aea5-befa-4c84-a187-c9245ac784f6),
+    pointer_default(unique)
+]
+
+interface IPDDomWord : IPDDomNode
+{
+	HRESULT LastWordOfLine
+	(
+		[out, retval] BOOL *isLast
+	);
+
+}
+
+[
+	helpstring("IPDDomDocument Interface"),
+	object,
+	dual,
+	uuid(00FFD6C4-1A94-44bc-AD3E-8AC18552E3E6),
+	pointer_default(unique)
+]
+
+interface IPDDomDocument : IPDDomElement
+{
+
+	HRESULT GetFocusNode([out, retval] IPDDomNode **node);
+
+	HRESULT NextFocusNode([in] BOOL forward, [out, retval] IPDDomNode **node);
+
+	HRESULT GetDocInfo
+		(
+		[out] BSTR *fileName,
+		[out] long *nPages,
+		[out] long *firstVisiblePage,
+		[out] long *lastVisiblePage,
+		[out] long *status,
+		[out] BSTR *lang
+		);
+
+	HRESULT SelectText([in] IPDDomWord *startID, [in] long startCharIndex, [in] IPDDomWord *stopID, [in] long stopCharIndex);
+
+	HRESULT GetTextSelection([out] BSTR *pSelection);
+
+	HRESULT GetSelectionBounds ([out] IPDDomWord **pStart, [out] long *startIndex, [out] IPDDomWord **pStop, long *stopIndex);
+
+	HRESULT GetCaret(
+		[out] long *pxLeft, 
+		[out] long *pyTop, 
+		[out] long *pcxWidth, 
+		[out] long *pcyHeight,
+		[out] IPDDomNode **node,
+		[out] long *index
+		);
+
+	HRESULT SetCaret([in]IPDDomWord *node, [in] long index);
+
+	HRESULT GoToPage( [in] long pageNum );
+}
+
+[
+	object,
+	uuid(f9f2fe81-f764-4bd0-afa5-5de841ddb625),
+	dual,
+	helpstring("GetPPDom Interface"),
+	pointer_default(unique)
+]
+
+interface IGetPDDomNode : IUnknown
+{
+	[id(24), helpstring("method get_PDDomNode")] HRESULT get_PDDomNode([in] VARIANT varID, [out, retval] IPDDomNode **ppDispDoc);
+};
+
+[
+	object,
+	uuid(35ADDC4B-B470-45f9-B29C-B6845949A4FE),
+	dual,
+	helpstring("GroupInfo Interface"),
+	pointer_default(unique)
+]
+
+interface IPDDomGroupInfo : IUnknown
+{
+	[id(24), helpstring("method GetGroupPosition")] HRESULT GetGroupPosition([out] long *groupSize, [out] long *position);
+};
+
+/** IPDDom option IDs.
+*/
+typedef enum
+{
+	IPDDOM_OPT_CLIPPEDLOCATION = 1, /*< The screen coordinates retrieved by 
+																	IPDDomNode::GetLocation may be clipped to the container window. 
+																	The corresponding value VARIANT should be of type VT_BOOL. The 
+																	default value is true.
+																	*/
+	IPDDOM_OPT_RELATIVELOCATION = 2 /*< The screen coordinates retrieved by 
+																	IPDDomNode::GetLocation may be relative to the top left corner 
+																	of the container window. 
+																	The corresponding value VARIANT should be of type VT_BOOL. The 
+																	default value is false.
+																	*/
+} IPDDomOptIds;
+
+/** The IPDDomGlobalOptions interface allows a client to set and retrieve options that 
+	affect the behavior of several other IPDDom methods. For the meainig of a specific 
+	option, see the definition of its corresponding ID.
+	For example, to retrieve the unclipped screen coordinates of an IPDDomNode 
+	object, and relative to the top-left corner of the containing window,  you can do:
+	<code>
+		CComQIPtr<IPDDomGlobalOptions> opts(pddn);
+		if (opts)
+		{
+			VARIANT v;
+			v.vt = VT_BOOL;
+			v.boolVal = false;
+			opts->SetOption(IPDDOM_OPT_CLIPPEDLOCATION,v);
+			v.boolVal = true;
+			opts->SetOption(IPDDOM_OPT_RELATIVELOCATION,v);
+			pddn->GetLocation(...);
+		}
+	</code>
+*/
+[
+	object,
+	uuid(C37B1794-B61E-402b-9C7C-B073DE579AC1),
+	dual,
+	helpstring("IPDDom Global Options Interface"),
+	pointer_default(unique)
+]
+
+interface IPDDomGlobalOptions : IUnknown
+{
+	[id(1), helpstring("method GetOption")] HRESULT GetOption(
+		[in] IPDDomOptIds optId,[out, retval] VARIANT* value);
+	[id(2), helpstring("method SetOption")] HRESULT SetOption(
+		[in] IPDDomOptIds optId,[in] VARIANT value);
+};
+
+/** The pagination interface allows client to retrieve information about the 
+	document toatal number of pages, which pages are currently visible, and a 
+	textual label for pages. It also provides a method to make a specific page 
+	visible. This interface is available for a PDDomNode of type CPDDomNode_Document.
+	For insttance, to get the textual label of the first visible page, a client can do:
+	<code>
+	CComQIPtr<IPDDomDocPagination> pagination(pddNode);
+	if (pagination)
+	{
+		long firstVisiblePage = -1;
+		HRESULT hres = pagination->GetInfo( 0, &firstVisiblePage, 0 );
+		if (SUCCEEDED(hres))
+		{
+			CComBSTR bstr;
+			hres = pagination->LabelForPageNum( firstVisiblePage, &bstr );
+		}
+	}
+	</code>
+*/
+[
+	object,
+	uuid(8E6D1CB7-4DAE-4DE4-8ED9-15672A5F942F),
+	dual,
+	helpstring("IPDDom Document Pagination Interface"),
+	pointer_default(unique)
+]
+
+interface IPDDomDocPagination : IUnknown
+{
+	[id(1), helpstring("method GetInfo")]
+	HRESULT GetInfo( [out] long* numPages, [out] long* firstVisiblePage,
+		[out] long* lastVisiblePage ); /**< The same values can be obtained via 
+									   IPDDomDocument::GetDocInfo. */
+
+	/** Returns the page textual label associated with the given pageNum.
+	If no textual label exists for pageNum, returns the string representing the 
+	integer value pageNum. */
+	[id(2), helpstring("method LabelForPageNum")]
+	HRESULT LabelForPageNum( [in] long pageNum, [out, retval] BSTR* pageLabel );
+
+	[id(3), helpstring("method GoToPage")]
+	HRESULT GoToPage( [in] long pageNum ); //< Same as IPDDomDocument::GoToPage.
+};
+
+[
+	uuid(C523F390-9C83-11D3-9094-00104BD0D535),
+	version(3.0),
+	helpstring("Acrobat Access 3.0 Type Library")
+]
+library AcrobatAccessLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(C523F39F-9C83-11D3-9094-00104BD0D535),
+		helpstring("Accessible Class")
+	]
+	coclass Accessible
+	{
+		[default] interface IAccessible;
+		interface IOleWindow;
+		interface IEnumVARIANT;
+		interface IAccID;
+#ifdef TRUSTED_AT
+		interface IProtDoc;
+#endif
+		interface IGetPDDomNode;
+		interface ISelectText;
+	};
+	[
+		uuid(ECAF4D9D-B473-4EC5-86F4-3DBB46F3F31A),
+		helpstring("PDDom Class")
+	]
+	coclass PDDom
+	{
+		[default] interface IPDDomNode;
+		interface IEnumVARIANT;
+		interface IPDDomElement;
+		interface IPDDomWord;
+		interface IPDDomNodeExt;
+		interface IPDDomDocument;
+		interface IPDDomGroupInfo;
+		interface IPDDomGlobalOptions;
+		interface IPDDomDocPagination;
+	}
+};
+
+// Service IDs
+
+cpp_quote("
+// {449D454B-1F46-497e-B2B6-3357AED9912B}
+static const GUID SID_AccID = 
+{ 0x449d454b, 0x1f46, 0x497e, { 0xb2, 0xb6, 0x33, 0x57, 0xae, 0xd9, 0x91, 0x2b } };
+
+// {C0A1D5E9-1142-4cf3-B607-82FC3B96A4DF}
+static const GUID SID_GetPDDomNode = 
+{ 0xc0a1d5e9, 0x1142, 0x4cf3, { 0xb6, 0x7, 0x82, 0xfc, 0x3b, 0x96, 0xa4, 0xdf } };
+
+// {1CA75614-5102-49ec-B4C2-70910ABB7078}
+static const GUID SID_SelectText = 
+{ 0x1ca75614, 0x5102, 0x49ec, { 0xb4, 0xc2, 0x70, 0x91, 0xa, 0xbb, 0x70, 0x78 } };
+
+// {4EB77EC2-D966-4991-A75F-B6519C942787}
+static const GUID SID_PDDomNode = 
+{ 0x4eb77ec2, 0xd966, 0x4991, { 0xa7, 0x5f, 0xb6, 0x51, 0x9c, 0x94, 0x27, 0x87 } };
+
+// {FEE94E78-901B-4988-AF1E-1E0C3DEFA0BA}
+static const GUID SID_PDDomElement = 
+{ 0xfee94e78, 0x901b, 0x4988, { 0xaf, 0x1e, 0x1e, 0xc, 0x3d, 0xef, 0xa0, 0xba } };
+
+// {238168BC-50C2-4426-8BCE-0511FFF6372A}
+static const GUID SID_PDDomWord = 
+{ 0x238168bc, 0x50c2, 0x4426, { 0x8b, 0xce, 0x5, 0x11, 0xff, 0xf6, 0x37, 0x2a } };
+
+// {4FD5A346-9F45-4126-993A-2A6E85BC0947}
+static const GUID SID_PDDomNodeExt = 
+{ 0x4fd5a346, 0x9f45, 0x4126, { 0x99, 0x3a, 0x2a, 0x6e, 0x85, 0xbc, 0x9, 0x47 } };
+
+// {5AC8E54A-DD13-4630-8476-F169AD938B69}
+static const GUID SID_PDDomDocument = 
+{ 0x5ac8e54a, 0xdd13, 0x4630, { 0x84, 0x76, 0xf1, 0x69, 0xad, 0x93, 0x8b, 0x69 } };
+
+// {DE846B3B-2BDE-41b9-9C06-971D239F0DE6}
+static const GUID SID_GroupInfo = 
+{ 0xde846b3b, 0x2bde, 0x41b9, { 0x9c, 0x6, 0x97, 0x1d, 0x23, 0x9f, 0xd, 0xe6 } };
+")
