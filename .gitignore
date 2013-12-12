@@ -1,1 +1,3 @@
 *.pyc
+*.pyo
+python/comtypes/gen
