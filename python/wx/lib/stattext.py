@@ -7,7 +7,7 @@
 # Author:      Robin Dunn
 #
 # Created:     8-July-2002
-# RCS-ID:      $Id: stattext.py 49762 2007-11-09 17:50:59Z AG $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -20,17 +20,20 @@
 import wx
 
 BUFFERED = 0   # In unbuffered mode we can let the theme shine through,
-               # is there a way to do this when buffering?
+               # otherwise we draw the background ourselves.
 
+if wx.Platform == "__WXMAC__":
+    from Carbon.Appearance import kThemeBrushDialogBackgroundActive
+    
 #----------------------------------------------------------------------
 
 class GenStaticText(wx.PyControl):
     labelDelta = 1
 
-    def __init__(self, parent, ID, label,
-                 pos = wx.DefaultPosition, size = wx.DefaultSize,
-                 style = 0,
-                 name = "genstattext"):
+    def __init__(self, parent, ID=-1, label="",
+                 pos=wx.DefaultPosition, size=wx.DefaultSize,
+                 style=0,
+                 name="genstattext"):
         wx.PyControl.__init__(self, parent, ID, pos, size, style|wx.NO_BORDER,
                              wx.DefaultValidator, name)
 
@@ -144,10 +147,12 @@ class GenStaticText(wx.PyControl):
 
         if BUFFERED:
             clr = self.GetBackgroundColour()
-            backBrush = wx.Brush(clr, wx.SOLID)
             if wx.Platform == "__WXMAC__" and clr == self.defBackClr:
-                # if colour is still the default then use the striped background on Mac
-                backBrush.MacSetTheme(1) # 1 == kThemeBrushDialogBackgroundActive
+                # if colour is still the default then use the theme's  background on Mac
+                themeColour = wx.MacThemeColour(kThemeBrushDialogBackgroundActive)
+                backBrush = wx.Brush(themeColour)
+            else:
+                backBrush = wx.Brush(clr, wx.SOLID)
             dc.SetBackground(backBrush)
             dc.Clear()
 

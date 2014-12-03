@@ -6,7 +6,7 @@
 # Author:      Robin Dunn
 #
 # Created:     26-Jan-2007
-# RCS-ID:      $Id: inspection.py 63676 2010-03-12 23:53:48Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2007 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------------
@@ -19,7 +19,8 @@
 import wx
 import wx.py
 import wx.stc
-import wx.aui
+#import wx.aui as aui
+import wx.lib.agw.aui as aui
 import wx.lib.utils as utils
 import sys
 import inspect
@@ -127,10 +128,10 @@ class InspectionFrame(wx.Frame):
         panel = wx.Panel(self, size=self.GetClientSize())
 
         # tell FrameManager to manage this frame
-        self.mgr = wx.aui.AuiManager(panel,
-                                     wx.aui.AUI_MGR_DEFAULT
-                                     | wx.aui.AUI_MGR_TRANSPARENT_DRAG
-                                     | wx.aui.AUI_MGR_ALLOW_ACTIVE_PANE)
+        self.mgr = aui.AuiManager(panel,
+                                  aui.AUI_MGR_DEFAULT
+                                  | aui.AUI_MGR_TRANSPARENT_DRAG
+                                  | aui.AUI_MGR_ALLOW_ACTIVE_PANE)
 
         # make the child tools
         self.tree = InspectionTree(panel, size=(100,300))
@@ -158,17 +159,17 @@ class InspectionFrame(wx.Frame):
 
         # put the chlid tools in AUI panes
         self.mgr.AddPane(self.info,
-                         wx.aui.AuiPaneInfo().Name("info").Caption("Object Info").
+                         aui.AuiPaneInfo().Name("info").Caption("Object Info").
                          CenterPane().CaptionVisible(True).
                          CloseButton(False).MaximizeButton(True)
                          )
         self.mgr.AddPane(self.tree,
-                         wx.aui.AuiPaneInfo().Name("tree").Caption("Widget Tree").
+                         aui.AuiPaneInfo().Name("tree").Caption("Widget Tree").
                          CaptionVisible(True).Left().Dockable(True).Floatable(True).
                          BestSize((280,200)).CloseButton(False).MaximizeButton(True)
                          )
         self.mgr.AddPane(self.crust,
-                         wx.aui.AuiPaneInfo().Name("crust").Caption("PyCrust").
+                         aui.AuiPaneInfo().Name("crust").Caption("PyCrust").
                          CaptionVisible(True).Bottom().Dockable(True).Floatable(True).
                          BestSize((400,200)).CloseButton(False).MaximizeButton(True)
                          )
@@ -179,6 +180,9 @@ class InspectionFrame(wx.Frame):
             config = wx.Config('wxpyinspector')
         self.config = config
         self.Bind(wx.EVT_CLOSE, self.OnClose)
+        if self.Parent:
+            tlw = self.Parent.GetTopLevelParent()
+            tlw.Bind(wx.EVT_CLOSE, self.OnClose)
         self.LoadSettings(self.config)
         self.crust.shell.lineNumbers = False
         self.crust.shell.setDisplayLineNumbers(False)
@@ -254,13 +258,17 @@ class InspectionFrame(wx.Frame):
 
     def OnClose(self, evt):
         self.SaveSettings(self.config)
-        self.mgr.UnInit()
-        del self.mgr
         evt.Skip()
+        if hasattr(self, 'mgr'):
+            self.mgr.UnInit()
+            del self.mgr
+            if self.Parent:
+                tlw = self.Parent.GetTopLevelParent()
+                tlw.Unbind(wx.EVT_CLOSE, handler=self.OnClose)
 
 
     def UpdateInfo(self):
-        self.info.Update(self.obj)
+        self.info.UpdateInfo(self.obj)
 
 
     def SetObj(self, obj):
@@ -382,7 +390,11 @@ class InspectionFrame(wx.Frame):
         
         perspective = config.Read('perspective', '')
         if perspective:
-            self.mgr.LoadPerspective(perspective)
+            try:
+                self.mgr.LoadPerspective(perspective)
+            except wx.PyAssertionError:
+                # ignore bad perspective string errors
+                pass
         self.includeSizers = config.ReadBool('includeSizers', False)
 
 
@@ -410,7 +422,7 @@ INCLUDE_INSPECTOR = True
 
 USE_CUSTOMTREECTRL = False
 if USE_CUSTOMTREECTRL:
-    import wx.lib.customtreectrl as CT
+    import wx.lib.agw.customtreectrl as CT
     TreeBaseClass = CT.CustomTreeCtrl
 else:
     TreeBaseClass = wx.TreeCtrl
@@ -454,8 +466,8 @@ class InspectionTree(TreeBaseClass):
             topItem = self.FindWidgetItem(top)
             if topItem:
                 self.ExpandAllChildren(topItem)
-        self.SelectObj(startWidget)
         self.built = True
+        self.SelectObj(startWidget)
 
 
     def _AddWidget(self, parentItem, widget, includeSizers):
@@ -528,8 +540,10 @@ class InspectionTree(TreeBaseClass):
         """
         Returns the string to be used in the tree for a widget
         """
-        return "%s (\"%s\")" % (widget.__class__.__name__, widget.GetName())
-
+        if hasattr(widget, 'GetName'):
+            return "%s (\"%s\")" % (widget.__class__.__name__, widget.GetName())
+        return widget.__class__.__name__
+    
     
     def GetTextForSizer(self, sizer):
         """
@@ -546,8 +560,10 @@ class InspectionTree(TreeBaseClass):
 
 
     def OnSelectionChanged(self, evt):
-        obj = self.GetItemPyData(evt.GetItem())
-        self.toolFrame.SetObj(obj)
+        item = evt.GetItem()
+        if item:
+            obj = self.GetItemPyData(item)
+            self.toolFrame.SetObj(obj)
 
 
 #---------------------------------------------------------------------------
@@ -581,7 +597,7 @@ class InspectionInfoPanel(wx.stc.StyledTextCtrl):
         config.WriteInt('View/Zoom/Info', self.GetZoom())
 
 
-    def Update(self, obj):
+    def UpdateInfo(self, obj):
         st = []
         if not obj:
             st.append("Item is None or has been destroyed.")
@@ -627,7 +643,8 @@ class InspectionInfoPanel(wx.stc.StyledTextCtrl):
         tlwcount = _countAllChildren(obj.GetChildren())
 
         st = ["Widget:"]
-        st.append(self.Fmt('name',        obj.GetName()))
+        if hasattr(obj, 'GetName'):
+            st.append(self.Fmt('name',        obj.GetName()))
         st.append(self.Fmt('class',       obj.__class__))
         st.append(self.Fmt('bases',       obj.__class__.__bases__))
         st.append(self.Fmt('module',      inspect.getmodule(obj)))
@@ -643,6 +660,7 @@ class InspectionInfoPanel(wx.stc.StyledTextCtrl):
         st.append(self.Fmt('virtual size',obj.GetVirtualSize()))
         st.append(self.Fmt('IsEnabled',   obj.IsEnabled()))
         st.append(self.Fmt('IsShown',     obj.IsShown()))
+        st.append(self.Fmt('IsFrozen',    obj.IsFrozen()))        
         st.append(self.Fmt('fg color',    obj.GetForegroundColour()))
         st.append(self.Fmt('bg color',    obj.GetBackgroundColour()))
         st.append(self.Fmt('label',       obj.GetLabel()))
@@ -785,7 +803,16 @@ class _InspectionHighlighter(object):
     color3 = '#00008B'     # for items in sizers
 
     highlightTime = 3000   # how long to display the highlights
-
+    
+                           # how to draw it
+    useOverlay = 'wxMac' in wx.PlatformInfo
+    
+    
+    def __init__(self):
+        if self.useOverlay:
+            self.overlay = wx.Overlay()
+            
+    
     def HighlightCurrentItem(self, tree):
         """
         Draw a highlight rectangle around the item represented by the
@@ -816,9 +843,9 @@ class _InspectionHighlighter(object):
             self.FlickerTLW(win)
             return
         else:
-            pos, useWinDC = self.FindHighlightPos(tlw, win.ClientToScreen((0,0)))
+            pos = self.FindHighlightPos(tlw, win.ClientToScreen((0,0)))
             rect.SetPosition(pos)
-            self.DoHighlight(tlw, rect, self.color1, useWinDC)
+            self.DoHighlight(tlw, rect, self.color1)
 
 
     def HighlightSizerItem(self, item, sizer, penWidth=2):
@@ -826,11 +853,11 @@ class _InspectionHighlighter(object):
         tlw = win.GetTopLevelParent()
         rect = item.GetRect()
         pos = rect.GetPosition()
-        pos, useWinDC = self.FindHighlightPos(tlw, win.ClientToScreen(pos))
+        pos = self.FindHighlightPos(tlw, win.ClientToScreen(pos))
         rect.SetPosition(pos)
         if rect.width < 1: rect.width = 1
         if rect.width < 1: rect.width = 1
-        self.DoHighlight(tlw, rect, self.color1, useWinDC, penWidth)
+        self.DoHighlight(tlw, rect, self.color1, penWidth)
 
 
     def HighlightSizer(self, sizer):
@@ -838,9 +865,9 @@ class _InspectionHighlighter(object):
         win = sizer.GetContainingWindow()
         tlw = win.GetTopLevelParent()
         pos = sizer.GetPosition()
-        pos, useWinDC = self.FindHighlightPos(tlw, win.ClientToScreen(pos))
+        pos = self.FindHighlightPos(tlw, win.ClientToScreen(pos))
         rect = wx.RectPS(pos, sizer.GetSize())
-        dc = self.DoHighlight(tlw, rect, self.color1, useWinDC)
+        dc, dco = self.DoHighlight(tlw, rect, self.color1)
 
         # Now highlight the actual items within the sizer.  This may
         # get overdrawn by the code below for item boundaries, but if
@@ -865,8 +892,13 @@ class _InspectionHighlighter(object):
         # differently.
         dc.SetPen(wx.Pen(self.color2, 1))
 
+        if isinstance(sizer, wx.WrapSizer):
+            for item in sizer.GetChildren():
+                ir = self.AdjustRect(tlw, win, item.Rect)
+                dc.DrawRectangleRect(ir)
+        
         # wx.BoxSizer, wx.StaticBoxSizer
-        if isinstance(sizer, wx.BoxSizer):
+        elif isinstance(sizer, wx.BoxSizer):
             # NOTE: we have to do some reverse-engineering here for
             # borders because the sizer and sizer item don't give us
             # enough information to know for sure where item
@@ -939,33 +971,37 @@ class _InspectionHighlighter(object):
 
         # Anything else is probably a custom sizer, just highlight the items
         else:
-            del dc
+            del dc, odc
             for item in sizer.GetChildren():
                 self.HighlightSizerItem(item, sizer, 1)
 
 
     def FindHighlightPos(self, tlw, pos):
-        if 'wxMac' in wx.PlatformInfo:
-            # We'll be using a WindowDC in this case so adjust the
+        if self.useOverlay:
+            # We'll be using a ClientDC in this case so adjust the
             # position accordingly
             pos = tlw.ScreenToClient(pos)
-            useWinDC = True
-        else:
-            useWinDC = False
-        return pos, useWinDC
+        return pos
 
 
     def AdjustRect(self, tlw, win,  rect):
-        pos, j = self.FindHighlightPos(tlw, win.ClientToScreen(rect.Position))
+        pos = self.FindHighlightPos(tlw, win.ClientToScreen(rect.Position))
         rect.Position = pos
         return wx.RectPS(pos, rect.Size)
 
 
-    def DoHighlight(self, tlw, rect, colour, useWinDC, penWidth=2):
-        if useWinDC:
-            dc = wx.WindowDC(tlw)
+    def DoHighlight(self, tlw, rect, colour, penWidth=2):
+        if not tlw.IsFrozen():
+            tlw.Freeze()
+
+        if self.useOverlay:
+            dc = wx.ClientDC(tlw)
+            dco = wx.DCOverlay(self.overlay, dc)
+            dco.Clear()
         else:
             dc = wx.ScreenDC()
+            dco = None
+            
         dc.SetPen(wx.Pen(colour, penWidth))
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -973,13 +1009,28 @@ class _InspectionHighlighter(object):
         dc.DrawRectangleRect(drawRect)
 
         drawRect.Inflate(2,2)
-        if not useWinDC:
+        if not self.useOverlay:
             pos = tlw.ScreenToClient(drawRect.GetPosition())
             drawRect.SetPosition(pos)
-        wx.CallLater(self.highlightTime, tlw.RefreshRect, drawRect)
+        wx.CallLater(self.highlightTime, self.DoUnhighlight, tlw, drawRect)
 
-        return dc
+        return dc, dco
 
+    
+    def DoUnhighlight(self, tlw, rect):
+        if not tlw:
+            return
+        if tlw.IsFrozen():
+            tlw.Thaw()
+        if self.useOverlay:
+            dc = wx.ClientDC(tlw)
+            dco = wx.DCOverlay(self.overlay, dc)
+            dco.Clear()
+            del dc, dco
+            self.overlay.Reset()
+        else:
+            tlw.RefreshRect(rect)
+            
 
     def FlickerTLW(self, tlw):
         """
@@ -991,6 +1042,7 @@ class _InspectionHighlighter(object):
         tlw.Hide()
         self.cl = wx.CallLater(300, self._Toggle, tlw)
 
+        
     def _Toggle(self, tlw):
         if tlw.IsShown():
             tlw.Hide()

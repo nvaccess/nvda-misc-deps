@@ -78,7 +78,7 @@ class ActiveXCtrl(wx.PyAxBaseWindow):
         """
         pos = wx.Point(*pos)    # in case the arg is a tuple
         size = wx.Size(*size)   # ditto
-        
+
         x = pos.x
         y = pos.y
         if x == -1: x = CW_USEDEFAULT

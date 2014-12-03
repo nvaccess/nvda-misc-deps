@@ -2,8 +2,8 @@
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com> / "
 __author__ += "David N. Mashburn <david.n.mashburn@gmail.com>"
-__cvsid__ = "$Id: interpreter.py 63479 2010-02-14 05:24:22Z RD $"
-__revision__ = "$Revision: 63479 $"[11:-2]
+__cvsid__ = "$Id$"
+__revision__ = "$Revision$"[11:-2]
 
 import os
 import sys
@@ -98,10 +98,16 @@ class Interpreter(InteractiveInterpreter):
         # meant to be changed and leave it. Power to the people.
         if sys.stdin == self.stdin:
             sys.stdin = stdin
+        else:
+            self.stdin = sys.stdin
         if sys.stdout == self.stdout:
             sys.stdout = stdout
+        else:
+            self.stdout = sys.stdout
         if sys.stderr == self.stderr:
             sys.stderr = stderr
+        else:
+            self.stderr = sys.stderr
         return more
         
     def runModule(self, mod):
@@ -115,10 +121,16 @@ class Interpreter(InteractiveInterpreter):
         # meant to be changed and leave it. Power to the people.
         if sys.stdin == self.stdin:
             sys.stdin = stdin
+        else:
+            self.stdin = sys.stdin
         if sys.stdout == self.stdout:
             sys.stdout = stdout
+        else:
+            self.stdout = sys.stdout
         if sys.stderr == self.stderr:
             sys.stderr = stderr
+        else:
+            self.stderr = sys.stderr
         return False
     
     def getAutoCompleteKeys(self):

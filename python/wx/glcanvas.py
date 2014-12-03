@@ -68,7 +68,7 @@ class GLContext(_core.Object):
     __swig_destroy__ = _glcanvas.delete_GLContext
     __del__ = lambda self : None;
     def SetCurrent(*args, **kwargs):
-        """SetCurrent(self, GLCanvas win)"""
+        """SetCurrent(self, GLCanvas win) -> bool"""
         return _glcanvas.GLContext_SetCurrent(*args, **kwargs)
 
 _glcanvas.GLContext_swigregister(GLContext)
@@ -91,41 +91,53 @@ WX_GL_MIN_ACCUM_RED = _glcanvas.WX_GL_MIN_ACCUM_RED
 WX_GL_MIN_ACCUM_GREEN = _glcanvas.WX_GL_MIN_ACCUM_GREEN
 WX_GL_MIN_ACCUM_BLUE = _glcanvas.WX_GL_MIN_ACCUM_BLUE
 WX_GL_MIN_ACCUM_ALPHA = _glcanvas.WX_GL_MIN_ACCUM_ALPHA
+WX_GL_SAMPLE_BUFFERS = _glcanvas.WX_GL_SAMPLE_BUFFERS
+WX_GL_SAMPLES = _glcanvas.WX_GL_SAMPLES
 class GLCanvas(_core.Window):
     """Proxy of C++ GLCanvas class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
         """
-        __init__(self, Window parent, int id=-1, Point pos=DefaultPosition, 
-            Size size=DefaultSize, long style=0, String name=GLCanvasNameStr, 
-            int attribList=None, Palette palette=wxNullPalette) -> GLCanvas
+        __init__(self, Window parent, int id=-1, int attribList=None, Point pos=DefaultPosition, 
+            Size size=DefaultSize, 
+            long style=0, String name=GLCanvasNameStr, Palette palette=wxNullPalette) -> GLCanvas
         """
         _glcanvas.GLCanvas_swiginit(self,_glcanvas.new_GLCanvas(*args, **kwargs))
         self._setOORInfo(self)
 
-    def SetCurrent(*args):
+    def Create(*args, **kwargs):
         """
-        SetCurrent(self)
-        SetCurrent(self, GLContext RC)
+        Create(self, Window parent, int id=ID_ANY, Point pos=DefaultPosition, 
+            Size size=DefaultSize, long style=0, String name=wxGLCanvasName, 
+            int attribList=None, 
+            Palette palette=wxNullPalette) -> bool
         """
-        return _glcanvas.GLCanvas_SetCurrent(*args)
+        return _glcanvas.GLCanvas_Create(*args, **kwargs)
 
     def SetColour(*args, **kwargs):
         """SetColour(self, String colour)"""
         return _glcanvas.GLCanvas_SetColour(*args, **kwargs)
 
     def SwapBuffers(*args, **kwargs):
-        """SwapBuffers(self)"""
+        """SwapBuffers(self) -> bool"""
         return _glcanvas.GLCanvas_SwapBuffers(*args, **kwargs)
 
+    def IsExtensionSupported(*args, **kwargs):
+        """IsExtensionSupported(char extension) -> bool"""
+        return _glcanvas.GLCanvas_IsExtensionSupported(*args, **kwargs)
+
+    IsExtensionSupported = staticmethod(IsExtensionSupported)
     def GetContext(*args, **kwargs):
         """GetContext(self) -> GLContext"""
         return _glcanvas.GLCanvas_GetContext(*args, **kwargs)
 
-    def SetupPixelFormat(*args, **kwargs):
-        """SetupPixelFormat(self, int attribList=None)"""
-        return _glcanvas.GLCanvas_SetupPixelFormat(*args, **kwargs)
+    def SetCurrent(*args):
+        """
+        SetCurrent(self, GLContext context) -> bool
+        SetCurrent(self)
+        """
+        return _glcanvas.GLCanvas_SetCurrent(*args)
 
     def SetupPalette(*args, **kwargs):
         """SetupPalette(self, Palette palette)"""
@@ -139,7 +151,13 @@ class GLCanvas(_core.Window):
         """GetPalette(self) -> Palette"""
         return _glcanvas.GLCanvas_GetPalette(*args, **kwargs)
 
-    Context = property(GetContext,doc="See `GetContext`") 
+    def IsDisplaySupported(*args, **kwargs):
+        """IsDisplaySupported(int attribList) -> bool"""
+        return _glcanvas.GLCanvas_IsDisplaySupported(*args, **kwargs)
+
+    IsDisplaySupported = staticmethod(IsDisplaySupported)
+    Context = property(GetContext) 
+    Palette = property(GetPalette) 
 _glcanvas.GLCanvas_swigregister(GLCanvas)
 
 def GLCanvasWithContext(*args, **kwargs):
@@ -152,6 +170,14 @@ def GLCanvasWithContext(*args, **kwargs):
     val = _glcanvas.new_GLCanvasWithContext(*args, **kwargs)
     val._setOORInfo(val)
     return val
+
+def GLCanvas_IsExtensionSupported(*args, **kwargs):
+  """GLCanvas_IsExtensionSupported(char extension) -> bool"""
+  return _glcanvas.GLCanvas_IsExtensionSupported(*args, **kwargs)
+
+def GLCanvas_IsDisplaySupported(*args, **kwargs):
+  """GLCanvas_IsDisplaySupported(int attribList) -> bool"""
+  return _glcanvas.GLCanvas_IsDisplaySupported(*args, **kwargs)
 
 
 

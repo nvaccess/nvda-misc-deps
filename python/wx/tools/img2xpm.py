@@ -1,10 +1,10 @@
 #----------------------------------------------------------------------
-# Name:        wxPython.tools.img2xpm
+# Name:        wx.tools.img2xpm
 # Purpose:     Convert an image to XPM format
 #
 # Author:      Robin Dunn
 #
-# RCS-ID:      $Id: img2xpm.py 39136 2006-05-10 23:22:27Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -44,7 +44,7 @@ def main():
     # some bitmap related things need to have a wxApp initialized...
     if wx.GetApp() is None:
         global app
-        app = wx.PySimpleApp()
+        app = wx.App()
     img2img.main(sys.argv[1:], wx.BITMAP_TYPE_XPM, ".xpm", __doc__)
 
 

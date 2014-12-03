@@ -15,8 +15,8 @@ syntax highlighting of all supported filetypes.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_basestc.py 67626 2011-04-27 02:51:39Z CJP $"
-__revision__ = "$Revision: 67626 $"
+__svnid__ = "$Id: ed_basestc.py 73711 2013-03-23 14:19:01Z CJP $"
+__revision__ = "$Revision: 73711 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -101,6 +101,10 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
         if wx.Platform == '__WXMAC__':
             for keys in _GetMacKeyBindings():
                 self.CmdKeyAssign(*keys)
+
+        # Set default EOL format
+        if wx.Platform != '__WXMSW__':
+            self.SetEOLMode(wx.stc.STC_EOL_LF)
 
         # Setup Auto-comp images
         # TODO: should be called on theme change messages
@@ -305,15 +309,20 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
 
     def SetBlockCaret(self):
         """Change caret style to block"""
-        # XXX: This doesn't seem to be working with this wxPython version.
-#        self.SendMsg(msg=2512, lp=2)
-        # Alternatively, just make the caret a bit thicker!
-        self.SetCaretWidth(3)
+        if hasattr(self, 'SetCaretStyle'): # wxPython 2.9 or greater
+            self.SetCaretStyle(wx.stc.STC_CARETSTYLE_BLOCK)
+        else:
+            # Alternatively, just make the caret a bit thicker!
+            # best we can do on 2.8
+            self.SetCaretWidth(3)
 
     def SetLineCaret(self):
         """Change caret style to line"""
-        self.SetCaretWidth(1)
-#        self.SendMsg(2512, 1)
+        if hasattr(self, 'SetCaretStyle'):
+            self.SetCaretStyle(wx.stc.STC_CARETSTYLE_LINE)
+        else:
+            pwidth = Profile_Get('CARETWIDTH', default=1)
+            self.SetCaretWidth(pwidth)
 
     def BraceBadLight(self, pos):
         """Highlight the character at the given position
@@ -507,7 +516,6 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
     def DoZoom(self, mode):
         """Zoom control in or out
         @param mode: either zoom in or out
-        @type mode: int id value
 
         """
         id_type = mode
@@ -622,7 +630,6 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
         @keyword line: optional if None current cursor position used
         @keyword col: optional if None current cursor position used
         @return: the command string to the left of the autocomp char
-        @todo: fillups are currently disabled. See note in Configure.
 
         """
         if None in (line, col):
@@ -630,27 +637,8 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
             #       for multibyte characters.
             line, col = self.GetCurLine()
             col = self.GetColumn(self.GetCurrentPos())
-        line = line.expandtabs(self.GetTabWidth())
-        cmd_lmt = list(self._code['compsvc'].GetAutoCompStops() + \
-                       self._code['compsvc'].GetAutoCompFillups())
-        for key in self._code['compsvc'].GetAutoCompKeys():
-            kval = unichr(key)
-            if kval in cmd_lmt:
-                cmd_lmt.remove(kval)
-
-        curr_pos = col - 1
-        cmd = u''
-        while curr_pos > -1:
-            cmd = line[curr_pos:col]
-            if len(cmd) and cmd[0] not in cmd_lmt:
-                curr_pos -= 1
-            else:
-                break
-
-        for char in cmd_lmt:
-            cmd = cmd.replace(char, u'')
-
-        return cmd.strip()
+        cmd = self._code['compsvc'].GetCommandString(self, line, col)
+        return cmd
 
     def GetCommentChars(self):
         """Return the list of characters used to comment a string in the
@@ -715,14 +703,13 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
     def GetLangId(self):
         """Returns the language identifier of this control
         @return: language identifier of document
-        @rtype: int
 
         """
         return self._code['lang_id']
 
     def GetModTime(self):
         """Get the value of the buffers file last modtime"""
-        return self.file.GetModtime()
+        return self.file.ModTime
 
     def GetPos(self):
         """Update Line/Column information
@@ -760,6 +747,23 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
         pos = max(0, pos-1)
         return 'comment' in self.FindTagById(self.GetStyleAt(pos))
 
+    def IsString(self, pos):
+        """Is the given position in a string region of the current buffer
+        @param pos: int position in buffer
+        @return: bool
+
+        """
+        style = self.GetStyleAt(pos)
+        return self.FindTagById(style) in ('string_style', 'char_style')
+
+    def IsNonCode(self, pos):
+        """Is the passed in position in a non code region
+        @param pos: buffer position
+        @return: bool
+
+        """
+        return self.IsComment(pos) or self.IsString(pos)
+
     def HasMarker(self, line, marker):
         """Check if the given line has the given marker set
         @param line: line number
@@ -774,7 +778,7 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
         @return: bool
 
         """
-        sel = self.GetSelection()
+        sel = super(EditraBaseStc, self).GetSelection()
         return sel[0] != sel[1]
 
     def HasMultilineSelection(self):
@@ -783,7 +787,7 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
 
         """
         bMulti = False
-        sel = self.GetSelection()
+        sel = super(EditraBaseStc, self).GetSelection()
         if sel[0] != sel[1]:
             sline = self.LineFromPosition(sel[0])
             eline = self.LineFromPosition(sel[1])
@@ -825,15 +829,6 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
         else:
             extend = Profile_Get('AUTO_COMP_EX') # Using extended autocomp?
             self._code['compsvc'] = autocomp.AutoCompService.GetCompleter(self, extend)
-
-    def IsString(self, pos):
-        """Is the given position in a string region of the current buffer
-        @param pos: int position in buffer
-        @return: bool
-
-        """
-        style = self.GetStyleAt(pos)
-        return self.FindTagById(style) in ('string_style', 'char_style')
 
     def LoadFile(self, path):
         """Load the file at the given path into the buffer. Returns
@@ -883,8 +878,7 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
     def OnChanged(self, evt):
         """Handles updates that need to take place after
         the control has been modified.
-        @param evt: event that called this handler
-        @type evt: wx.stc.StyledTextEvent
+        @param evt: wx.stc.StyledTextEvent
 
         """
         if self._line_num:
@@ -1076,6 +1070,42 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
                     self.SetProperty(prop[0], prop[1])
         return True
 
+    def BaseSetSelection(self, start, end):
+        """Call base STC SetSelection method, for use with internal utf-8
+        indexes in use by derived classes, STC hell...
+
+        """
+        super(EditraBaseStc, self).SetSelection(start, end)
+
+    def SetSelection(self, start, end):
+        """Override base method to make it work correctly using
+        Unicode character positions instead of UTF-8.
+
+        """
+        # STC HELL - some methods require UTF-8 offsets while others work
+        #            with Unicode...
+        # Calculate UTF-8 offsets in buffer
+        unicode_txt = self.GetText()
+        if start != 0:
+            start = len(ed_txt.EncodeString(unicode_txt[0:start], 'utf-8'))
+        if end != 0:
+            end = len(ed_txt.EncodeString(unicode_txt[0:end], 'utf-8'))
+        del unicode_txt
+        super(EditraBaseStc, self).SetSelection(start, end)
+
+    def GetSelection(self):
+        """Get the selection positions in Unicode instead of UTF-8"""
+        # STC HELL
+        # Translate the UTF8 byte offsets to unicode
+        start, end = super(EditraBaseStc, self).GetSelection()
+        utf8_txt = self.GetTextUTF8()
+        if start != 0:
+            start = len(ed_txt.DecodeString(utf8_txt[0:start], 'utf-8'))
+        if end != 0:
+            end = len(ed_txt.DecodeString(utf8_txt[0:end], 'utf-8'))
+        del utf8_txt
+        return start, end
+
     def ShowAutoCompOpt(self, command):
         """Shows the autocompletion options list for the command
         @param command: command to look for autocomp options for
@@ -1103,6 +1133,41 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
                 self._code['compsvc'].OnCompletionInserted(pos, text)
             self.EndUndoAction()
             self.SetFocus()
+
+    def GetViewWhiteSpace(self):
+        """Get if view whitespace is turned on
+        @return: bool
+
+        """
+        val = super(EditraBaseStc, self).GetViewWhiteSpace()
+        return val != wx.stc.STC_WS_INVISIBLE
+
+    def SetViewWhiteSpace(self, viewws):
+        """Overrides base method to make it a simple bool toggle"""
+        if viewws:
+            val = wx.stc.STC_WS_VISIBLEALWAYS
+        else:
+            val = wx.stc.STC_WS_INVISIBLE
+        super(EditraBaseStc, self).SetViewWhiteSpace(val)
+
+    def GetWrapMode(self):
+        """Get if word wrap is turned on
+        @return: bool
+
+        """
+        val = super(EditraBaseStc, self).GetWrapMode()
+        return val != wx.stc.STC_WRAP_NONE
+
+    def SetWrapMode(self, wrap):
+        """Overrides base method to make it a simple toggle operation
+        @param wrap: bool
+
+        """
+        if wrap:
+            val = wx.stc.STC_WRAP_WORD
+        else:
+            val = wx.stc.STC_WRAP_NONE
+        super(EditraBaseStc, self).SetWrapMode(val)
 
     def ShowCallTip(self, command):
         """Shows call tip for given command
@@ -1175,11 +1240,10 @@ class EditraBaseStc(wx.stc.StyledTextCtrl, ed_style.StyleMgr):
         @postcondition: all style settings are refreshed in the control
 
         """
-        self.Freeze()
-        self.StyleClearAll()
-        self.SetSyntax(self.GetSyntaxParams())
-        self.DefineMarkers()
-        self.Thaw()
+        with eclib.Freezer(self) as _tmp:
+            self.StyleClearAll()
+            self.SetSyntax(self.GetSyntaxParams())
+            self.DefineMarkers()
         self.Refresh()
 
     def UpdateBaseStyles(self):
@@ -1266,6 +1330,8 @@ def _GetMacKeyBindings():
             # tip our auto-completion display, and then implement forward
             # delete in OnKeyDown.
             #(wx.stc.STC_KEY_DELETE, 0, wx.stc.STC_CMD_CANCEL),
-            (wx.stc.STC_KEY_BACK, wx.stc.STC_SCMOD_SHIFT,
-             wx.stc.STC_CMD_CANCEL),
+            # Disabled as it breaks some keyboard functionality
+            # NOTE: forward delete on mac is Fn+Delete and works fine
+          #  (wx.stc.STC_KEY_BACK, wx.stc.STC_SCMOD_SHIFT,
+          #   wx.stc.STC_CMD_CANCEL),
             ]

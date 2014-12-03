@@ -6,18 +6,21 @@
 # License: wxWindows License                                                  #
 ###############################################################################
 
-"""
+"""@package Editra.src.ed_ipc
+
 Classes and utilities for handling IPC between running instances of Editra. The
 IPC is done through sockets using the TCP protocol. Message packets have a
 specified format and authentication method that is described in L{EdIpcServer}.
 
-Remote Control Protocol:
+@section protocol Remote Control Protocol:
 
 This server and its relationship with the main application object allows for
 some limited remote control of Editra. The server's basic message protocol
 requirements are as follows.
 
+@verbatim
 SESSION_KEY;xml;MSGEND
+@endverbatim
 
 Where the SESSION_KEY is the unique authentication key created by the app that
 started the server. This key is stored in the user profile and only valid for
@@ -26,8 +29,8 @@ string defined in this file (*EDEND*). If both of these parts of the message
 are found and correct the server will forward the messages that are packed in
 between to the app.
 
-Message Format:
-
+@section format Message Format:
+@verbatim
 <edipc>
    <filelist>
       <file name="absolute_filepath"/>
@@ -36,14 +39,13 @@ Message Format:
       <arg name="g" value="2"/>
    </arglist>
 </edipc>
-
-@summary: Editra's IPC Library
+@endverbatim
 
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_ipc.py 67991 2011-06-20 23:48:01Z CJP $"
-__revision__ = "$Revision: 67991 $"
+__svnid__ = "$Id: ed_ipc.py 72623 2012-10-06 19:33:06Z CJP $"
+__revision__ = "$Revision: 72623 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -96,7 +98,7 @@ class IpcServerEvent(wx.PyCommandEvent):
 class EdIpcServer(threading.Thread):
     """Create an instance of IPC server for Editra. IPC is handled through
     a socket connection to an instance of this server listening on L{EDPORT}.
-    The server will recieve commands and dispatch them to the app.
+    The server will receive commands and dispatch them to the app.
     Messages sent to the server must be in the following format.
     
       AuthenticationKey;Message Data;MSGEND
@@ -165,7 +167,7 @@ class EdIpcServer(threading.Thread):
 
                 # Block for up to 2 seconds while reading
                 start = time.time()
-                recieved = u''
+                recieved = ''
                 while time.time() < start + 2:
                     recieved += client.recv(4096)
                     if recieved.endswith(MSGEND):
@@ -182,7 +184,9 @@ class EdIpcServer(threading.Thread):
                     # Parse the xml
                     exml = IPCCommand()
                     try:
-                        # Well formed xml must be utf-8 string not unicode
+                        # Well formed xml must be utf-8 string not Unicode
+                        if not ebmlib.IsUnicode(xmlstr):
+                            xmlstr = unicode(xmlstr, sys.getfilesystemencoding())
                         xmlstr = xmlstr.encode('utf-8')
                         exml = IPCCommand.parse(xmlstr)
                     except Exception, msg:
@@ -223,7 +227,6 @@ def SendCommands(xmlobj, key):
     cmds.insert(0, key)
     cmds.append(xmlobj.GetXml())
     cmds.append(MSGEND)
-
     try:
         # Setup the client socket
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -235,6 +238,7 @@ def SendCommands(xmlobj, key):
         client.shutdown(socket.SHUT_RDWR)
         client.close()
     except Exception, msg:
+        util.Log("[ed_ipc][err] Failed in SendCommands: %s" % msg)
         return False
     else:
         return True
@@ -244,7 +248,7 @@ def SendCommands(xmlobj, key):
 
 class IPCFile(ed_xml.EdXml):
     """Xml object for holding the list of files
-    <file value="/path/to/file"/>
+    @verbatim <file value="/path/to/file"/> @endverbatim
 
     """
     class meta:
@@ -253,7 +257,7 @@ class IPCFile(ed_xml.EdXml):
 
 class IPCArg(ed_xml.EdXml):
     """Xml object for holding the list of args
-       <arg name="test" value="x"/>
+    @verbatim <arg name="test" value="x"/> @endverbatim
 
     """
     class meta:

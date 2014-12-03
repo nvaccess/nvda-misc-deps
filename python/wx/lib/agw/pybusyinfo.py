@@ -1,14 +1,14 @@
 """
-PyBusyInfo constructs a busy info window and displays a message in it.
+:class:`PyBusyInfo` constructs a busy info window and displays a message in it.
 
 
 Description
 ===========
 
-PyBusyInfo constructs a busy info window and displays a message in it.
+:class:`PyBusyInfo` constructs a busy info window and displays a message in it.
 
 This class makes it easy to tell your user that the program is temporarily busy.
-Just create a PyBusyInfo object, and within the current scope, a message window
+Just create a :class:`PyBusyInfo` object, and within the current scope, a message window
 will be shown.
 
 For example::
@@ -22,14 +22,59 @@ For example::
 
 
 It works by creating a window in the constructor, and deleting it in the destructor.
-You may also want to call `wx.Yield()` to refresh the window periodically (in case
+You may also want to call :func:`Yield` () to refresh the window periodically (in case
 it had been obscured by other windows, for example).
+
+
+Usage
+=====
+
+Usage example::
+
+    import wx    
+    import wx.lib.agw.pybusyinfo as PBI
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+        
+            wx.Frame.__init__(self, parent, -1, "PyBusyInfo Demo")
+
+            panel = wx.Panel(self)
+    
+            b = wx.Button(panel, -1, "Test PyBusyInfo ", (50,50))
+            self.Bind(wx.EVT_BUTTON, self.OnButton, b)
+
+
+        def OnButton(self, event):
+            
+            message = "Please wait 5 seconds, working..."
+            busy = PBI.PyBusyInfo(message, parent=self, title="Really Busy")
+
+            wx.Yield()
+            
+            for indx in xrange(5):
+                wx.MilliSleep(1000)
+
+            del busy
+
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
+
 
 
 Supported Platforms
 ===================
 
-PyBusyInfo has been tested on the following platforms:
+:class:`PyBusyInfo` has been tested on the following platforms:
   * Windows (Windows XP).
 
 
@@ -48,14 +93,16 @@ Events Processing
 License And Version
 ===================
 
-PyBusyInfo is distributed under the wxPython license.
+:class:`PyBusyInfo` is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 03 Dec 2009, 09.00 GMT
+Latest Revision: Andrea Gavana @ 20 Mar 2012, 21.00 GMT
 
-Version 0.1
+Version 0.2
 
 """
 
+# Version Info
+__version__ = "0.2"
 
 import wx
 
@@ -63,16 +110,16 @@ _ = wx.GetTranslation
 
 
 class PyInfoFrame(wx.Frame):
-    """ Base class for L{PyBusyInfo}. """
+    """ Base class for :class:`PyBusyInfo`. """
 
     def __init__(self, parent, message, title, icon):
         """
         Default class constructor.
         
         :param `parent`: the frame parent;
-        :param `message`: the message to display in the L{PyBusyInfo};
-        :param `title`: the main L{PyBusyInfo} title;
-        :param `icon`: an icon to draw as the frame icon, an instance of `wx.Bitmap`.
+        :param `message`: the message to display in the :class:`PyBusyInfo`;
+        :param `title`: the main :class:`PyBusyInfo` title;
+        :param `icon`: an icon to draw as the frame icon, an instance of :class:`Bitmap`.
         """
         
         wx.Frame.__init__(self, parent, wx.ID_ANY, title, wx.DefaultPosition,
@@ -121,9 +168,9 @@ class PyInfoFrame(wx.Frame):
 
     def SetBusyShape(self, event=None):
         """
-        Sets L{PyInfoFrame} shape using the region created from the bitmap.
+        Sets :class:`PyInfoFrame` shape using the region created from the bitmap.
 
-        :param `event`: a `wx.WindowCreateEvent` event (GTK only, as GTK supports setting
+        :param `event`: a :class:`WindowCreateEvent` event (GTK only, as GTK supports setting
          the window shape only during window creation).
         """
 
@@ -135,9 +182,9 @@ class PyInfoFrame(wx.Frame):
 
     def OnPaint(self, event):
         """
-        Handles the ``wx.EVT_PAINT`` event for L{PyInfoFrame}.
+        Handles the ``wx.EVT_PAINT`` event for :class:`PyInfoFrame`.
 
-        :param `event`: a `wx.PaintEvent` to be processed.
+        :param `event`: a :class:`PaintEvent` to be processed.
         """
 
         panel = event.GetEventObject()
@@ -186,9 +233,9 @@ class PyInfoFrame(wx.Frame):
 
     def OnErase(self, event):
         """
-        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for L{PyInfoFrame}.
+        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for :class:`PyInfoFrame`.
 
-        :param `event`: a `wx.EraseEvent` event to be processed.
+        :param `event`: a :class:`EraseEvent` event to be processed.
 
         :note: This method is intentionally empty to reduce flicker.        
         """
@@ -210,10 +257,10 @@ class PyBusyInfo(object):
         """
         Default class constructor.
         
-        :param `parent`: the L{PyBusyInfo} parent;
-        :param `message`: the message to display in the L{PyBusyInfo};
-        :param `title`: the main L{PyBusyInfo} title;
-        :param `icon`: an icon to draw as the frame icon, an instance of `wx.Bitmap`.
+        :param `parent`: the :class:`PyBusyInfo` parent;
+        :param `message`: the message to display in the :class:`PyBusyInfo`;
+        :param `title`: the main :class:`PyBusyInfo` title;
+        :param `icon`: an icon to draw as the frame icon, an instance of :class:`Bitmap`.
 
         :note: If `parent` is not ``None`` you must ensure that it is not closed
          while the busy info is shown.
@@ -224,10 +271,9 @@ class PyBusyInfo(object):
         if parent and parent.HasFlag(wx.STAY_ON_TOP):
             # we must have this flag to be in front of our parent if it has it
             self._infoFrame.SetWindowStyleFlag(wx.STAY_ON_TOP)
-            
-        self._infoFrame.Show(True)
-        self._infoFrame.Refresh()
-        self._infoFrame.Update()
+
+        # Added for the screenshot-taking tool
+        self.Show()
         
 
     def __del__(self):
@@ -237,4 +283,49 @@ class PyBusyInfo(object):
         self._infoFrame.Destroy()
 
 
+    def Show(self, show=True):
+        """
+        Shows or hides the window.
+
+        You may need to call `Raise` for a top level window if you want to bring it to
+        top, although this is not needed if :meth:`PyBusyInfo.Show` is called immediately after the frame creation.
+
+        :param bool `show`: ``True`` to show the :class:`PyBusyInfo` frame, ``False`` to hide it.
         
+        :return: ``True`` if the window has been shown or hidden or ``False`` if nothing was done
+         because it already was in the requested state.
+
+        .. note::
+
+           Notice that the default state of newly created top level windows is hidden (to allow
+           you to create their contents without flicker) unlike for all the other, not derived from
+           :class:`TopLevelWindow`, windows that are by default created in the shown state.
+
+
+        .. versionadded:: 0.9.5
+        """
+        
+        retVal = self._infoFrame.Show(show)
+
+        if show:
+            self._infoFrame.Refresh()
+            self._infoFrame.Update()
+
+        return retVal        
+
+
+    def Update(self):
+        """
+        Calling this method immediately repaints the invalidated area of the window and all of its
+        children recursively (this normally only happens when the flow of control returns to the
+        event loop).
+
+        :note: Notice that this function doesn't invalidate any area of the window so nothing happens
+         if nothing has been invalidated (i.e. marked as requiring a redraw). Use `Refresh` first if
+         you want to immediately redraw the window unconditionally.
+
+        .. versionadded:: 0.9.5
+        """
+
+        self._infoFrame.Update()
+

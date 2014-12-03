@@ -6,7 +6,7 @@
 # Author:      Robin Dunn
 #
 # Created:     21-Nov-2006
-# RCS-ID:      $Id: inspection.py 44696 2007-03-08 19:24:13Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2006 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------------
@@ -35,9 +35,9 @@ class InspectionMixin(object):
     InspectionMixin and then call the `Init` method from the app's
     OnInit.
     """
-    def Init(self, pos=wx.DefaultPosition, size=wx.Size(850,700),
-             config=None, locals=None,
-             alt=True, cmd=True, shift=False, keyCode=ord('I')):
+    def InitInspection(self, pos=wx.DefaultPosition, size=wx.Size(850,700),
+                       config=None, locals=None,
+                       alt=True, cmd=True, shift=False, keyCode=ord('I')):
         """
         Make the event binding that will activate the InspectionFrame window.
         """
@@ -62,6 +62,7 @@ class InspectionMixin(object):
         else:
             evt.Skip()
 
+    Init = InitInspection  # compatibility alias
 
     def ShowInspectionTool(self):
         """
@@ -81,7 +82,7 @@ class InspectableApp(wx.App, InspectionMixin):
     """
 
     def OnInit(self):
-        self.Init()
+        self.InitInspection()
         return True
 
 #---------------------------------------------------------------------------

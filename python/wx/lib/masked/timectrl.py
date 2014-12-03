@@ -3,7 +3,7 @@
 # Author:       Will Sadkin
 # Created:      09/19/2002
 # Copyright:    (c) 2002 by Will Sadkin, 2002
-# RCS-ID:       $Id: timectrl.py 58925 2009-02-16 00:06:57Z RD $
+# RCS-ID:       $Id$
 # License:      wxWindows license
 #----------------------------------------------------------------------------
 # NOTE:
@@ -695,11 +695,13 @@ class TimeCtrl(BaseMaskedTextCtrl):
         """
         This function is the conversion engine for TimeCtrl; it takes
         one of the following types:
-            time string
-            wxDateTime
-            wxTimeSpan
-            mxDateTime
-            mxDateTimeDelta
+        
+        * time string
+        * wx.DateTime
+        * wx.TimeSpan
+        * mxDateTime
+        * mxDateTimeDelta
+        
         and converts it to a wx.DateTime that always has Jan 1, 1970 as its date
         portion, so that range comparisons around values can work using
         wx.DateTime's built-in comparison function.  If a value is not
@@ -725,9 +727,7 @@ class TimeCtrl(BaseMaskedTextCtrl):
             wxdt = wx.DateTimeFromDMY(1, 0, 1970)
 ##            dbg('attempting conversion')
             value = value.strip()    # (parser doesn't like leading spaces)
-            checkTime    = wxdt.ParseTime(value)
-            valid = checkTime == len(value)     # entire string parsed?
-##            dbg('checkTime == len(value)?', valid)
+            valid = wxdt.ParseTime(value)
 
             if not valid:
                 # deal with bug/deficiency in wx.DateTime:

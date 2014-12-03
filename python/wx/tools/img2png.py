@@ -1,10 +1,10 @@
 #----------------------------------------------------------------------
-# Name:        wxPython.tools.img2png
+# Name:        wx.tools.img2png
 # Purpose:     Convert an image to PNG format
 #
 # Author:      Robin Dunn
 #
-# RCS-ID:      $Id: img2png.py 39136 2006-05-10 23:22:27Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -45,7 +45,7 @@ def main():
     # some bitmap related things need to have a wxApp initialized...
     if wx.GetApp() is None:
         global app
-        app = wx.PySimpleApp()
+        app = wx.App()
     img2img.main(sys.argv[1:], wx.BITMAP_TYPE_PNG, ".png", __doc__)
 
 if __name__ == '__main__':

@@ -60,13 +60,11 @@ SYS_ANSI_FIXED_FONT = _misc_.SYS_ANSI_FIXED_FONT
 SYS_ANSI_VAR_FONT = _misc_.SYS_ANSI_VAR_FONT
 SYS_SYSTEM_FONT = _misc_.SYS_SYSTEM_FONT
 SYS_DEVICE_DEFAULT_FONT = _misc_.SYS_DEVICE_DEFAULT_FONT
-SYS_DEFAULT_PALETTE = _misc_.SYS_DEFAULT_PALETTE
 SYS_SYSTEM_FIXED_FONT = _misc_.SYS_SYSTEM_FIXED_FONT
 SYS_DEFAULT_GUI_FONT = _misc_.SYS_DEFAULT_GUI_FONT
 SYS_ICONTITLE_FONT = _misc_.SYS_ICONTITLE_FONT
 SYS_COLOUR_SCROLLBAR = _misc_.SYS_COLOUR_SCROLLBAR
 SYS_COLOUR_BACKGROUND = _misc_.SYS_COLOUR_BACKGROUND
-SYS_COLOUR_DESKTOP = _misc_.SYS_COLOUR_DESKTOP
 SYS_COLOUR_ACTIVECAPTION = _misc_.SYS_COLOUR_ACTIVECAPTION
 SYS_COLOUR_INACTIVECAPTION = _misc_.SYS_COLOUR_INACTIVECAPTION
 SYS_COLOUR_MENU = _misc_.SYS_COLOUR_MENU
@@ -81,16 +79,11 @@ SYS_COLOUR_APPWORKSPACE = _misc_.SYS_COLOUR_APPWORKSPACE
 SYS_COLOUR_HIGHLIGHT = _misc_.SYS_COLOUR_HIGHLIGHT
 SYS_COLOUR_HIGHLIGHTTEXT = _misc_.SYS_COLOUR_HIGHLIGHTTEXT
 SYS_COLOUR_BTNFACE = _misc_.SYS_COLOUR_BTNFACE
-SYS_COLOUR_3DFACE = _misc_.SYS_COLOUR_3DFACE
 SYS_COLOUR_BTNSHADOW = _misc_.SYS_COLOUR_BTNSHADOW
-SYS_COLOUR_3DSHADOW = _misc_.SYS_COLOUR_3DSHADOW
 SYS_COLOUR_GRAYTEXT = _misc_.SYS_COLOUR_GRAYTEXT
 SYS_COLOUR_BTNTEXT = _misc_.SYS_COLOUR_BTNTEXT
 SYS_COLOUR_INACTIVECAPTIONTEXT = _misc_.SYS_COLOUR_INACTIVECAPTIONTEXT
 SYS_COLOUR_BTNHIGHLIGHT = _misc_.SYS_COLOUR_BTNHIGHLIGHT
-SYS_COLOUR_BTNHILIGHT = _misc_.SYS_COLOUR_BTNHILIGHT
-SYS_COLOUR_3DHIGHLIGHT = _misc_.SYS_COLOUR_3DHIGHLIGHT
-SYS_COLOUR_3DHILIGHT = _misc_.SYS_COLOUR_3DHILIGHT
 SYS_COLOUR_3DDKSHADOW = _misc_.SYS_COLOUR_3DDKSHADOW
 SYS_COLOUR_3DLIGHT = _misc_.SYS_COLOUR_3DLIGHT
 SYS_COLOUR_INFOTEXT = _misc_.SYS_COLOUR_INFOTEXT
@@ -104,6 +97,13 @@ SYS_COLOUR_MENUBAR = _misc_.SYS_COLOUR_MENUBAR
 SYS_COLOUR_LISTBOXTEXT = _misc_.SYS_COLOUR_LISTBOXTEXT
 SYS_COLOUR_LISTBOXHIGHLIGHTTEXT = _misc_.SYS_COLOUR_LISTBOXHIGHLIGHTTEXT
 SYS_COLOUR_MAX = _misc_.SYS_COLOUR_MAX
+SYS_COLOUR_DESKTOP = _misc_.SYS_COLOUR_DESKTOP
+SYS_COLOUR_3DFACE = _misc_.SYS_COLOUR_3DFACE
+SYS_COLOUR_3DSHADOW = _misc_.SYS_COLOUR_3DSHADOW
+SYS_COLOUR_BTNHILIGHT = _misc_.SYS_COLOUR_BTNHILIGHT
+SYS_COLOUR_3DHIGHLIGHT = _misc_.SYS_COLOUR_3DHIGHLIGHT
+SYS_COLOUR_3DHILIGHT = _misc_.SYS_COLOUR_3DHILIGHT
+SYS_COLOUR_FRAMEBK = _misc_.SYS_COLOUR_FRAMEBK
 SYS_MOUSE_BUTTONS = _misc_.SYS_MOUSE_BUTTONS
 SYS_BORDER_X = _misc_.SYS_BORDER_X
 SYS_BORDER_Y = _misc_.SYS_BORDER_Y
@@ -141,6 +141,7 @@ SYS_NETWORK_PRESENT = _misc_.SYS_NETWORK_PRESENT
 SYS_PENWINDOWS_PRESENT = _misc_.SYS_PENWINDOWS_PRESENT
 SYS_SHOW_SOUNDS = _misc_.SYS_SHOW_SOUNDS
 SYS_SWAP_BUTTONS = _misc_.SYS_SWAP_BUTTONS
+SYS_DCLICK_MSEC = _misc_.SYS_DCLICK_MSEC
 SYS_CAN_DRAW_FRAME_DECORATIONS = _misc_.SYS_CAN_DRAW_FRAME_DECORATIONS
 SYS_CAN_ICONIZE_FRAME = _misc_.SYS_CAN_ICONIZE_FRAME
 SYS_TABLET_PRESENT = _misc_.SYS_TABLET_PRESENT
@@ -300,6 +301,8 @@ def IsStockLabel(*args, **kwargs):
 STOCK_NOFLAGS = _misc_.STOCK_NOFLAGS
 STOCK_WITH_MNEMONIC = _misc_.STOCK_WITH_MNEMONIC
 STOCK_WITH_ACCELERATOR = _misc_.STOCK_WITH_ACCELERATOR
+STOCK_WITHOUT_ELLIPSIS = _misc_.STOCK_WITHOUT_ELLIPSIS
+STOCK_FOR_BUTTON = _misc_.STOCK_FOR_BUTTON
 
 def GetStockLabel(*args, **kwargs):
   """GetStockLabel(int id, long flags=STOCK_WITH_MNEMONIC) -> String"""
@@ -318,11 +321,6 @@ def EndBusyCursor(*args):
   """EndBusyCursor()"""
   return _misc_.EndBusyCursor(*args)
 
-def GetElapsedTime(*args, **kwargs):
-  """GetElapsedTime(bool resetTimer=True) -> long"""
-  return _misc_.GetElapsedTime(*args, **kwargs)
-GetElapsedTime = wx._deprecated(GetElapsedTime) 
-
 def IsBusy(*args):
   """IsBusy() -> bool"""
   return _misc_.IsBusy(*args)
@@ -334,10 +332,6 @@ def Now(*args):
 def Shell(*args, **kwargs):
   """Shell(String command=EmptyString) -> bool"""
   return _misc_.Shell(*args, **kwargs)
-
-def StartTimer(*args):
-  """StartTimer()"""
-  return _misc_.StartTimer(*args)
 
 def GetOsVersion(*args):
   """GetOsVersion() -> (platform, major, minor)"""
@@ -358,8 +352,10 @@ def IsPlatform64Bit(*args):
 def GetFreeMemory(*args):
   """GetFreeMemory() -> wxMemorySize"""
   return _misc_.GetFreeMemory(*args)
+SHUTDOWN_FORCE = _misc_.SHUTDOWN_FORCE
 SHUTDOWN_POWEROFF = _misc_.SHUTDOWN_POWEROFF
 SHUTDOWN_REBOOT = _misc_.SHUTDOWN_REBOOT
+SHUTDOWN_LOGOFF = _misc_.SHUTDOWN_LOGOFF
 
 def Shutdown(*args, **kwargs):
   """Shutdown(int wFlags) -> bool"""
@@ -530,6 +526,10 @@ def GetDisplaySizeMM(*args):
   """GetDisplaySizeMM() -> Size"""
   return _misc_.GetDisplaySizeMM(*args)
 
+def GetDisplayPPI(*args):
+  """GetDisplayPPI() -> Size"""
+  return _misc_.GetDisplayPPI(*args)
+
 def ClientDisplayRect(*args):
   """ClientDisplayRect() -> (x, y, width, height)"""
   return _misc_.ClientDisplayRect(*args)
@@ -591,16 +591,26 @@ def FindWindowAtPoint(*args, **kwargs):
 def GetTopLevelParent(*args, **kwargs):
   """GetTopLevelParent(Window win) -> Window"""
   return _misc_.GetTopLevelParent(*args, **kwargs)
+BROWSER_NEW_WINDOW = _misc_.BROWSER_NEW_WINDOW
+BROWSER_NOBUSYCURSOR = _misc_.BROWSER_NOBUSYCURSOR
 
 def LaunchDefaultBrowser(*args, **kwargs):
   """
-    LaunchDefaultBrowser(String url) -> bool
+    LaunchDefaultBrowser(String url, int flags=0) -> bool
 
     Launches the user's default browser and tells it to open the location
     at ``url``.  Returns ``True`` if the application was successfully
     launched.
     """
   return _misc_.LaunchDefaultBrowser(*args, **kwargs)
+
+def LaunchDefaultApplication(*args, **kwargs):
+  """
+    LaunchDefaultApplication(String path, int flags=0) -> bool
+
+    Launch document in the user's default application.
+    """
+  return _misc_.LaunchDefaultApplication(*args, **kwargs)
 
 def GetKeyState(*args, **kwargs):
   """
@@ -613,126 +623,6 @@ def GetKeyState(*args, **kwargs):
 
     """
   return _misc_.GetKeyState(*args, **kwargs)
-class MouseState(object):
-    """
-    `wx.MouseState` is used to hold information about mouse button and
-    modifier key states and is what is returned from `wx.GetMouseState`.
-    """
-    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
-        """
-        __init__(self) -> MouseState
-
-        `wx.MouseState` is used to hold information about mouse button and
-        modifier key states and is what is returned from `wx.GetMouseState`.
-        """
-        _misc_.MouseState_swiginit(self,_misc_.new_MouseState(*args, **kwargs))
-    __swig_destroy__ = _misc_.delete_MouseState
-    __del__ = lambda self : None;
-    def GetX(*args, **kwargs):
-        """GetX(self) -> int"""
-        return _misc_.MouseState_GetX(*args, **kwargs)
-
-    def GetY(*args, **kwargs):
-        """GetY(self) -> int"""
-        return _misc_.MouseState_GetY(*args, **kwargs)
-
-    def LeftDown(*args, **kwargs):
-        """LeftDown(self) -> bool"""
-        return _misc_.MouseState_LeftDown(*args, **kwargs)
-
-    def MiddleDown(*args, **kwargs):
-        """MiddleDown(self) -> bool"""
-        return _misc_.MouseState_MiddleDown(*args, **kwargs)
-
-    def RightDown(*args, **kwargs):
-        """RightDown(self) -> bool"""
-        return _misc_.MouseState_RightDown(*args, **kwargs)
-
-    def ControlDown(*args, **kwargs):
-        """ControlDown(self) -> bool"""
-        return _misc_.MouseState_ControlDown(*args, **kwargs)
-
-    def ShiftDown(*args, **kwargs):
-        """ShiftDown(self) -> bool"""
-        return _misc_.MouseState_ShiftDown(*args, **kwargs)
-
-    def AltDown(*args, **kwargs):
-        """AltDown(self) -> bool"""
-        return _misc_.MouseState_AltDown(*args, **kwargs)
-
-    def MetaDown(*args, **kwargs):
-        """MetaDown(self) -> bool"""
-        return _misc_.MouseState_MetaDown(*args, **kwargs)
-
-    def CmdDown(*args, **kwargs):
-        """CmdDown(self) -> bool"""
-        return _misc_.MouseState_CmdDown(*args, **kwargs)
-
-    def SetX(*args, **kwargs):
-        """SetX(self, int x)"""
-        return _misc_.MouseState_SetX(*args, **kwargs)
-
-    def SetY(*args, **kwargs):
-        """SetY(self, int y)"""
-        return _misc_.MouseState_SetY(*args, **kwargs)
-
-    def SetLeftDown(*args, **kwargs):
-        """SetLeftDown(self, bool down)"""
-        return _misc_.MouseState_SetLeftDown(*args, **kwargs)
-
-    def SetMiddleDown(*args, **kwargs):
-        """SetMiddleDown(self, bool down)"""
-        return _misc_.MouseState_SetMiddleDown(*args, **kwargs)
-
-    def SetRightDown(*args, **kwargs):
-        """SetRightDown(self, bool down)"""
-        return _misc_.MouseState_SetRightDown(*args, **kwargs)
-
-    def SetControlDown(*args, **kwargs):
-        """SetControlDown(self, bool down)"""
-        return _misc_.MouseState_SetControlDown(*args, **kwargs)
-
-    def SetShiftDown(*args, **kwargs):
-        """SetShiftDown(self, bool down)"""
-        return _misc_.MouseState_SetShiftDown(*args, **kwargs)
-
-    def SetAltDown(*args, **kwargs):
-        """SetAltDown(self, bool down)"""
-        return _misc_.MouseState_SetAltDown(*args, **kwargs)
-
-    def SetMetaDown(*args, **kwargs):
-        """SetMetaDown(self, bool down)"""
-        return _misc_.MouseState_SetMetaDown(*args, **kwargs)
-
-    x = property(GetX, SetX)
-    y = property(GetY, SetY)
-    leftDown = property(LeftDown, SetLeftDown)
-    middleDown = property(MiddleDown, SetMiddleDown)
-    rightDown = property(RightDown, SetRightDown)
-    controlDown = property(ControlDown, SetControlDown)
-    shiftDown = property(ShiftDown, SetShiftDown)
-    altDown = property(AltDown, SetAltDown)
-    metaDown = property(MetaDown, SetMetaDown)
-    cmdDown = property(CmdDown)
-
-_misc_.MouseState_swigregister(MouseState)
-FileSelectorPromptStr = cvar.FileSelectorPromptStr
-FileSelectorDefaultWildcardStr = cvar.FileSelectorDefaultWildcardStr
-DirSelectorPromptStr = cvar.DirSelectorPromptStr
-
-
-def GetMouseState(*args):
-  """
-    GetMouseState() -> MouseState
-
-    Returns the current state of the mouse.  Returns an instance of a
-    `wx.MouseState` object that contains the current position of the mouse
-    pointer in screen coordinants, as well as boolean values indicating
-    the up/down status of the mouse buttons and the modifier keys.
-    """
-  return _misc_.GetMouseState(*args)
 
 def WakeUpMainThread(*args):
   """WakeUpMainThread()"""
@@ -755,6 +645,9 @@ class MutexGuiLocker(object):
     __swig_destroy__ = _misc_.delete_MutexGuiLocker
     __del__ = lambda self : None;
 _misc_.MutexGuiLocker_swigregister(MutexGuiLocker)
+FileSelectorPromptStr = cvar.FileSelectorPromptStr
+FileSelectorDefaultWildcardStr = cvar.FileSelectorDefaultWildcardStr
+DirSelectorPromptStr = cvar.DirSelectorPromptStr
 
 
 def Thread_IsMain(*args):
@@ -793,6 +686,21 @@ class ToolTip(_core.Object):
         return _misc_.ToolTip_SetDelay(*args, **kwargs)
 
     SetDelay = staticmethod(SetDelay)
+    def SetAutoPop(*args, **kwargs):
+        """SetAutoPop(long milliseconds)"""
+        return _misc_.ToolTip_SetAutoPop(*args, **kwargs)
+
+    SetAutoPop = staticmethod(SetAutoPop)
+    def SetReshow(*args, **kwargs):
+        """SetReshow(long milliseconds)"""
+        return _misc_.ToolTip_SetReshow(*args, **kwargs)
+
+    SetReshow = staticmethod(SetReshow)
+    def SetMaxWidth(*args, **kwargs):
+        """SetMaxWidth(int width)"""
+        return _misc_.ToolTip_SetMaxWidth(*args, **kwargs)
+
+    SetMaxWidth = staticmethod(SetMaxWidth)
     Tip = property(GetTip,SetTip,doc="See `GetTip` and `SetTip`") 
     Window = property(GetWindow,doc="See `GetWindow`") 
 _misc_.ToolTip_swigregister(ToolTip)
@@ -804,6 +712,18 @@ def ToolTip_Enable(*args, **kwargs):
 def ToolTip_SetDelay(*args, **kwargs):
   """ToolTip_SetDelay(long milliseconds)"""
   return _misc_.ToolTip_SetDelay(*args, **kwargs)
+
+def ToolTip_SetAutoPop(*args, **kwargs):
+  """ToolTip_SetAutoPop(long milliseconds)"""
+  return _misc_.ToolTip_SetAutoPop(*args, **kwargs)
+
+def ToolTip_SetReshow(*args, **kwargs):
+  """ToolTip_SetReshow(long milliseconds)"""
+  return _misc_.ToolTip_SetReshow(*args, **kwargs)
+
+def ToolTip_SetMaxWidth(*args, **kwargs):
+  """ToolTip_SetMaxWidth(int width)"""
+  return _misc_.ToolTip_SetMaxWidth(*args, **kwargs)
 
 class Caret(object):
     """Proxy of C++ Caret class"""
@@ -919,9 +839,12 @@ class WindowDisabler(object):
     """Proxy of C++ WindowDisabler class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
-        """__init__(self, Window winToSkip=None) -> WindowDisabler"""
-        _misc_.WindowDisabler_swiginit(self,_misc_.new_WindowDisabler(*args, **kwargs))
+    def __init__(self, *args): 
+        """
+        __init__(self, bool disable=True) -> WindowDisabler
+        __init__(self, Window winToSkip) -> WindowDisabler
+        """
+        _misc_.WindowDisabler_swiginit(self,_misc_.new_WindowDisabler(*args))
     __swig_destroy__ = _misc_.delete_WindowDisabler
     __del__ = lambda self : None;
     def __enter__(self):
@@ -968,6 +891,10 @@ class StopWatch(object):
     def Resume(*args, **kwargs):
         """Resume(self)"""
         return _misc_.StopWatch_Resume(*args, **kwargs)
+
+    def TimeInMicro(*args, **kwargs):
+        """TimeInMicro(self) -> wxLongLong"""
+        return _misc_.StopWatch_TimeInMicro(*args, **kwargs)
 
     def Time(*args, **kwargs):
         """Time(self) -> long"""
@@ -1048,6 +975,10 @@ class SingleInstanceChecker(object):
         """Create(self, String name, String path=EmptyString) -> bool"""
         return _misc_.SingleInstanceChecker_Create(*args, **kwargs)
 
+    def CreateDefault(*args, **kwargs):
+        """CreateDefault(self) -> bool"""
+        return _misc_.SingleInstanceChecker_CreateDefault(*args, **kwargs)
+
     def IsAnotherRunning(*args, **kwargs):
         """IsAnotherRunning(self) -> bool"""
         return _misc_.SingleInstanceChecker_IsAnotherRunning(*args, **kwargs)
@@ -1085,14 +1016,12 @@ PORT_BASE = _misc_.PORT_BASE
 PORT_MSW = _misc_.PORT_MSW
 PORT_MOTIF = _misc_.PORT_MOTIF
 PORT_GTK = _misc_.PORT_GTK
-PORT_MGL = _misc_.PORT_MGL
 PORT_X11 = _misc_.PORT_X11
 PORT_PM = _misc_.PORT_PM
 PORT_OS2 = _misc_.PORT_OS2
 PORT_MAC = _misc_.PORT_MAC
 PORT_COCOA = _misc_.PORT_COCOA
 PORT_WINCE = _misc_.PORT_WINCE
-PORT_PALMOS = _misc_.PORT_PALMOS
 PORT_DFB = _misc_.PORT_DFB
 ARCH_INVALID = _misc_.ARCH_INVALID
 ARCH_32 = _misc_.ARCH_32
@@ -1103,6 +1032,17 @@ ENDIAN_BIG = _misc_.ENDIAN_BIG
 ENDIAN_LITTLE = _misc_.ENDIAN_LITTLE
 ENDIAN_PDP = _misc_.ENDIAN_PDP
 ENDIAN_MAX = _misc_.ENDIAN_MAX
+class LinuxDistributionInfo(object):
+    """Proxy of C++ LinuxDistributionInfo class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    Id = property(_misc_.LinuxDistributionInfo_Id_get, _misc_.LinuxDistributionInfo_Id_set)
+    Release = property(_misc_.LinuxDistributionInfo_Release_get, _misc_.LinuxDistributionInfo_Release_set)
+    CodeName = property(_misc_.LinuxDistributionInfo_CodeName_get, _misc_.LinuxDistributionInfo_CodeName_set)
+    Description = property(_misc_.LinuxDistributionInfo_Description_get, _misc_.LinuxDistributionInfo_Description_set)
+_misc_.LinuxDistributionInfo_swigregister(LinuxDistributionInfo)
+
 class PlatformInformation(object):
     """Proxy of C++ PlatformInformation class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -1150,6 +1090,10 @@ class PlatformInformation(object):
         """GetOperatingSystemId(self) -> int"""
         return _misc_.PlatformInformation_GetOperatingSystemId(*args, **kwargs)
 
+    def GetLinuxDistributionInfo(*args, **kwargs):
+        """GetLinuxDistributionInfo(self) -> LinuxDistributionInfo"""
+        return _misc_.PlatformInformation_GetLinuxDistributionInfo(*args, **kwargs)
+
     def GetPortId(*args, **kwargs):
         """GetPortId(self) -> int"""
         return _misc_.PlatformInformation_GetPortId(*args, **kwargs)
@@ -1186,6 +1130,19 @@ class PlatformInformation(object):
         """GetEndiannessName(self) -> String"""
         return _misc_.PlatformInformation_GetEndiannessName(*args, **kwargs)
 
+    def GetOperatingSystemDescription(*args, **kwargs):
+        """GetOperatingSystemDescription(self) -> String"""
+        return _misc_.PlatformInformation_GetOperatingSystemDescription(*args, **kwargs)
+
+    def GetDesktopEnvironment(*args, **kwargs):
+        """GetDesktopEnvironment(self) -> String"""
+        return _misc_.PlatformInformation_GetDesktopEnvironment(*args, **kwargs)
+
+    def GetOperatingSystemDirectory(*args, **kwargs):
+        """GetOperatingSystemDirectory() -> String"""
+        return _misc_.PlatformInformation_GetOperatingSystemDirectory(*args, **kwargs)
+
+    GetOperatingSystemDirectory = staticmethod(GetOperatingSystemDirectory)
     def SetOSVersion(*args, **kwargs):
         """SetOSVersion(self, int major, int minor)"""
         return _misc_.PlatformInformation_SetOSVersion(*args, **kwargs)
@@ -1198,6 +1155,10 @@ class PlatformInformation(object):
         """SetOperatingSystemId(self, int n)"""
         return _misc_.PlatformInformation_SetOperatingSystemId(*args, **kwargs)
 
+    def SetOperatingSystemDescription(*args, **kwargs):
+        """SetOperatingSystemDescription(self, String desc)"""
+        return _misc_.PlatformInformation_SetOperatingSystemDescription(*args, **kwargs)
+
     def SetPortId(*args, **kwargs):
         """SetPortId(self, int n)"""
         return _misc_.PlatformInformation_SetPortId(*args, **kwargs)
@@ -1209,6 +1170,14 @@ class PlatformInformation(object):
     def SetEndianness(*args, **kwargs):
         """SetEndianness(self, int n)"""
         return _misc_.PlatformInformation_SetEndianness(*args, **kwargs)
+
+    def SetDesktopEnvironment(*args, **kwargs):
+        """SetDesktopEnvironment(self, String de)"""
+        return _misc_.PlatformInformation_SetDesktopEnvironment(*args, **kwargs)
+
+    def SetLinuxDistributionInfo(*args, **kwargs):
+        """SetLinuxDistributionInfo(self, LinuxDistributionInfo di)"""
+        return _misc_.PlatformInformation_SetLinuxDistributionInfo(*args, **kwargs)
 
     def IsOk(*args, **kwargs):
         """IsOk(self) -> bool"""
@@ -1230,10 +1199,50 @@ class PlatformInformation(object):
     ToolkitMinorVersion = property(GetToolkitMinorVersion,doc="See `GetToolkitMinorVersion`") 
 _misc_.PlatformInformation_swigregister(PlatformInformation)
 
+def PlatformInformation_GetOperatingSystemDirectory(*args):
+  """PlatformInformation_GetOperatingSystemDirectory() -> String"""
+  return _misc_.PlatformInformation_GetOperatingSystemDirectory(*args)
 
-def DrawWindowOnDC(*args, **kwargs):
-  """DrawWindowOnDC(Window window, DC dc) -> bool"""
-  return _misc_.DrawWindowOnDC(*args, **kwargs)
+class NotificationMessage(_core.EvtHandler):
+    """Proxy of C++ NotificationMessage class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self) -> NotificationMessage
+        __init__(self, String title, String message=wxEmptyString, Window parent=None) -> NotificationMessage
+        """
+        _misc_.NotificationMessage_swiginit(self,_misc_.new_NotificationMessage(*args))
+    __swig_destroy__ = _misc_.delete_NotificationMessage
+    __del__ = lambda self : None;
+    def SetTitle(*args, **kwargs):
+        """SetTitle(self, String title)"""
+        return _misc_.NotificationMessage_SetTitle(*args, **kwargs)
+
+    def SetMessage(*args, **kwargs):
+        """SetMessage(self, String message)"""
+        return _misc_.NotificationMessage_SetMessage(*args, **kwargs)
+
+    def SetParent(*args, **kwargs):
+        """SetParent(self, Window parent)"""
+        return _misc_.NotificationMessage_SetParent(*args, **kwargs)
+
+    def SetFlags(*args, **kwargs):
+        """SetFlags(self, int flags)"""
+        return _misc_.NotificationMessage_SetFlags(*args, **kwargs)
+
+    Timeout_Auto = _misc_.NotificationMessage_Timeout_Auto
+    Timeout_Never = _misc_.NotificationMessage_Timeout_Never
+    def Show(*args, **kwargs):
+        """Show(self, int timeout=Timeout_Auto) -> bool"""
+        return _misc_.NotificationMessage_Show(*args, **kwargs)
+
+    def Close(*args, **kwargs):
+        """Close(self) -> bool"""
+        return _misc_.NotificationMessage_Close(*args, **kwargs)
+
+_misc_.NotificationMessage_swigregister(NotificationMessage)
+
 #---------------------------------------------------------------------------
 
 class TipProvider(object):
@@ -1366,13 +1375,18 @@ class TimerEvent(_core.Event):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self, int timerid=0, int interval=0) -> TimerEvent"""
+        """__init__(self, wxTimer timer) -> TimerEvent"""
         _misc_.TimerEvent_swiginit(self,_misc_.new_TimerEvent(*args, **kwargs))
     def GetInterval(*args, **kwargs):
         """GetInterval(self) -> int"""
         return _misc_.TimerEvent_GetInterval(*args, **kwargs)
 
+    def GetTimer(*args, **kwargs):
+        """GetTimer(self) -> wxTimer"""
+        return _misc_.TimerEvent_GetTimer(*args, **kwargs)
+
     Interval = property(GetInterval,doc="See `GetInterval`") 
+    Timer = property(GetTimer) 
 _misc_.TimerEvent_swigregister(TimerEvent)
 
 class TimerRunner(object):
@@ -1416,6 +1430,25 @@ TraceMessages = _misc_.TraceMessages
 TraceResAlloc = _misc_.TraceResAlloc
 TraceRefCount = _misc_.TraceRefCount
 TraceOleCalls = _misc_.TraceOleCalls
+class LogRecordInfo(object):
+    """Proxy of C++ LogRecordInfo class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self) -> LogRecordInfo
+        __init__(self, char filename_, int line_, char func_, char component_) -> LogRecordInfo
+        """
+        _misc_.LogRecordInfo_swiginit(self,_misc_.new_LogRecordInfo(*args))
+    __swig_destroy__ = _misc_.delete_LogRecordInfo
+    __del__ = lambda self : None;
+    filename = property(_misc_.LogRecordInfo_filename_get)
+    line = property(_misc_.LogRecordInfo_line_get)
+    func = property(_misc_.LogRecordInfo_func_get)
+    component = property(_misc_.LogRecordInfo_component_get)
+    timestamp = property(_misc_.LogRecordInfo_timestamp_get)
+_misc_.LogRecordInfo_swigregister(LogRecordInfo)
+
 class Log(object):
     """Proxy of C++ Log class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -1431,15 +1464,45 @@ class Log(object):
 
     IsEnabled = staticmethod(IsEnabled)
     def EnableLogging(*args, **kwargs):
-        """EnableLogging(bool doIt=True) -> bool"""
+        """EnableLogging(bool enable=True) -> bool"""
         return _misc_.Log_EnableLogging(*args, **kwargs)
 
     EnableLogging = staticmethod(EnableLogging)
-    def OnLog(*args, **kwargs):
-        """OnLog(LogLevel level, wxChar szString, time_t t)"""
-        return _misc_.Log_OnLog(*args, **kwargs)
+    def GetLogLevel(*args, **kwargs):
+        """GetLogLevel() -> LogLevel"""
+        return _misc_.Log_GetLogLevel(*args, **kwargs)
 
-    OnLog = staticmethod(OnLog)
+    GetLogLevel = staticmethod(GetLogLevel)
+    def SetLogLevel(*args, **kwargs):
+        """SetLogLevel(LogLevel logLevel)"""
+        return _misc_.Log_SetLogLevel(*args, **kwargs)
+
+    SetLogLevel = staticmethod(SetLogLevel)
+    def SetComponentLevel(*args, **kwargs):
+        """SetComponentLevel(String component, LogLevel level)"""
+        return _misc_.Log_SetComponentLevel(*args, **kwargs)
+
+    SetComponentLevel = staticmethod(SetComponentLevel)
+    def GetComponentLevel(*args, **kwargs):
+        """GetComponentLevel(String component) -> LogLevel"""
+        return _misc_.Log_GetComponentLevel(*args, **kwargs)
+
+    GetComponentLevel = staticmethod(GetComponentLevel)
+    def IsLevelEnabled(*args, **kwargs):
+        """IsLevelEnabled(LogLevel level, String component) -> bool"""
+        return _misc_.Log_IsLevelEnabled(*args, **kwargs)
+
+    IsLevelEnabled = staticmethod(IsLevelEnabled)
+    def SetVerbose(*args, **kwargs):
+        """SetVerbose(bool bVerbose=True)"""
+        return _misc_.Log_SetVerbose(*args, **kwargs)
+
+    SetVerbose = staticmethod(SetVerbose)
+    def GetVerbose(*args, **kwargs):
+        """GetVerbose() -> bool"""
+        return _misc_.Log_GetVerbose(*args, **kwargs)
+
+    GetVerbose = staticmethod(GetVerbose)
     def Flush(*args, **kwargs):
         """Flush(self)"""
         return _misc_.Log_Flush(*args, **kwargs)
@@ -1469,21 +1532,16 @@ class Log(object):
         return _misc_.Log_Resume(*args, **kwargs)
 
     Resume = staticmethod(Resume)
-    def SetVerbose(*args, **kwargs):
-        """SetVerbose(bool bVerbose=True)"""
-        return _misc_.Log_SetVerbose(*args, **kwargs)
-
-    SetVerbose = staticmethod(SetVerbose)
-    def SetLogLevel(*args, **kwargs):
-        """SetLogLevel(LogLevel logLevel)"""
-        return _misc_.Log_SetLogLevel(*args, **kwargs)
-
-    SetLogLevel = staticmethod(SetLogLevel)
     def DontCreateOnDemand(*args, **kwargs):
         """DontCreateOnDemand()"""
         return _misc_.Log_DontCreateOnDemand(*args, **kwargs)
 
     DontCreateOnDemand = staticmethod(DontCreateOnDemand)
+    def DoCreateOnDemand(*args, **kwargs):
+        """DoCreateOnDemand()"""
+        return _misc_.Log_DoCreateOnDemand(*args, **kwargs)
+
+    DoCreateOnDemand = staticmethod(DoCreateOnDemand)
     def SetRepetitionCounting(*args, **kwargs):
         """SetRepetitionCounting(bool bRepetCounting=True)"""
         return _misc_.Log_SetRepetitionCounting(*args, **kwargs)
@@ -1520,32 +1578,22 @@ class Log(object):
 
     GetTraceMasks = staticmethod(GetTraceMasks)
     def SetTimestamp(*args, **kwargs):
-        """SetTimestamp(wxChar ts)"""
+        """SetTimestamp(String ts)"""
         return _misc_.Log_SetTimestamp(*args, **kwargs)
 
     SetTimestamp = staticmethod(SetTimestamp)
-    def GetVerbose(*args, **kwargs):
-        """GetVerbose() -> bool"""
-        return _misc_.Log_GetVerbose(*args, **kwargs)
-
-    GetVerbose = staticmethod(GetVerbose)
     def GetTraceMask(*args, **kwargs):
         """GetTraceMask() -> TraceMask"""
         return _misc_.Log_GetTraceMask(*args, **kwargs)
 
     GetTraceMask = staticmethod(GetTraceMask)
     def IsAllowedTraceMask(*args, **kwargs):
-        """IsAllowedTraceMask(wxChar mask) -> bool"""
+        """IsAllowedTraceMask(String mask) -> bool"""
         return _misc_.Log_IsAllowedTraceMask(*args, **kwargs)
 
     IsAllowedTraceMask = staticmethod(IsAllowedTraceMask)
-    def GetLogLevel(*args, **kwargs):
-        """GetLogLevel() -> LogLevel"""
-        return _misc_.Log_GetLogLevel(*args, **kwargs)
-
-    GetLogLevel = staticmethod(GetLogLevel)
     def GetTimestamp(*args, **kwargs):
-        """GetTimestamp() -> wxChar"""
+        """GetTimestamp() -> String"""
         return _misc_.Log_GetTimestamp(*args, **kwargs)
 
     GetTimestamp = staticmethod(GetTimestamp)
@@ -1554,6 +1602,18 @@ class Log(object):
         return _misc_.Log_TimeStamp(*args, **kwargs)
 
     TimeStamp = staticmethod(TimeStamp)
+    def LogRecord(*args, **kwargs):
+        """LogRecord(self, LogLevel level, String msg, LogRecordInfo info)"""
+        return _misc_.Log_LogRecord(*args, **kwargs)
+
+    def LogTextAtLevel(*args, **kwargs):
+        """LogTextAtLevel(self, LogLevel level, String msg)"""
+        return _misc_.Log_LogTextAtLevel(*args, **kwargs)
+
+    def LogText(*args, **kwargs):
+        """LogText(self, String msg)"""
+        return _misc_.Log_LogText(*args, **kwargs)
+
     def Destroy(*args, **kwargs):
         """Destroy(self)"""
         args[0].this.own(False)
@@ -1566,12 +1626,36 @@ def Log_IsEnabled(*args):
   return _misc_.Log_IsEnabled(*args)
 
 def Log_EnableLogging(*args, **kwargs):
-  """Log_EnableLogging(bool doIt=True) -> bool"""
+  """Log_EnableLogging(bool enable=True) -> bool"""
   return _misc_.Log_EnableLogging(*args, **kwargs)
 
-def Log_OnLog(*args, **kwargs):
-  """Log_OnLog(LogLevel level, wxChar szString, time_t t)"""
-  return _misc_.Log_OnLog(*args, **kwargs)
+def Log_GetLogLevel(*args):
+  """Log_GetLogLevel() -> LogLevel"""
+  return _misc_.Log_GetLogLevel(*args)
+
+def Log_SetLogLevel(*args, **kwargs):
+  """Log_SetLogLevel(LogLevel logLevel)"""
+  return _misc_.Log_SetLogLevel(*args, **kwargs)
+
+def Log_SetComponentLevel(*args, **kwargs):
+  """Log_SetComponentLevel(String component, LogLevel level)"""
+  return _misc_.Log_SetComponentLevel(*args, **kwargs)
+
+def Log_GetComponentLevel(*args, **kwargs):
+  """Log_GetComponentLevel(String component) -> LogLevel"""
+  return _misc_.Log_GetComponentLevel(*args, **kwargs)
+
+def Log_IsLevelEnabled(*args, **kwargs):
+  """Log_IsLevelEnabled(LogLevel level, String component) -> bool"""
+  return _misc_.Log_IsLevelEnabled(*args, **kwargs)
+
+def Log_SetVerbose(*args, **kwargs):
+  """Log_SetVerbose(bool bVerbose=True)"""
+  return _misc_.Log_SetVerbose(*args, **kwargs)
+
+def Log_GetVerbose(*args):
+  """Log_GetVerbose() -> bool"""
+  return _misc_.Log_GetVerbose(*args)
 
 def Log_FlushActive(*args):
   """Log_FlushActive()"""
@@ -1593,17 +1677,13 @@ def Log_Resume(*args):
   """Log_Resume()"""
   return _misc_.Log_Resume(*args)
 
-def Log_SetVerbose(*args, **kwargs):
-  """Log_SetVerbose(bool bVerbose=True)"""
-  return _misc_.Log_SetVerbose(*args, **kwargs)
-
-def Log_SetLogLevel(*args, **kwargs):
-  """Log_SetLogLevel(LogLevel logLevel)"""
-  return _misc_.Log_SetLogLevel(*args, **kwargs)
-
 def Log_DontCreateOnDemand(*args):
   """Log_DontCreateOnDemand()"""
   return _misc_.Log_DontCreateOnDemand(*args)
+
+def Log_DoCreateOnDemand(*args):
+  """Log_DoCreateOnDemand()"""
+  return _misc_.Log_DoCreateOnDemand(*args)
 
 def Log_SetRepetitionCounting(*args, **kwargs):
   """Log_SetRepetitionCounting(bool bRepetCounting=True)"""
@@ -1634,27 +1714,19 @@ def Log_GetTraceMasks(*args):
   return _misc_.Log_GetTraceMasks(*args)
 
 def Log_SetTimestamp(*args, **kwargs):
-  """Log_SetTimestamp(wxChar ts)"""
+  """Log_SetTimestamp(String ts)"""
   return _misc_.Log_SetTimestamp(*args, **kwargs)
-
-def Log_GetVerbose(*args):
-  """Log_GetVerbose() -> bool"""
-  return _misc_.Log_GetVerbose(*args)
 
 def Log_GetTraceMask(*args):
   """Log_GetTraceMask() -> TraceMask"""
   return _misc_.Log_GetTraceMask(*args)
 
 def Log_IsAllowedTraceMask(*args, **kwargs):
-  """Log_IsAllowedTraceMask(wxChar mask) -> bool"""
+  """Log_IsAllowedTraceMask(String mask) -> bool"""
   return _misc_.Log_IsAllowedTraceMask(*args, **kwargs)
 
-def Log_GetLogLevel(*args):
-  """Log_GetLogLevel() -> LogLevel"""
-  return _misc_.Log_GetLogLevel(*args)
-
 def Log_GetTimestamp(*args):
-  """Log_GetTimestamp() -> wxChar"""
+  """Log_GetTimestamp() -> String"""
   return _misc_.Log_GetTimestamp(*args)
 
 def Log_TimeStamp(*args):
@@ -1929,7 +2001,7 @@ class Process(_core.EvtHandler):
 
     def base_OnTerminate(*args, **kw):
         return Process.OnTerminate(*args, **kw)
-    base_OnTerminate = wx._deprecated(base_OnTerminate,
+    base_OnTerminate = wx.deprecated(base_OnTerminate,
                                    "Please use Process.OnTerminate instead.")
 
     def Redirect(*args, **kwargs):
@@ -2021,6 +2093,10 @@ EXEC_SYNC = _misc_.EXEC_SYNC
 EXEC_NOHIDE = _misc_.EXEC_NOHIDE
 EXEC_MAKE_GROUP_LEADER = _misc_.EXEC_MAKE_GROUP_LEADER
 EXEC_NODISABLE = _misc_.EXEC_NODISABLE
+EXEC_NOEVENTS = _misc_.EXEC_NOEVENTS
+EXEC_BLOCK = _misc_.EXEC_BLOCK
+EXEC_SHOW_CONSOLE = _misc_.EXEC_SHOW_CONSOLE
+EXEC_HIDE_CONSOLE = _misc_.EXEC_HIDE_CONSOLE
 
 def Execute(*args, **kwargs):
   """Execute(String command, int flags=EXEC_ASYNC, Process process=None) -> long"""
@@ -2598,14 +2674,6 @@ class MimeTypesManager(object):
         """GetFileTypeFromMimeType(self, String mimeType) -> FileType"""
         return _misc_.MimeTypesManager_GetFileTypeFromMimeType(*args, **kwargs)
 
-    def ReadMailcap(*args, **kwargs):
-        """ReadMailcap(self, String filename, bool fallback=False) -> bool"""
-        return _misc_.MimeTypesManager_ReadMailcap(*args, **kwargs)
-
-    def ReadMimeTypes(*args, **kwargs):
-        """ReadMimeTypes(self, String filename) -> bool"""
-        return _misc_.MimeTypesManager_ReadMimeTypes(*args, **kwargs)
-
     def EnumAllFileTypes(*args, **kwargs):
         """EnumAllFileTypes(self) -> PyObject"""
         return _misc_.MimeTypesManager_EnumAllFileTypes(*args, **kwargs)
@@ -2686,6 +2754,15 @@ class ArtProvider(object):
         """_setCallbackInfo(self, PyObject self, PyObject _class)"""
         return _misc_.ArtProvider__setCallbackInfo(*args, **kwargs)
 
+    def HasNativeProvider(*args, **kwargs):
+        """
+        HasNativeProvider() -> bool
+
+        Does this platform implement native icons theme?
+        """
+        return _misc_.ArtProvider_HasNativeProvider(*args, **kwargs)
+
+    HasNativeProvider = staticmethod(HasNativeProvider)
     def Push(*args, **kwargs):
         """
         Push(ArtProvider provider)
@@ -2696,6 +2773,16 @@ class ArtProvider(object):
 
     Push = staticmethod(Push)
     PushProvider = Push 
+    def PushBack(*args, **kwargs):
+        """
+        PushBack(wxArtProvider provider)
+
+        Add new provider to the bottom of providers stack (i.e. the provider
+        will be queried as the last one).
+        """
+        return _misc_.ArtProvider_PushBack(*args, **kwargs)
+
+    PushBack = staticmethod(PushBack)
     def Insert(*args, **kwargs):
         """
         Insert(ArtProvider provider)
@@ -2749,6 +2836,42 @@ class ArtProvider(object):
         return _misc_.ArtProvider_GetIcon(*args, **kwargs)
 
     GetIcon = staticmethod(GetIcon)
+    def GetMessageBoxIconId(*args, **kwargs):
+        """GetMessageBoxIconId(int flags) -> wxArtID"""
+        return _misc_.ArtProvider_GetMessageBoxIconId(*args, **kwargs)
+
+    GetMessageBoxIconId = staticmethod(GetMessageBoxIconId)
+    def GetMessageBoxIcon(*args, **kwargs):
+        """
+        GetMessageBoxIcon(int flags) -> Icon
+
+        Helper used by several generic classes: return the icon corresponding
+        to the standard wx.ICON_INFORMATION/WARNING/ERROR/QUESTION flags (only
+        one can be set)
+        """
+        return _misc_.ArtProvider_GetMessageBoxIcon(*args, **kwargs)
+
+    GetMessageBoxIcon = staticmethod(GetMessageBoxIcon)
+    def GetIconBundle(*args, **kwargs):
+        """
+        GetIconBundle(wxArtID id, wxArtClient client=wxART_OTHER) -> wxIconBundle
+
+        Query the providers for iconbundle with given ID and return it. Return
+        wx.NullIconBundle if no provider provides it.
+        """
+        return _misc_.ArtProvider_GetIconBundle(*args, **kwargs)
+
+    GetIconBundle = staticmethod(GetIconBundle)
+    def GetNativeSizeHint(*args, **kwargs):
+        """
+        GetNativeSizeHint(wxArtClient client) -> Size
+
+        Gets native size for given 'client' or wxDefaultSize if it doesn't
+        have native equivalent.
+        """
+        return _misc_.ArtProvider_GetNativeSizeHint(*args, **kwargs)
+
+    GetNativeSizeHint = staticmethod(GetNativeSizeHint)
     def GetSizeHint(*args, **kwargs):
         """
         GetSizeHint(String client, bool platform_dependent=False) -> Size
@@ -2772,6 +2895,7 @@ ART_CMN_DIALOG = cvar.ART_CMN_DIALOG
 ART_HELP_BROWSER = cvar.ART_HELP_BROWSER
 ART_MESSAGE_BOX = cvar.ART_MESSAGE_BOX
 ART_BUTTON = cvar.ART_BUTTON
+ART_LIST = cvar.ART_LIST
 ART_OTHER = cvar.ART_OTHER
 ART_ADD_BOOKMARK = cvar.ART_ADD_BOOKMARK
 ART_DEL_BOOKMARK = cvar.ART_DEL_BOOKMARK
@@ -2786,6 +2910,8 @@ ART_GO_UP = cvar.ART_GO_UP
 ART_GO_DOWN = cvar.ART_GO_DOWN
 ART_GO_TO_PARENT = cvar.ART_GO_TO_PARENT
 ART_GO_HOME = cvar.ART_GO_HOME
+ART_GOTO_FIRST = cvar.ART_GOTO_FIRST
+ART_GOTO_LAST = cvar.ART_GOTO_LAST
 ART_FILE_OPEN = cvar.ART_FILE_OPEN
 ART_FILE_SAVE = cvar.ART_FILE_SAVE
 ART_FILE_SAVE_AS = cvar.ART_FILE_SAVE_AS
@@ -2818,9 +2944,20 @@ ART_DELETE = cvar.ART_DELETE
 ART_NEW = cvar.ART_NEW
 ART_UNDO = cvar.ART_UNDO
 ART_REDO = cvar.ART_REDO
+ART_PLUS = cvar.ART_PLUS
+ART_MINUS = cvar.ART_MINUS
+ART_CLOSE = cvar.ART_CLOSE
 ART_QUIT = cvar.ART_QUIT
 ART_FIND = cvar.ART_FIND
 ART_FIND_AND_REPLACE = cvar.ART_FIND_AND_REPLACE
+
+def ArtProvider_HasNativeProvider(*args):
+  """
+    ArtProvider_HasNativeProvider() -> bool
+
+    Does this platform implement native icons theme?
+    """
+  return _misc_.ArtProvider_HasNativeProvider(*args)
 
 def ArtProvider_Push(*args, **kwargs):
   """
@@ -2829,6 +2966,15 @@ def ArtProvider_Push(*args, **kwargs):
     Add new provider to the top of providers stack.
     """
   return _misc_.ArtProvider_Push(*args, **kwargs)
+
+def ArtProvider_PushBack(*args, **kwargs):
+  """
+    ArtProvider_PushBack(wxArtProvider provider)
+
+    Add new provider to the bottom of providers stack (i.e. the provider
+    will be queried as the last one).
+    """
+  return _misc_.ArtProvider_PushBack(*args, **kwargs)
 
 def ArtProvider_Insert(*args, **kwargs):
   """
@@ -2875,6 +3021,38 @@ def ArtProvider_GetIcon(*args, **kwargs):
     """
   return _misc_.ArtProvider_GetIcon(*args, **kwargs)
 
+def ArtProvider_GetMessageBoxIconId(*args, **kwargs):
+  """ArtProvider_GetMessageBoxIconId(int flags) -> wxArtID"""
+  return _misc_.ArtProvider_GetMessageBoxIconId(*args, **kwargs)
+
+def ArtProvider_GetMessageBoxIcon(*args, **kwargs):
+  """
+    ArtProvider_GetMessageBoxIcon(int flags) -> Icon
+
+    Helper used by several generic classes: return the icon corresponding
+    to the standard wx.ICON_INFORMATION/WARNING/ERROR/QUESTION flags (only
+    one can be set)
+    """
+  return _misc_.ArtProvider_GetMessageBoxIcon(*args, **kwargs)
+
+def ArtProvider_GetIconBundle(*args, **kwargs):
+  """
+    ArtProvider_GetIconBundle(wxArtID id, wxArtClient client=wxART_OTHER) -> wxIconBundle
+
+    Query the providers for iconbundle with given ID and return it. Return
+    wx.NullIconBundle if no provider provides it.
+    """
+  return _misc_.ArtProvider_GetIconBundle(*args, **kwargs)
+
+def ArtProvider_GetNativeSizeHint(*args, **kwargs):
+  """
+    ArtProvider_GetNativeSizeHint(wxArtClient client) -> Size
+
+    Gets native size for given 'client' or wxDefaultSize if it doesn't
+    have native equivalent.
+    """
+  return _misc_.ArtProvider_GetNativeSizeHint(*args, **kwargs)
+
 def ArtProvider_GetSizeHint(*args, **kwargs):
   """
     ArtProvider_GetSizeHint(String client, bool platform_dependent=False) -> Size
@@ -2890,6 +3068,7 @@ CONFIG_USE_LOCAL_FILE = _misc_.CONFIG_USE_LOCAL_FILE
 CONFIG_USE_GLOBAL_FILE = _misc_.CONFIG_USE_GLOBAL_FILE
 CONFIG_USE_RELATIVE_PATH = _misc_.CONFIG_USE_RELATIVE_PATH
 CONFIG_USE_NO_ESCAPE_CHARACTERS = _misc_.CONFIG_USE_NO_ESCAPE_CHARACTERS
+CONFIG_USE_SUBDIR = _misc_.CONFIG_USE_SUBDIR
 class ConfigBase(object):
     """
     wx.ConfigBase class defines the basic interface of all config
@@ -3335,7 +3514,25 @@ class FileConfig(ConfigBase):
         _misc_.FileConfig_swiginit(self,_misc_.new_FileConfig(*args, **kwargs))
     __swig_destroy__ = _misc_.delete_FileConfig
     __del__ = lambda self : None;
+    def GetGlobalFileName(*args, **kwargs):
+        """GetGlobalFileName(String szFile) -> String"""
+        return _misc_.FileConfig_GetGlobalFileName(*args, **kwargs)
+
+    GetGlobalFileName = staticmethod(GetGlobalFileName)
+    def GetLocalFileName(*args, **kwargs):
+        """GetLocalFileName(String szFile, int style=0) -> String"""
+        return _misc_.FileConfig_GetLocalFileName(*args, **kwargs)
+
+    GetLocalFileName = staticmethod(GetLocalFileName)
 _misc_.FileConfig_swigregister(FileConfig)
+
+def FileConfig_GetGlobalFileName(*args, **kwargs):
+  """FileConfig_GetGlobalFileName(String szFile) -> String"""
+  return _misc_.FileConfig_GetGlobalFileName(*args, **kwargs)
+
+def FileConfig_GetLocalFileName(*args, **kwargs):
+  """FileConfig_GetLocalFileName(String szFile, int style=0) -> String"""
+  return _misc_.FileConfig_GetLocalFileName(*args, **kwargs)
 
 class ConfigPathChanger(object):
     """
@@ -3435,70 +3632,6 @@ class DateTime(object):
     UTC = _misc_.DateTime_UTC
     Gregorian = _misc_.DateTime_Gregorian
     Julian = _misc_.DateTime_Julian
-    Gr_Unknown = _misc_.DateTime_Gr_Unknown
-    Gr_Standard = _misc_.DateTime_Gr_Standard
-    Gr_Alaska = _misc_.DateTime_Gr_Alaska
-    Gr_Albania = _misc_.DateTime_Gr_Albania
-    Gr_Austria = _misc_.DateTime_Gr_Austria
-    Gr_Austria_Brixen = _misc_.DateTime_Gr_Austria_Brixen
-    Gr_Austria_Salzburg = _misc_.DateTime_Gr_Austria_Salzburg
-    Gr_Austria_Tyrol = _misc_.DateTime_Gr_Austria_Tyrol
-    Gr_Austria_Carinthia = _misc_.DateTime_Gr_Austria_Carinthia
-    Gr_Austria_Styria = _misc_.DateTime_Gr_Austria_Styria
-    Gr_Belgium = _misc_.DateTime_Gr_Belgium
-    Gr_Bulgaria = _misc_.DateTime_Gr_Bulgaria
-    Gr_Bulgaria_1 = _misc_.DateTime_Gr_Bulgaria_1
-    Gr_Bulgaria_2 = _misc_.DateTime_Gr_Bulgaria_2
-    Gr_Bulgaria_3 = _misc_.DateTime_Gr_Bulgaria_3
-    Gr_Canada = _misc_.DateTime_Gr_Canada
-    Gr_China = _misc_.DateTime_Gr_China
-    Gr_China_1 = _misc_.DateTime_Gr_China_1
-    Gr_China_2 = _misc_.DateTime_Gr_China_2
-    Gr_Czechoslovakia = _misc_.DateTime_Gr_Czechoslovakia
-    Gr_Denmark = _misc_.DateTime_Gr_Denmark
-    Gr_Egypt = _misc_.DateTime_Gr_Egypt
-    Gr_Estonia = _misc_.DateTime_Gr_Estonia
-    Gr_Finland = _misc_.DateTime_Gr_Finland
-    Gr_France = _misc_.DateTime_Gr_France
-    Gr_France_Alsace = _misc_.DateTime_Gr_France_Alsace
-    Gr_France_Lorraine = _misc_.DateTime_Gr_France_Lorraine
-    Gr_France_Strasbourg = _misc_.DateTime_Gr_France_Strasbourg
-    Gr_Germany = _misc_.DateTime_Gr_Germany
-    Gr_Germany_Catholic = _misc_.DateTime_Gr_Germany_Catholic
-    Gr_Germany_Prussia = _misc_.DateTime_Gr_Germany_Prussia
-    Gr_Germany_Protestant = _misc_.DateTime_Gr_Germany_Protestant
-    Gr_GreatBritain = _misc_.DateTime_Gr_GreatBritain
-    Gr_Greece = _misc_.DateTime_Gr_Greece
-    Gr_Hungary = _misc_.DateTime_Gr_Hungary
-    Gr_Ireland = _misc_.DateTime_Gr_Ireland
-    Gr_Italy = _misc_.DateTime_Gr_Italy
-    Gr_Japan = _misc_.DateTime_Gr_Japan
-    Gr_Japan_1 = _misc_.DateTime_Gr_Japan_1
-    Gr_Japan_2 = _misc_.DateTime_Gr_Japan_2
-    Gr_Japan_3 = _misc_.DateTime_Gr_Japan_3
-    Gr_Latvia = _misc_.DateTime_Gr_Latvia
-    Gr_Lithuania = _misc_.DateTime_Gr_Lithuania
-    Gr_Luxemburg = _misc_.DateTime_Gr_Luxemburg
-    Gr_Netherlands = _misc_.DateTime_Gr_Netherlands
-    Gr_Netherlands_Groningen = _misc_.DateTime_Gr_Netherlands_Groningen
-    Gr_Netherlands_Gelderland = _misc_.DateTime_Gr_Netherlands_Gelderland
-    Gr_Netherlands_Utrecht = _misc_.DateTime_Gr_Netherlands_Utrecht
-    Gr_Netherlands_Friesland = _misc_.DateTime_Gr_Netherlands_Friesland
-    Gr_Norway = _misc_.DateTime_Gr_Norway
-    Gr_Poland = _misc_.DateTime_Gr_Poland
-    Gr_Portugal = _misc_.DateTime_Gr_Portugal
-    Gr_Romania = _misc_.DateTime_Gr_Romania
-    Gr_Russia = _misc_.DateTime_Gr_Russia
-    Gr_Scotland = _misc_.DateTime_Gr_Scotland
-    Gr_Spain = _misc_.DateTime_Gr_Spain
-    Gr_Sweden = _misc_.DateTime_Gr_Sweden
-    Gr_Switzerland = _misc_.DateTime_Gr_Switzerland
-    Gr_Switzerland_Catholic = _misc_.DateTime_Gr_Switzerland_Catholic
-    Gr_Switzerland_Protestant = _misc_.DateTime_Gr_Switzerland_Protestant
-    Gr_Turkey = _misc_.DateTime_Gr_Turkey
-    Gr_USA = _misc_.DateTime_Gr_USA
-    Gr_Wales = _misc_.DateTime_Gr_Wales
-    Gr_Yugoslavia = _misc_.DateTime_Gr_Yugoslavia
     Country_Unknown = _misc_.DateTime_Country_Unknown
     Country_Default = _misc_.DateTime_Country_Default
     Country_WesternEurope_Start = _misc_.DateTime_Country_WesternEurope_Start
@@ -3576,12 +3709,11 @@ class DateTime(object):
         return _misc_.DateTime_GetCentury(*args, **kwargs)
 
     GetCentury = staticmethod(GetCentury)
-    def GetNumberOfDaysInYear(*args, **kwargs):
-        """GetNumberOfDaysInYear(int year, int cal=Gregorian) -> int"""
-        return _misc_.DateTime_GetNumberOfDaysInYear(*args, **kwargs)
+    def GetNumberOfDaysinYear(*args, **kwargs):
+        """GetNumberOfDaysinYear(int year, int cal=Gregorian) -> int"""
+        return _misc_.DateTime_GetNumberOfDaysinYear(*args, **kwargs)
 
-    GetNumberOfDaysInYear = staticmethod(GetNumberOfDaysInYear)
-    GetNumberOfDaysinYear = GetNumberOfDaysInYear # for compatibility 
+    GetNumberOfDaysinYear = staticmethod(GetNumberOfDaysinYear)
     def GetNumberOfDaysInMonth(*args, **kwargs):
         """GetNumberOfDaysInMonth(int month, int year=Inv_Year, int cal=Gregorian) -> int"""
         return _misc_.DateTime_GetNumberOfDaysInMonth(*args, **kwargs)
@@ -3597,6 +3729,16 @@ class DateTime(object):
         return _misc_.DateTime_GetWeekDayName(*args, **kwargs)
 
     GetWeekDayName = staticmethod(GetWeekDayName)
+    def GetEnglishMonthName(*args, **kwargs):
+        """GetEnglishMonthName(int month, int flags=Name_Full) -> String"""
+        return _misc_.DateTime_GetEnglishMonthName(*args, **kwargs)
+
+    GetEnglishMonthName = staticmethod(GetEnglishMonthName)
+    def GetEnglishWeekDayName(*args, **kwargs):
+        """GetEnglishWeekDayName(int weekday, int flags=Name_Full) -> String"""
+        return _misc_.DateTime_GetEnglishWeekDayName(*args, **kwargs)
+
+    GetEnglishWeekDayName = staticmethod(GetEnglishWeekDayName)
     def GetAmPmStrings(*args, **kwargs):
         """
         GetAmPmStrings() -> (am, pm)
@@ -3735,17 +3877,6 @@ class DateTime(object):
     def GetLastWeekDay(*args, **kwargs):
         """GetLastWeekDay(self, int weekday, int month=Inv_Month, int year=Inv_Year) -> DateTime"""
         return _misc_.DateTime_GetLastWeekDay(*args, **kwargs)
-
-    def SetToTheWeek(*args, **kwargs):
-        """SetToTheWeek(self, int numWeek, int weekday=Mon, int flags=Monday_First) -> bool"""
-        return _misc_.DateTime_SetToTheWeek(*args, **kwargs)
-
-    def GetWeek(*args, **kwargs):
-        """GetWeek(self, int numWeek, int weekday=Mon, int flags=Monday_First) -> DateTime"""
-        return _misc_.DateTime_GetWeek(*args, **kwargs)
-
-    SetToTheWeek = wx._deprecated(SetToTheWeek, "SetToTheWeek is deprecated, use (static) SetToWeekOfYear instead")
-    GetWeek = wx._deprecated(GetWeek, "GetWeek is deprecated, use GetWeekOfYear instead")
 
     def SetToWeekOfYear(*args, **kwargs):
         """SetToWeekOfYear(int year, int numWeek, int weekday=Mon) -> DateTime"""
@@ -4004,6 +4135,18 @@ class DateTime(object):
         """ParseFormat(self, String date, String format=DefaultDateTimeFormat, DateTime dateDef=DefaultDateTime) -> int"""
         return _misc_.DateTime_ParseFormat(*args, **kwargs)
 
+    def ParseISODate(*args, **kwargs):
+        """ParseISODate(self, String date) -> bool"""
+        return _misc_.DateTime_ParseISODate(*args, **kwargs)
+
+    def ParseISOTime(*args, **kwargs):
+        """ParseISOTime(self, String time) -> bool"""
+        return _misc_.DateTime_ParseISOTime(*args, **kwargs)
+
+    def ParseISOCombined(*args, **kwargs):
+        """ParseISOCombined(self, String datetime, char sep='T') -> bool"""
+        return _misc_.DateTime_ParseISOCombined(*args, **kwargs)
+
     def ParseDateTime(*args, **kwargs):
         """ParseDateTime(self, String datetime) -> int"""
         return _misc_.DateTime_ParseDateTime(*args, **kwargs)
@@ -4036,6 +4179,10 @@ class DateTime(object):
         """FormatISOTime(self) -> String"""
         return _misc_.DateTime_FormatISOTime(*args, **kwargs)
 
+    def FormatISOCombined(*args, **kwargs):
+        """FormatISOCombined(self, char sep='T') -> String"""
+        return _misc_.DateTime_FormatISOCombined(*args, **kwargs)
+
     def __repr__(self):
         if self.IsValid():
             f = self.Format().encode(wx.GetDefaultPyEncoding())
@@ -4065,7 +4212,6 @@ class DateTime(object):
     RataDie = property(GetRataDie,doc="See `GetRataDie`") 
     Second = property(GetSecond,SetSecond,doc="See `GetSecond` and `SetSecond`") 
     Ticks = property(GetTicks,doc="See `GetTicks`") 
-    Week = property(GetWeek,doc="See `GetWeek`") 
     WeekDay = property(GetWeekDay,doc="See `GetWeekDay`") 
     WeekDayInSameWeek = property(GetWeekDayInSameWeek,doc="See `GetWeekDayInSameWeek`") 
     WeekOfMonth = property(GetWeekOfMonth,doc="See `GetWeekOfMonth`") 
@@ -4108,9 +4254,9 @@ def DateTime_GetCentury(*args, **kwargs):
   """DateTime_GetCentury(int year=Inv_Year) -> int"""
   return _misc_.DateTime_GetCentury(*args, **kwargs)
 
-def DateTime_GetNumberOfDaysInYear(*args, **kwargs):
-  """DateTime_GetNumberOfDaysInYear(int year, int cal=Gregorian) -> int"""
-  return _misc_.DateTime_GetNumberOfDaysInYear(*args, **kwargs)
+def DateTime_GetNumberOfDaysinYear(*args, **kwargs):
+  """DateTime_GetNumberOfDaysinYear(int year, int cal=Gregorian) -> int"""
+  return _misc_.DateTime_GetNumberOfDaysinYear(*args, **kwargs)
 
 def DateTime_GetNumberOfDaysInMonth(*args, **kwargs):
   """DateTime_GetNumberOfDaysInMonth(int month, int year=Inv_Year, int cal=Gregorian) -> int"""
@@ -4123,6 +4269,14 @@ def DateTime_GetMonthName(*args, **kwargs):
 def DateTime_GetWeekDayName(*args, **kwargs):
   """DateTime_GetWeekDayName(int weekday, int flags=Name_Full) -> String"""
   return _misc_.DateTime_GetWeekDayName(*args, **kwargs)
+
+def DateTime_GetEnglishMonthName(*args, **kwargs):
+  """DateTime_GetEnglishMonthName(int month, int flags=Name_Full) -> String"""
+  return _misc_.DateTime_GetEnglishMonthName(*args, **kwargs)
+
+def DateTime_GetEnglishWeekDayName(*args, **kwargs):
+  """DateTime_GetEnglishWeekDayName(int weekday, int flags=Name_Full) -> String"""
+  return _misc_.DateTime_GetEnglishWeekDayName(*args, **kwargs)
 
 def DateTime_GetAmPmStrings(*args):
   """
@@ -4997,6 +5151,15 @@ class DataObjectComposite(DataObject):
         return _misc_.DataObjectComposite_GetReceivedFormat(*args, **kwargs)
 
     ReceivedFormat = property(GetReceivedFormat,doc="See `GetReceivedFormat`") 
+    def GetObject(*args, **kwargs):
+        """
+        GetObject(self, DataFormat format, wxDataObjectBase::Direction dir=Get) -> DataObjectSimple
+
+        Returns the pointer to the object which supports this format or None.
+        TODO: Fix this to use OOR and return the right object type.
+        """
+        return _misc_.DataObjectComposite_GetObject(*args, **kwargs)
+
 _misc_.DataObjectComposite_swigregister(DataObjectComposite)
 
 class TextDataObject(DataObjectSimple):
@@ -5278,6 +5441,24 @@ class URLDataObject(DataObject):
     URL = property(GetURL,SetURL,doc="See `GetURL` and `SetURL`") 
 _misc_.URLDataObject_swigregister(URLDataObject)
 
+class HTMLDataObject(DataObjectSimple):
+    """Proxy of C++ HTMLDataObject class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, String html=wxEmptyString) -> HTMLDataObject"""
+        _misc_.HTMLDataObject_swiginit(self,_misc_.new_HTMLDataObject(*args, **kwargs))
+    def GetHTML(*args, **kwargs):
+        """GetHTML(self) -> String"""
+        return _misc_.HTMLDataObject_GetHTML(*args, **kwargs)
+
+    def SetHTML(*args, **kwargs):
+        """SetHTML(self, String html)"""
+        return _misc_.HTMLDataObject_SetHTML(*args, **kwargs)
+
+    HTML = property(GetHTML,SetHTML) 
+_misc_.HTMLDataObject_swigregister(HTMLDataObject)
+
 class MetafileDataObject(DataObjectSimple):
     """Proxy of C++ MetafileDataObject class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -5350,7 +5531,7 @@ class DropSource(object):
 
     def base_GiveFeedback(*args, **kw):
         return DropSource.GiveFeedback(*args, **kw)
-    base_GiveFeedback = wx._deprecated(base_GiveFeedback,
+    base_GiveFeedback = wx.deprecated(base_GiveFeedback,
                                    "Please use DropSource.GiveFeedback instead.")
 
     DataObject = property(GetDataObject,SetData,doc="See `GetDataObject` and `SetData`") 
@@ -5360,7 +5541,7 @@ def DROP_ICON(filename):
     """
     Returns either a `wx.Cursor` or `wx.Icon` created from the image file
     ``filename``.  This function is useful with the `wx.DropSource` class
-    which, depending on platform accepts either a icon or a cursor.
+    which, depending on platform accepts either an icon or a cursor.
     """
     img = wx.Image(filename)
     if wx.Platform == '__WXGTK__':
@@ -5409,22 +5590,22 @@ class DropTarget(object):
 
     def base_OnEnter(*args, **kw):
         return DropTarget.OnEnter(*args, **kw)
-    base_OnEnter = wx._deprecated(base_OnEnter,
+    base_OnEnter = wx.deprecated(base_OnEnter,
                                    "Please use DropTarget.OnEnter instead.")
 
     def base_OnDragOver(*args, **kw):
         return DropTarget.OnDragOver(*args, **kw)
-    base_OnDragOver = wx._deprecated(base_OnDragOver,
+    base_OnDragOver = wx.deprecated(base_OnDragOver,
                                    "Please use DropTarget.OnDragOver instead.")
 
     def base_OnLeave(*args, **kw):
         return DropTarget.OnLeave(*args, **kw)
-    base_OnLeave = wx._deprecated(base_OnLeave,
+    base_OnLeave = wx.deprecated(base_OnLeave,
                                    "Please use DropTarget.OnLeave instead.")
 
     def base_OnDrop(*args, **kw):
         return DropTarget.OnDrop(*args, **kw)
-    base_OnDrop = wx._deprecated(base_OnDrop,
+    base_OnDrop = wx.deprecated(base_OnDrop,
                                    "Please use DropTarget.OnDrop instead.")
 
     def GetData(*args, **kwargs):
@@ -5483,32 +5664,32 @@ class TextDropTarget(DropTarget):
 
     def base_OnDropText(*args, **kw):
         return TextDropTarget.OnDropText(*args, **kw)
-    base_OnDropText = wx._deprecated(base_OnDropText,
+    base_OnDropText = wx.deprecated(base_OnDropText,
                                    "Please use TextDropTarget.OnDropText instead.")
 
     def base_OnEnter(*args, **kw):
         return TextDropTarget.OnEnter(*args, **kw)
-    base_OnEnter = wx._deprecated(base_OnEnter,
+    base_OnEnter = wx.deprecated(base_OnEnter,
                                    "Please use TextDropTarget.OnEnter instead.")
 
     def base_OnDragOver(*args, **kw):
         return TextDropTarget.OnDragOver(*args, **kw)
-    base_OnDragOver = wx._deprecated(base_OnDragOver,
+    base_OnDragOver = wx.deprecated(base_OnDragOver,
                                    "Please use TextDropTarget.OnDragOver instead.")
 
     def base_OnLeave(*args, **kw):
         return TextDropTarget.OnLeave(*args, **kw)
-    base_OnLeave = wx._deprecated(base_OnLeave,
+    base_OnLeave = wx.deprecated(base_OnLeave,
                                    "Please use TextDropTarget.OnLeave instead.")
 
     def base_OnDrop(*args, **kw):
         return TextDropTarget.OnDrop(*args, **kw)
-    base_OnDrop = wx._deprecated(base_OnDrop,
+    base_OnDrop = wx.deprecated(base_OnDrop,
                                    "Please use TextDropTarget.OnDrop instead.")
 
     def base_OnData(*args, **kw):
         return TextDropTarget.OnData(*args, **kw)
-    base_OnData = wx._deprecated(base_OnData,
+    base_OnData = wx.deprecated(base_OnData,
                                    "Please use TextDropTarget.OnData instead.")
 
 _misc_.TextDropTarget_swigregister(TextDropTarget)
@@ -5552,32 +5733,32 @@ class FileDropTarget(DropTarget):
 
     def base_OnDropFiles(*args, **kw):
         return FileDropTarget.OnDropFiles(*args, **kw)
-    base_OnDropFiles = wx._deprecated(base_OnDropFiles,
+    base_OnDropFiles = wx.deprecated(base_OnDropFiles,
                                    "Please use FileDropTarget.OnDropFiles instead.")
 
     def base_OnEnter(*args, **kw):
         return FileDropTarget.OnEnter(*args, **kw)
-    base_OnEnter = wx._deprecated(base_OnEnter,
+    base_OnEnter = wx.deprecated(base_OnEnter,
                                    "Please use FileDropTarget.OnEnter instead.")
 
     def base_OnDragOver(*args, **kw):
         return FileDropTarget.OnDragOver(*args, **kw)
-    base_OnDragOver = wx._deprecated(base_OnDragOver,
+    base_OnDragOver = wx.deprecated(base_OnDragOver,
                                    "Please use FileDropTarget.OnDragOver instead.")
 
     def base_OnLeave(*args, **kw):
         return FileDropTarget.OnLeave(*args, **kw)
-    base_OnLeave = wx._deprecated(base_OnLeave,
+    base_OnLeave = wx.deprecated(base_OnLeave,
                                    "Please use FileDropTarget.OnLeave instead.")
 
     def base_OnDrop(*args, **kw):
         return FileDropTarget.OnDrop(*args, **kw)
-    base_OnDrop = wx._deprecated(base_OnDrop,
+    base_OnDrop = wx.deprecated(base_OnDrop,
                                    "Please use FileDropTarget.OnDrop instead.")
 
     def base_OnData(*args, **kw):
         return FileDropTarget.OnData(*args, **kw)
-    base_OnData = wx._deprecated(base_OnData,
+    base_OnData = wx.deprecated(base_OnData,
                                    "Please use FileDropTarget.OnData instead.")
 
 _misc_.FileDropTarget_swigregister(FileDropTarget)
@@ -5668,6 +5849,10 @@ class Clipboard(_core.Object):
         """
         return _misc_.Clipboard_IsSupported(*args, **kwargs)
 
+    def IsSupportedAsync(*args, **kwargs):
+        """IsSupportedAsync(self, EvtHandler sink) -> bool"""
+        return _misc_.Clipboard_IsSupportedAsync(*args, **kwargs)
+
     def GetData(*args, **kwargs):
         """
         GetData(self, DataObject data) -> bool
@@ -5701,11 +5886,22 @@ class Clipboard(_core.Object):
         """
         UsePrimarySelection(self, bool primary=True)
 
-        On platforms supporting it (the X11 based platforms), selects the
-        so called PRIMARY SELECTION as the clipboard as opposed to the
-        normal clipboard, if primary is True.
+        On platforms supporting it (the X11 based platforms), selects the so
+        called PRIMARY SELECTION as the clipboard as opposed to the normal
+        clipboard, if primary is True.  On other platforms all clipboard
+        operations fail when using the primary selection.  This allows code
+        supporting the primary selection to be written without ill effects on
+        the other platforms.
         """
         return _misc_.Clipboard_UsePrimarySelection(*args, **kwargs)
+
+    def IsUsingPrimarySelection(*args, **kwargs):
+        """
+        IsUsingPrimarySelection(self) -> bool
+
+        Return true if we're using primary selection
+        """
+        return _misc_.Clipboard_IsUsingPrimarySelection(*args, **kwargs)
 
     def Get(*args, **kwargs):
         """
@@ -5777,6 +5973,26 @@ class ClipboardLocker(object):
 
 _misc_.ClipboardLocker_swigregister(ClipboardLocker)
 
+class ClipboardEvent(_core.Event):
+    """Proxy of C++ ClipboardEvent class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, EventType evtType=wxEVT_NULL) -> ClipboardEvent"""
+        _misc_.ClipboardEvent_swiginit(self,_misc_.new_ClipboardEvent(*args, **kwargs))
+    def SupportsFormat(*args, **kwargs):
+        """SupportsFormat(self, DataFormat format) -> bool"""
+        return _misc_.ClipboardEvent_SupportsFormat(*args, **kwargs)
+
+    def AddFormat(*args, **kwargs):
+        """AddFormat(self, DataFormat format)"""
+        return _misc_.ClipboardEvent_AddFormat(*args, **kwargs)
+
+_misc_.ClipboardEvent_swigregister(ClipboardEvent)
+
+wxEVT_CLIPBOARD_CHANGED = _misc_.wxEVT_CLIPBOARD_CHANGED
+EVT_CLIPBOARD_CHANGED = wx.PyEventBinder( wxEVT_CLIPBOARD_CHANGED )
+
 #---------------------------------------------------------------------------
 
 class VideoMode(object):
@@ -5827,6 +6043,10 @@ class VideoMode(object):
         """
         return _misc_.VideoMode_GetDepth(*args, **kwargs)
 
+    def GetRefresh(*args, **kwargs):
+        """GetRefresh(self) -> int"""
+        return _misc_.VideoMode_GetRefresh(*args, **kwargs)
+
     def IsOk(*args, **kwargs):
         """
         IsOk(self) -> bool
@@ -5851,6 +6071,7 @@ class VideoMode(object):
     Depth = property(GetDepth,doc="See `GetDepth`") 
     Height = property(GetHeight,doc="See `GetHeight`") 
     Width = property(GetWidth,doc="See `GetWidth`") 
+    Refresh = property(GetRefresh) 
 _misc_.VideoMode_swigregister(VideoMode)
 
 class Display(object):
@@ -6063,6 +6284,9 @@ class StandardPaths(object):
     ResourceCat_None = _misc_.StandardPaths_ResourceCat_None
     ResourceCat_Messages = _misc_.StandardPaths_ResourceCat_Messages
     ResourceCat_Max = _misc_.StandardPaths_ResourceCat_Max
+    AppInfo_None = _misc_.StandardPaths_AppInfo_None
+    AppInfo_AppName = _misc_.StandardPaths_AppInfo_AppName
+    AppInfo_VendorName = _misc_.StandardPaths_AppInfo_VendorName
     def Get(*args, **kwargs):
         """
         Get() -> StandardPaths
@@ -6196,6 +6420,17 @@ class StandardPaths(object):
         """
         return _misc_.StandardPaths_GetDocumentsDir(*args, **kwargs)
 
+    def GetAppDocumentsDir(*args, **kwargs):
+        """
+        GetAppDocumentsDir(self) -> String
+
+        Return the directory for the documents files used by this application:
+        it's a subdirectory of GetDocumentsDir() constructed using the
+        application name/vendor if it exists or just GetDocumentsDir()
+        otherwise.
+        """
+        return _misc_.StandardPaths_GetAppDocumentsDir(*args, **kwargs)
+
     def GetTempDir(*args, **kwargs):
         """
         GetTempDir(self) -> String
@@ -6223,6 +6458,14 @@ class StandardPaths(object):
         Python is installed. (This function only has meaning on Unix systems.)
         """
         return _misc_.StandardPaths_GetInstallPrefix(*args, **kwargs)
+
+    def UseAppInfo(*args, **kwargs):
+        """UseAppInfo(self, int info)"""
+        return _misc_.StandardPaths_UseAppInfo(*args, **kwargs)
+
+    def UsesAppInfo(*args, **kwargs):
+        """UsesAppInfo(self, int info) -> bool"""
+        return _misc_.StandardPaths_UsesAppInfo(*args, **kwargs)
 
 _misc_.StandardPaths_swigregister(StandardPaths)
 
@@ -6361,7 +6604,7 @@ class AboutDialogInfo(object):
     Name = property(GetName,SetName) 
     def SetVersion(*args, **kwargs):
         """
-        SetVersion(self, String version)
+        SetVersion(self, String version, String longVersion=wxEmptyString)
 
         Set the version of the program. The version is in free format,
         i.e. not necessarily in the x.y.z form but it shouldn't contain the
@@ -6386,6 +6629,11 @@ class AboutDialogInfo(object):
         return _misc_.AboutDialogInfo_GetVersion(*args, **kwargs)
 
     Version = property(GetVersion,SetVersion) 
+    def GetLongVersion(*args, **kwargs):
+        """GetLongVersion(self) -> String"""
+        return _misc_.AboutDialogInfo_GetLongVersion(*args, **kwargs)
+
+    LongVersion = property(GetLongVersion) 
     def SetDescription(*args, **kwargs):
         """
         SetDescription(self, String desc)
@@ -6688,12 +6936,16 @@ class AboutDialogInfo(object):
         """GetDescriptionAndCredits(self) -> String"""
         return _misc_.AboutDialogInfo_GetDescriptionAndCredits(*args, **kwargs)
 
+    def GetCopyrightToDisplay(*args, **kwargs):
+        """GetCopyrightToDisplay(self) -> String"""
+        return _misc_.AboutDialogInfo_GetCopyrightToDisplay(*args, **kwargs)
+
 _misc_.AboutDialogInfo_swigregister(AboutDialogInfo)
 
 
 def AboutBox(*args, **kwargs):
   """
-    AboutBox(AboutDialogInfo info)
+    AboutBox(AboutDialogInfo info, Window parent=None)
 
     This function shows the standard about dialog containing the
     information specified in ``info``. If the current platform has a
@@ -6702,5 +6954,61 @@ def AboutBox(*args, **kwargs):
     function falls back to the generic wxWidgets version of the dialog.
     """
   return _misc_.AboutBox(*args, **kwargs)
+#---------------------------------------------------------------------------
+
+class UIActionSimulator(object):
+    """Proxy of C++ UIActionSimulator class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> UIActionSimulator"""
+        _misc_.UIActionSimulator_swiginit(self,_misc_.new_UIActionSimulator(*args, **kwargs))
+    __swig_destroy__ = _misc_.delete_UIActionSimulator
+    __del__ = lambda self : None;
+    def MouseMove(*args):
+        """
+        MouseMove(self, long x, long y) -> bool
+        MouseMove(self, Point point) -> bool
+        """
+        return _misc_.UIActionSimulator_MouseMove(*args)
+
+    def MouseDown(*args, **kwargs):
+        """MouseDown(self, int button=MOUSE_BTN_LEFT) -> bool"""
+        return _misc_.UIActionSimulator_MouseDown(*args, **kwargs)
+
+    def MouseUp(*args, **kwargs):
+        """MouseUp(self, int button=MOUSE_BTN_LEFT) -> bool"""
+        return _misc_.UIActionSimulator_MouseUp(*args, **kwargs)
+
+    def MouseClick(*args, **kwargs):
+        """MouseClick(self, int button=MOUSE_BTN_LEFT) -> bool"""
+        return _misc_.UIActionSimulator_MouseClick(*args, **kwargs)
+
+    def MouseDblClick(*args, **kwargs):
+        """MouseDblClick(self, int button=MOUSE_BTN_LEFT) -> bool"""
+        return _misc_.UIActionSimulator_MouseDblClick(*args, **kwargs)
+
+    def MouseDragDrop(*args, **kwargs):
+        """MouseDragDrop(self, long x1, long y1, long x2, long y2, int button=MOUSE_BTN_LEFT) -> bool"""
+        return _misc_.UIActionSimulator_MouseDragDrop(*args, **kwargs)
+
+    def KeyDown(*args, **kwargs):
+        """KeyDown(self, int keycode, int modifiers=MOD_NONE) -> bool"""
+        return _misc_.UIActionSimulator_KeyDown(*args, **kwargs)
+
+    def KeyUp(*args, **kwargs):
+        """KeyUp(self, int keycode, int modifiers=MOD_NONE) -> bool"""
+        return _misc_.UIActionSimulator_KeyUp(*args, **kwargs)
+
+    def Char(*args, **kwargs):
+        """Char(self, int keycode, int modifiers=MOD_NONE) -> bool"""
+        return _misc_.UIActionSimulator_Char(*args, **kwargs)
+
+    def Text(*args, **kwargs):
+        """Text(self, char text) -> bool"""
+        return _misc_.UIActionSimulator_Text(*args, **kwargs)
+
+_misc_.UIActionSimulator_swigregister(UIActionSimulator)
+
 
 

@@ -6,7 +6,7 @@
 # Author:      Robin Dunn
 #
 # Created:     9-June-2005
-# RCS-ID:      $Id: splitter.py 65274 2010-08-11 23:55:40Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2005 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

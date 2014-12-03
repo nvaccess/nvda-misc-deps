@@ -5,7 +5,7 @@
 # Author:      Robb Shecter and members of wxPython-users
 #
 # Created:     11-September-2002
-# RCS-ID:      $Id: rubberband.py 24889 2003-12-17 00:34:40Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by db-X Corporation
 # Licence:     wxWindows license
 #---------------------------------------------------------------------------
@@ -379,7 +379,7 @@ class RubberBand:
 
 
 if __name__ == '__main__':
-    app   = wx.PySimpleApp()
+    app   = wx.App()
     frame = wx.Frame(None, -1, title='RubberBand Test', size=(300,300))
 
     # Add a panel that the rubberband will work on.

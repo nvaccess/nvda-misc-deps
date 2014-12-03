@@ -5,7 +5,7 @@
 # Author:      Robin Dunn
 #
 # Created:     11-Dec-2002
-# RCS-ID:      $Id: helpviewer.py 45966 2007-05-11 18:54:09Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -50,12 +50,12 @@ def main(args=sys.argv):
     import wx
     import wx.html
 
-    app = wx.PySimpleApp()
+    app = wx.App()
     #wx.Log.SetActiveTarget(wx.LogStderr())
     wx.Log.SetLogLevel(wx.LOG_Error)
 
     # Set up the default config so the htmlhelp frame can save its preferences
-    app.SetVendorName('wxWidgets')
+    app.SetVendorName('wxWindows')
     app.SetAppName('helpviewer')
     cfg = wx.ConfigBase.Get()
 

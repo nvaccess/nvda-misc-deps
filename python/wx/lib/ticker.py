@@ -5,7 +5,7 @@
 # Author:      Chris Mellon
 #
 # Created:     29-Aug-2004
-# RCS-ID:      $Id: ticker.py 42816 2006-10-31 08:50:17Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2004 by Chris Mellon
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -201,7 +201,7 @@ class Ticker(wx.PyControl):
 
 #testcase/demo
 if __name__ == '__main__':
-    app = wx.PySimpleApp()
+    app = wx.App()
     f = wx.Frame(None)
     p = wx.Panel(f)
     t = Ticker(p, text="Some sample ticker text")   

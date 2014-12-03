@@ -61,16 +61,27 @@ import _core
 wx = _core 
 __docfilter__ = wx.__DocFilter(globals()) 
 WIZARD_EX_HELPBUTTON = _wizard.WIZARD_EX_HELPBUTTON
+WIZARD_VALIGN_TOP = _wizard.WIZARD_VALIGN_TOP
+WIZARD_VALIGN_CENTRE = _wizard.WIZARD_VALIGN_CENTRE
+WIZARD_VALIGN_BOTTOM = _wizard.WIZARD_VALIGN_BOTTOM
+WIZARD_HALIGN_LEFT = _wizard.WIZARD_HALIGN_LEFT
+WIZARD_HALIGN_CENTRE = _wizard.WIZARD_HALIGN_CENTRE
+WIZARD_HALIGN_RIGHT = _wizard.WIZARD_HALIGN_RIGHT
+WIZARD_TILE = _wizard.WIZARD_TILE
 wxEVT_WIZARD_PAGE_CHANGED = _wizard.wxEVT_WIZARD_PAGE_CHANGED
 wxEVT_WIZARD_PAGE_CHANGING = _wizard.wxEVT_WIZARD_PAGE_CHANGING
 wxEVT_WIZARD_CANCEL = _wizard.wxEVT_WIZARD_CANCEL
 wxEVT_WIZARD_HELP = _wizard.wxEVT_WIZARD_HELP
 wxEVT_WIZARD_FINISHED = _wizard.wxEVT_WIZARD_FINISHED
+wxEVT_WIZARD_PAGE_SHOWN = _wizard.wxEVT_WIZARD_PAGE_SHOWN
+wxEVT_WIZARD_BEFORE_PAGE_CHANGED = _wizard.wxEVT_WIZARD_BEFORE_PAGE_CHANGED
 EVT_WIZARD_PAGE_CHANGED  = wx.PyEventBinder( wxEVT_WIZARD_PAGE_CHANGED, 1)
 EVT_WIZARD_PAGE_CHANGING = wx.PyEventBinder( wxEVT_WIZARD_PAGE_CHANGING, 1)
 EVT_WIZARD_CANCEL        = wx.PyEventBinder( wxEVT_WIZARD_CANCEL, 1)
 EVT_WIZARD_HELP          = wx.PyEventBinder( wxEVT_WIZARD_HELP, 1)
 EVT_WIZARD_FINISHED      = wx.PyEventBinder( wxEVT_WIZARD_FINISHED, 1)
+EVT_WIZARD_PAGE_SHOWN    = wx.PyEventBinder( wxEVT_WIZARD_PAGE_SHOWN, 1)
+EVT_WIZARD_BEFORE_PAGE_CHANGED    = wx.PyEventBinder( wxEVT_WIZARD_PAGE_SHOWN, 1)
 
 class WizardEvent(_core.NotifyEvent):
     """Proxy of C++ WizardEvent class"""
@@ -100,7 +111,7 @@ class WizardPage(_windows.Panel):
     def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def Create(*args, **kwargs):
-        """Create(self, Wizard parent, Bitmap bitmap=wxNullBitmap, String resource=EmptyString) -> bool"""
+        """Create(self, Wizard parent, Bitmap bitmap=wxNullBitmap) -> bool"""
         return _wizard.WizardPage_Create(*args, **kwargs)
 
     def GetPrev(*args, **kwargs):
@@ -125,12 +136,12 @@ class PyWizardPage(WizardPage):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self, Wizard parent, Bitmap bitmap=&wxNullBitmap, String resource=&wxPyEmptyString) -> PyWizardPage"""
+        """__init__(self, Wizard parent, Bitmap bitmap=wxNullBitmap) -> PyWizardPage"""
         _wizard.PyWizardPage_swiginit(self,_wizard.new_PyWizardPage(*args, **kwargs))
         self._setOORInfo(self);PyWizardPage._setCallbackInfo(self, self, PyWizardPage)
 
     def Create(*args, **kwargs):
-        """Create(self, Wizard parent, Bitmap bitmap=wxNullBitmap, String resource=EmptyString) -> bool"""
+        """Create(self, Wizard parent, Bitmap bitmap=wxNullBitmap) -> bool"""
         return _wizard.PyWizardPage_Create(*args, **kwargs)
 
     def _setCallbackInfo(*args, **kwargs):
@@ -183,107 +194,107 @@ class PyWizardPage(WizardPage):
 
     def base_DoMoveWindow(*args, **kw):
         return PyWizardPage.DoMoveWindow(*args, **kw)
-    base_DoMoveWindow = wx._deprecated(base_DoMoveWindow,
+    base_DoMoveWindow = wx.deprecated(base_DoMoveWindow,
                                    "Please use PyWizardPage.DoMoveWindow instead.")
 
     def base_DoSetSize(*args, **kw):
         return PyWizardPage.DoSetSize(*args, **kw)
-    base_DoSetSize = wx._deprecated(base_DoSetSize,
+    base_DoSetSize = wx.deprecated(base_DoSetSize,
                                    "Please use PyWizardPage.DoSetSize instead.")
 
     def base_DoSetClientSize(*args, **kw):
         return PyWizardPage.DoSetClientSize(*args, **kw)
-    base_DoSetClientSize = wx._deprecated(base_DoSetClientSize,
+    base_DoSetClientSize = wx.deprecated(base_DoSetClientSize,
                                    "Please use PyWizardPage.DoSetClientSize instead.")
 
     def base_DoSetVirtualSize(*args, **kw):
         return PyWizardPage.DoSetVirtualSize(*args, **kw)
-    base_DoSetVirtualSize = wx._deprecated(base_DoSetVirtualSize,
+    base_DoSetVirtualSize = wx.deprecated(base_DoSetVirtualSize,
                                    "Please use PyWizardPage.DoSetVirtualSize instead.")
 
     def base_DoGetSize(*args, **kw):
         return PyWizardPage.DoGetSize(*args, **kw)
-    base_DoGetSize = wx._deprecated(base_DoGetSize,
+    base_DoGetSize = wx.deprecated(base_DoGetSize,
                                    "Please use PyWizardPage.DoGetSize instead.")
 
     def base_DoGetClientSize(*args, **kw):
         return PyWizardPage.DoGetClientSize(*args, **kw)
-    base_DoGetClientSize = wx._deprecated(base_DoGetClientSize,
+    base_DoGetClientSize = wx.deprecated(base_DoGetClientSize,
                                    "Please use PyWizardPage.DoGetClientSize instead.")
 
     def base_DoGetPosition(*args, **kw):
         return PyWizardPage.DoGetPosition(*args, **kw)
-    base_DoGetPosition = wx._deprecated(base_DoGetPosition,
+    base_DoGetPosition = wx.deprecated(base_DoGetPosition,
                                    "Please use PyWizardPage.DoGetPosition instead.")
 
     def base_DoGetVirtualSize(*args, **kw):
         return PyWizardPage.DoGetVirtualSize(*args, **kw)
-    base_DoGetVirtualSize = wx._deprecated(base_DoGetVirtualSize,
+    base_DoGetVirtualSize = wx.deprecated(base_DoGetVirtualSize,
                                    "Please use PyWizardPage.DoGetVirtualSize instead.")
 
     def base_DoGetBestSize(*args, **kw):
         return PyWizardPage.DoGetBestSize(*args, **kw)
-    base_DoGetBestSize = wx._deprecated(base_DoGetBestSize,
+    base_DoGetBestSize = wx.deprecated(base_DoGetBestSize,
                                    "Please use PyWizardPage.DoGetBestSize instead.")
 
     def base_InitDialog(*args, **kw):
         return PyWizardPage.InitDialog(*args, **kw)
-    base_InitDialog = wx._deprecated(base_InitDialog,
+    base_InitDialog = wx.deprecated(base_InitDialog,
                                    "Please use PyWizardPage.InitDialog instead.")
 
     def base_TransferDataToWindow(*args, **kw):
         return PyWizardPage.TransferDataToWindow(*args, **kw)
-    base_TransferDataToWindow = wx._deprecated(base_TransferDataToWindow,
+    base_TransferDataToWindow = wx.deprecated(base_TransferDataToWindow,
                                    "Please use PyWizardPage.TransferDataToWindow instead.")
 
     def base_TransferDataFromWindow(*args, **kw):
         return PyWizardPage.TransferDataFromWindow(*args, **kw)
-    base_TransferDataFromWindow = wx._deprecated(base_TransferDataFromWindow,
+    base_TransferDataFromWindow = wx.deprecated(base_TransferDataFromWindow,
                                    "Please use PyWizardPage.TransferDataFromWindow instead.")
 
     def base_Validate(*args, **kw):
         return PyWizardPage.Validate(*args, **kw)
-    base_Validate = wx._deprecated(base_Validate,
+    base_Validate = wx.deprecated(base_Validate,
                                    "Please use PyWizardPage.Validate instead.")
 
     def base_AcceptsFocus(*args, **kw):
         return PyWizardPage.AcceptsFocus(*args, **kw)
-    base_AcceptsFocus = wx._deprecated(base_AcceptsFocus,
+    base_AcceptsFocus = wx.deprecated(base_AcceptsFocus,
                                    "Please use PyWizardPage.AcceptsFocus instead.")
 
     def base_AcceptsFocusFromKeyboard(*args, **kw):
         return PyWizardPage.AcceptsFocusFromKeyboard(*args, **kw)
-    base_AcceptsFocusFromKeyboard = wx._deprecated(base_AcceptsFocusFromKeyboard,
+    base_AcceptsFocusFromKeyboard = wx.deprecated(base_AcceptsFocusFromKeyboard,
                                    "Please use PyWizardPage.AcceptsFocusFromKeyboard instead.")
 
     def base_GetMaxSize(*args, **kw):
         return PyWizardPage.GetMaxSize(*args, **kw)
-    base_GetMaxSize = wx._deprecated(base_GetMaxSize,
+    base_GetMaxSize = wx.deprecated(base_GetMaxSize,
                                    "Please use PyWizardPage.GetMaxSize instead.")
 
     def base_AddChild(*args, **kw):
         return PyWizardPage.AddChild(*args, **kw)
-    base_AddChild = wx._deprecated(base_AddChild,
+    base_AddChild = wx.deprecated(base_AddChild,
                                    "Please use PyWizardPage.AddChild instead.")
 
     def base_RemoveChild(*args, **kw):
         return PyWizardPage.RemoveChild(*args, **kw)
-    base_RemoveChild = wx._deprecated(base_RemoveChild,
+    base_RemoveChild = wx.deprecated(base_RemoveChild,
                                    "Please use PyWizardPage.RemoveChild instead.")
 
     def base_ShouldInheritColours(*args, **kw):
         return PyWizardPage.ShouldInheritColours(*args, **kw)
-    base_ShouldInheritColours = wx._deprecated(base_ShouldInheritColours,
+    base_ShouldInheritColours = wx.deprecated(base_ShouldInheritColours,
                                    "Please use PyWizardPage.ShouldInheritColours instead.")
 
     def base_GetDefaultAttributes(*args, **kw):
         return PyWizardPage.GetDefaultAttributes(*args, **kw)
-    base_GetDefaultAttributes = wx._deprecated(base_GetDefaultAttributes,
+    base_GetDefaultAttributes = wx.deprecated(base_GetDefaultAttributes,
                                    "Please use PyWizardPage.GetDefaultAttributes instead.")
 
     def base_OnInternalIdle(*args, **kw):
         return PyWizardPage.OnInternalIdle(*args, **kw)
-    base_OnInternalIdle = wx._deprecated(base_OnInternalIdle,
+    base_OnInternalIdle = wx.deprecated(base_OnInternalIdle,
                                    "Please use PyWizardPage.OnInternalIdle instead.")
 
 _wizard.PyWizardPage_swigregister(PyWizardPage)
@@ -300,7 +311,7 @@ class WizardPageSimple(WizardPage):
     def __init__(self, *args, **kwargs): 
         """
         __init__(self, Wizard parent, WizardPage prev=None, WizardPage next=None, 
-            Bitmap bitmap=wxNullBitmap, wxChar resource=None) -> WizardPageSimple
+            Bitmap bitmap=wxNullBitmap) -> WizardPageSimple
         """
         _wizard.WizardPageSimple_swiginit(self,_wizard.new_WizardPageSimple(*args, **kwargs))
         self._setOORInfo(self)
@@ -308,7 +319,7 @@ class WizardPageSimple(WizardPage):
     def Create(*args, **kwargs):
         """
         Create(self, Wizard parent=None, WizardPage prev=None, WizardPage next=None, 
-            Bitmap bitmap=wxNullBitmap, wxChar resource=None) -> bool
+            Bitmap bitmap=wxNullBitmap) -> bool
         """
         return _wizard.WizardPageSimple_Create(*args, **kwargs)
 
@@ -400,6 +411,35 @@ class Wizard(_windows.Dialog):
         """IsRunning(self) -> bool"""
         return _wizard.Wizard_IsRunning(*args, **kwargs)
 
+    def SetBitmapBackgroundColour(*args, **kwargs):
+        """SetBitmapBackgroundColour(self, Colour colour)"""
+        return _wizard.Wizard_SetBitmapBackgroundColour(*args, **kwargs)
+
+    def GetBitmapBackgroundColour(*args, **kwargs):
+        """GetBitmapBackgroundColour(self) -> Colour"""
+        return _wizard.Wizard_GetBitmapBackgroundColour(*args, **kwargs)
+
+    def SetBitmapPlacement(*args, **kwargs):
+        """SetBitmapPlacement(self, int placement)"""
+        return _wizard.Wizard_SetBitmapPlacement(*args, **kwargs)
+
+    def GetBitmapPlacement(*args, **kwargs):
+        """GetBitmapPlacement(self) -> int"""
+        return _wizard.Wizard_GetBitmapPlacement(*args, **kwargs)
+
+    def SetMinimumBitmapWidth(*args, **kwargs):
+        """SetMinimumBitmapWidth(self, int w)"""
+        return _wizard.Wizard_SetMinimumBitmapWidth(*args, **kwargs)
+
+    def GetMinimumBitmapWidth(*args, **kwargs):
+        """GetMinimumBitmapWidth(self) -> int"""
+        return _wizard.Wizard_GetMinimumBitmapWidth(*args, **kwargs)
+
+    def TileBitmap(*args, **kwargs):
+        """TileBitmap(Rect rect, DC dc, Bitmap bitmap) -> bool"""
+        return _wizard.Wizard_TileBitmap(*args, **kwargs)
+
+    TileBitmap = staticmethod(TileBitmap)
     def ShowPage(*args, **kwargs):
         """ShowPage(self, WizardPage page, bool goingForward=True) -> bool"""
         return _wizard.Wizard_ShowPage(*args, **kwargs)
@@ -422,6 +462,10 @@ def PreWizard(*args, **kwargs):
     """PreWizard() -> Wizard"""
     val = _wizard.new_PreWizard(*args, **kwargs)
     return val
+
+def Wizard_TileBitmap(*args, **kwargs):
+  """Wizard_TileBitmap(Rect rect, DC dc, Bitmap bitmap) -> bool"""
+  return _wizard.Wizard_TileBitmap(*args, **kwargs)
 
 
 

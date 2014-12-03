@@ -7,7 +7,7 @@
 # Author:      Josu Oyanguren
 #
 # Created:     19-October-2001
-# RCS-ID:      $Id: rightalign.py 27049 2004-05-02 02:41:33Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2001 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -88,7 +88,7 @@ class RightTextCtrl(wx.TextCtrl):
 
         dc.SetTextForeground(fclr)
 
-        dc.SetClippingRegion((0, 0), (dcwidth, dcheight))
+        dc.SetClippingRegion(0, 0, dcwidth, dcheight)
         dc.DrawText(text, x, y)
 
         if x < 0:

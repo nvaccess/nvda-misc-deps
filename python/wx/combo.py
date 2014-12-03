@@ -58,13 +58,19 @@ def _swig_setattr_nondynamic_method(set):
 
 import _windows
 import _core
+import _controls
 wx = _core 
 __docfilter__ = wx.__DocFilter(globals()) 
 #---------------------------------------------------------------------------
 
+CC_SPECIAL_DCLICK = _combo.CC_SPECIAL_DCLICK
+CC_STD_BUTTON = _combo.CC_STD_BUTTON
 CC_BUTTON_OUTSIDE_BORDER = _combo.CC_BUTTON_OUTSIDE_BORDER
 CC_POPUP_ON_MOUSE_UP = _combo.CC_POPUP_ON_MOUSE_UP
 CC_NO_TEXT_AUTO_SELECT = _combo.CC_NO_TEXT_AUTO_SELECT
+CC_BUTTON_STAYS_DOWN = _combo.CC_BUTTON_STAYS_DOWN
+CC_FULL_BUTTON = _combo.CC_FULL_BUTTON
+CC_BUTTON_COVERS_BORDER = _combo.CC_BUTTON_COVERS_BORDER
 CC_MF_ON_BUTTON = _combo.CC_MF_ON_BUTTON
 CC_MF_ON_CLICK_AREA = _combo.CC_MF_ON_CLICK_AREA
 class ComboCtrlFeatures(object):
@@ -85,7 +91,7 @@ class ComboCtrlFeatures(object):
     All = _combo.ComboCtrlFeatures_All
 _combo.ComboCtrlFeatures_swigregister(ComboCtrlFeatures)
 
-class ComboCtrl(_core.Control):
+class ComboCtrl(_core.Control,_core.TextEntry):
     """
     A combo control is a generic combobox that allows for a totally custom
     popup. In addition it has other customization features. For instance,
@@ -106,7 +112,7 @@ class ComboCtrl(_core.Control):
         __init__(self, Window parent, int id=ID_ANY, String value=wxEmptyString, 
             Point pos=DefaultPosition, Size size=DefaultSize, 
             long style=0, Validator validator=DefaultValidator, 
-            String name=wxPyComboBoxNameStr) -> ComboCtrl
+            String name=ComboBoxNameStr) -> ComboCtrl
         """
         _combo.ComboCtrl_swiginit(self,_combo.new_ComboCtrl(*args, **kwargs))
         self._setOORInfo(self);ComboCtrl._setCallbackInfo(self, self, ComboCtrl)
@@ -114,6 +120,14 @@ class ComboCtrl(_core.Control):
     def _setCallbackInfo(*args, **kwargs):
         """_setCallbackInfo(self, PyObject self, PyObject _class)"""
         return _combo.ComboCtrl__setCallbackInfo(*args, **kwargs)
+
+    def Popup(*args, **kwargs):
+        """Popup(self)"""
+        return _combo.ComboCtrl_Popup(*args, **kwargs)
+
+    def Dismiss(*args, **kwargs):
+        """Dismiss(self)"""
+        return _combo.ComboCtrl_Dismiss(*args, **kwargs)
 
     def ShowPopup(*args, **kwargs):
         """
@@ -177,7 +191,7 @@ class ComboCtrl(_core.Control):
 
     def GetTextCtrl(*args, **kwargs):
         """
-        GetTextCtrl(self) -> wxTextCtrl
+        GetTextCtrl(self) -> TextCtrl
 
         Get the text control which is part of the combo control.
         """
@@ -192,6 +206,36 @@ class ComboCtrl(_core.Control):
         """
         return _combo.ComboCtrl_GetButton(*args, **kwargs)
 
+    def SetMargins(*args):
+        """
+        SetMargins(self, Point pt) -> bool
+        SetMargins(self, int left, int top=-1) -> bool
+        """
+        return _combo.ComboCtrl_SetMargins(*args)
+
+    def GetMargins(*args, **kwargs):
+        """GetMargins(self) -> Point"""
+        return _combo.ComboCtrl_GetMargins(*args, **kwargs)
+
+    def SetTextCtrlStyle(*args, **kwargs):
+        """
+        SetTextCtrlStyle(self, int style)
+
+        Set a custom window style for the embedded wxTextCtrl. Usually you
+        will need to use this during two-step creation, just before Create().
+        For example::
+
+            class MyComboCtrl(wx.combo.ComboCtrl):
+                def __init__(self, *args, **kwargs):
+                    pre = wx.combo.PreComboCtrl()
+                    # Let's make the text right-aligned
+                    pre.SetTextCtrlStyle(wx.TE_RIGHT)
+                    pre.Create(*args, **kwargs);
+                    self.PostCreate(pre)
+
+        """
+        return _combo.ComboCtrl_SetTextCtrlStyle(*args, **kwargs)
+
     def GetValue(*args, **kwargs):
         """
         GetValue(self) -> String
@@ -201,60 +245,8 @@ class ComboCtrl(_core.Control):
         """
         return _combo.ComboCtrl_GetValue(*args, **kwargs)
 
-    def SetValue(*args, **kwargs):
-        """
-        SetValue(self, String value)
-
-        Sets the text for the combo control text field.  For a combo control
-        with wx.CB_READONLY style the string must be accepted by the popup (for
-        instance, exist in the dropdown list), otherwise the call to
-        SetValue is ignored.
-        """
-        return _combo.ComboCtrl_SetValue(*args, **kwargs)
-
-    def Copy(*args, **kwargs):
-        """Copy(self)"""
-        return _combo.ComboCtrl_Copy(*args, **kwargs)
-
-    def Cut(*args, **kwargs):
-        """Cut(self)"""
-        return _combo.ComboCtrl_Cut(*args, **kwargs)
-
-    def Paste(*args, **kwargs):
-        """Paste(self)"""
-        return _combo.ComboCtrl_Paste(*args, **kwargs)
-
-    def SetInsertionPoint(*args, **kwargs):
-        """SetInsertionPoint(self, long pos)"""
-        return _combo.ComboCtrl_SetInsertionPoint(*args, **kwargs)
-
-    def SetInsertionPointEnd(*args, **kwargs):
-        """SetInsertionPointEnd(self)"""
-        return _combo.ComboCtrl_SetInsertionPointEnd(*args, **kwargs)
-
-    def GetInsertionPoint(*args, **kwargs):
-        """GetInsertionPoint(self) -> long"""
-        return _combo.ComboCtrl_GetInsertionPoint(*args, **kwargs)
-
-    def GetLastPosition(*args, **kwargs):
-        """GetLastPosition(self) -> long"""
-        return _combo.ComboCtrl_GetLastPosition(*args, **kwargs)
-
-    def Replace(*args, **kwargs):
-        """Replace(self, long from, long to, String value)"""
-        return _combo.ComboCtrl_Replace(*args, **kwargs)
-
-    def Remove(*args, **kwargs):
-        """Remove(self, long from, long to)"""
-        return _combo.ComboCtrl_Remove(*args, **kwargs)
-
-    def Undo(*args, **kwargs):
-        """Undo(self)"""
-        return _combo.ComboCtrl_Undo(*args, **kwargs)
-
-    def SetMark(*args, **kwargs):
-        """SetMark(self, long from, long to)"""
-        return _combo.ComboCtrl_SetMark(*args, **kwargs)
+    GetMark = wx.TextEntry.GetSelection
+    SetMark = wx.TextEntry.SetSelection
 
     def SetText(*args, **kwargs):
         """
@@ -273,6 +265,10 @@ class ComboCtrl(_core.Control):
         Same as `SetValue`, but also sends a EVT_TEXT event if withEvent is true.
         """
         return _combo.ComboCtrl_SetValueWithEvent(*args, **kwargs)
+
+    def SetValueByUser(*args, **kwargs):
+        """SetValueByUser(self, String value)"""
+        return _combo.ComboCtrl_SetValueByUser(*args, **kwargs)
 
     def SetPopupMinWidth(*args, **kwargs):
         """
@@ -353,8 +349,8 @@ class ComboCtrl(_core.Control):
 
             :param bmpNormal:  Default button image
             :param pushButtonBg: If ``True``, blank push button background is painted below the image.
-            :param bmpPressed:  Depressed butotn image.
-            :param bmpHover:  Button imate to use when the mouse hovers over it.
+            :param bmpPressed:  Depressed button image.
+            :param bmpHover:  Button image to use when the mouse hovers over it.
             :param bmpDisabled: Disabled button image.
 
         """
@@ -475,9 +471,17 @@ class ComboCtrl(_core.Control):
         """
         return _combo.ComboCtrl_IsCreated(*args, **kwargs)
 
+    def GetBackgroundColour(*args, **kwargs):
+        """
+        GetBackgroundColour(self) -> Colour
+
+        Returns the background colour of the window.
+        """
+        return _combo.ComboCtrl_GetBackgroundColour(*args, **kwargs)
+
     def OnPopupDismiss(*args, **kwargs):
         """
-        OnPopupDismiss(self)
+        OnPopupDismiss(self, bool generateEvent)
 
         Common code to be called on popup hide/dismiss
         """
@@ -497,10 +501,6 @@ class ComboCtrl(_core.Control):
     def SetCtrlMainWnd(*args, **kwargs):
         """SetCtrlMainWnd(self, Window wnd)"""
         return _combo.ComboCtrl_SetCtrlMainWnd(*args, **kwargs)
-
-    def GetMainWindowOfCompositeControl(*args, **kwargs):
-        """GetMainWindowOfCompositeControl(self) -> Window"""
-        return _combo.ComboCtrl_GetMainWindowOfCompositeControl(*args, **kwargs)
 
     def DestroyPopup(*args, **kwargs):
         """DestroyPopup(self)"""
@@ -551,8 +551,6 @@ class ComboCtrl(_core.Control):
     PopupWindow = property(GetPopupWindow) 
     TextCtrl = property(GetTextCtrl) 
     Button = property(GetButton) 
-    Value = property(GetValue,SetValue) 
-    InsertionPoint = property(GetInsertionPoint) 
     CustomPaintWidth = property(GetCustomPaintWidth,SetCustomPaintWidth) 
     ButtonSize = property(GetButtonSize) 
     TextIndent = property(GetTextIndent,SetTextIndent) 
@@ -632,6 +630,10 @@ class ComboPopup(object):
         """
         return _combo.ComboPopup_Create(*args, **kwargs)
 
+    def DestroyPopup(*args, **kwargs):
+        """DestroyPopup(self)"""
+        return _combo.ComboPopup_DestroyPopup(*args, **kwargs)
+
     def GetControl(*args, **kwargs):
         """
         GetControl(self) -> Window
@@ -690,6 +692,10 @@ class ComboPopup(object):
         """
         return _combo.ComboPopup_PaintComboControl(*args, **kwargs)
 
+    def FindItem(*args, **kwargs):
+        """FindItem(self, String item) -> bool"""
+        return _combo.ComboPopup_FindItem(*args, **kwargs)
+
     def OnComboKeyEvent(*args, **kwargs):
         """
         OnComboKeyEvent(self, KeyEvent event)
@@ -698,6 +704,10 @@ class ComboPopup(object):
         should be skipped, as usual.
         """
         return _combo.ComboPopup_OnComboKeyEvent(*args, **kwargs)
+
+    def OnComboCharEvent(*args, **kwargs):
+        """OnComboCharEvent(self, KeyEvent event)"""
+        return _combo.ComboPopup_OnComboCharEvent(*args, **kwargs)
 
     def OnComboDoubleClick(*args, **kwargs):
         """
@@ -752,6 +762,14 @@ class ComboPopup(object):
         """
         return _combo.ComboPopup_IsCreated(*args, **kwargs)
 
+    def GetComboCtrl(*args, **kwargs):
+        """
+        GetComboCtrl(self) -> wxComboCtrl
+
+        Returns the associated parent ComboCtrl.
+        """
+        return _combo.ComboPopup_GetComboCtrl(*args, **kwargs)
+
     def DefaultPaintComboControl(*args, **kwargs):
         """
         DefaultPaintComboControl(wxComboCtrlBase combo, DC dc, Rect rect)
@@ -805,7 +823,7 @@ class OwnerDrawnComboBox(ComboCtrl,_core.ItemContainer):
             Point pos=DefaultPosition, Size size=DefaultSize, 
             wxArrayString choices=wxPyEmptyStringArray, 
             long style=0, Validator validator=DefaultValidator, 
-            String name=wxPyComboBoxNameStr) -> OwnerDrawnComboBox
+            String name=ComboBoxNameStr) -> OwnerDrawnComboBox
 
         Standard constructor.
         """
@@ -822,7 +840,7 @@ class OwnerDrawnComboBox(ComboCtrl,_core.ItemContainer):
             Point pos=DefaultPosition, Size size=DefaultSize, 
             wxArrayString choices=wxPyEmptyStringArray, 
             long style=0, Validator validator=DefaultValidator, 
-            String name=wxPyComboBoxNameStr) -> bool
+            String name=ComboBoxNameStr) -> bool
 
         Create the UI object, and other initialization.
         """
@@ -844,9 +862,9 @@ class OwnerDrawnComboBox(ComboCtrl,_core.ItemContainer):
         """
         return _combo.OwnerDrawnComboBox_GetWidestItem(*args, **kwargs)
 
-    def SetMark(*args, **kwargs):
-        """SetMark(self, long from, long to)"""
-        return _combo.OwnerDrawnComboBox_SetMark(*args, **kwargs)
+    GetString = wx.ItemContainer.GetString 
+    GetSelection = wx.ItemContainer.GetSelection
+    SetSelection = wx.ItemContainer.SetSelection
 
     def OnDrawItem(*args, **kwargs):
         """
@@ -918,7 +936,7 @@ def PreOwnerDrawnComboBox(*args, **kwargs):
     val = _combo.new_PreOwnerDrawnComboBox(*args, **kwargs)
     return val
 
-class BitmapComboBox(OwnerDrawnComboBox):
+class BitmapComboBox(_controls.ComboBox):
     """
     A combobox that displays a bitmap in front of the list items. It
     currently only allows using bitmaps of one size, and resizes itself so
@@ -941,11 +959,10 @@ class BitmapComboBox(OwnerDrawnComboBox):
 
     def Create(*args, **kwargs):
         """
-        Create(self, Window parent, int id=-1, String value=EmptyString, 
-            Point pos=DefaultPosition, Size size=DefaultSize, 
-            wxArrayString choices=wxPyEmptyStringArray, 
-            long style=0, Validator validator=DefaultValidator, 
-            String name=wxBitmapComboBoxNameStr) -> bool
+        Create(Window parent, int id=-1, String value=EmptyString,
+            Point pos=DefaultPosition, Size size=DefaultSize,
+            List choices=EmptyList, long style=0, Validator validator=DefaultValidator,
+            String name=ChoiceNameStr) -> bool
 
         Create the UI object, and other initialization.
         """

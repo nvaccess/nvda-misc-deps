@@ -12,8 +12,8 @@ Editra Control Library
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__cvsid__ = "$Id: __init__.py 66084 2010-11-10 02:27:16Z CJP $"
-__revision__ = "$Revision: 66084 $"
+__cvsid__ = "$Id: __init__.py 70469 2012-01-27 19:27:02Z CJP $"
+__revision__ = "$Revision: 70469 $"
 
 
 __all__ = ['auinavi', 'choicedlg', 'colorsetter', 'ctrlbox', 'eclutil',
@@ -43,6 +43,8 @@ from pstatbar import *
 from segmentbk import *
 from txtentry import *
 from elistctrl import *
+from _filetree import *
+from _infobar import *
 
 # TODO: Delete module entries once all plugins have been updated to not 
 #       import them separately.

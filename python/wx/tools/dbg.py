@@ -1,6 +1,6 @@
 #----------------------------------------------------------------------------
 # Name:         dbg.py
-# RCS-ID:       $Id: dbg.py 39667 2006-06-11 00:13:05Z RD $
+# RCS-ID:       $Id$
 # Author:       Will Sadkin
 # Email:        wsadkin@nameconnector.com
 # Created:      07/11/2002
@@ -77,7 +77,7 @@ stream
 You can also call the log function implicitly on the Logger
 instance, ie. you can type::
 
-    from wxPython.tools.dbg import Logger
+    from wx.tools.dbg import Logger
     dbg = Logger()
     dbg('something to print')
 
@@ -161,8 +161,7 @@ class Logger:
             output = ' ' * 3 * self._indent + output
 
             if self._wxLog:
-                from wxPython.wx import wxLogMessage    # (if not already imported)
-                wxLogMessage(output)
+                wx.LogMessage(output)
             else:
                 self._outstream.write(output + '\n')
                 self._outstream.flush()

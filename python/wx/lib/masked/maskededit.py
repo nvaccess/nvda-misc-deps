@@ -5,7 +5,7 @@
 # Created:      02/11/2003
 # Copyright:    (c) 2003 by Jeff Childers, Will Sadkin, 2003
 # Portions:     (c) 2002 by Will Sadkin, 2002-2007
-# RCS-ID:       $Id: maskededit.py 67477 2011-04-13 18:24:56Z RD $
+# RCS-ID:       $Id$
 # License:      wxWidgets license
 #----------------------------------------------------------------------------
 # NOTE:
@@ -113,7 +113,7 @@ mask
         C       Allow any letter, upper or lower
         X       Allow string.letters, string.punctuation, string.digits
         &       Allow string.punctuation only (doesn't include all unicode symbols)
-        \*       Allow any visible character
+        \*      Allow any visible character
         |       explicit field boundary (takes no space in the control; allows mix
                 of adjacent mask characters to be treated as separate fields,
                 eg: '&|###' means "field 0 = '&', field 1 = '###'", but there's
@@ -148,7 +148,8 @@ mask
   (use \\ for literal backslash, as in: r'CCC\\NNN'.)
 
 
-  *Note:*
+  .. note::
+  
       Masks containing only # characters and one optional decimal point
       character are handled specially, as "numeric" controls.  Such
       controls have special handling for typing the '-' key, handling
@@ -159,9 +160,12 @@ mask
       forth (see below).  These allow you to construct reasonable
       numeric entry controls.
 
-  *Note:*
+
+  .. note::
+  
       Changing the mask for a control deletes any previous field classes
       (and any associated validation or formatting constraints) for them.
+
 
 useFixedWidthFont
   By default, masked edit controls use a fixed width font, so that
@@ -169,6 +173,9 @@ useFixedWidthFont
   subsequent modifications to the value.  Set to False if having
   the control font be the same as other controls is required. (This is
   a control-level parameter.)
+  
+  .. versionchanged::  2.9.5
+     The default is changed to False for numctrl only
 
 defaultEncoding
   (Applies to unicode systems only) By default, the default unicode encoding
@@ -302,83 +309,54 @@ There are a variety of initialization parameters that are used to validate
 user input.  These parameters can apply to the control as a whole, and/or
 to individual fields:
 
-        =====================  ==================================================================
-        excludeChars           A string of characters to exclude even if otherwise allowed
-        includeChars           A string of characters to allow even if otherwise disallowed
-        validRegex             Use a regular expression to validate the contents of the text box
-        validRange             Pass a rangeas list (low,high) to limit numeric fields/values
-        choices                A list of strings that are allowed choices for the control.
-        choiceRequired         value must be member of choices list
-        compareNoCase          Perform case-insensitive matching when validating against list
-                               *Note: for masked.ComboBox, this defaults to True.*
-        emptyInvalid           Boolean indicating whether an empty value should be considered 
-                               invalid
-
-        validFunc              A function to call of the form: bool = func(candidate_value)
-                               which will return True if the candidate_value satisfies some
-                               external criteria for the control in addition to the the
-                               other validation, or False if not.  (This validation is
-                               applied last in the chain of validations.)
-
-        validRequired          Boolean indicating whether or not keys that are allowed by the
-                               mask, but result in an invalid value are allowed to be entered
-                               into the control.  Setting this to True implies that a valid
-                               default value is set for the control.
-
-        retainFieldValidation  False by default; if True, this allows individual fields to
-                               retain their own validation constraints independently of any
-                               subsequent changes to the control's overall parameters.
-                               (This is a control-level parameter.)
-
-        validator              Validators are not normally needed for masked controls, because
-                               of the nature of the validation and control of input.  However,
-                               you can supply one to provide data transfer routines for the
-                               controls.
-        raiseOnInvalidPaste    False by default; normally a bad paste simply is ignored with a bell;
-                               if True, this will cause a ValueError exception to be thrown,
-                               with the .value attribute of the exception containing the bad value.
-
-        stopFieldChangeIfInvalid
-                               False by default; tries to prevent navigation out of a field if its
-                               current value is invalid.  Can be used to create a hybrid of validation
-                               settings, allowing intermediate invalid values in a field without
-                               sacrificing ability to limit values as with validRequired.
-                               NOTE: It is possible to end up with an invalid value when using
-                                 this option if focus is switched to some other control via mousing.
-                                 To avoid this, consider deriving a class that defines _LostFocus()
-                                 function that returns the control to a valid value when the focus
-                                 shifts.  (AFAICT, The change in focus is unpreventable.)
-        =====================  =================================================================
+========================  ==================================================================
+excludeChars              A string of characters to exclude even if otherwise allowed
+includeChars              A string of characters to allow even if otherwise disallowed
+validRegex                Use a regular expression to validate the contents of the text box
+validRange                Pass a rangeas list (low,high) to limit numeric fields/values
+choices                   A list of strings that are allowed choices for the control.
+choiceRequired            value must be member of choices list
+compareNoCase             Perform case-insensitive matching when validating against list. *Note: for masked.ComboBox, this defaults to True.*
+emptyInvalid              Boolean indicating whether an empty value should be considered invalid
+validFunc                 A function to call of the form: bool = func(candidate_value) which will return True if the candidate_value satisfies some external criteria for the control in addition to the the other validation, or False if not.  (This validation is applied last in the chain of validations.)
+validRequired             Boolean indicating whether or not keys that are allowed by the mask, but result in an invalid value are allowed to be entered into the control.  Setting this to True implies that a valid default value is set for the control.
+retainFieldValidation     False by default; if True, this allows individual fields to retain their own validation constraints independently of any subsequent changes to the control's overall parameters. (This is a control-level parameter.)
+validator                 Validators are not normally needed for masked controls, because of the nature of the validation and control of input.  However, you can supply one to provide data transfer routines for the controls.
+raiseOnInvalidPaste       False by default; normally a bad paste simply is ignored with a bell; if True, this will cause a ValueError exception to be thrown, with the .value attribute of the exception containing the bad value.
+stopFieldChangeIfInvalid  False by default; tries to prevent navigation out of a field if its current value is invalid.  Can be used to create a hybrid of validation settings, allowing intermediate invalid values in a field without sacrificing ability to limit values as with validRequired. NOTE: It is possible to end up with an invalid value when using this option if focus is switched to some other control via mousing. To avoid this, consider deriving a class that defines _LostFocus() function that returns the control to a valid value when the focus shifts.  (AFAICT, The change in focus is unpreventable.)
+========================  ==================================================================
 
 
 Coloring Behavior
 =================
-  The following parameters have been provided to allow you to change the default
-  coloring behavior of the control.   These can be set at construction, or via
-  the .SetCtrlParameters() function.  Pass a color as string e.g. 'Yellow':
 
-        ========================  =======================================================================
-        emptyBackgroundColour      Control Background color when identified as empty. Default=White
-        invalidBackgroundColour    Control Background color when identified as Not valid. Default=Yellow
-        validBackgroundColour      Control Background color when identified as Valid. Default=white
-        ========================  =======================================================================
+The following parameters have been provided to allow you to change the default
+coloring behavior of the control.   These can be set at construction, or via
+the .SetCtrlParameters() function.  Pass a color as string e.g. 'Yellow':
+
+========================  =======================================================================
+emptyBackgroundColour     Control Background color when identified as empty. Default=White
+invalidBackgroundColour   Control Background color when identified as Not valid. Default=Yellow
+validBackgroundColour     Control Background color when identified as Valid. Default=white
+========================  =======================================================================
 
 
-  The following parameters control the default foreground color coloring behavior of the
-  control. Pass a color as string e.g. 'Yellow':
+The following parameters control the default foreground color coloring behavior of the
+control. Pass a color as string e.g. 'Yellow':
 
-        ========================  ======================================================================
-        foregroundColour           Control foreground color when value is not negative.  Default=Black
-        signedForegroundColour     Control foreground color when value is negative. Default=Red
-        ========================  ======================================================================
+========================  ======================================================================
+foregroundColour          Control foreground color when value is not negative.  Default=Black
+signedForegroundColour    Control foreground color when value is negative. Default=Red
+========================  ======================================================================
 
 
 Fields
 ======
-  Each part of the mask that allows user input is considered a field.  The fields
-  are represented by their own class instances.  You can specify field-specific
-  constraints by constructing or accessing the field instances for the control
-  and then specifying those constraints via parameters.
+
+Each part of the mask that allows user input is considered a field.  The fields
+are represented by their own class instances.  You can specify field-specific
+constraints by constructing or accessing the field instances for the control
+and then specifying those constraints via parameters.
 
 fields
   This parameter allows you to specify Field instances containing
@@ -434,6 +412,7 @@ fields
 
 Control Class Functions
 =======================
+
 .GetPlainValue(value=None)
                     Returns the value specified (or the control's text value
                     not specified) without the formatting text.
@@ -565,8 +544,8 @@ controlType can be one of::
 These constants are also available individually, ie, you can
 use either of the following::
 
-    from wxPython.wx.lib.masked import MaskedCtrl, controlTypes
-    from wxPython.wx.lib.masked import MaskedCtrl, COMBO, TEXT, NUMBER, IPADDR
+    from wx.lib.masked import MaskedCtrl, controlTypes
+    from wx.lib.masked import MaskedCtrl, COMBO, TEXT, NUMBER, IPADDR
 
 If not specified as a keyword argument, the default controlType is
 controlTypes.TEXT.
@@ -683,7 +662,7 @@ Event Handling
   each class derivation using the mixin to have an option to hook up
   the event handlers itself or forego this operation and let a
   subclass of the masked control do so.  For this reason, each
-  subclass should probably include the following code:
+  subclass should probably include the following code::
 
     if setupEventHandling:
         ## Setup event handlers
@@ -2876,14 +2855,50 @@ class MaskedEditMixin:
         cont = (size is None or size == wx.DefaultSize)
 
         if cont and self._autofit:
-            sizing_text = 'M' * self._masklength
+####            dbg('isinstance(self, wx.lib.masked.numctrl.NumCtrl): "%s"' % self.__class__)
+            # sizing of numctrl when using proportional font and
+            # wxPython 2.9 is not working when using "M"
+            # GetTextExtent returns a width which is way to large
+            # instead we use '9' for numctrl and a selection of 
+            # characters instead of just 'M' for textctrl and combobox
+            # where the mask is larger then 10 characters long
+            if isinstance(self, wx.lib.masked.numctrl.NumCtrl):
+                sizing_text = '9' * self._masklength
+                wAdjust = 8
+            elif isinstance(self, wx.lib.masked.combobox.ComboBox):
+                if self._masklength > 10:
+                    tC, sC = divmod(self._masklength, 10.0)
+                    sizing_text = 'FDSJKLREUI' * int(tC)
+                    sizing_text += 'M' * int(sC)                    
+                    wAdjust = 26
+                else:
+                    sizing_text = ""
+                    for cn in range(self._masklength):
+                        if cn % 2:
+                            sizing_text += "M"
+                        else:
+                            sizing_text += "I"
+                    wAdjust = 4
+            else:
+                if self._masklength > 10:
+                    tC, sC = divmod(self._masklength, 10.0)
+                    sizing_text = 'FDSJKLREUI' * int(tC)
+                    sizing_text += 'M' * int(sC)
+                else:
+                    sizing_text = ""
+                    for cn in range(self._masklength):
+                        if cn % 2:
+                            sizing_text += "M"
+                        else:
+                            sizing_text += "I"
+                wAdjust = 4
             if wx.Platform != "__WXMSW__":   # give it a little extra space
                 sizing_text += 'M'
             if wx.Platform == "__WXMAC__":   # give it even a little more...
                 sizing_text += 'M'
 ####            dbg('len(sizing_text):', len(sizing_text), 'sizing_text: "%s"' % sizing_text)
             w, h = self.GetTextExtent(sizing_text)
-            size = (w+4, self.GetSize().height)
+            size = (w+wAdjust, self.GetSize().height)
 ####            dbg('size:', size, indent=0)
         return size
 
@@ -3240,7 +3255,7 @@ class MaskedEditMixin:
         previous field.
         """
 ##        dbg('MaskedEditMixin::_OnUpNumeric', indent=1)
-        event.m_shiftDown = 1
+        event.shiftDown = 1
 ##        dbg('event.ShiftDown()?', event.ShiftDown())
         self._OnChangeField(event)
 ##        dbg(indent=0)
@@ -3270,7 +3285,7 @@ class MaskedEditMixin:
         # treat as shifted up/down arrows as tab/reverse tab:
         if event.ShiftDown() and keycode in (wx.WXK_UP, wx.WXK_DOWN, wx.WXK_NUMPAD_UP, wx.WXK_NUMPAD_DOWN):
             # remove "shifting" and treat as (forward) tab:
-            event.m_shiftDown = False
+            event.shiftDown = False
             keep_processing = self._OnChangeField(event)
 
         elif self._FindField(pos)._selectOnFieldEntry:
@@ -3282,15 +3297,15 @@ class MaskedEditMixin:
 
                 # call _OnChangeField to handle "ctrl-shifted event"
                 # (which moves to previous field and selects it.)
-                event.m_shiftDown = True
-                event.m_ControlDown = True
+                event.shiftDown = True
+                event.sontrolDown = True
                 keep_processing = self._OnChangeField(event)
             elif( keycode in (wx.WXK_DOWN, wx.WXK_RIGHT, wx.WXK_NUMPAD_DOWN, wx.WXK_NUMPAD_RIGHT)
                   and sel_to != self._masklength
                   and self._isTemplateChar(sel_to)):
 
                 # when changing field to the right, ensure don't accidentally go left instead
-                event.m_shiftDown = False
+                event.shiftDown = False
                 keep_processing = self._OnChangeField(event)
             else:
                 # treat arrows as normal, allowing selection
@@ -3602,16 +3617,19 @@ class MaskedEditMixin:
 ##            dbg(indent=0)
             return False
 
+        # If the caller just wants the erased value without validation 
+        # (because a just pressed key might make this string valid again)
+        # then return it.
+        if just_return_value:
+##            dbg(indent=0)
+            return newstr
+
         # if erasure results in an invalid value, disallow it:
         if self._ctrl_constraints._validRequired and not self.IsValid(newstr):
             if not wx.Validator_IsSilent():
                 wx.Bell()
 ##            dbg(indent=0)
             return False
-
-        if just_return_value:
-##            dbg(indent=0)
-            return newstr
 
         # else...
 ##        dbg('setting value (later) to', newstr)
@@ -3786,8 +3804,11 @@ class MaskedEditMixin:
 ##        dbg('current pos:', pos)
         sel_start, sel_to = self._GetSelection()
 
-        if self._masklength < 0:   # no fields; process tab normally
-            self._AdjustField(pos)
+        # no fields; process tab normally
+        # sel_to == -1 would cause an index error in _FindField
+        if self._masklength < 0 or sel_to == -1:
+            if pos != -1:
+                self._AdjustField(pos)
             if event.GetKeyCode() == wx.WXK_TAB:
 ##                dbg('tab to next ctrl')
                 # As of 2.5.2, you don't call event.Skip() to do
@@ -4155,7 +4176,7 @@ class MaskedEditMixin:
             if event.ShiftDown():
                 if keycode in (wx.WXK_DOWN, wx.WXK_RIGHT, wx.WXK_NUMPAD_DOWN, wx.WXK_NUMPAD_RIGHT):
                     # remove "shifting" and treat as (forward) tab:
-                    event.m_shiftDown = False
+                    event.shiftDown = False
                 keep_processing = self._OnChangeField(event)
             else:
                 keep_processing = self._OnArrow(event)
@@ -4733,6 +4754,7 @@ class MaskedEditMixin:
             return approved
         else:
 ##            dbg('%d is a !???! character; returning False', indent=0)
+##            dbg(indent=0)
             return False
 
 
@@ -6485,7 +6507,7 @@ def _getDay(dateStr,dateFmt):
     return parts[2]
 
 ## ---------- ---------- ---------- ---------- ---------- ---------- ----------
-class __test(wx.PySimpleApp):
+class __test(wx.App):
         def OnInit(self):
             from wx.lib.rcsizer import RowColSizer
             self.frame = wx.Frame( None, -1, "MaskedEditMixin 0.0.7 Demo Page #1", size = (700,600))

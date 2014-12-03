@@ -87,6 +87,10 @@ class XmlResource(_core.Object):
         """LoadFromString(self, buffer data) -> bool"""
         return _xrc.XmlResource_LoadFromString(*args, **kwargs)
 
+    def LoadFile(*args, **kwargs):
+        """LoadFile(self, String file) -> bool"""
+        return _xrc.XmlResource_LoadFile(*args, **kwargs)
+
     def Unload(*args, **kwargs):
         """Unload(self, String filename) -> bool"""
         return _xrc.XmlResource_Unload(*args, **kwargs)
@@ -160,6 +164,14 @@ class XmlResource(_core.Object):
         """LoadOnObject(self, Object instance, Window parent, String name, String classname) -> bool"""
         return _xrc.XmlResource_LoadOnObject(*args, **kwargs)
 
+    def LoadObjectRecursively(*args, **kwargs):
+        """LoadObjectRecursively(self, Window parent, String name, String classname) -> Object"""
+        return _xrc.XmlResource_LoadObjectRecursively(*args, **kwargs)
+
+    def LoadOnObjectRecursively(*args, **kwargs):
+        """LoadOnObjectRecursively(self, Object instance, Window parent, String name, String classname) -> bool"""
+        return _xrc.XmlResource_LoadOnObjectRecursively(*args, **kwargs)
+
     def LoadBitmap(*args, **kwargs):
         """LoadBitmap(self, String name) -> Bitmap"""
         return _xrc.XmlResource_LoadBitmap(*args, **kwargs)
@@ -210,6 +222,10 @@ class XmlResource(_core.Object):
     def SetDomain(*args, **kwargs):
         """SetDomain(self, String domain)"""
         return _xrc.XmlResource_SetDomain(*args, **kwargs)
+
+    def GetResourceNode(*args, **kwargs):
+        """GetResourceNode(self, String name) -> XmlNode"""
+        return _xrc.XmlResource_GetResourceNode(*args, **kwargs)
 
     Domain = property(GetDomain,SetDomain,doc="See `GetDomain` and `SetDomain`") 
     Flags = property(GetFlags,SetFlags,doc="See `GetFlags` and `SetFlags`") 
@@ -264,6 +280,8 @@ class XmlSubclassFactory(object):
         _xrc.XmlSubclassFactory_swiginit(self,_xrc.new_XmlSubclassFactory(*args, **kwargs))
         XmlSubclassFactory._setCallbackInfo(self, self, XmlSubclassFactory)
 
+    __swig_destroy__ = _xrc.delete_XmlSubclassFactory
+    __del__ = lambda self : None;
     def _setCallbackInfo(*args, **kwargs):
         """_setCallbackInfo(self, PyObject self, PyObject _class)"""
         return _xrc.XmlSubclassFactory__setCallbackInfo(*args, **kwargs)
@@ -332,7 +350,7 @@ class XmlNode(object):
         """
         __init__(self, XmlNode parent=None, int type=0, String name=EmptyString, 
             String content=EmptyString, XmlProperty props=None, 
-            XmlNode next=None) -> XmlNode
+            XmlNode next=None, int lineNo=-1) -> XmlNode
         """
         _xrc.XmlNode_swiginit(self,_xrc.new_XmlNode(*args, **kwargs))
     __swig_destroy__ = _xrc.delete_XmlNode
@@ -401,6 +419,14 @@ class XmlNode(object):
         """GetChildren(self) -> XmlNode"""
         return _xrc.XmlNode_GetChildren(*args, **kwargs)
 
+    def HasAttribute(*args, **kwargs):
+        """HasAttribute(self, String attrName) -> bool"""
+        return _xrc.XmlNode_HasAttribute(*args, **kwargs)
+
+    def GetLineNumber(*args, **kwargs):
+        """GetLineNumber(self) -> int"""
+        return _xrc.XmlNode_GetLineNumber(*args, **kwargs)
+
     def GetProperties(*args, **kwargs):
         """GetProperties(self) -> XmlProperty"""
         return _xrc.XmlNode_GetProperties(*args, **kwargs)
@@ -441,13 +467,20 @@ class XmlNode(object):
         """SetProperties(self, XmlProperty prop)"""
         return _xrc.XmlNode_SetProperties(*args, **kwargs)
 
+    def SetAttributes(*args, **kwargs):
+        """SetAttributes(self, wxXmlAttribute attr)"""
+        return _xrc.XmlNode_SetAttributes(*args, **kwargs)
+
+    def AddAttribute(*args):
+        """
+        AddAttribute(self, wxXmlAttribute attr)
+        AddAttribute(self, String attrName, String value)
+        """
+        return _xrc.XmlNode_AddAttribute(*args)
+
     def GetAttribute(*args, **kwargs):
         """GetAttribute(self, String attrName, String defaultVal) -> String"""
         return _xrc.XmlNode_GetAttribute(*args, **kwargs)
-
-    def AddAttribute(*args, **kwargs):
-        """AddAttribute(self, String attrName, String value)"""
-        return _xrc.XmlNode_AddAttribute(*args, **kwargs)
 
     def GetAttributes(*args, **kwargs):
         """GetAttributes(self) -> XmlProperty"""

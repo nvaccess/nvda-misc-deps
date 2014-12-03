@@ -1,8 +1,8 @@
 """Crust combines the shell and filling into one control."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id: crust.py 63479 2010-02-14 05:24:22Z RD $"
-__revision__ = "$Revision: 63479 $"[11:-2]
+__cvsid__ = "$Id$"
+__revision__ = "$Revision$"[11:-2]
 
 import wx
 
@@ -212,6 +212,7 @@ class Calltip(wx.TextCtrl):
         ## self.SetValue(calltip)  # Caused refresh problem on Windows.
         self.Clear()
         self.AppendText(calltip)
+        self.SetInsertionPoint(0)
 
 
 # TODO: Switch this to a editwindow.EditWindow

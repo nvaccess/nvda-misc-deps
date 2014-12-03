@@ -19,7 +19,7 @@ c = component.SmartContainer('wx.lib.foldpanelbar.FoldPanelBar', ['book', 'windo
                    implicit_page='FoldPanel', 
                    implicit_attributes=['label', 'collapsed'],
                    implicit_params={'collapsed': params.ParamBool})
-c.addStyles('FPB_DEFAULT_STYLE', 'FPB_SINGLE_FOLD', 'FPB_COLLAPSE_TO_BOTTOM',
+c.addStyles('FPB_SINGLE_FOLD', 'FPB_COLLAPSE_TO_BOTTOM',
             'FPB_EXCLUSIVE_FOLD', 'FPB_HORIZONTAL', 'FPB_VERTICAL')
 component.Manager.register(c)
 component.Manager.addXmlHandler(xh_wxlib.FoldPanelBarXmlHandler)

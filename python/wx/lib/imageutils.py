@@ -5,7 +5,7 @@
 # Author:      Robb Shecter
 #
 # Created:     7-Nov-2002
-# RCS-ID:      $Id: imageutils.py 57750 2009-01-02 04:39:38Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

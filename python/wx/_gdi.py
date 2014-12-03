@@ -58,16 +58,19 @@ wx = _core
 class GDIObject(_core.Object):
     """Proxy of C++ GDIObject class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
-        """__init__(self) -> GDIObject"""
-        _gdi_.GDIObject_swiginit(self,_gdi_.new_GDIObject(*args, **kwargs))
     __swig_destroy__ = _gdi_.delete_GDIObject
     __del__ = lambda self : None;
     def IsNull(*args, **kwargs):
         """IsNull(self) -> bool"""
         return _gdi_.GDIObject_IsNull(*args, **kwargs)
 
+    def IsOk(*args, **kwargs):
+        """IsOk(self) -> bool"""
+        return _gdi_.GDIObject_IsOk(*args, **kwargs)
+
+    Ok = IsOk 
 _gdi_.GDIObject_swigregister(GDIObject)
 
 #---------------------------------------------------------------------------
@@ -121,7 +124,7 @@ class Colour(_core.Object):
 
         Constructs a colour from red, green, blue and alpha values.
 
-        :see: Alternate constructors `wx.NamedColour` and `wx.ColourRGB`.
+        :see: Alternate constructors `wx.NamedColour`, `wx.ColourRGB` and `MacThemeColour`.
 
         """
         _gdi_.Colour_swiginit(self,_gdi_.new_Colour(*args, **kwargs))
@@ -177,14 +180,6 @@ class Colour(_core.Object):
         """
         return _gdi_.Colour_Set(*args, **kwargs)
 
-    def SetRGB(*args, **kwargs):
-        """
-        SetRGB(self, unsigned long colRGB)
-
-        Sets the RGB intensity values from a packed RGB value.
-        """
-        return _gdi_.Colour_SetRGB(*args, **kwargs)
-
     def SetFromString(self, colourName):
         """
         Sets the RGB intensity values using a colour name listed in
@@ -208,6 +203,33 @@ class Colour(_core.Object):
                     =================== ==================================
         """
         return _gdi_.Colour_GetAsString(*args, **kwargs)
+
+    def SetRGB(*args, **kwargs):
+        """
+        SetRGB(self, unsigned int colRGB)
+
+        Sets the RGB colour values from a single 32 bit value.
+
+        The argument colRGB should be of the form 0x00BBGGRR and where 0xRR,
+        0xGG and 0xBB are the values of the red, green and blue components.
+        """
+        return _gdi_.Colour_SetRGB(*args, **kwargs)
+
+    def SetRGBA(*args, **kwargs):
+        """
+        SetRGBA(self, unsigned int colRGBA)
+
+        Sets the RGBA colour values from a single 32 bit value.
+
+        The argument colRGBA should be of the form 0xAABBGGRR where 0xRR,
+        0xGG, 0xBB and 0xAA are the values of the red, green, blue and alpha
+        components.
+        """
+        return _gdi_.Colour_SetRGBA(*args, **kwargs)
+
+    def GetRGBA(*args, **kwargs):
+        """GetRGBA(self) -> unsigned int"""
+        return _gdi_.Colour_GetRGBA(*args, **kwargs)
 
     def GetPixel(*args, **kwargs):
         """
@@ -243,15 +265,16 @@ class Colour(_core.Object):
         """
         return _gdi_.Colour_Get(*args, **kwargs)
 
-    def GetRGB(*args, **kwargs):
+    def GetRGB(*args):
         """
+        GetRGB(self) -> unsigned int
         GetRGB(self) -> unsigned long
 
         Return the colour as a packed RGB value
         """
-        return _gdi_.Colour_GetRGB(*args, **kwargs)
+        return _gdi_.Colour_GetRGB(*args)
 
-    asTuple = wx._deprecated(Get, "asTuple is deprecated, use `Get` instead")
+    asTuple = wx.deprecated(Get, "asTuple is deprecated, use `Get` instead")
     def __str__(self):                  return str(self.Get(True))
 
     # help() can access the stock colors before they are created,  
@@ -296,9 +319,15 @@ def ColourRGB(*args, **kwargs):
     val = _gdi_.new_ColourRGB(*args, **kwargs)
     return val
 
-Color = Colour
-NamedColor = NamedColour
-ColorRGB = ColourRGB
+def MacThemeColour(*args, **kwargs):
+    """
+    MacThemeColour(int themeBrushID) -> Colour
+
+    Creates a color (or pattern) from a Mac theme brush ID.  Raises a
+    NotImplemented exception on other platforms.
+    """
+    val = _gdi_.new_MacThemeColour(*args, **kwargs)
+    return val
 
 class Palette(GDIObject):
     """Proxy of C++ Palette class"""
@@ -332,6 +361,33 @@ _gdi_.Palette_swigregister(Palette)
 
 #---------------------------------------------------------------------------
 
+PENSTYLE_INVALID = _gdi_.PENSTYLE_INVALID
+PENSTYLE_SOLID = _gdi_.PENSTYLE_SOLID
+PENSTYLE_DOT = _gdi_.PENSTYLE_DOT
+PENSTYLE_LONG_DASH = _gdi_.PENSTYLE_LONG_DASH
+PENSTYLE_SHORT_DASH = _gdi_.PENSTYLE_SHORT_DASH
+PENSTYLE_DOT_DASH = _gdi_.PENSTYLE_DOT_DASH
+PENSTYLE_USER_DASH = _gdi_.PENSTYLE_USER_DASH
+PENSTYLE_TRANSPARENT = _gdi_.PENSTYLE_TRANSPARENT
+PENSTYLE_STIPPLE_MASK_OPAQUE = _gdi_.PENSTYLE_STIPPLE_MASK_OPAQUE
+PENSTYLE_STIPPLE_MASK = _gdi_.PENSTYLE_STIPPLE_MASK
+PENSTYLE_STIPPLE = _gdi_.PENSTYLE_STIPPLE
+PENSTYLE_BDIAGONAL_HATCH = _gdi_.PENSTYLE_BDIAGONAL_HATCH
+PENSTYLE_CROSSDIAG_HATCH = _gdi_.PENSTYLE_CROSSDIAG_HATCH
+PENSTYLE_FDIAGONAL_HATCH = _gdi_.PENSTYLE_FDIAGONAL_HATCH
+PENSTYLE_CROSS_HATCH = _gdi_.PENSTYLE_CROSS_HATCH
+PENSTYLE_HORIZONTAL_HATCH = _gdi_.PENSTYLE_HORIZONTAL_HATCH
+PENSTYLE_VERTICAL_HATCH = _gdi_.PENSTYLE_VERTICAL_HATCH
+PENSTYLE_FIRST_HATCH = _gdi_.PENSTYLE_FIRST_HATCH
+PENSTYLE_LAST_HATCH = _gdi_.PENSTYLE_LAST_HATCH
+JOIN_INVALID = _gdi_.JOIN_INVALID
+JOIN_BEVEL = _gdi_.JOIN_BEVEL
+JOIN_MITER = _gdi_.JOIN_MITER
+JOIN_ROUND = _gdi_.JOIN_ROUND
+CAP_INVALID = _gdi_.CAP_INVALID
+CAP_ROUND = _gdi_.CAP_ROUND
+CAP_PROJECTING = _gdi_.CAP_PROJECTING
+CAP_BUTT = _gdi_.CAP_BUTT
 class Pen(GDIObject):
     """Proxy of C++ Pen class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -418,6 +474,14 @@ class Pen(GDIObject):
         return _gdi_.Pen_SetStipple(*args, **kwargs)
 
     Stipple = property(GetStipple,SetStipple,doc="See `GetStipple` and `SetStipple`") 
+    def IsTransparent(*args, **kwargs):
+        """IsTransparent(self) -> bool"""
+        return _gdi_.Pen_IsTransparent(*args, **kwargs)
+
+    def IsNonTransparent(*args, **kwargs):
+        """IsNonTransparent(self) -> bool"""
+        return _gdi_.Pen_IsNonTransparent(*args, **kwargs)
+
     def __eq__(*args, **kwargs):
         """__eq__(self, Pen other) -> bool"""
         return _gdi_.Pen___eq__(*args, **kwargs)
@@ -437,6 +501,20 @@ _gdi_.Pen_swigregister(Pen)
 
 #---------------------------------------------------------------------------
 
+BRUSHSTYLE_INVALID = _gdi_.BRUSHSTYLE_INVALID
+BRUSHSTYLE_SOLID = _gdi_.BRUSHSTYLE_SOLID
+BRUSHSTYLE_TRANSPARENT = _gdi_.BRUSHSTYLE_TRANSPARENT
+BRUSHSTYLE_STIPPLE_MASK_OPAQUE = _gdi_.BRUSHSTYLE_STIPPLE_MASK_OPAQUE
+BRUSHSTYLE_STIPPLE_MASK = _gdi_.BRUSHSTYLE_STIPPLE_MASK
+BRUSHSTYLE_STIPPLE = _gdi_.BRUSHSTYLE_STIPPLE
+BRUSHSTYLE_BDIAGONAL_HATCH = _gdi_.BRUSHSTYLE_BDIAGONAL_HATCH
+BRUSHSTYLE_CROSSDIAG_HATCH = _gdi_.BRUSHSTYLE_CROSSDIAG_HATCH
+BRUSHSTYLE_FDIAGONAL_HATCH = _gdi_.BRUSHSTYLE_FDIAGONAL_HATCH
+BRUSHSTYLE_CROSS_HATCH = _gdi_.BRUSHSTYLE_CROSS_HATCH
+BRUSHSTYLE_HORIZONTAL_HATCH = _gdi_.BRUSHSTYLE_HORIZONTAL_HATCH
+BRUSHSTYLE_VERTICAL_HATCH = _gdi_.BRUSHSTYLE_VERTICAL_HATCH
+BRUSHSTYLE_FIRST_HATCH = _gdi_.BRUSHSTYLE_FIRST_HATCH
+BRUSHSTYLE_LAST_HATCH = _gdi_.BRUSHSTYLE_LAST_HATCH
 class Brush(GDIObject):
     """
     A brush is a drawing tool for filling in areas. It is used for
@@ -513,6 +591,14 @@ class Brush(GDIObject):
         """
         return _gdi_.Brush_IsHatch(*args, **kwargs)
 
+    def IsTransparent(*args, **kwargs):
+        """IsTransparent(self) -> bool"""
+        return _gdi_.Brush_IsTransparent(*args, **kwargs)
+
+    def IsNonTransparent(*args, **kwargs):
+        """IsNonTransparent(self) -> bool"""
+        return _gdi_.Brush_IsNonTransparent(*args, **kwargs)
+
     def IsOk(*args, **kwargs):
         """
         IsOk(self) -> bool
@@ -541,6 +627,7 @@ BitmapBufferFormat_RGB = _gdi_.BitmapBufferFormat_RGB
 BitmapBufferFormat_RGBA = _gdi_.BitmapBufferFormat_RGBA
 BitmapBufferFormat_RGB32 = _gdi_.BitmapBufferFormat_RGB32
 BitmapBufferFormat_ARGB32 = _gdi_.BitmapBufferFormat_ARGB32
+BITMAP_SCREEN_DEPTH = _gdi_.BITMAP_SCREEN_DEPTH
 class Bitmap(GDIObject):
     """
     The wx.Bitmap class encapsulates the concept of a platform-dependent
@@ -658,6 +745,10 @@ class Bitmap(GDIObject):
         """
         return _gdi_.Bitmap_GetSubBitmap(*args, **kwargs)
 
+    def ConvertToDisabled(*args, **kwargs):
+        """ConvertToDisabled(self, byte brightness=255) -> Bitmap"""
+        return _gdi_.Bitmap_ConvertToDisabled(*args, **kwargs)
+
     def SaveFile(*args, **kwargs):
         """
         SaveFile(self, String name, int type, Palette palette=None) -> bool
@@ -751,7 +842,7 @@ class Bitmap(GDIObject):
         """
         Copy data from a RGBA buffer object to replace the bitmap pixel
         data.  This method is now just a compatibility wrapper around
-        CopyFrombuffer.
+        CopyFromBuffer.
         """
         self.CopyFromBuffer(buffer, wx.BitmapBufferFormat_RGBA)           
 
@@ -768,10 +859,6 @@ class Bitmap(GDIObject):
         """HasAlpha(self) -> bool"""
         return _gdi_.Bitmap_HasAlpha(*args, **kwargs)
 
-    def UseAlpha(*args, **kwargs):
-        """UseAlpha(self)"""
-        return _gdi_.Bitmap_UseAlpha(*args, **kwargs)
-
     def __nonzero__(self): return self.IsOk() 
     def __eq__(*args, **kwargs):
         """__eq__(self, Bitmap other) -> bool"""
@@ -786,13 +873,12 @@ class Bitmap(GDIObject):
     Mask = property(GetMask,SetMask,doc="See `GetMask` and `SetMask`") 
     Palette = property(GetPalette,doc="See `GetPalette`") 
     Size = property(GetSize,SetSize,doc="See `GetSize` and `SetSize`") 
-    SubBitmap = property(GetSubBitmap,doc="See `GetSubBitmap`") 
     Width = property(GetWidth,SetWidth,doc="See `GetWidth` and `SetWidth`") 
 _gdi_.Bitmap_swigregister(Bitmap)
 
 def EmptyBitmap(*args, **kwargs):
     """
-    EmptyBitmap(int width, int height, int depth=-1) -> Bitmap
+    EmptyBitmap(int width, int height, int depth=BITMAP_SCREEN_DEPTH) -> Bitmap
 
     Creates a new bitmap of the given size.  A depth of -1 indicates the
     depth of the current screen or visual. Some platforms only support 1
@@ -812,7 +898,7 @@ def BitmapFromIcon(*args, **kwargs):
 
 def BitmapFromImage(*args, **kwargs):
     """
-    BitmapFromImage(Image image, int depth=-1) -> Bitmap
+    BitmapFromImage(Image image, int depth=BITMAP_SCREEN_DEPTH) -> Bitmap
 
     Creates bitmap object from a `wx.Image`. This has to be done to
     actually display a `wx.Image` as you cannot draw an image directly on
@@ -970,9 +1056,8 @@ class NativePixelData(PixelDataBase):
         """GetPixels(self) -> NativePixelData_Accessor"""
         return _gdi_.NativePixelData_GetPixels(*args, **kwargs)
 
-    def UseAlpha(*args, **kwargs):
-        """UseAlpha(self)"""
-        return _gdi_.NativePixelData_UseAlpha(*args, **kwargs)
+    def UseAlpha(self): pass
+    UseAlpha = wx.deprecated(UseAlpha)
 
     def __nonzero__(*args, **kwargs):
         """__nonzero__(self) -> bool"""
@@ -1078,17 +1163,14 @@ class AlphaPixelData(PixelDataBase):
         __init__(self, Bitmap bmp, Point pt, Size sz) -> AlphaPixelData
         """
         _gdi_.AlphaPixelData_swiginit(self,_gdi_.new_AlphaPixelData(*args))
-        self.UseAlpha()
-
     __swig_destroy__ = _gdi_.delete_AlphaPixelData
     __del__ = lambda self : None;
     def GetPixels(*args, **kwargs):
         """GetPixels(self) -> AlphaPixelData_Accessor"""
         return _gdi_.AlphaPixelData_GetPixels(*args, **kwargs)
 
-    def UseAlpha(*args, **kwargs):
-        """UseAlpha(self)"""
-        return _gdi_.AlphaPixelData_UseAlpha(*args, **kwargs)
+    def UseAlpha(self): pass
+    UseAlpha = wx.deprecated(UseAlpha)
 
     def __nonzero__(*args, **kwargs):
         """__nonzero__(self) -> bool"""
@@ -1214,13 +1296,16 @@ class Mask(_core.Object):
     __del__ = lambda self : None;
 _gdi_.Mask_swigregister(Mask)
 
-MaskColour = wx._deprecated(Mask, "wx.MaskColour is deprecated, use `wx.Mask` instead.") 
+MaskColour = wx.deprecated(Mask, "wx.MaskColour is deprecated, use `wx.Mask` instead.") 
 class Icon(GDIObject):
     """Proxy of C++ Icon class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self, String name, int type, int desiredWidth=-1, int desiredHeight=-1) -> Icon"""
+        """
+        __init__(self, String name, int type=BITMAP_TYPE_ANY, int desiredWidth=-1, 
+            int desiredHeight=-1) -> Icon
+        """
         _gdi_.Icon_swiginit(self,_gdi_.new_Icon(*args, **kwargs))
     __swig_destroy__ = _gdi_.delete_Icon
     __del__ = lambda self : None;
@@ -1337,33 +1422,104 @@ class IconBundle(object):
     """Proxy of C++ IconBundle class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
+    FALLBACK_NONE = _gdi_.IconBundle_FALLBACK_NONE
+    FALLBACK_SYSTEM = _gdi_.IconBundle_FALLBACK_SYSTEM
+    FALLBACK_NEAREST_LARGER = _gdi_.IconBundle_FALLBACK_NEAREST_LARGER
     def __init__(self, *args, **kwargs): 
         """__init__(self) -> IconBundle"""
         _gdi_.IconBundle_swiginit(self,_gdi_.new_IconBundle(*args, **kwargs))
     __swig_destroy__ = _gdi_.delete_IconBundle
     __del__ = lambda self : None;
+    def IsOk(*args, **kwargs):
+        """IsOk(self) -> bool"""
+        return _gdi_.IconBundle_IsOk(*args, **kwargs)
+
+    def __nonzero__(self): return self.IsOk() 
     def AddIcon(*args, **kwargs):
-        """AddIcon(self, Icon icon)"""
+        """
+        AddIcon(self, Icon icon)
+
+        Adds the icon to the collection, if the collection already contains an
+        icon with the same width and height, it is replaced
+        """
         return _gdi_.IconBundle_AddIcon(*args, **kwargs)
 
     def AddIconFromFile(*args, **kwargs):
-        """AddIconFromFile(self, String file, long type)"""
+        """
+        AddIconFromFile(self, String file, int type=BITMAP_TYPE_ANY)
+
+        Adds all the icons contained in the file to the collection, if the
+        collection already contains icons with the same width and height, they
+        are replaced
+        """
         return _gdi_.IconBundle_AddIconFromFile(*args, **kwargs)
 
+    def AddIconFromStream(*args, **kwargs):
+        """
+        AddIconFromStream(self, InputStream stream, int type=BITMAP_TYPE_ANY)
+
+        Just like `AddIconFromFile` but pulls icons from a file-liek object.
+        """
+        return _gdi_.IconBundle_AddIconFromStream(*args, **kwargs)
+
     def GetIcon(*args, **kwargs):
-        """GetIcon(self, Size size) -> Icon"""
+        """
+        GetIcon(self, Size size, int flags=FALLBACK_SYSTEM) -> Icon
+
+        Returns the icon with the given size; if no such icon exists, returns
+        the icon with size wxSYS_ICON_[XY]; if no such icon exists, returns
+        the first icon in the bundle
+        """
         return _gdi_.IconBundle_GetIcon(*args, **kwargs)
+
+    def GetIconOfExactSize(*args, **kwargs):
+        """
+        GetIconOfExactSize(self, Size size) -> Icon
+
+        Returns the icon exactly of the specified size or wxNullIcon if no
+        icon of exactly given size are available.
+        """
+        return _gdi_.IconBundle_GetIconOfExactSize(*args, **kwargs)
+
+    def GetIconCount(*args, **kwargs):
+        """
+        GetIconCount(self) -> size_t
+
+        return the number of available icons
+        """
+        return _gdi_.IconBundle_GetIconCount(*args, **kwargs)
+
+    def GetIconByIndex(*args, **kwargs):
+        """
+        GetIconByIndex(self, size_t n) -> Icon
+
+        Return the icon at index (must be < GetIconCount())
+        """
+        return _gdi_.IconBundle_GetIconByIndex(*args, **kwargs)
+
+    def IsEmpty(*args, **kwargs):
+        """
+        IsEmpty(self) -> bool
+
+        Check if we have any icons at all
+        """
+        return _gdi_.IconBundle_IsEmpty(*args, **kwargs)
 
 _gdi_.IconBundle_swigregister(IconBundle)
 
 def IconBundleFromFile(*args, **kwargs):
-    """IconBundleFromFile(String file, long type) -> IconBundle"""
+    """IconBundleFromFile(String file, int type=BITMAP_TYPE_ANY) -> IconBundle"""
     val = _gdi_.new_IconBundleFromFile(*args, **kwargs)
     return val
 
 def IconBundleFromIcon(*args, **kwargs):
     """IconBundleFromIcon(Icon icon) -> IconBundle"""
     val = _gdi_.new_IconBundleFromIcon(*args, **kwargs)
+    return val
+
+def IconBundleFromStream(*args, **kwargs):
+    """IconBundleFromStream(InputStream stream, int type=BITMAP_TYPE_ANY) -> IconBundle"""
+    val = _gdi_.new_IconBundleFromStream(*args, **kwargs)
     return val
 
 class Cursor(GDIObject):
@@ -1382,7 +1538,7 @@ class Cursor(GDIObject):
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
         """
-        __init__(self, String cursorName, long type, int hotSpotX=0, int hotSpotY=0) -> Cursor
+        __init__(self, String cursorName, int type, int hotSpotX=0, int hotSpotY=0) -> Cursor
 
         Construct a Cursor from a file.  Specify the type of file using
         wx.BITMAP_TYPE* constants, and specify the hotspot if not using a .cur
@@ -1672,6 +1828,13 @@ FONTWEIGHT_NORMAL = _gdi_.FONTWEIGHT_NORMAL
 FONTWEIGHT_LIGHT = _gdi_.FONTWEIGHT_LIGHT
 FONTWEIGHT_BOLD = _gdi_.FONTWEIGHT_BOLD
 FONTWEIGHT_MAX = _gdi_.FONTWEIGHT_MAX
+FONTSIZE_XX_SMALL = _gdi_.FONTSIZE_XX_SMALL
+FONTSIZE_X_SMALL = _gdi_.FONTSIZE_X_SMALL
+FONTSIZE_SMALL = _gdi_.FONTSIZE_SMALL
+FONTSIZE_MEDIUM = _gdi_.FONTSIZE_MEDIUM
+FONTSIZE_LARGE = _gdi_.FONTSIZE_LARGE
+FONTSIZE_X_LARGE = _gdi_.FONTSIZE_X_LARGE
+FONTSIZE_XX_LARGE = _gdi_.FONTSIZE_XX_LARGE
 FONTFLAG_DEFAULT = _gdi_.FONTFLAG_DEFAULT
 FONTFLAG_ITALIC = _gdi_.FONTFLAG_ITALIC
 FONTFLAG_SLANT = _gdi_.FONTFLAG_SLANT
@@ -1770,6 +1933,7 @@ FONTENCODING_MACROMANIAN = _gdi_.FONTENCODING_MACROMANIAN
 FONTENCODING_MACCELTIC = _gdi_.FONTENCODING_MACCELTIC
 FONTENCODING_MACGAELIC = _gdi_.FONTENCODING_MACGAELIC
 FONTENCODING_MACKEYBOARD = _gdi_.FONTENCODING_MACKEYBOARD
+FONTENCODING_ISO2022_JP = _gdi_.FONTENCODING_ISO2022_JP
 FONTENCODING_MACMIN = _gdi_.FONTENCODING_MACMIN
 FONTENCODING_MACMAX = _gdi_.FONTENCODING_MACMAX
 FONTENCODING_MAX = _gdi_.FONTENCODING_MAX
@@ -1779,6 +1943,7 @@ FONTENCODING_UNICODE = _gdi_.FONTENCODING_UNICODE
 FONTENCODING_GB2312 = _gdi_.FONTENCODING_GB2312
 FONTENCODING_BIG5 = _gdi_.FONTENCODING_BIG5
 FONTENCODING_SHIFT_JIS = _gdi_.FONTENCODING_SHIFT_JIS
+FONTENCODING_EUC_KR = _gdi_.FONTENCODING_EUC_KR
 #---------------------------------------------------------------------------
 
 class NativeFontInfo(object):
@@ -1818,6 +1983,10 @@ class NativeFontInfo(object):
         """GetUnderlined(self) -> bool"""
         return _gdi_.NativeFontInfo_GetUnderlined(*args, **kwargs)
 
+    def GetStrikethrough(*args, **kwargs):
+        """GetStrikethrough(self) -> bool"""
+        return _gdi_.NativeFontInfo_GetStrikethrough(*args, **kwargs)
+
     def GetFaceName(*args, **kwargs):
         """GetFaceName(self) -> String"""
         return _gdi_.NativeFontInfo_GetFaceName(*args, **kwargs)
@@ -1849,6 +2018,10 @@ class NativeFontInfo(object):
     def SetUnderlined(*args, **kwargs):
         """SetUnderlined(self, bool underlined)"""
         return _gdi_.NativeFontInfo_SetUnderlined(*args, **kwargs)
+
+    def SetStrikethrough(*args, **kwargs):
+        """SetStrikethrough(self, bool strikethrough)"""
+        return _gdi_.NativeFontInfo_SetStrikethrough(*args, **kwargs)
 
     def SetFaceName(*args, **kwargs):
         """SetFaceName(self, String facename) -> bool"""
@@ -1995,7 +2168,6 @@ class FontMapper(object):
         """SetDialogTitle(self, String title)"""
         return _gdi_.FontMapper_SetDialogTitle(*args, **kwargs)
 
-    AltForEncoding = property(GetAltForEncoding,doc="See `GetAltForEncoding`") 
 _gdi_.FontMapper_swigregister(FontMapper)
 
 def FontMapper_Get(*args):
@@ -2156,6 +2328,10 @@ class Font(GDIObject):
         """
         return _gdi_.Font_GetUnderlined(*args, **kwargs)
 
+    def GetStrikethrough(*args, **kwargs):
+        """GetStrikethrough(self) -> bool"""
+        return _gdi_.Font_GetStrikethrough(*args, **kwargs)
+
     def GetFaceName(*args, **kwargs):
         """
         GetFaceName(self) -> String
@@ -2272,6 +2448,10 @@ class Font(GDIObject):
         """
         return _gdi_.Font_SetUnderlined(*args, **kwargs)
 
+    def SetStrikethrough(*args, **kwargs):
+        """SetStrikethrough(self, bool strikethrough)"""
+        return _gdi_.Font_SetStrikethrough(*args, **kwargs)
+
     def SetEncoding(*args, **kwargs):
         """
         SetEncoding(self, int encoding)
@@ -2306,6 +2486,19 @@ class Font(GDIObject):
         """
         return _gdi_.Font_SetNativeFontInfoUserDesc(*args, **kwargs)
 
+    def SetSymbolicSize(*args, **kwargs):
+        """SetSymbolicSize(self, int size)"""
+        return _gdi_.Font_SetSymbolicSize(*args, **kwargs)
+
+    def SetSymbolicSizeRelativeTo(*args, **kwargs):
+        """SetSymbolicSizeRelativeTo(self, int size, int base)"""
+        return _gdi_.Font_SetSymbolicSizeRelativeTo(*args, **kwargs)
+
+    def AdjustToSymbolicSize(*args, **kwargs):
+        """AdjustToSymbolicSize(int size, int base) -> int"""
+        return _gdi_.Font_AdjustToSymbolicSize(*args, **kwargs)
+
+    AdjustToSymbolicSize = staticmethod(AdjustToSymbolicSize)
     def GetFamilyString(*args, **kwargs):
         """
         GetFamilyString(self) -> String
@@ -2337,6 +2530,65 @@ class Font(GDIObject):
     def GetNoAntiAliasing(*args, **kwargs):
         """GetNoAntiAliasing(self) -> bool"""
         return _gdi_.Font_GetNoAntiAliasing(*args, **kwargs)
+
+    SetNoAntiAliasing = wx.deprecated(SetNoAntiAliasing)
+    GetNoAntiAliasing = wx.deprecated(GetNoAntiAliasing)
+
+    def MakeBold(*args, **kwargs):
+        """MakeBold(self) -> Font"""
+        return _gdi_.Font_MakeBold(*args, **kwargs)
+
+    def MakeItalic(*args, **kwargs):
+        """MakeItalic(self) -> Font"""
+        return _gdi_.Font_MakeItalic(*args, **kwargs)
+
+    def MakeUnderlined(*args, **kwargs):
+        """MakeUnderlined(self) -> Font"""
+        return _gdi_.Font_MakeUnderlined(*args, **kwargs)
+
+    def MakeStrikethrough(*args, **kwargs):
+        """MakeStrikethrough(self) -> Font"""
+        return _gdi_.Font_MakeStrikethrough(*args, **kwargs)
+
+    def MakeLarger(*args, **kwargs):
+        """MakeLarger(self) -> Font"""
+        return _gdi_.Font_MakeLarger(*args, **kwargs)
+
+    def MakeSmaller(*args, **kwargs):
+        """MakeSmaller(self) -> Font"""
+        return _gdi_.Font_MakeSmaller(*args, **kwargs)
+
+    def Scale(*args, **kwargs):
+        """Scale(self, float x) -> Font"""
+        return _gdi_.Font_Scale(*args, **kwargs)
+
+    def Bold(*args, **kwargs):
+        """Bold(self) -> Font"""
+        return _gdi_.Font_Bold(*args, **kwargs)
+
+    def Italic(*args, **kwargs):
+        """Italic(self) -> Font"""
+        return _gdi_.Font_Italic(*args, **kwargs)
+
+    def Underlined(*args, **kwargs):
+        """Underlined(self) -> Font"""
+        return _gdi_.Font_Underlined(*args, **kwargs)
+
+    def Strikethrough(*args, **kwargs):
+        """Strikethrough(self) -> Font"""
+        return _gdi_.Font_Strikethrough(*args, **kwargs)
+
+    def Larger(*args, **kwargs):
+        """Larger(self) -> Font"""
+        return _gdi_.Font_Larger(*args, **kwargs)
+
+    def Smaller(*args, **kwargs):
+        """Smaller(self) -> Font"""
+        return _gdi_.Font_Smaller(*args, **kwargs)
+
+    def Scaled(*args, **kwargs):
+        """Scaled(self, float x) -> Font"""
+        return _gdi_.Font_Scaled(*args, **kwargs)
 
     def GetHFONT(*args, **kwargs):
         """GetHFONT(self) -> void"""
@@ -2373,7 +2625,6 @@ class Font(GDIObject):
     PointSize = property(GetPointSize,SetPointSize,doc="See `GetPointSize` and `SetPointSize`") 
     Style = property(GetStyle,SetStyle,doc="See `GetStyle` and `SetStyle`") 
     StyleString = property(GetStyleString,doc="See `GetStyleString`") 
-    Underlined = property(GetUnderlined,SetUnderlined,doc="See `GetUnderlined` and `SetUnderlined`") 
     Weight = property(GetWeight,SetWeight,doc="See `GetWeight` and `SetWeight`") 
     WeightString = property(GetWeightString,doc="See `GetWeightString`") 
 _gdi_.Font_swigregister(Font)
@@ -2457,6 +2708,10 @@ def FFontFromPixelSize(*args, **kwargs):
     val = _gdi_.new_FFontFromPixelSize(*args, **kwargs)
     return val
 
+def Font_AdjustToSymbolicSize(*args, **kwargs):
+  """Font_AdjustToSymbolicSize(int size, int base) -> int"""
+  return _gdi_.Font_AdjustToSymbolicSize(*args, **kwargs)
+
 def Font_GetDefaultEncoding(*args):
   """
     Font_GetDefaultEncoding() -> int
@@ -2474,7 +2729,7 @@ def Font_SetDefaultEncoding(*args, **kwargs):
     """
   return _gdi_.Font_SetDefaultEncoding(*args, **kwargs)
 
-Font2 = wx._deprecated(FFont, "Use `wx.FFont` instead.") 
+Font2 = wx.deprecated(FFont, "Use `wx.FFont` instead.") 
 #---------------------------------------------------------------------------
 
 class FontEnumerator(object):
@@ -2568,6 +2823,7 @@ LANGUAGE_ARABIC_UAE = _gdi_.LANGUAGE_ARABIC_UAE
 LANGUAGE_ARABIC_YEMEN = _gdi_.LANGUAGE_ARABIC_YEMEN
 LANGUAGE_ARMENIAN = _gdi_.LANGUAGE_ARMENIAN
 LANGUAGE_ASSAMESE = _gdi_.LANGUAGE_ASSAMESE
+LANGUAGE_ASTURIAN = _gdi_.LANGUAGE_ASTURIAN
 LANGUAGE_AYMARA = _gdi_.LANGUAGE_AYMARA
 LANGUAGE_AZERI = _gdi_.LANGUAGE_AZERI
 LANGUAGE_AZERI_CYRILLIC = _gdi_.LANGUAGE_AZERI_CYRILLIC
@@ -2782,14 +3038,25 @@ class LanguageInfo(object):
     Language = property(_gdi_.LanguageInfo_Language_get, _gdi_.LanguageInfo_Language_set)
     CanonicalName = property(_gdi_.LanguageInfo_CanonicalName_get, _gdi_.LanguageInfo_CanonicalName_set)
     Description = property(_gdi_.LanguageInfo_Description_get, _gdi_.LanguageInfo_Description_set)
+    LayoutDirection = property(_gdi_.LanguageInfo_LayoutDirection_get, _gdi_.LanguageInfo_LayoutDirection_set)
+    def GetLocaleName(*args, **kwargs):
+        """GetLocaleName(self) -> String"""
+        return _gdi_.LanguageInfo_GetLocaleName(*args, **kwargs)
+
 _gdi_.LanguageInfo_swigregister(LanguageInfo)
 
 LOCALE_CAT_NUMBER = _gdi_.LOCALE_CAT_NUMBER
 LOCALE_CAT_DATE = _gdi_.LOCALE_CAT_DATE
 LOCALE_CAT_MONEY = _gdi_.LOCALE_CAT_MONEY
+LOCALE_CAT_DEFAULT = _gdi_.LOCALE_CAT_DEFAULT
 LOCALE_CAT_MAX = _gdi_.LOCALE_CAT_MAX
 LOCALE_THOUSANDS_SEP = _gdi_.LOCALE_THOUSANDS_SEP
 LOCALE_DECIMAL_POINT = _gdi_.LOCALE_DECIMAL_POINT
+LOCALE_SHORT_DATE_FMT = _gdi_.LOCALE_SHORT_DATE_FMT
+LOCALE_LONG_DATE_FMT = _gdi_.LOCALE_LONG_DATE_FMT
+LOCALE_DATE_TIME_FMT = _gdi_.LOCALE_DATE_TIME_FMT
+LOCALE_TIME_FMT = _gdi_.LOCALE_TIME_FMT
+LOCALE_DONT_LOAD_DEFAULT = _gdi_.LOCALE_DONT_LOAD_DEFAULT
 LOCALE_LOAD_DEFAULT = _gdi_.LOCALE_LOAD_DEFAULT
 LOCALE_CONV_ENCODING = _gdi_.LOCALE_CONV_ENCODING
 class Locale(object):
@@ -2797,20 +3064,19 @@ class Locale(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self, int language=-1, int flags=wxLOCALE_LOAD_DEFAULT|wxLOCALE_CONV_ENCODING) -> Locale"""
+        """__init__(self, int language=-1, int flags=LOCALE_LOAD_DEFAULT) -> Locale"""
         _gdi_.Locale_swiginit(self,_gdi_.new_Locale(*args, **kwargs))
     __swig_destroy__ = _gdi_.delete_Locale
     __del__ = lambda self : None;
     def Init1(*args, **kwargs):
         """
-        Init1(self, String szName, String szShort=EmptyString, String szLocale=EmptyString, 
-            bool bLoadDefault=True, 
-            bool bConvertEncoding=False) -> bool
+        Init1(self, String name, String shortName=EmptyString, String locale=EmptyString, 
+            bool bLoadDefault=True) -> bool
         """
         return _gdi_.Locale_Init1(*args, **kwargs)
 
     def Init2(*args, **kwargs):
-        """Init2(self, int language=LANGUAGE_DEFAULT, int flags=wxLOCALE_LOAD_DEFAULT|wxLOCALE_CONV_ENCODING) -> bool"""
+        """Init2(self, int language=LANGUAGE_DEFAULT, int flags=LOCALE_LOAD_DEFAULT) -> bool"""
         return _gdi_.Locale_Init2(*args, **kwargs)
 
     def Init(self, *_args, **_kwargs):
@@ -2835,6 +3101,11 @@ class Locale(object):
         return _gdi_.Locale_GetSystemEncodingName(*args, **kwargs)
 
     GetSystemEncodingName = staticmethod(GetSystemEncodingName)
+    def GetInfo(*args, **kwargs):
+        """GetInfo(int index, int cat=LOCALE_CAT_DEFAULT) -> String"""
+        return _gdi_.Locale_GetInfo(*args, **kwargs)
+
+    GetInfo = staticmethod(GetInfo)
     def IsOk(*args, **kwargs):
         """IsOk(self) -> bool"""
         return _gdi_.Locale_IsOk(*args, **kwargs)
@@ -2861,9 +3132,13 @@ class Locale(object):
         return _gdi_.Locale_AddCatalogLookupPathPrefix(*args, **kwargs)
 
     AddCatalogLookupPathPrefix = staticmethod(AddCatalogLookupPathPrefix)
-    def AddCatalog(*args, **kwargs):
-        """AddCatalog(self, String szDomain) -> bool"""
-        return _gdi_.Locale_AddCatalog(*args, **kwargs)
+    def AddCatalog(*args):
+        """
+        AddCatalog(self, String domain) -> bool
+        AddCatalog(self, String domain, int msgIdLanguage) -> bool
+        AddCatalog(self, String domain, int msgIdLanguage, String msgIdCharset) -> bool
+        """
+        return _gdi_.Locale_AddCatalog(*args)
 
     def IsAvailable(*args, **kwargs):
         """IsAvailable(int lang) -> bool"""
@@ -2871,7 +3146,7 @@ class Locale(object):
 
     IsAvailable = staticmethod(IsAvailable)
     def IsLoaded(*args, **kwargs):
-        """IsLoaded(self, String szDomain) -> bool"""
+        """IsLoaded(self, String domain) -> bool"""
         return _gdi_.Locale_IsLoaded(*args, **kwargs)
 
     def GetLanguageInfo(*args, **kwargs):
@@ -2884,6 +3159,11 @@ class Locale(object):
         return _gdi_.Locale_GetLanguageName(*args, **kwargs)
 
     GetLanguageName = staticmethod(GetLanguageName)
+    def GetLanguageCanonicalName(*args, **kwargs):
+        """GetLanguageCanonicalName(int lang) -> String"""
+        return _gdi_.Locale_GetLanguageCanonicalName(*args, **kwargs)
+
+    GetLanguageCanonicalName = staticmethod(GetLanguageCanonicalName)
     def FindLanguageInfo(*args, **kwargs):
         """FindLanguageInfo(String locale) -> LanguageInfo"""
         return _gdi_.Locale_FindLanguageInfo(*args, **kwargs)
@@ -2895,7 +3175,7 @@ class Locale(object):
 
     AddLanguage = staticmethod(AddLanguage)
     def GetString(*args, **kwargs):
-        """GetString(self, String szOrigString, String szDomain=EmptyString) -> String"""
+        """GetString(self, String origString, String domain=EmptyString) -> String"""
         return _gdi_.Locale_GetString(*args, **kwargs)
 
     def GetName(*args, **kwargs):
@@ -2922,6 +3202,10 @@ def Locale_GetSystemEncodingName(*args):
   """Locale_GetSystemEncodingName() -> String"""
   return _gdi_.Locale_GetSystemEncodingName(*args)
 
+def Locale_GetInfo(*args, **kwargs):
+  """Locale_GetInfo(int index, int cat=LOCALE_CAT_DEFAULT) -> String"""
+  return _gdi_.Locale_GetInfo(*args, **kwargs)
+
 def Locale_AddCatalogLookupPathPrefix(*args, **kwargs):
   """Locale_AddCatalogLookupPathPrefix(String prefix)"""
   return _gdi_.Locale_AddCatalogLookupPathPrefix(*args, **kwargs)
@@ -2938,6 +3222,10 @@ def Locale_GetLanguageName(*args, **kwargs):
   """Locale_GetLanguageName(int lang) -> String"""
   return _gdi_.Locale_GetLanguageName(*args, **kwargs)
 
+def Locale_GetLanguageCanonicalName(*args, **kwargs):
+  """Locale_GetLanguageCanonicalName(int lang) -> String"""
+  return _gdi_.Locale_GetLanguageCanonicalName(*args, **kwargs)
+
 def Locale_FindLanguageInfo(*args, **kwargs):
   """Locale_FindLanguageInfo(String locale) -> LanguageInfo"""
   return _gdi_.Locale_FindLanguageInfo(*args, **kwargs)
@@ -2951,7 +3239,7 @@ class PyLocale(Locale):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self, int language=-1, int flags=wxLOCALE_LOAD_DEFAULT|wxLOCALE_CONV_ENCODING) -> PyLocale"""
+        """__init__(self, int language=-1, int flags=LOCALE_LOAD_DEFAULT) -> PyLocale"""
         _gdi_.PyLocale_swiginit(self,_gdi_.new_PyLocale(*args, **kwargs))
         PyLocale._setCallbackInfo(self, self, PyLocale)
 
@@ -2962,14 +3250,11 @@ class PyLocale(Locale):
         return _gdi_.PyLocale__setCallbackInfo(*args, **kwargs)
 
     def GetSingularString(*args, **kwargs):
-        """GetSingularString(self, wxChar szOrigString, wxChar szDomain=None) -> wxChar"""
+        """GetSingularString(self, String origString, String domain=EmptyString) -> String"""
         return _gdi_.PyLocale_GetSingularString(*args, **kwargs)
 
     def GetPluralString(*args, **kwargs):
-        """
-        GetPluralString(self, wxChar szOrigString, wxChar szOrigString2, size_t n, 
-            wxChar szDomain=None) -> wxChar
-        """
+        """GetPluralString(self, String origString, String origString2, size_t n, String domain=EmptyString) -> String"""
         return _gdi_.PyLocale_GetPluralString(*args, **kwargs)
 
 _gdi_.PyLocale_swigregister(PyLocale)
@@ -3056,6 +3341,45 @@ del os
 
 #---------------------------------------------------------------------------
 
+CLEAR = _gdi_.CLEAR
+XOR = _gdi_.XOR
+INVERT = _gdi_.INVERT
+OR_REVERSE = _gdi_.OR_REVERSE
+AND_REVERSE = _gdi_.AND_REVERSE
+COPY = _gdi_.COPY
+AND = _gdi_.AND
+AND_INVERT = _gdi_.AND_INVERT
+NO_OP = _gdi_.NO_OP
+NOR = _gdi_.NOR
+EQUIV = _gdi_.EQUIV
+SRC_INVERT = _gdi_.SRC_INVERT
+OR_INVERT = _gdi_.OR_INVERT
+NAND = _gdi_.NAND
+OR = _gdi_.OR
+SET = _gdi_.SET
+FLOOD_SURFACE = _gdi_.FLOOD_SURFACE
+FLOOD_BORDER = _gdi_.FLOOD_BORDER
+MM_TEXT = _gdi_.MM_TEXT
+MM_TWIPS = _gdi_.MM_TWIPS
+MM_POINTS = _gdi_.MM_POINTS
+MM_METRIC = _gdi_.MM_METRIC
+class FontMetrics(object):
+    """Proxy of C++ FontMetrics class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> FontMetrics"""
+        _gdi_.FontMetrics_swiginit(self,_gdi_.new_FontMetrics(*args, **kwargs))
+    __swig_destroy__ = _gdi_.delete_FontMetrics
+    __del__ = lambda self : None;
+    height = property(_gdi_.FontMetrics_height_get, _gdi_.FontMetrics_height_set)
+    ascent = property(_gdi_.FontMetrics_ascent_get, _gdi_.FontMetrics_ascent_set)
+    descent = property(_gdi_.FontMetrics_descent_get, _gdi_.FontMetrics_descent_set)
+    internalLeading = property(_gdi_.FontMetrics_internalLeading_get, _gdi_.FontMetrics_internalLeading_set)
+    externalLeading = property(_gdi_.FontMetrics_externalLeading_get, _gdi_.FontMetrics_externalLeading_set)
+    averageWidth = property(_gdi_.FontMetrics_averageWidth_get, _gdi_.FontMetrics_averageWidth_set)
+_gdi_.FontMetrics_swigregister(FontMetrics)
+
 class DC(_core.Object):
     """
     A wx.DC is a device context onto which graphics and text can be
@@ -3081,6 +3405,18 @@ class DC(_core.Object):
     # really did anything to begin with, just make them be NOPs.
     def BeginDrawing(self):  pass
     def EndDrawing(self):  pass
+
+    def GetImpl(*args, **kwargs):
+        """GetImpl(self) -> DCImpl"""
+        return _gdi_.DC_GetImpl(*args, **kwargs)
+
+    def GetWindow(*args, **kwargs):
+        """GetWindow(self) -> Window"""
+        return _gdi_.DC_GetWindow(*args, **kwargs)
+
+    def CopyAttributes(*args, **kwargs):
+        """CopyAttributes(self, DC dc)"""
+        return _gdi_.DC_CopyAttributes(*args, **kwargs)
 
     def FloodFill(*args, **kwargs):
         """
@@ -3554,6 +3890,35 @@ class DC(_core.Object):
         """
         return _gdi_.DC_BlitPointSize(*args, **kwargs)
 
+    def StretchBlit(*args, **kwargs):
+        """
+        StretchBlit(self, int dstX, int dstY, int dstWidth, int dstHeight, DC source, 
+            int srcX, int srcY, int srcWidth, int srcHeight, 
+            int rop=COPY, bool useMask=False, 
+            int srcMaskX=DefaultCoord, int srcMaskY=DefaultCoord) -> bool
+
+        Copy from a source DC to this DC, specifying the destination
+        coordinates, destination size, source DC, source coordinates, size of
+        source area to copy, logical function, whether to use a bitmap mask,
+        and mask source position.
+        """
+        return _gdi_.DC_StretchBlit(*args, **kwargs)
+
+    def StretchBlitPointSize(*args, **kwargs):
+        """
+        StretchBlitPointSize(self, Point dstPt, Size dstSize, DC source, Point srcPt, 
+            Size srcSize, int rop=COPY, bool useMask=False, 
+            Point srcMaskPt=DefaultPosition) -> bool
+
+        Copy from a source DC to this DC, specifying the destination
+        coordinates, destination size, source DC, source coordinates, size of
+        source area to copy, logical function, whether to use a bitmap mask,
+        and mask source position.  This version is the same as `StretchBlit`
+        except `wx.Point` and `wx.Size` objects are used instead of individual
+        position and size components.
+        """
+        return _gdi_.DC_StretchBlitPointSize(*args, **kwargs)
+
     def GetAsBitmap(*args, **kwargs):
         """GetAsBitmap(self, Rect subrect=None) -> Bitmap"""
         return _gdi_.DC_GetAsBitmap(*args, **kwargs)
@@ -3627,7 +3992,12 @@ class DC(_core.Object):
         return _gdi_.DC_SetClippingRect(*args, **kwargs)
 
     def SetDeviceClippingRegion(*args, **kwargs):
-        """SetDeviceClippingRegion(self, Region region)"""
+        """
+        SetDeviceClippingRegion(self, Region region)
+
+        The coordinates of the region used in this method one are in device
+        coordinates, not the logical ones
+        """
         return _gdi_.DC_SetDeviceClippingRegion(*args, **kwargs)
 
     def DrawLines(*args, **kwargs):
@@ -3643,7 +4013,7 @@ class DC(_core.Object):
     def DrawPolygon(*args, **kwargs):
         """
         DrawPolygon(self, List points, int xoffset=0, int yoffset=0,
-            int fillStyle=ODDEVEN_RULE)
+            wxPolygonFillMode fillStyle=ODDEVEN_RULE)
 
         Draws a filled polygon using a sequence of `wx.Point` objects, adding
         the optional offset coordinate.  The last argument specifies the fill
@@ -3832,6 +4202,10 @@ class DC(_core.Object):
         """
         return _gdi_.DC_GetCharWidth(*args, **kwargs)
 
+    def GetFontMetrics(*args, **kwargs):
+        """GetFontMetrics(self) -> FontMetrics"""
+        return _gdi_.DC_GetFontMetrics(*args, **kwargs)
+
     def GetTextExtent(*args, **kwargs):
         """
         GetTextExtent(wxString string) -> (width, height)
@@ -3926,6 +4300,10 @@ class DC(_core.Object):
         Get the DC size in milimeters.
         """
         return _gdi_.DC_GetSizeMMTuple(*args, **kwargs)
+
+    def GetResolution(*args, **kwargs):
+        """GetResolution(self) -> int"""
+        return _gdi_.DC_GetResolution(*args, **kwargs)
 
     def DeviceToLogicalX(*args, **kwargs):
         """
@@ -4252,24 +4630,13 @@ class DC(_core.Object):
         """
         return _gdi_.DC_SetLogicalFunction(*args, **kwargs)
 
-    def ComputeScaleAndOrigin(*args, **kwargs):
-        """
-        ComputeScaleAndOrigin(self)
-
-        Performs all necessary computations for given platform and context
-        type after each change of scale and origin parameters. Usually called
-        automatically internally after such changes.
-
-        """
-        return _gdi_.DC_ComputeScaleAndOrigin(*args, **kwargs)
-
     def SetOptimization(self, optimize):
         pass
     def GetOptimization(self):
         return False
 
-    SetOptimization = wx._deprecated(SetOptimization)
-    GetOptimization = wx._deprecated(GetOptimization)
+    SetOptimization = wx.deprecated(SetOptimization)
+    GetOptimization = wx.deprecated(GetOptimization)
 
     def CalcBoundingBox(*args, **kwargs):
         """
@@ -4358,6 +4725,10 @@ class DC(_core.Object):
         Change the layout direction for this dc.
         """
         return _gdi_.DC_SetLayoutDirection(*args, **kwargs)
+
+    def GetHandle(*args, **kwargs):
+        """GetHandle(self) -> void"""
+        return _gdi_.DC_GetHandle(*args, **kwargs)
 
     def GetHDC(*args, **kwargs):
         """GetHDC(self) -> long"""
@@ -4569,8 +4940,6 @@ class DC(_core.Object):
     PPI = property(GetPPI,doc="See `GetPPI`") 
     PartialTextExtents = property(GetPartialTextExtents,doc="See `GetPartialTextExtents`") 
     Pen = property(GetPen,SetPen,doc="See `GetPen` and `SetPen`") 
-    Pixel = property(GetPixel,doc="See `GetPixel`") 
-    PixelPoint = property(GetPixelPoint,doc="See `GetPixelPoint`") 
     Size = property(GetSize,doc="See `GetSize`") 
     SizeMM = property(GetSizeMM,doc="See `GetSizeMM`") 
     TextBackground = property(GetTextBackground,SetTextBackground,doc="See `GetTextBackground` and `SetTextBackground`") 
@@ -4681,6 +5050,29 @@ class DCClipper(object):
         return False
 
 _gdi_.DCClipper_swigregister(DCClipper)
+
+class DCFontChanger(object):
+    """
+    wx.wxDCFontChanger sets the DC's font when it is constructed,
+    and then restores the old font whrn it goes out of scope.
+    """
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """
+        __init__(self, DC dc, Font font) -> DCFontChanger
+
+        wx.wxDCFontChanger sets the DC's font when it is constructed,
+        and then restores the old font whrn it goes out of scope.
+        """
+        _gdi_.DCFontChanger_swiginit(self,_gdi_.new_DCFontChanger(*args, **kwargs))
+    __swig_destroy__ = _gdi_.delete_DCFontChanger
+    __del__ = lambda self : None;
+    def Set(*args, **kwargs):
+        """Set(self, Font font)"""
+        return _gdi_.DCFontChanger_Set(*args, **kwargs)
+
+_gdi_.DCFontChanger_swigregister(DCFontChanger)
 
 #---------------------------------------------------------------------------
 
@@ -4890,6 +5282,7 @@ def MemoryDCFromDC(*args, **kwargs):
 
 BUFFER_VIRTUAL_AREA = _gdi_.BUFFER_VIRTUAL_AREA
 BUFFER_CLIENT_AREA = _gdi_.BUFFER_CLIENT_AREA
+BUFFER_USES_SHARED_BUFFER = _gdi_.BUFFER_USES_SHARED_BUFFER
 class BufferedDC(MemoryDC):
     """
     This simple class provides a simple way to avoid flicker: when drawing
@@ -4962,7 +5355,7 @@ class BufferedPaintDC(BufferedDC):
     of `wx.PaintDC` and that's all you have to do to (mostly) avoid
     flicker. The only thing to watch out for is that if you are using this
     class together with `wx.ScrolledWindow`, you probably do **not** want
-    to call `wx.Window.PrepareDC` on it as it already does this internally
+    to call `wx.ScrolledWindow.PrepareDC` on it as it already does this internally
     for the real underlying `wx.PaintDC`.
 
     If your window is already fully buffered in a `wx.Bitmap` then your
@@ -5067,52 +5460,7 @@ class PostScriptDC(DC):
         object.
         """
         _gdi_.PostScriptDC_swiginit(self,_gdi_.new_PostScriptDC(*args, **kwargs))
-    def GetPrintData(*args, **kwargs):
-        """GetPrintData(self) -> wxPrintData"""
-        return _gdi_.PostScriptDC_GetPrintData(*args, **kwargs)
-
-    def SetPrintData(*args, **kwargs):
-        """SetPrintData(self, wxPrintData data)"""
-        return _gdi_.PostScriptDC_SetPrintData(*args, **kwargs)
-
-    def SetResolution(*args, **kwargs):
-        """
-        SetResolution(int ppi)
-
-        Set resolution (in pixels per inch) that will be used in PostScript
-        output. Default is 720ppi.
-        """
-        return _gdi_.PostScriptDC_SetResolution(*args, **kwargs)
-
-    SetResolution = staticmethod(SetResolution)
-    def GetResolution(*args, **kwargs):
-        """
-        GetResolution() -> int
-
-        Return resolution used in PostScript output.
-        """
-        return _gdi_.PostScriptDC_GetResolution(*args, **kwargs)
-
-    GetResolution = staticmethod(GetResolution)
-    PrintData = property(GetPrintData,SetPrintData,doc="See `GetPrintData` and `SetPrintData`") 
 _gdi_.PostScriptDC_swigregister(PostScriptDC)
-
-def PostScriptDC_SetResolution(*args, **kwargs):
-  """
-    PostScriptDC_SetResolution(int ppi)
-
-    Set resolution (in pixels per inch) that will be used in PostScript
-    output. Default is 720ppi.
-    """
-  return _gdi_.PostScriptDC_SetResolution(*args, **kwargs)
-
-def PostScriptDC_GetResolution(*args):
-  """
-    PostScriptDC_GetResolution() -> int
-
-    Return resolution used in PostScript output.
-    """
-  return _gdi_.PostScriptDC_GetResolution(*args)
 
 #---------------------------------------------------------------------------
 
@@ -5173,6 +5521,66 @@ class MetaFileDC(DC):
 
 _gdi_.MetaFileDC_swigregister(MetaFileDC)
 
+class EnhMetaFile(GDIObject):
+    """Proxy of C++ EnhMetaFile class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self, String file=wxEmptyString) -> EnhMetaFile
+        __init__(self, EnhMetaFile metafile) -> EnhMetaFile
+        """
+        _gdi_.EnhMetaFile_swiginit(self,_gdi_.new_EnhMetaFile(*args))
+    __swig_destroy__ = _gdi_.delete_EnhMetaFile
+    __del__ = lambda self : None;
+    def Play(*args, **kwargs):
+        """Play(self, DC dc, Rect rectBound=None) -> bool"""
+        return _gdi_.EnhMetaFile_Play(*args, **kwargs)
+
+    def IsOk(*args, **kwargs):
+        """IsOk(self) -> bool"""
+        return _gdi_.EnhMetaFile_IsOk(*args, **kwargs)
+
+    def GetSize(*args, **kwargs):
+        """GetSize(self) -> Size"""
+        return _gdi_.EnhMetaFile_GetSize(*args, **kwargs)
+
+    def GetWidth(*args, **kwargs):
+        """GetWidth(self) -> int"""
+        return _gdi_.EnhMetaFile_GetWidth(*args, **kwargs)
+
+    def GetHeight(*args, **kwargs):
+        """GetHeight(self) -> int"""
+        return _gdi_.EnhMetaFile_GetHeight(*args, **kwargs)
+
+    def GetFileName(*args, **kwargs):
+        """GetFileName(self) -> String"""
+        return _gdi_.EnhMetaFile_GetFileName(*args, **kwargs)
+
+    def SetClipboard(*args, **kwargs):
+        """SetClipboard(self, int width=0, int height=0) -> bool"""
+        return _gdi_.EnhMetaFile_SetClipboard(*args, **kwargs)
+
+_gdi_.EnhMetaFile_swigregister(EnhMetaFile)
+
+class EnhMetaFileDC(DC):
+    """Proxy of C++ EnhMetaFileDC class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self, String filename=wxEmptyString, int width=0, int height=0, 
+            String description=wxEmptyString) -> EnhMetaFileDC
+        __init__(self, DC referenceDC, String filename=wxEmptyString, int width=0, 
+            int height=0, String description=wxEmptyString) -> EnhMetaFileDC
+        """
+        _gdi_.EnhMetaFileDC_swiginit(self,_gdi_.new_EnhMetaFileDC(*args))
+    def Close(*args, **kwargs):
+        """Close(self) -> EnhMetaFile"""
+        return _gdi_.EnhMetaFileDC_Close(*args, **kwargs)
+
+_gdi_.EnhMetaFileDC_swigregister(EnhMetaFileDC)
+
 class PrinterDC(DC):
     """Proxy of C++ PrinterDC class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -5180,10 +5588,44 @@ class PrinterDC(DC):
     def __init__(self, *args, **kwargs): 
         """__init__(self, wxPrintData printData) -> PrinterDC"""
         _gdi_.PrinterDC_swiginit(self,_gdi_.new_PrinterDC(*args, **kwargs))
+    def GetPaperRect(*args, **kwargs):
+        """GetPaperRect(self) -> Rect"""
+        return _gdi_.PrinterDC_GetPaperRect(*args, **kwargs)
+
 _gdi_.PrinterDC_swigregister(PrinterDC)
+
+class SVGFileDC(DC):
+    """Proxy of C++ SVGFileDC class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, String filename, int width=320, int height=240, double dpi=72.0) -> SVGFileDC"""
+        _gdi_.SVGFileDC_swiginit(self,_gdi_.new_SVGFileDC(*args, **kwargs))
+_gdi_.SVGFileDC_swigregister(SVGFileDC)
 
 #---------------------------------------------------------------------------
 
+ANTIALIAS_NONE = _gdi_.ANTIALIAS_NONE
+ANTIALIAS_DEFAULT = _gdi_.ANTIALIAS_DEFAULT
+INTERPOLATION_DEFAULT = _gdi_.INTERPOLATION_DEFAULT
+INTERPOLATION_NONE = _gdi_.INTERPOLATION_NONE
+INTERPOLATION_FAST = _gdi_.INTERPOLATION_FAST
+INTERPOLATION_GOOD = _gdi_.INTERPOLATION_GOOD
+INTERPOLATION_BEST = _gdi_.INTERPOLATION_BEST
+COMPOSITION_INVALID = _gdi_.COMPOSITION_INVALID
+COMPOSITION_CLEAR = _gdi_.COMPOSITION_CLEAR
+COMPOSITION_SOURCE = _gdi_.COMPOSITION_SOURCE
+COMPOSITION_OVER = _gdi_.COMPOSITION_OVER
+COMPOSITION_IN = _gdi_.COMPOSITION_IN
+COMPOSITION_OUT = _gdi_.COMPOSITION_OUT
+COMPOSITION_ATOP = _gdi_.COMPOSITION_ATOP
+COMPOSITION_DEST = _gdi_.COMPOSITION_DEST
+COMPOSITION_DEST_OVER = _gdi_.COMPOSITION_DEST_OVER
+COMPOSITION_DEST_IN = _gdi_.COMPOSITION_DEST_IN
+COMPOSITION_DEST_OUT = _gdi_.COMPOSITION_DEST_OUT
+COMPOSITION_DEST_ATOP = _gdi_.COMPOSITION_DEST_ATOP
+COMPOSITION_XOR = _gdi_.COMPOSITION_XOR
+COMPOSITION_ADD = _gdi_.COMPOSITION_ADD
 class GraphicsObject(_core.Object):
     """
     This class is the superclass of native graphics objects like pens
@@ -5593,6 +6035,95 @@ class GraphicsPath(GraphicsObject):
 
 _gdi_.GraphicsPath_swigregister(GraphicsPath)
 
+class GraphicsGradientStop(object):
+    """Proxy of C++ GraphicsGradientStop class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, Colour col=wxTransparentColour, float pos=0.0) -> GraphicsGradientStop"""
+        _gdi_.GraphicsGradientStop_swiginit(self,_gdi_.new_GraphicsGradientStop(*args, **kwargs))
+    __swig_destroy__ = _gdi_.delete_GraphicsGradientStop
+    __del__ = lambda self : None;
+    def GetColour(*args, **kwargs):
+        """GetColour(self) -> Colour"""
+        return _gdi_.GraphicsGradientStop_GetColour(*args, **kwargs)
+
+    def SetColour(*args, **kwargs):
+        """SetColour(self, Colour col)"""
+        return _gdi_.GraphicsGradientStop_SetColour(*args, **kwargs)
+
+    def GetPosition(*args, **kwargs):
+        """GetPosition(self) -> float"""
+        return _gdi_.GraphicsGradientStop_GetPosition(*args, **kwargs)
+
+    def SetPosition(*args, **kwargs):
+        """SetPosition(self, float pos)"""
+        return _gdi_.GraphicsGradientStop_SetPosition(*args, **kwargs)
+
+    Position = property(GetPosition,SetPosition) 
+    Colour = property(GetColour,SetColour) 
+_gdi_.GraphicsGradientStop_swigregister(GraphicsGradientStop)
+cvar = _gdi_.cvar
+NullGraphicsPen = cvar.NullGraphicsPen
+NullGraphicsBrush = cvar.NullGraphicsBrush
+NullGraphicsFont = cvar.NullGraphicsFont
+NullGraphicsBitmap = cvar.NullGraphicsBitmap
+NullGraphicsMatrix = cvar.NullGraphicsMatrix
+NullGraphicsPath = cvar.NullGraphicsPath
+
+class GraphicsGradientStops(object):
+    """Proxy of C++ GraphicsGradientStops class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, Colour startCol=wxTransparentColour, Colour endCol=wxTransparentColour) -> GraphicsGradientStops"""
+        _gdi_.GraphicsGradientStops_swiginit(self,_gdi_.new_GraphicsGradientStops(*args, **kwargs))
+    __swig_destroy__ = _gdi_.delete_GraphicsGradientStops
+    __del__ = lambda self : None;
+    def Add(*args):
+        """
+        Add(self, GraphicsGradientStop stop)
+        Add(self, Colour col, float pos)
+        """
+        return _gdi_.GraphicsGradientStops_Add(*args)
+
+    def GetCount(*args, **kwargs):
+        """GetCount(self) -> unsigned int"""
+        return _gdi_.GraphicsGradientStops_GetCount(*args, **kwargs)
+
+    def Item(*args, **kwargs):
+        """Item(self, unsigned int n) -> GraphicsGradientStop"""
+        return _gdi_.GraphicsGradientStops_Item(*args, **kwargs)
+
+    def SetStartColour(*args, **kwargs):
+        """SetStartColour(self, Colour col)"""
+        return _gdi_.GraphicsGradientStops_SetStartColour(*args, **kwargs)
+
+    def GetStartColour(*args, **kwargs):
+        """GetStartColour(self) -> Colour"""
+        return _gdi_.GraphicsGradientStops_GetStartColour(*args, **kwargs)
+
+    def SetEndColour(*args, **kwargs):
+        """SetEndColour(self, Colour col)"""
+        return _gdi_.GraphicsGradientStops_SetEndColour(*args, **kwargs)
+
+    def GetEndColour(*args, **kwargs):
+        """GetEndColour(self) -> Colour"""
+        return _gdi_.GraphicsGradientStops_GetEndColour(*args, **kwargs)
+
+    def __len__(*args, **kwargs):
+        """__len__(self) -> unsigned int"""
+        return _gdi_.GraphicsGradientStops___len__(*args, **kwargs)
+
+    def __getitem__(*args, **kwargs):
+        """__getitem__(self, unsigned int n) -> GraphicsGradientStop"""
+        return _gdi_.GraphicsGradientStops___getitem__(*args, **kwargs)
+
+    Count = property(GetCount) 
+    StartColour = property(GetStartColour,SetStartColour) 
+    EndColour = property(GetEndColour,SetEndColour) 
+_gdi_.GraphicsGradientStops_swigregister(GraphicsGradientStops)
+
 class GraphicsContext(GraphicsObject):
     """
     A `wx.GraphicsContext` instance is the object that is drawn upon. It is
@@ -5609,7 +6140,12 @@ class GraphicsContext(GraphicsObject):
     def Create(*args):
         """
         Create(WindowDC dc) -> GraphicsContext
+        Create(MemoryDC dc) -> GraphicsContext
         Create(Window window) -> GraphicsContext
+        Create(PrinterDC dc) -> GraphicsContext
+        Create(MetaFileDC dc) -> GraphicsContext
+        Create(EnhMetaFileDC dc) -> GraphicsContext
+        Create(Image ?) -> GraphicsContext
 
         Creates a wx.GraphicsContext either from a window or a DC.
         """
@@ -5649,6 +6185,49 @@ class GraphicsContext(GraphicsObject):
         return _gdi_.GraphicsContext_CreateFromNativeWindow(*args, **kwargs)
 
     CreateFromNativeWindow = staticmethod(CreateFromNativeWindow)
+    def StartDoc(*args, **kwargs):
+        """
+        StartDoc(self, String message) -> bool
+
+        Begin a new document (relevant only for printing / pdf etc) if there
+        is a progress dialog, message will be shown
+        """
+        return _gdi_.GraphicsContext_StartDoc(*args, **kwargs)
+
+    def EndDoc(*args, **kwargs):
+        """
+        EndDoc(self)
+
+        Done with that document (relevant only for printing / pdf etc) 
+        """
+        return _gdi_.GraphicsContext_EndDoc(*args, **kwargs)
+
+    def StartPage(*args, **kwargs):
+        """
+        StartPage(self, Double width=0, Double height=0)
+
+        Opens a new page (relevant only for printing / pdf etc) with the given
+        size in points (if both are null the default page size will be used)
+
+        """
+        return _gdi_.GraphicsContext_StartPage(*args, **kwargs)
+
+    def EndPage(*args, **kwargs):
+        """
+        EndPage(self)
+
+        Ends the current page  (relevant only for printing / pdf etc) 
+        """
+        return _gdi_.GraphicsContext_EndPage(*args, **kwargs)
+
+    def Flush(*args, **kwargs):
+        """
+        Flush(self)
+
+        Make sure that the current content of this context is immediately visible
+        """
+        return _gdi_.GraphicsContext_Flush(*args, **kwargs)
+
     def CreatePath(*args, **kwargs):
         """
         CreatePath(self) -> GraphicsPath
@@ -5673,38 +6252,58 @@ class GraphicsContext(GraphicsObject):
         """
         return _gdi_.GraphicsContext_CreateBrush(*args, **kwargs)
 
-    def CreateLinearGradientBrush(*args, **kwargs):
+    def CreateLinearGradientBrush(*args):
         """
         CreateLinearGradientBrush(self, Double x1, Double y1, Double x2, Double y2, Colour c1, 
             Colour c2) -> GraphicsBrush
+        CreateLinearGradientBrush(self, Double x1, Double y1, Double x2, Double y2, GraphicsGradientStops stops) -> GraphicsBrush
 
         Creates a native brush, having a linear gradient, starting at (x1,y1)
-        with color c1 to (x2,y2) with color c2.
+        to (x2,y2) with the given boundary colors or the specified stops.
         """
-        return _gdi_.GraphicsContext_CreateLinearGradientBrush(*args, **kwargs)
+        return _gdi_.GraphicsContext_CreateLinearGradientBrush(*args)
 
-    def CreateRadialGradientBrush(*args, **kwargs):
+    def CreateRadialGradientBrush(*args):
         """
         CreateRadialGradientBrush(self, Double xo, Double yo, Double xc, Double yc, Double radius, 
             Colour oColor, Colour cColor) -> GraphicsBrush
+        CreateRadialGradientBrush(self, Double xo, Double yo, Double xc, Double yc, Double radius, 
+            GraphicsGradientStops stops) -> GraphicsBrush
 
         Creates a native brush, having a radial gradient originating at point
-        (xo,yc) with color oColour and ends on a circle around (xc,yc) with
-        radius r and color cColour.
+        (xo,yo) and ending on a circle around (xc,yc) with the given radius; the colours may be
+        specified by just the two extremes or the full array of gradient stops.
         """
-        return _gdi_.GraphicsContext_CreateRadialGradientBrush(*args, **kwargs)
+        return _gdi_.GraphicsContext_CreateRadialGradientBrush(*args)
 
-    def CreateFont(*args, **kwargs):
+    def CreateFont(*args):
         """
         CreateFont(self, Font font, Colour col=*wxBLACK) -> GraphicsFont
-
-        Creates a native graphics font from a `wx.Font` and a text colour.
+        CreateFont(self, double sizeInPixels, String facename, int flags=FONTFLAG_DEFAULT, 
+            Colour col=*wxBLACK) -> GraphicsFont
         """
-        return _gdi_.GraphicsContext_CreateFont(*args, **kwargs)
+        return _gdi_.GraphicsContext_CreateFont(*args)
 
     def CreateBitmap(*args, **kwargs):
-        """CreateBitmap(self, Bitmap bitmap) -> GraphicsBitmap"""
+        """
+        CreateBitmap(self, Bitmap bitmap) -> GraphicsBitmap
+
+        Create a native bitmap representation.
+        """
         return _gdi_.GraphicsContext_CreateBitmap(*args, **kwargs)
+
+    def CreateBitmapFromImage(*args, **kwargs):
+        """CreateBitmapFromImage(self, Image image) -> GraphicsBitmap"""
+        return _gdi_.GraphicsContext_CreateBitmapFromImage(*args, **kwargs)
+
+    def CreateSubBitmap(*args, **kwargs):
+        """
+        CreateSubBitmap(self, GraphicsBitmap bitmap, Double x, Double y, Double w, 
+            Double h) -> GraphicsBitmap
+
+        Create a native bitmap representation using a subset of a wx.Bitmap.
+        """
+        return _gdi_.GraphicsContext_CreateSubBitmap(*args, **kwargs)
 
     def CreateMatrix(*args, **kwargs):
         """
@@ -5766,21 +6365,78 @@ class GraphicsContext(GraphicsObject):
         """
         return _gdi_.GraphicsContext_GetNativeContext(*args, **kwargs)
 
-    def GetLogicalFunction(*args, **kwargs):
+    def GetAntialiasMode(*args, **kwargs):
         """
-        GetLogicalFunction(self) -> int
+        GetAntialiasMode(self) -> int
 
-        Returns the current logical function.
+        Returns the current shape antialiasing mode
         """
-        return _gdi_.GraphicsContext_GetLogicalFunction(*args, **kwargs)
+        return _gdi_.GraphicsContext_GetAntialiasMode(*args, **kwargs)
 
-    def SetLogicalFunction(*args, **kwargs):
+    def SetAntialiasMode(*args, **kwargs):
         """
-        SetLogicalFunction(self, int function) -> bool
+        SetAntialiasMode(self, int antialias) -> bool
 
-        Sets the current logical function, returns ``True`` if it supported
+        Sets the antialiasing mode, returns true if it is supported
         """
-        return _gdi_.GraphicsContext_SetLogicalFunction(*args, **kwargs)
+        return _gdi_.GraphicsContext_SetAntialiasMode(*args, **kwargs)
+
+    def GetInterpolationQuality(*args, **kwargs):
+        """GetInterpolationQuality(self) -> int"""
+        return _gdi_.GraphicsContext_GetInterpolationQuality(*args, **kwargs)
+
+    def SetInterpolationQuality(*args, **kwargs):
+        """SetInterpolationQuality(self, int interpolation) -> bool"""
+        return _gdi_.GraphicsContext_SetInterpolationQuality(*args, **kwargs)
+
+    def GetCompositionMode(*args, **kwargs):
+        """
+        GetCompositionMode(self) -> int
+
+        Returns the current compositing operator
+        """
+        return _gdi_.GraphicsContext_GetCompositionMode(*args, **kwargs)
+
+    def SetCompositionMode(*args, **kwargs):
+        """
+        SetCompositionMode(self, int op) -> bool
+
+        Sets the compositing operator, returns True if it supported
+        """
+        return _gdi_.GraphicsContext_SetCompositionMode(*args, **kwargs)
+
+    def GetSize(*args, **kwargs):
+        """
+        GetSize(self) --> (width, height)
+
+        Returns the size of the graphics context in device coordinates
+        """
+        return _gdi_.GraphicsContext_GetSize(*args, **kwargs)
+
+    def GetDPI(*args, **kwargs):
+        """
+        GetDPI(self) --> (dpiX, dpiY)
+
+        Returns the resolution of the graphics context in device points per inch
+        """
+        return _gdi_.GraphicsContext_GetDPI(*args, **kwargs)
+
+    def BeginLayer(*args, **kwargs):
+        """
+        BeginLayer(self, Double opacity)
+
+        all rendering is done into a fully transparent temporary context
+        """
+        return _gdi_.GraphicsContext_BeginLayer(*args, **kwargs)
+
+    def EndLayer(*args, **kwargs):
+        """
+        EndLayer(self)
+
+        composites back the drawings into the context with the opacity given
+        at the BeginLayer call
+        """
+        return _gdi_.GraphicsContext_EndLayer(*args, **kwargs)
 
     def Translate(*args, **kwargs):
         """
@@ -5932,18 +6588,15 @@ class GraphicsContext(GraphicsObject):
         """
         return _gdi_.GraphicsContext_GetPartialTextExtents(*args, **kwargs)
 
-    def DrawGraphicsBitmap(*args, **kwargs):
-        """DrawGraphicsBitmap(self, GraphicsBitmap bmp, Double x, Double y, Double w, Double h)"""
-        return _gdi_.GraphicsContext_DrawGraphicsBitmap(*args, **kwargs)
-
-    def DrawBitmap(*args, **kwargs):
+    def DrawBitmap(*args):
         """
+        DrawBitmap(self, GraphicsBitmap bmp, Double x, Double y, Double w, Double h)
         DrawBitmap(self, Bitmap bmp, Double x, Double y, Double w, Double h)
 
         Draws the bitmap. In case of a mono bitmap, this is treated as a mask
         and the current brush is used for filling.
         """
-        return _gdi_.GraphicsContext_DrawBitmap(*args, **kwargs)
+        return _gdi_.GraphicsContext_DrawBitmap(*args)
 
     def DrawIcon(*args, **kwargs):
         """
@@ -5969,13 +6622,13 @@ class GraphicsContext(GraphicsObject):
         """
         return _gdi_.GraphicsContext_StrokeLines(*args, **kwargs)
 
-    def StrokeLineSegments(*args, **kwargs):
+    def StrokeLineSegements(*args, **kwargs):
         """
         StrokeLineSegments(self, List beginPoints, List endPoints)
 
         Stroke disconnected lines from begin to end points
         """
-        return _gdi_.GraphicsContext_StrokeLineSegments(*args, **kwargs)
+        return _gdi_.GraphicsContext_StrokeLineSegements(*args, **kwargs)
 
     def DrawLines(*args, **kwargs):
         """
@@ -6017,19 +6670,29 @@ class GraphicsContext(GraphicsObject):
         """
         return _gdi_.GraphicsContext_ShouldOffset(*args, **kwargs)
 
+    def EnableOffset(*args, **kwargs):
+        """EnableOffset(self, bool enable=True)"""
+        return _gdi_.GraphicsContext_EnableOffset(*args, **kwargs)
+
+    def DisableOffset(*args, **kwargs):
+        """DisableOffset(self)"""
+        return _gdi_.GraphicsContext_DisableOffset(*args, **kwargs)
+
+    def OffsetEnabled(*args, **kwargs):
+        """OffsetEnabled(self) -> bool"""
+        return _gdi_.GraphicsContext_OffsetEnabled(*args, **kwargs)
+
 _gdi_.GraphicsContext_swigregister(GraphicsContext)
-cvar = _gdi_.cvar
-NullGraphicsPen = cvar.NullGraphicsPen
-NullGraphicsBrush = cvar.NullGraphicsBrush
-NullGraphicsFont = cvar.NullGraphicsFont
-NullGraphicsBitmap = cvar.NullGraphicsBitmap
-NullGraphicsMatrix = cvar.NullGraphicsMatrix
-NullGraphicsPath = cvar.NullGraphicsPath
 
 def GraphicsContext_Create(*args):
   """
     Create(WindowDC dc) -> GraphicsContext
-    GraphicsContext_Create(Window window) -> GraphicsContext
+    Create(MemoryDC dc) -> GraphicsContext
+    Create(Window window) -> GraphicsContext
+    Create(PrinterDC dc) -> GraphicsContext
+    Create(MetaFileDC dc) -> GraphicsContext
+    Create(EnhMetaFileDC dc) -> GraphicsContext
+    GraphicsContext_Create(Image ?) -> GraphicsContext
 
     Creates a wx.GraphicsContext either from a window or a DC.
     """
@@ -6085,9 +6748,17 @@ class GraphicsRenderer(_core.Object):
     def CreateContext(*args):
         """
         CreateContext(self, WindowDC dc) -> GraphicsContext
+        CreateContext(self, MemoryDC dc) -> GraphicsContext
+        CreateContext(self, PrinterDC dc) -> GraphicsContext
         CreateContext(self, Window window) -> GraphicsContext
+        CreateContext(self, MetaFileDC dc) -> GraphicsContext
+        CreateContext(self, EnhMetaFileDC dc) -> GraphicsContext
         """
         return _gdi_.GraphicsRenderer_CreateContext(*args)
+
+    def CreateContextFromImage(*args, **kwargs):
+        """CreateContextFromImage(self, Image image) -> GraphicsContext"""
+        return _gdi_.GraphicsRenderer_CreateContextFromImage(*args, **kwargs)
 
     def CreateMeasuringContext(*args, **kwargs):
         """CreateMeasuringContext(self) -> GraphicsContext"""
@@ -6121,26 +6792,38 @@ class GraphicsRenderer(_core.Object):
         return _gdi_.GraphicsRenderer_CreateBrush(*args, **kwargs)
 
     def CreateLinearGradientBrush(*args, **kwargs):
-        """
-        CreateLinearGradientBrush(self, Double x1, Double y1, Double x2, Double y2, Colour c1, 
-            Colour c2) -> GraphicsBrush
-        """
+        """CreateLinearGradientBrush(self, Double x1, Double y1, Double x2, Double y2, GraphicsGradientStops stops) -> GraphicsBrush"""
         return _gdi_.GraphicsRenderer_CreateLinearGradientBrush(*args, **kwargs)
 
     def CreateRadialGradientBrush(*args, **kwargs):
         """
         CreateRadialGradientBrush(self, Double xo, Double yo, Double xc, Double yc, Double radius, 
-            Colour oColor, Colour cColor) -> GraphicsBrush
+            GraphicsGradientStops stops) -> GraphicsBrush
         """
         return _gdi_.GraphicsRenderer_CreateRadialGradientBrush(*args, **kwargs)
 
-    def CreateFont(*args, **kwargs):
-        """CreateFont(self, Font font, Colour col=*wxBLACK) -> GraphicsFont"""
-        return _gdi_.GraphicsRenderer_CreateFont(*args, **kwargs)
+    def CreateFont(*args):
+        """
+        CreateFont(self, Font font, Colour col=*wxBLACK) -> GraphicsFont
+        CreateFont(self, double sizeInPixels, String facename, int flags=FONTFLAG_DEFAULT, 
+            Colour col=*wxBLACK) -> GraphicsFont
+        """
+        return _gdi_.GraphicsRenderer_CreateFont(*args)
 
     def CreateBitmap(*args, **kwargs):
-        """CreateBitmap(self, Bitmap bmp) -> GraphicsBitmap"""
+        """CreateBitmap(self, Bitmap bitmap) -> GraphicsBitmap"""
         return _gdi_.GraphicsRenderer_CreateBitmap(*args, **kwargs)
+
+    def CreateBitmapFromImage(*args, **kwargs):
+        """CreateBitmapFromImage(self, Image image) -> GraphicsBitmap"""
+        return _gdi_.GraphicsRenderer_CreateBitmapFromImage(*args, **kwargs)
+
+    def CreateSubBitmap(*args, **kwargs):
+        """
+        CreateSubBitmap(self, GraphicsBitmap bitmap, Double x, Double y, Double w, 
+            Double h) -> GraphicsBitmap
+        """
+        return _gdi_.GraphicsRenderer_CreateSubBitmap(*args, **kwargs)
 
 _gdi_.GraphicsRenderer_swigregister(GraphicsRenderer)
 
@@ -6159,7 +6842,10 @@ class GCDC(DC):
     def __init__(self, *args): 
         """
         __init__(self, WindowDC dc) -> GCDC
+        __init__(self, MemoryDC dc) -> GCDC
+        __init__(self, PrinterDC dc) -> GCDC
         __init__(self, Window window) -> GCDC
+        __init__(self, GraphicsContext ctx) -> GCDC
         """
         _gdi_.GCDC_swiginit(self,_gdi_.new_GCDC(*args))
         self.__dc = args[0] # save a ref so the other dc will not be deleted before self
@@ -6173,10 +6859,6 @@ class GCDC(DC):
     def SetGraphicsContext(*args, **kwargs):
         """SetGraphicsContext(self, GraphicsContext ctx)"""
         return _gdi_.GCDC_SetGraphicsContext(*args, **kwargs)
-
-    def Flush(*args, **kwargs):
-        """Flush(self)"""
-        return _gdi_.GCDC_Flush(*args, **kwargs)
 
     GraphicsContext = property(GetGraphicsContext,SetGraphicsContext) 
 _gdi_.GCDC_swigregister(GCDC)
@@ -6202,9 +6884,8 @@ class DCOverlay(object):
     __repr__ = _swig_repr
     def __init__(self, *args): 
         """
-        __init__(self, Overlay overlay, WindowDC dc, int x, int y, int width, 
-            int height) -> DCOverlay
-        __init__(self, Overlay overlay, WindowDC dc) -> DCOverlay
+        __init__(self, Overlay overlay, DC dc, int x, int y, int width, int height) -> DCOverlay
+        __init__(self, Overlay overlay, DC dc) -> DCOverlay
         """
         _gdi_.DCOverlay_swiginit(self,_gdi_.new_DCOverlay(*args))
         self.__dc = args[1] # save a ref so the dc will not be deleted before self
@@ -6296,6 +6977,7 @@ class StockGDI(object):
     BRUSH_BLUE = _gdi_.StockGDI_BRUSH_BLUE
     BRUSH_CYAN = _gdi_.StockGDI_BRUSH_CYAN
     BRUSH_GREEN = _gdi_.StockGDI_BRUSH_GREEN
+    BRUSH_YELLOW = _gdi_.StockGDI_BRUSH_YELLOW
     BRUSH_GREY = _gdi_.StockGDI_BRUSH_GREY
     BRUSH_LIGHTGREY = _gdi_.StockGDI_BRUSH_LIGHTGREY
     BRUSH_MEDIUMGREY = _gdi_.StockGDI_BRUSH_MEDIUMGREY
@@ -6306,6 +6988,7 @@ class StockGDI(object):
     COLOUR_BLUE = _gdi_.StockGDI_COLOUR_BLUE
     COLOUR_CYAN = _gdi_.StockGDI_COLOUR_CYAN
     COLOUR_GREEN = _gdi_.StockGDI_COLOUR_GREEN
+    COLOUR_YELLOW = _gdi_.StockGDI_COLOUR_YELLOW
     COLOUR_LIGHTGREY = _gdi_.StockGDI_COLOUR_LIGHTGREY
     COLOUR_RED = _gdi_.StockGDI_COLOUR_RED
     COLOUR_WHITE = _gdi_.StockGDI_COLOUR_WHITE
@@ -6318,8 +7001,10 @@ class StockGDI(object):
     FONT_SWISS = _gdi_.StockGDI_FONT_SWISS
     PEN_BLACK = _gdi_.StockGDI_PEN_BLACK
     PEN_BLACKDASHED = _gdi_.StockGDI_PEN_BLACKDASHED
+    PEN_BLUE = _gdi_.StockGDI_PEN_BLUE
     PEN_CYAN = _gdi_.StockGDI_PEN_CYAN
     PEN_GREEN = _gdi_.StockGDI_PEN_GREEN
+    PEN_YELLOW = _gdi_.StockGDI_PEN_YELLOW
     PEN_GREY = _gdi_.StockGDI_PEN_GREY
     PEN_LIGHTGREY = _gdi_.StockGDI_PEN_LIGHTGREY
     PEN_MEDIUMGREY = _gdi_.StockGDI_PEN_MEDIUMGREY
@@ -6375,8 +7060,10 @@ class StockGDI(object):
                                               
         wx.BLACK_DASHED_PEN.this  = StockGDI.GetPen(StockGDI.PEN_BLACKDASHED).this
         wx.BLACK_PEN.this         = StockGDI.GetPen(StockGDI.PEN_BLACK).this
+        wx.BLUE_PEN.this          = StockGDI.GetPen(StockGDI.PEN_BLUE).this
         wx.CYAN_PEN.this          = StockGDI.GetPen(StockGDI.PEN_CYAN).this
         wx.GREEN_PEN.this         = StockGDI.GetPen(StockGDI.PEN_GREEN).this
+        wx.YELLOW_PEN.this        = StockGDI.GetPen(StockGDI.PEN_YELLOW).this
         wx.GREY_PEN.this          = StockGDI.GetPen(StockGDI.PEN_GREY).this
         wx.LIGHT_GREY_PEN.this    = StockGDI.GetPen(StockGDI.PEN_LIGHTGREY).this
         wx.MEDIUM_GREY_PEN.this   = StockGDI.GetPen(StockGDI.PEN_MEDIUMGREY).this
@@ -6388,6 +7075,7 @@ class StockGDI(object):
         wx.BLUE_BRUSH.this         = StockGDI.GetBrush(StockGDI.BRUSH_BLUE).this
         wx.CYAN_BRUSH.this         = StockGDI.GetBrush(StockGDI.BRUSH_CYAN).this
         wx.GREEN_BRUSH.this        = StockGDI.GetBrush(StockGDI.BRUSH_GREEN).this
+        wx.YELLOW_BRUSH.this       = StockGDI.GetBrush(StockGDI.BRUSH_YELLOW).this
         wx.GREY_BRUSH.this         = StockGDI.GetBrush(StockGDI.BRUSH_GREY).this
         wx.LIGHT_GREY_BRUSH.this   = StockGDI.GetBrush(StockGDI.BRUSH_LIGHTGREY).this
         wx.MEDIUM_GREY_BRUSH.this  = StockGDI.GetBrush(StockGDI.BRUSH_MEDIUMGREY).this
@@ -6399,6 +7087,7 @@ class StockGDI(object):
         wx.BLUE.this        = StockGDI.GetColour(StockGDI.COLOUR_BLUE).this
         wx.CYAN.this        = StockGDI.GetColour(StockGDI.COLOUR_CYAN).this
         wx.GREEN.this       = StockGDI.GetColour(StockGDI.COLOUR_GREEN).this
+        wx.YELLOW.this       = StockGDI.GetColour(StockGDI.COLOUR_YELLOW).this
         wx.LIGHT_GREY.this  = StockGDI.GetColour(StockGDI.COLOUR_LIGHTGREY).this
         wx.RED.this         = StockGDI.GetColour(StockGDI.COLOUR_RED).this
         wx.WHITE.this       = StockGDI.GetColour(StockGDI.COLOUR_WHITE).this
@@ -6411,7 +7100,6 @@ class StockGDI(object):
         wx.ThePenList.this        = _wxPyInitThePenList().this
         wx.TheBrushList.this      = _wxPyInitTheBrushList().this
         wx.TheColourDatabase.this = _wxPyInitTheColourDatabase().this
-
         
     _initStockObjects = staticmethod(_initStockObjects)
 
@@ -6450,8 +7138,10 @@ SWISS_FONT   = Font.__new__(Font)
                                    
 BLACK_DASHED_PEN  = Pen.__new__(Pen)
 BLACK_PEN         = Pen.__new__(Pen)
+BLUE_PEN          = Pen.__new__(Pen)                                               
 CYAN_PEN          = Pen.__new__(Pen)
 GREEN_PEN         = Pen.__new__(Pen)
+YELLOW_PEN        = Pen.__new__(Pen)                                                
 GREY_PEN          = Pen.__new__(Pen)
 LIGHT_GREY_PEN    = Pen.__new__(Pen)
 MEDIUM_GREY_PEN   = Pen.__new__(Pen)
@@ -6463,6 +7153,7 @@ BLACK_BRUSH        = Brush.__new__(Brush)
 BLUE_BRUSH         = Brush.__new__(Brush)
 CYAN_BRUSH         = Brush.__new__(Brush)
 GREEN_BRUSH        = Brush.__new__(Brush)
+YELLOW_BRUSH       = Brush.__new__(Brush)                                                
 GREY_BRUSH         = Brush.__new__(Brush)
 LIGHT_GREY_BRUSH   = Brush.__new__(Brush)
 MEDIUM_GREY_BRUSH  = Brush.__new__(Brush)
@@ -6474,6 +7165,7 @@ BLACK       = Colour.__new__(Colour)
 BLUE        = Colour.__new__(Colour)
 CYAN        = Colour.__new__(Colour)
 GREEN       = Colour.__new__(Colour)
+YELLOW      = Colour.__new__(Colour)                                                
 LIGHT_GREY  = Colour.__new__(Colour)
 RED         = Colour.__new__(Colour)
 WHITE       = Colour.__new__(Colour)
@@ -6481,6 +7173,8 @@ WHITE       = Colour.__new__(Colour)
 CROSS_CURSOR      = Cursor.__new__(Cursor)
 HOURGLASS_CURSOR  = Cursor.__new__(Cursor)
 STANDARD_CURSOR   = Cursor.__new__(Cursor)
+
+TransparentColour = Colour(0,0,0,ALPHA_TRANSPARENT)
 
 class GDIObjListBase(object):
     """Proxy of C++ GDIObjListBase class"""
@@ -6500,6 +7194,7 @@ NullBrush = cvar.NullBrush
 NullPalette = cvar.NullPalette
 NullFont = cvar.NullFont
 NullColour = cvar.NullColour
+NullIconBundle = cvar.NullIconBundle
 
 class PenList(GDIObjListBase):
     """Proxy of C++ PenList class"""
@@ -6509,17 +7204,6 @@ class PenList(GDIObjListBase):
     def FindOrCreatePen(*args, **kwargs):
         """FindOrCreatePen(self, Colour colour, int width, int style) -> Pen"""
         return _gdi_.PenList_FindOrCreatePen(*args, **kwargs)
-
-    def AddPen(*args, **kwargs):
-        """AddPen(self, Pen pen)"""
-        return _gdi_.PenList_AddPen(*args, **kwargs)
-
-    def RemovePen(*args, **kwargs):
-        """RemovePen(self, Pen pen)"""
-        return _gdi_.PenList_RemovePen(*args, **kwargs)
-
-    AddPen = wx._deprecated(AddPen)
-    RemovePen = wx._deprecated(RemovePen)
 
 _gdi_.PenList_swigregister(PenList)
 
@@ -6531,17 +7215,6 @@ class BrushList(GDIObjListBase):
     def FindOrCreateBrush(*args, **kwargs):
         """FindOrCreateBrush(self, Colour colour, int style=SOLID) -> Brush"""
         return _gdi_.BrushList_FindOrCreateBrush(*args, **kwargs)
-
-    def AddBrush(*args, **kwargs):
-        """AddBrush(self, Brush brush)"""
-        return _gdi_.BrushList_AddBrush(*args, **kwargs)
-
-    def RemoveBrush(*args, **kwargs):
-        """RemoveBrush(self, Brush brush)"""
-        return _gdi_.BrushList_RemoveBrush(*args, **kwargs)
-
-    AddBrush = wx._deprecated(AddBrush)
-    RemoveBrush = wx._deprecated(RemoveBrush)
 
 _gdi_.BrushList_swigregister(BrushList)
 
@@ -6557,17 +7230,6 @@ class FontList(GDIObjListBase):
             int encoding=FONTENCODING_DEFAULT) -> Font
         """
         return _gdi_.FontList_FindOrCreateFont(*args, **kwargs)
-
-    def AddFont(*args, **kwargs):
-        """AddFont(self, Font font)"""
-        return _gdi_.FontList_AddFont(*args, **kwargs)
-
-    def RemoveFont(*args, **kwargs):
-        """RemoveFont(self, Font font)"""
-        return _gdi_.FontList_RemoveFont(*args, **kwargs)
-
-    AddFont = wx._deprecated(AddFont)
-    RemoveFont = wx._deprecated(RemoveFont)
 
 _gdi_.FontList_swigregister(FontList)
 
@@ -6624,79 +7286,6 @@ ThePenList        = PenList.__new__(PenList)
 TheBrushList      = BrushList.__new__(BrushList)
 TheColourDatabase = ColourDatabase.__new__(ColourDatabase)
 
-NullColor = NullColour 
-#---------------------------------------------------------------------------
-
-class Effects(_core.Object):
-    """Proxy of C++ Effects class"""
-    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
-        """__init__(self) -> Effects"""
-        _gdi_.Effects_swiginit(self,_gdi_.new_Effects(*args, **kwargs))
-    def GetHighlightColour(*args, **kwargs):
-        """GetHighlightColour(self) -> Colour"""
-        return _gdi_.Effects_GetHighlightColour(*args, **kwargs)
-
-    def GetLightShadow(*args, **kwargs):
-        """GetLightShadow(self) -> Colour"""
-        return _gdi_.Effects_GetLightShadow(*args, **kwargs)
-
-    def GetFaceColour(*args, **kwargs):
-        """GetFaceColour(self) -> Colour"""
-        return _gdi_.Effects_GetFaceColour(*args, **kwargs)
-
-    def GetMediumShadow(*args, **kwargs):
-        """GetMediumShadow(self) -> Colour"""
-        return _gdi_.Effects_GetMediumShadow(*args, **kwargs)
-
-    def GetDarkShadow(*args, **kwargs):
-        """GetDarkShadow(self) -> Colour"""
-        return _gdi_.Effects_GetDarkShadow(*args, **kwargs)
-
-    def SetHighlightColour(*args, **kwargs):
-        """SetHighlightColour(self, Colour c)"""
-        return _gdi_.Effects_SetHighlightColour(*args, **kwargs)
-
-    def SetLightShadow(*args, **kwargs):
-        """SetLightShadow(self, Colour c)"""
-        return _gdi_.Effects_SetLightShadow(*args, **kwargs)
-
-    def SetFaceColour(*args, **kwargs):
-        """SetFaceColour(self, Colour c)"""
-        return _gdi_.Effects_SetFaceColour(*args, **kwargs)
-
-    def SetMediumShadow(*args, **kwargs):
-        """SetMediumShadow(self, Colour c)"""
-        return _gdi_.Effects_SetMediumShadow(*args, **kwargs)
-
-    def SetDarkShadow(*args, **kwargs):
-        """SetDarkShadow(self, Colour c)"""
-        return _gdi_.Effects_SetDarkShadow(*args, **kwargs)
-
-    def Set(*args, **kwargs):
-        """
-        Set(self, Colour highlightColour, Colour lightShadow, Colour faceColour, 
-            Colour mediumShadow, Colour darkShadow)
-        """
-        return _gdi_.Effects_Set(*args, **kwargs)
-
-    def DrawSunkenEdge(*args, **kwargs):
-        """DrawSunkenEdge(self, DC dc, Rect rect, int borderSize=1)"""
-        return _gdi_.Effects_DrawSunkenEdge(*args, **kwargs)
-
-    def TileBitmap(*args, **kwargs):
-        """TileBitmap(self, Rect rect, DC dc, Bitmap bitmap) -> bool"""
-        return _gdi_.Effects_TileBitmap(*args, **kwargs)
-
-    DarkShadow = property(GetDarkShadow,SetDarkShadow,doc="See `GetDarkShadow` and `SetDarkShadow`") 
-    FaceColour = property(GetFaceColour,SetFaceColour,doc="See `GetFaceColour` and `SetFaceColour`") 
-    HighlightColour = property(GetHighlightColour,SetHighlightColour,doc="See `GetHighlightColour` and `SetHighlightColour`") 
-    LightShadow = property(GetLightShadow,SetLightShadow,doc="See `GetLightShadow` and `SetLightShadow`") 
-    MediumShadow = property(GetMediumShadow,SetMediumShadow,doc="See `GetMediumShadow` and `SetMediumShadow`") 
-_gdi_.Effects_swigregister(Effects)
-
-Effects = wx._deprecated(Effects) 
 #---------------------------------------------------------------------------
 
 CONTROL_DISABLED = _gdi_.CONTROL_DISABLED
@@ -6707,6 +7296,7 @@ CONTROL_ISDEFAULT = _gdi_.CONTROL_ISDEFAULT
 CONTROL_ISSUBMENU = _gdi_.CONTROL_ISSUBMENU
 CONTROL_EXPANDED = _gdi_.CONTROL_EXPANDED
 CONTROL_SIZEGRIP = _gdi_.CONTROL_SIZEGRIP
+CONTROL_FLAT = _gdi_.CONTROL_FLAT
 CONTROL_CURRENT = _gdi_.CONTROL_CURRENT
 CONTROL_SELECTED = _gdi_.CONTROL_SELECTED
 CONTROL_CHECKED = _gdi_.CONTROL_CHECKED
@@ -6714,6 +7304,11 @@ CONTROL_CHECKABLE = _gdi_.CONTROL_CHECKABLE
 CONTROL_UNDETERMINED = _gdi_.CONTROL_UNDETERMINED
 CONTROL_FLAGS_MASK = _gdi_.CONTROL_FLAGS_MASK
 CONTROL_DIRTY = _gdi_.CONTROL_DIRTY
+TITLEBAR_BUTTON_CLOSE = _gdi_.TITLEBAR_BUTTON_CLOSE
+TITLEBAR_BUTTON_MAXIMIZE = _gdi_.TITLEBAR_BUTTON_MAXIMIZE
+TITLEBAR_BUTTON_ICONIZE = _gdi_.TITLEBAR_BUTTON_ICONIZE
+TITLEBAR_BUTTON_RESTORE = _gdi_.TITLEBAR_BUTTON_RESTORE
+TITLEBAR_BUTTON_HELP = _gdi_.TITLEBAR_BUTTON_HELP
 class SplitterRenderParams(object):
     """
     This is just a simple struct used as a return value of
@@ -6863,6 +7458,10 @@ class RendererNative(object):
         """
         return _gdi_.RendererNative_GetHeaderButtonHeight(*args, **kwargs)
 
+    def GetHeaderButtonMargin(*args, **kwargs):
+        """GetHeaderButtonMargin(self, Window win) -> int"""
+        return _gdi_.RendererNative_GetHeaderButtonMargin(*args, **kwargs)
+
     def DrawTreeItemButton(*args, **kwargs):
         """
         DrawTreeItemButton(self, Window win, DC dc, Rect rect, int flags=0)
@@ -6925,6 +7524,10 @@ class RendererNative(object):
         """
         return _gdi_.RendererNative_DrawCheckBox(*args, **kwargs)
 
+    def GetCheckBoxSize(*args, **kwargs):
+        """GetCheckBoxSize(self, Window win) -> Size"""
+        return _gdi_.RendererNative_GetCheckBoxSize(*args, **kwargs)
+
     def DrawPushButton(*args, **kwargs):
         """
         DrawPushButton(self, Window win, DC dc, Rect rect, int flags=0)
@@ -6953,6 +7556,15 @@ class RendererNative(object):
         """
         return _gdi_.RendererNative_DrawItemSelectionRect(*args, **kwargs)
 
+    def DrawFocusRect(*args, **kwargs):
+        """
+        DrawFocusRect(self, Window win, DC dc, Rect rect, int flags=0)
+
+        Draw the focus rectangle around the label contained in the given rect.
+        Only wxCONTROL_SELECTED makes sense in flags here
+        """
+        return _gdi_.RendererNative_DrawFocusRect(*args, **kwargs)
+
     def GetSplitterParams(*args, **kwargs):
         """
         GetSplitterParams(self, Window win) -> SplitterRenderParams
@@ -6962,20 +7574,53 @@ class RendererNative(object):
         return _gdi_.RendererNative_GetSplitterParams(*args, **kwargs)
 
     def DrawChoice(*args, **kwargs):
-        """DrawChoice(self, Window win, DC dc, Rect rect, int flags=0)"""
+        """
+        DrawChoice(self, Window win, DC dc, Rect rect, int flags=0)
+
+        Draw a native wxChoice
+        """
         return _gdi_.RendererNative_DrawChoice(*args, **kwargs)
 
     def DrawComboBox(*args, **kwargs):
-        """DrawComboBox(self, Window win, DC dc, Rect rect, int flags=0)"""
+        """
+        DrawComboBox(self, Window win, DC dc, Rect rect, int flags=0)
+
+        Draw a native wxComboBox
+        """
         return _gdi_.RendererNative_DrawComboBox(*args, **kwargs)
 
     def DrawTextCtrl(*args, **kwargs):
-        """DrawTextCtrl(self, Window win, DC dc, Rect rect, int flags=0)"""
+        """
+        DrawTextCtrl(self, Window win, DC dc, Rect rect, int flags=0)
+
+        Draw a native wxTextCtrl
+        """
         return _gdi_.RendererNative_DrawTextCtrl(*args, **kwargs)
 
-    def DrawRadioButton(*args, **kwargs):
-        """DrawRadioButton(self, Window win, DC dc, Rect rect, int flags=0)"""
-        return _gdi_.RendererNative_DrawRadioButton(*args, **kwargs)
+    def DrawRadioBitmap(*args, **kwargs):
+        """
+        DrawRadioBitmap(self, Window win, DC dc, Rect rect, int flags=0)
+
+        Draw a native wxRadioButton (just the button image, not the text)
+        """
+        return _gdi_.RendererNative_DrawRadioBitmap(*args, **kwargs)
+
+    DrawRadioButton = wx.deprecated(DrawRadioBitmap,
+        'DrawRadioButton is deprecated, use `DrawRadioBitmap` instead.')
+
+    def DrawTitleBarBitmap(*args, **kwargs):
+        """
+        DrawTitleBarBitmap(self, Window win, DC dc, Rect rect, int button, int flags=0)
+
+        Draw one of the standard title bar buttons.
+
+        This is currently implemented only for MSW and OS X (for the close
+        button only) because there is no way to render standard title bar
+        buttons under the other platforms, the best can be done is to use
+        normal (only) images which wxArtProvider provides for wxART_HELP and
+        wxART_CLOSE (but not any other title bar buttons)
+        """
+        return _gdi_.RendererNative_DrawTitleBarBitmap(*args, **kwargs)
 
     def Get(*args, **kwargs):
         """
@@ -7072,22 +7717,6 @@ def RendererNative_Set(*args, **kwargs):
     """
   return _gdi_.RendererNative_Set(*args, **kwargs)
 
-
-def Renderer_DrawChoice(*args, **kwargs):
-  """Renderer_DrawChoice(Window win, DC dc, Rect rect, int flags=0)"""
-  return _gdi_.Renderer_DrawChoice(*args, **kwargs)
-
-def Renderer_DrawComboBox(*args, **kwargs):
-  """Renderer_DrawComboBox(Window win, DC dc, Rect rect, int flags=0)"""
-  return _gdi_.Renderer_DrawComboBox(*args, **kwargs)
-
-def Renderer_DrawTextCtrl(*args, **kwargs):
-  """Renderer_DrawTextCtrl(Window win, DC dc, Rect rect, int flags=0)"""
-  return _gdi_.Renderer_DrawTextCtrl(*args, **kwargs)
-
-def Renderer_DrawRadioButton(*args, **kwargs):
-  """Renderer_DrawRadioButton(Window win, DC dc, Rect rect, int flags=0)"""
-  return _gdi_.Renderer_DrawRadioButton(*args, **kwargs)
 #---------------------------------------------------------------------------
 
 class PseudoDC(_core.Object):
@@ -7693,7 +8322,7 @@ class PseudoDC(_core.Object):
     def DrawPolygon(*args, **kwargs):
         """
         DrawPolygon(self, List points, int xoffset=0, int yoffset=0,
-            int fillStyle=ODDEVEN_RULE)
+            wxPolygonFillMode fillStyle=ODDEVEN_RULE)
 
         Draws a filled polygon using a sequence of `wx.Point` objects, adding
         the optional offset coordinate.  The last argument specifies the fill

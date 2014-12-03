@@ -11,6 +11,7 @@
 #----------------------------------------------------------------------
 
 import wx
+import wx.lib.scrolledpanel as sp
 
 # For HIG info: links to all the HIGs can be found here: 
 # http://en.wikipedia.org/wiki/Human_Interface_Guidelines
@@ -42,7 +43,6 @@ border = {  "left": wx.LEFT,
          }
            
 minsize = {   "fixed":    wx.FIXED_MINSIZE,
-              "adjust":   wx.ADJUST_MINSIZE,
           }
                 
 misc_flags = {   "expand": wx.EXPAND, }
@@ -284,14 +284,17 @@ def SetDefaultSizerProps(self):
     item = self.GetParent().GetSizer().GetItem(self)    
     item.SetProportion(0)
     item.SetFlag(wx.ALL)
-    item.SetBorder(self.GetDefaultBorder())
+    item.SetBorder(self.GetDefaultHIGBorder())
         
 def GetSizerProps(self):
     """
     Returns a dictionary of prop name + value
     """
+
     props = {}
     item = self.GetParent().GetSizer().GetItem(self)
+    if item is None:
+        return None
     
     props['proportion'] = item.GetProportion()
     flags = item.GetFlag()
@@ -328,6 +331,13 @@ def GetSizerProps(self):
     return props
 
 def SetSizerProp(self, prop, value):
+    """
+    Sets a sizer property
+    
+    :param prop: valid strings are "proportion", "hgrow", "vgrow",
+        "align", "halign", "valign", "border", "minsize" and "expand"
+    :param value: corresponding value for the prop
+    """
     
     lprop = prop.lower()
     sizer = self.GetParent().GetSizer()
@@ -345,11 +355,21 @@ def SetSizerProp(self, prop, value):
         flag = flag | halign[value]
     elif lprop == "valign":
         flag = flag | valign[value]
+    # elif lprop == "border":
+    #     # this arg takes a tuple (dir, pixels)
+    #     dirs, amount = value
+    #     if dirs == "all":
+    #         dirs = ["all"]
+    #     for dir in dirs:
+    #         flag = flag | border[dir]
+    #     item.SetBorder(amount)
     elif lprop == "border":
         # this arg takes a tuple (dir, pixels)
         dirs, amount = value
         if dirs == "all":
             dirs = ["all"]
+        else:
+            flag &= ~(wx.ALL)
         for dir in dirs:
             flag = flag | border[dir]
         item.SetBorder(amount)
@@ -377,14 +397,21 @@ def SetSizerProp(self, prop, value):
         else:
             row, col = divmod( itemnum, cols )
         
-        if lprop == "expand":
+        if lprop == "expand" and not sizer.IsColGrowable(col):
             sizer.AddGrowableCol(col)
-        elif lprop == "proportion" and int(value) != 0:
+        elif lprop == "proportion" and int(value) != 0 and not sizer.IsRowGrowable(row):
             sizer.AddGrowableRow(row)
 
     item.SetFlag(flag)
 
 def SetSizerProps(self, props={}, **kwargs):
+    """
+    Allows to set multiple sizer properties
+
+    :param props: a dictionary of prop name + value
+    :param kwargs: key words can be used for properties, e.g. expand=True
+    """
+
     allprops = {}
     allprops.update(props)
     allprops.update(kwargs)
@@ -420,7 +447,6 @@ def SetVGrow(self, proportion):
         data["VGrow"] = proportion
         self.SetUserData(data) 
     
-    
 def GetVGrow(self):
     if self.GetUserData() and "VGrow" in self.GetUserData():
         return self.GetUserData()["VGrow"]
@@ -433,11 +459,11 @@ def GetDefaultPanelBorder(self):
 
 # Why, Python?! Why do you make it so easy?! ;-)    
 wx.Dialog.GetDialogBorder = GetDialogBorder
-wx.Panel.GetDefaultBorder = GetDefaultPanelBorder
-wx.Notebook.GetDefaultBorder = GetDefaultPanelBorder
-wx.SplitterWindow.GetDefaultBorder = GetDefaultPanelBorder
+wx.Panel.GetDefaultHIGBorder = GetDefaultPanelBorder
+wx.Notebook.GetDefaultHIGBorder = GetDefaultPanelBorder
+wx.SplitterWindow.GetDefaultHIGBorder = GetDefaultPanelBorder
 
-wx.Window.GetDefaultBorder = GetDefaultBorder
+wx.Window.GetDefaultHIGBorder = GetDefaultBorder
 wx.Window.SetDefaultSizerProps = SetDefaultSizerProps
 wx.Window.SetSizerProp = SetSizerProp
 wx.Window.SetSizerProps = SetSizerProps
@@ -449,19 +475,8 @@ wx.SizerItem.SetVGrow = SetVGrow
 wx.SizerItem.GetVGrow = GetVGrow
 
 
-class SizedPanel(wx.PyPanel):
-    def __init__(self, *args, **kwargs):
-        wx.PyPanel.__init__(self, *args, **kwargs)
-        sizer = wx.BoxSizer(wx.VERTICAL) #TableSizer(1, 0)
-        self.SetSizer(sizer)
-        self.sizerType = "vertical"
-        
+class SizedParent:
     def AddChild(self, child):
-        if wx.VERSION < (2,8):
-            wx.PyPanel.base_AddChild(self, child)
-        else:
-            wx.PyPanel.AddChild(self, child)
-
         # Note: The wx.LogNull is used here to suppress a log message
         # on wxMSW that happens because when AddChild is called the
         # widget's hwnd hasn't been set yet, so the GetWindowRect that
@@ -484,6 +499,15 @@ class SizedPanel(wx.PyPanel):
         return self.sizerType
     
     def SetSizerType(self, type, options={}):
+        """
+        Sets the sizer type and automatically re-assign any children
+        to it.
+        
+        :param type: sizer type, valid values are "horizontal", "vertical",
+            "form", "table" and "grid"
+        :param options: dictionary of options depending on type
+        """
+
         sizer = None
         self.sizerType = type
         if type == "horizontal":
@@ -534,20 +558,128 @@ class SizedPanel(wx.PyPanel):
         if sizer:
             self._SetNewSizer(sizer)
                 
-    def _SetNewSizer(self, sizer):
+    def _DetachFromSizer(self, sizer):
         props = {}
         for child in self.GetChildren():
-            props[child.GetId()] = child.GetSizerProps()
-            self.GetSizer().Detach(child)
-            
-        wx.PyPanel.SetSizer(self, sizer)
-        
+            # On the Mac the scrollbars and corner gripper of a
+            # ScrolledWindow will be in the list of children, but
+            # should not be managed by a sizer.  So if there is a
+            # child that is not in a sizer make sure we don't track
+            # info for it nor add it to the next sizer.
+            csp = child.GetSizerProps()
+            if csp is not None:
+                props[child.GetId()] = csp
+                self.GetSizer().Detach(child)
+
+        return props
+
+    def _AddToNewSizer(self, sizer, props):
         for child in self.GetChildren():
-            self.GetSizer().Add(child)
-            child.SetSizerProps(props[child.GetId()])
+            csp = props.get(child.GetId(), None)
+            # See Mac comment above.
+            if csp is not None:
+                self.GetSizer().Add(child)
+                child.SetSizerProps(csp)
+
+
+class SizedPanel(wx.PyPanel, SizedParent):
+    def __init__(self, *args, **kwargs):
+        """
+        A sized panel
         
+        Controls added to it will automatically be added to its sizer.
+        
+        Usage:
+        'self' is a SizedPanel instance
+        
+        self.SetSizerType("horizontal")
+        
+        b1 = wx.Button(self, wx.ID_ANY)
+        t1 = wx.TextCtrl(self, -1)
+        t1.SetSizerProps(expand=True)
+        """
+
+        wx.PyPanel.__init__(self, *args, **kwargs)
+        sizer = wx.BoxSizer(wx.VERTICAL) #TableSizer(1, 0)
+        self.SetSizer(sizer)
+        self.sizerType = "vertical"
+
+    def AddChild(self, child):
+        """
+        Called automatically by wx, do not call it from user code
+        """
+
+        if wx.VERSION < (2,8):
+            wx.PyPanel.base_AddChild(self, child)
+        else:
+            wx.PyPanel.AddChild(self, child)
+
+        SizedParent.AddChild(self, child)
+
+    def _SetNewSizer(self, sizer):
+        props = self._DetachFromSizer(sizer)
+        wx.PyPanel.SetSizer(self, sizer)
+        self._AddToNewSizer(sizer, props)
+
+
+class SizedScrolledPanel(sp.ScrolledPanel, SizedParent):
+    def __init__(self, *args, **kwargs):
+        """A sized scrolled panel
+        
+        Controls added to it will automatically be added to its sizer.
+        
+        Usage:
+        'self' is a SizedScrolledPanel instance
+        
+        self.SetSizerType("horizontal")
+        
+        b1 = wx.Button(self, wx.ID_ANY)
+        t1 = wx.TextCtrl(self, -1)
+        t1.SetSizerProps(expand=True)
+        """
+
+        sp.ScrolledPanel.__init__(self, *args, **kwargs)
+        sizer = wx.BoxSizer(wx.VERTICAL) #TableSizer(1, 0)
+        self.SetSizer(sizer)
+        self.sizerType = "vertical"
+        self.SetupScrolling()
+
+    def AddChild(self, child):
+        """
+        Called automatically by wx, should not be called from user code
+        """
+
+        if wx.VERSION < (2,8):
+            sp.ScrolledPanel.base_AddChild(self, child)
+        else:
+            sp.ScrolledPanel.AddChild(self, child)
+
+        SizedParent.AddChild(self, child)
+
+    def _SetNewSizer(self, sizer):
+        props = self._DetachFromSizer(sizer)
+        sp.ScrolledPanel.SetSizer(self, sizer)
+        self._AddToNewSizer(sizer, props)
+
+
 class SizedDialog(wx.Dialog):
     def __init__(self, *args, **kwargs):    
+        """A sized dialog
+        
+        Controls added to its content pane will automatically be added to 
+        the panes sizer.
+        
+        Usage:
+        'self' is a SizedDialog instance
+        
+        pane = self.GetContentsPane()
+        pane.SetSizerType("horizontal")
+        
+        b1 = wx.Button(pane, wx.ID_ANY)
+        t1 = wx.TextCtrl(pane, wx.ID_ANY)
+        t1.SetSizerProps(expand=True)
+        """
+
         wx.Dialog.__init__(self, *args, **kwargs)
         
         self.SetExtraStyle(wx.WS_EX_VALIDATE_RECURSIVELY)
@@ -562,19 +694,38 @@ class SizedDialog(wx.Dialog):
         self.SetAutoLayout(True)
         
     def GetContentsPane(self):
+        """
+        Return the pane to add controls too
+        """
         return self.mainPanel
         
     def SetButtonSizer(self, sizer):
         self.GetSizer().Add(sizer, 0, wx.EXPAND | wx.BOTTOM | wx.RIGHT, self.GetDialogBorder())
         
         # Temporary hack to fix button ordering problems.
-        cancel = self.FindWindowById(wx.ID_CANCEL)
-        no = self.FindWindowById(wx.ID_NO)
+        cancel = wx.FindWindowById(wx.ID_CANCEL, parent=self)
+        no = wx.FindWindowById(wx.ID_NO, parent=self)
         if no and cancel:
             cancel.MoveAfterInTabOrder(no)
             
 class SizedFrame(wx.Frame):
     def __init__(self, *args, **kwargs):    
+        """
+        A sized frame
+        
+        Controls added to its content pane will automatically be added to 
+        the panes sizer.
+        
+        Usage:
+        'self' is a SizedFrame instance
+        
+        pane = self.GetContentsPane()
+        pane.SetSizerType("horizontal")
+        
+        b1 = wx.Button(pane, wx.ID_ANY)
+        t1 = wx.TextCtrl(pane, -1)
+        t1.SetSizerProps(expand=True)
+        """
         wx.Frame.__init__(self, *args, **kwargs)
         
         self.borderLen = 12
@@ -589,4 +740,7 @@ class SizedFrame(wx.Frame):
         self.SetAutoLayout(True)
         
     def GetContentsPane(self):
+        """
+        Return the pane to add controls too
+        """
         return self.mainPanel

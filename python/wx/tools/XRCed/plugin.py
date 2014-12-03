@@ -2,7 +2,7 @@
 # Purpose:      Pluggable component support
 # Author:       Roman Rolinsky <rolinsky@femagsoft.com>
 # Created:      31.05.2007
-# RCS-ID:       $Id: plugin.py 51262 2008-01-17 17:07:19Z ROL $
+# RCS-ID:       $Id: plugin.py 69876 2011-11-30 15:46:26Z ROL $
 
 '''
 Functions for loading plugins.
@@ -30,7 +30,7 @@ def load_plugins(dir):
     dir = os.path.abspath(os.path.normpath(dir))
     TRACE('* load_plugins from %s' % dir)
     os.chdir(dir)
-    sys.path = sys_path + [dir]
+    sys.path = [dir] + sys_path
     try:                                # try/finally shield
         ff_py = glob.glob('[!_]*.py')
         for f in ff_py:

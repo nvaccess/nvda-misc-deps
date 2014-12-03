@@ -6,7 +6,7 @@
 # Author:      Mike Fletcher, Robin Dunn
 #
 # Created:     19-Nov-1999
-# RCS-ID:      $Id: splashscreen.py 27049 2004-05-02 02:41:33Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 1999 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -52,7 +52,7 @@ class SplashScreen(wx.Frame):
         duration -- milliseconds to display the splash screen
         bitmapfile -- absolute or relative pathname to image file
         callback -- if specified, is called when timer completes, callback is
-                    responsible for closing the splash screen
+        responsible for closing the splash screen
         '''
         ### Loading bitmap
         self.bitmap = bmp = wx.Image(bitmapfile, wx.BITMAP_TYPE_ANY).ConvertToBitmap()

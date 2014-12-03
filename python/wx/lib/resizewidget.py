@@ -61,6 +61,7 @@ class ResizeWidget(wx.PyPanel):
     def _init(self):
         self._managedChild = None
         self._bestSize = wx.Size(100,25)
+        self.InvalidateBestSize()
         self._resizeCursor = False
         self._dragPos = None
         self._resizeEnabled = True
@@ -68,10 +69,10 @@ class ResizeWidget(wx.PyPanel):
         
         
     def SetManagedChild(self, child):
-         self._reparenting = True
-         child.Reparent(self)  # This calls AddChild, so do the rest of the init there
-         self._reparenting = False
-         self.AdjustToChild()
+        self._reparenting = True
+        child.Reparent(self)  # This calls AddChild, so do the rest of the init there
+        self._reparenting = False
+        self.AdjustToChild()
      
     def GetManagedChild(self):
         return self._managedChild
@@ -86,6 +87,7 @@ class ResizeWidget(wx.PyPanel):
     def AdjustToSize(self, size):
         size = wx.Size(*size)
         self._bestSize = size + (RW_THICKNESS, RW_THICKNESS)
+        self.InvalidateBestSize()
         self.SetSize(self._bestSize)
 
 
@@ -132,6 +134,7 @@ class ResizeWidget(wx.PyPanel):
                 self.SetSize(newSize)
                 self._dragPos = pos
                 self._bestSize = newSize
+                self.InvalidateBestSize()
                 self._sendEvent()
                 
                 
@@ -170,13 +173,13 @@ class ResizeWidget(wx.PyPanel):
         if not self._managedChild:
             return
         sz = self.GetSize() 
-        self._managedChild.SetRect(
-            wx.RectPS((0,0), sz - (RW_THICKNESS, RW_THICKNESS)))
-        r = wx.Rect(sz.width - RW_LENGTH, 
-                    sz.height - RW_LENGTH,
-                    RW_LENGTH, RW_LENGTH)
-        r.Inflate(2,2)
-        self.RefreshRect(r)
+        cr = wx.RectPS((0,0), sz - (RW_THICKNESS, RW_THICKNESS))
+        self._managedChild.SetRect(cr)
+        r1 = wx.Rect(0, cr.height, sz.width, RW_THICKNESS)
+        r2 = wx.Rect(cr.width, 0, RW_THICKNESS, sz.height)
+        self.RefreshRect(r1)
+        self.RefreshRect(r2)
+        
         
         
     def OnPaint(self, evt): 

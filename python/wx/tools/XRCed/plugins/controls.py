@@ -39,13 +39,13 @@ c = component.Component('wxStaticBitmap', ['control','tool'],
               image=images.TreeStaticBitmap.GetImage())
 c.setSpecial('bitmap', attribute.BitmapAttribute)
 component.Manager.register(c)
-component.Manager.setMenu(c, 'control', 'bitmap', 'wxStaticLine', 30)
+component.Manager.setMenu(c, 'control', 'bitmap', 'wxStaticBitmap', 30)
 component.Manager.setTool(c, 'Controls', pos=(1,0))
 
 ### wxTextCtrl
 
 c = component.Component('wxTextCtrl', ['control','tool'],
-              ['pos', 'size', 'value'],
+              ['pos', 'size', 'value', 'maxlength'],
               image=images.TreeTextCtrl.GetImage())
 c.addStyles('wxTE_NO_VSCROLL',
             'wxTE_AUTO_SCROLL',
@@ -72,6 +72,21 @@ component.Manager.register(c)
 component.Manager.setMenu(c, 'control', 'text ctrl', 'wxTextCtrl', 40)
 component.Manager.setTool(c, 'Controls', pos=(0,2))
 
+#### wxRichTextCtrl
+#
+#c = component.Component('wxRichTextCtrl', ['control','tool'],
+#              ['pos', 'size', 'value', 'maxlength'],
+#              image=images.TreeTextCtrl.GetImage())
+#c.addStyles('wxTE_PROCESS_ENTER',
+#            'wxTE_PROCESS_TAB',
+#            'wxTE_MULTILINE',
+#            'wxTE_READONLY',
+#            'wxTE_AUTO_URL')
+#c.setParamClass('value', params.ParamMultilineText)
+#c.addEvents('EVT_TEXT', 'EVT_TEXT_ENTER', 'EVT_TEXT_URL', 'EVT_TEXT_MAXLEN')
+#component.Manager.register(c)
+#component.Manager.setMenu(c, 'control', 'rich text ctrl', 'wxTRichextCtrl', 41)
+#
 ### wxChoice
 
 c = component.Component('wxChoice', ['control','tool'],
@@ -119,7 +134,7 @@ component.Manager.setTool(c, 'Controls', pos=(2,3))
 c = component.Component('wxGauge', ['control','tool'],
               ['pos', 'size', 'range', 'value', 'shadow', 'bezel'],
               image=images.TreeGauge.GetImage())
-c.addStyles('wxGA_HORIZONTAL', 'wxGA_VERTICAL', 'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
+c.addStyles('wxGA_HORIZONTAL', 'wxGA_VERTICAL', 'wxGA_SMOOTH')
 c.setParamClass('range', params.ParamIntNN)
 c.setParamClass('value', params.ParamIntNN)
 c.setParamClass('shadow', params.ParamUnit)
@@ -277,18 +292,54 @@ c = component.Component('wxFilePickerCtrl', ['control'],
               ['pos', 'size', 'value', 'message', 'wildcard'])
 c.addStyles('wxFLP_OPEN', 'wxFLP_SAVE', 'wxFLP_OVERWRITE_PROMPT',
             'wxFLP_FILE_MUST_EXIST', 'wxFLP_CHANGE_DIR',
-            'wxFLP_DEFAULT_STYLE')
+            'wxFLP_DEFAULT_STYLE', 'wxFLP_USE_TEXTCTRL')
 component.Manager.register(c)
 component.Manager.setMenu(c, 'control', 'file picker ctrl', 'wxFilePickerCtrl', 170)
 component.Manager.setTool(c, 'Controls', pos=(4,2))
 
+### wxDirPickerCtrl
+
+c = component.Component('wxDirPickerCtrl', ['control'],
+              ['pos', 'size', 'value', 'message', 'wildcard'])
+c.addStyles('wxDIRP_USE_TEXTCTRL',
+            'wxDIRP_DIR_MUST_EXIST', 'wxDIRP_CHANGE_DIR',
+            'wxDIRP_DEFAULT_STYLE')
+component.Manager.register(c)
+component.Manager.setMenu(c, 'control', 'dir picker ctrl', 'wxDirPickerCtrl', 171)
+
 ### wxDatePickerCtrl
 
-c = component.Component('wxDatePickerCtrl', ['control'], ['pos', 'size', 'borders'])
+c = component.Component('wxDatePickerCtrl', ['control'], ['pos', 'size'])
 c.addStyles('wxDP_DEFAULT', 'wxDP_SPIN', 'wxDP_DROPDOWN',
             'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY')
 component.Manager.register(c)
 component.Manager.setMenu(c, 'control', 'date picker ctrl', 'wxDateCtrl', 180)
+
+### wxFontPickerCtrl
+
+c = component.Component('wxFontPickerCtrl', ['control'], ['pos', 'size', 'value'])
+c.addStyles('wxFNTP_USE_TEXTCTRL', 'wxFNTP_FONTDESC_AS_LABEL',
+            'wxFNTP_USEFONT_FOR_LABEL', 'wxFNTP_DEFAULT_STYLE')
+component.Manager.register(c)
+component.Manager.setMenu(c, 'control', 'font picker ctrl', 'wxFontPickerCtrl', 181)
+
+### wxColourPickerCtrl
+
+c = component.Component('wxColourPickerCtrl', ['control'], ['pos', 'size', 'value'])
+c.addStyles('wxCLRP_USE_TEXTCTRL', 'wxCLRP_SHOW_LABEL', 'wxCLRP_DEFAULT_STYLE')
+c.addEvents('EVT_COMMAND_COLOURPICKER_CHANGED')
+component.Manager.register(c)
+component.Manager.setMenu(c, 'control', 'colour picker ctrl', 'wxColourPickerCtrl', 181)
+
+### wxAnimationCtrl
+
+c = component.Component('wxAnimationCtrl', ['control','tool'],
+              ['pos', 'size', 'animation', 'inactive-bitmap'])
+c.addStyles('wxAC_NO_AUTORESIZE', 'wxAC_DEFAULT_STYLE')
+c.setSpecial('inactive-bitmap', attribute.BitmapAttribute)
+c.setParamClass('inactive-bitmap', params.ParamBitmap)
+component.Manager.register(c)
+component.Manager.setMenu(c, 'control', 'animation ctrl', 'wxAnimationCtrl', 182)
 
 ### wxGrid
 
@@ -334,8 +385,7 @@ component.Manager.setTool(c, 'Controls', pos=(3,0))
 c = component.Component('wxButton', ['control', 'tool', 'stdbtn'],
                         ['pos', 'size', 'label', 'default'],
                         image=images.TreeButton.GetImage())
-c.addStyles('wxBU_LEFT', 'wxBU_TOP', 'wxBU_RIGHT', 'wxBU_BOTTOM', 'wxBU_EXACTFIT',
-            'wxNO_BORDER')
+c.addStyles('wxBU_LEFT', 'wxBU_TOP', 'wxBU_RIGHT', 'wxBU_BOTTOM', 'wxBU_EXACTFIT')
 c.setParamClass('default', params.ParamBool)
 c.addEvents('EVT_BUTTON')
 component.Manager.register(c)
@@ -406,6 +456,8 @@ component.Manager.setTool(c, 'Controls', pos=(2,1))
 c = component.Component('wxCheckBox', ['control','tool'],
                         ['pos', 'size', 'label', 'checked'],
                         image=images.TreeCheckBox.GetImage())
+c.addStyles('wxCHK_2STATE', 'wxCHK_3STATE', 'wxCHK_ALLOW_3RD_STATE_FOR_USER',
+            'wxALIGN_RIGHT')
 c.addEvents('EVT_CHECKBOX')
 component.Manager.register(c)
 component.Manager.setMenu(c, 'box', 'check box', 'wxCheckBox', 10)
@@ -416,7 +468,7 @@ component.Manager.setTool(c, 'Controls', pos=(4,1))
 c = component.Component('wxComboBox', ['control','tool'],
               ['pos', 'size', 'content', 'selection', 'value'],
               image=images.TreeComboBox.GetImage())
-c.addStyles('wxCB_SINGLE', 'wxCB_DROPDOWN', 'wxCB_READONLY',
+c.addStyles('wxCB_SIMPLE', 'wxCB_DROPDOWN', 'wxCB_READONLY',
             'wxCB_SORT', 'wxTE_PROCESS_ENTER')
 c.setSpecial('content',  attribute.ContentAttribute)
 c.addEvents('EVT_COMBOBOX', 'EVT_TEXT', 'EVT_TEXT_ENTER')
@@ -424,13 +476,39 @@ component.Manager.register(c)
 component.Manager.setMenu(c, 'box', 'combo box', 'wxComboBox', 20)
 component.Manager.setTool(c, 'Controls', pos=(2,2))
 
+### wxOwnerDrawnComboBox
+
+c = component.Component('wxOwnerDrawnComboBox', ['control','tool'],
+              ['pos', 'size', 'content', 'selection', 'value'],
+              image=images.TreeComboBox.GetImage())
+c.addStyles('wxCB_SIMPLE', 'wxCB_DROPDOWN', 'wxCB_READONLY', 'wxCB_SORT',
+            'wxODCB_STD_CONTROL_PAINT', 'wxODCB_DCLICK_CYCLES', 'wxTE_PROCESS_ENTER')
+c.setSpecial('content',  attribute.ContentAttribute)
+c.addEvents('EVT_COMBOBOX', 'EVT_TEXT', 'EVT_TEXT_ENTER')
+component.Manager.register(c)
+component.Manager.setMenu(c, 'box', 'owner-drawn combo box', 'wxOwnerDrawnComboBox', 21)
+
+#### wxBitmapComboBox
+## FIXME: needs special content support (bitmap, text)
+#
+#c = component.Component('wxBitmapComboBox', ['control','tool'],
+#              ['pos', 'size', 'ownerdrawnitem', 'selection', 'value'],
+#              image=images.TreeComboBox.GetImage())
+#c.addStyles('wxCB_READONLY', 'wxCB_SORT')
+#c.setSpecial('ownerdrawnitem',  attribute.ContentAttribute)
+#c.addEvents('EVT_COMBOBOX', 'EVT_TEXT', 'EVT_TEXT_ENTER')
+#component.Manager.register(c)
+#component.Manager.setMenu(c, 'box', 'virtual combo box', 'wxBitmapComboBox', 20)
+#
 ### wxRadioBox
 
 c = component.Component('wxRadioBox', ['control','tool'],
               ['pos', 'size', 'label', 'dimension', 
                'content', 'selection', 'dimension'])
-c.addStyles('wxRA_SPECIFY_ROWS', 'wxRA_SPECIFY_COLS')
-c.setSpecial('content',  attribute.ContentAttribute)
+c.addStyles('wxRA_SPECIFY_ROWS', 'wxRA_SPECIFY_COLS', 'wxRA_HORIZONTAL',
+            'wxRA_VERTICAL')
+c.setSpecial('content',  attribute.HelpContentAttribute)
+c.setParamClass('content', params.ParamContentHelpList)
 c.setParamClass('dimension', params.ParamInt)
 c.addEvents('EVT_RADIOBOX')
 component.Manager.register(c)
@@ -450,10 +528,22 @@ component.Manager.register(c)
 component.Manager.setMenu(c, 'box', 'list box', 'wxListBox', 40)
 component.Manager.setTool(c, 'Panels', pos=(0,0))
 
+### wxSimpleHtmlListBox
+
+c = component.Component('wxSimpleHtmlListBox', ['control','tool'],
+                        ['pos', 'size', 'content', 'selection'],
+                        image=images.TreeListBox.GetImage())
+c.addStyles('wxHLB_MULTIPLE', 'wxHLB_DEFAULT_STYLE')
+c.setSpecial('content',  attribute.ContentAttribute)
+c.addEvents('EVT_LISTBOX', 'EVT_LISTBOX_DCLICK')
+component.Manager.register(c)
+component.Manager.setMenu(c, 'box', 'html list box', 'wxSimpleHtmlListBox', 41)
+
 ### wxCheckListBox
 
 c = component.Component('wxCheckListBox', ['control','tool'],
-              ['pos', 'size', 'content', 'selection'])
+              ['pos', 'size', 'content', 'selection'],
+              image=images.TreeCheckListBox.GetImage())
 c.addStyles('wxLB_SINGLE', 'wxLB_MULTIPLE', 'wxLB_EXTENDED', 'wxLB_HSCROLL',
             'wxLB_ALWAYS_SB', 'wxLB_NEEDED_SB', 'wxLB_SORT')
 c.setSpecial('content',  attribute.CheckContentAttribute)

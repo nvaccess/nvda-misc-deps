@@ -5,7 +5,7 @@
 # Author:       Peter Yared, Morgan Hua, Matt Fryer
 #
 # Created:      5/15/03
-# CVS-ID:       $Id: pydocview.py 57781 2009-01-02 18:14:51Z RD $
+# CVS-ID:       $Id$
 # Copyright:    (c) 2003-2006 ActiveGrid, Inc.
 # License:      wxWindows license
 #----------------------------------------------------------------------------
@@ -1653,7 +1653,7 @@ class GeneralOptionsPanel(wx.Panel):
         return wx.GetApp().GetDefaultIcon()
 
 
-class DocApp(wx.PySimpleApp):
+class DocApp(wx.App):
     """
     The DocApp class serves as the base class for pydocview applications and offers
     functionality such as services, creation of SDI and MDI frames, show tips,

@@ -17,7 +17,6 @@ class FoldPanelBarXmlHandler(xrc.XmlResourceHandler):
         # Standard styles
         self.AddWindowStyles()
         # Custom styles
-        self.AddStyle('FPB_DEFAULT_STYLE', fpb.FPB_DEFAULT_STYLE)
         self.AddStyle('FPB_SINGLE_FOLD', fpb.FPB_SINGLE_FOLD)
         self.AddStyle('FPB_COLLAPSE_TO_BOTTOM', fpb.FPB_COLLAPSE_TO_BOTTOM)
         self.AddStyle('FPB_EXCLUSIVE_FOLD', fpb.FPB_EXCLUSIVE_FOLD)

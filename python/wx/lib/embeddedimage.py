@@ -7,7 +7,7 @@
 # Author:      Anthony Tuininga
 #
 # Created:     26-Nov-2007
-# RCS-ID:      $Id: embeddedimage.py 65198 2010-08-04 20:22:39Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2007 by Anthony Tuininga
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

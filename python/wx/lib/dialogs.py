@@ -6,7 +6,7 @@
 # Author:      Various
 #
 # Created:     3-January-2002
-# RCS-ID:      $Id: dialogs.py 44619 2007-03-05 19:18:51Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -21,7 +21,7 @@
 #
 
 import  wx
-import  layoutf
+import  wx.lib.layoutf as layoutf
 
 #----------------------------------------------------------------------
 
@@ -335,104 +335,171 @@ def multipleChoiceDialog(parent=None, message='', title='', lst=[],
     return result
 
 
-if __name__ == '__main__':
-    #import os
-    #print os.getpid()
+
+#---------------------------------------------------------------------------
+
+try:
+    wx.CANCEL_DEFAULT
+    wx.OK_DEFAULT
+except AttributeError:
+    wx.CANCEL_DEFAULT = 0
+    wx.OK_DEFAULT = 0
     
-    class MyApp(wx.App):
+    
 
-        def OnInit(self):
-            self.frame = frame = wx.Frame(None, -1, "Dialogs", size=(400, 240))
-            panel = wx.Panel(frame, -1)
-            self.panel = panel
+class MultiMessageDialog(wx.Dialog):
+    """
+    A dialog like wx.MessageDialog, but with an optional 2nd message string
+    that is shown in a scrolled window, and also allows passing in the icon to
+    be shown instead of the stock error, question, etc. icons. The btnLabels
+    can be used if you'd like to change the stock labels on the buttons, it's
+    a dictionary mapping stock IDs to label strings.
+    """
+    CONTENT_MAX_W = 550
+    CONTENT_MAX_H = 350
+    
+    def __init__(self, parent, message, caption = "Message Box", msg2="",
+                 style = wx.OK | wx.CANCEL, pos = wx.DefaultPosition, icon=None,
+                 btnLabels=None):
+        if 'wxMac' not in wx.PlatformInfo:
+            title = caption  # the caption will be displayed inside the dialog on Macs
+        else:
+            title = ""
+            
+        wx.Dialog.__init__(self, parent, -1, title, pos, 
+                           style = wx.DEFAULT_DIALOG_STYLE | style & (wx.STAY_ON_TOP | wx.DIALOG_NO_PARENT))
+        
+        bitmap = None
+        isize = (32,32)
+            
+        # was an icon passed to us?
+        if icon is not None:
+            if isinstance(icon, wx.Icon):
+                bitmap = wx.BitmapFromIcon(icon)
+            elif isinstance(icon, wx.Image):
+                bitmap = wx.BitmapFromImage(icon)
+            else:
+                assert isinstance(icon, wx.Bitmap)
+                bitmap = icon
+                
+        else:
+            # check for icons in the style flags
+            artid = None
+            if style & wx.ICON_ERROR or style & wx.ICON_HAND:
+                artid = wx.ART_ERROR
+            elif style & wx.ICON_EXCLAMATION:
+                artid = wx.ART_WARNING
+            elif style & wx.ICON_QUESTION:
+                artid = wx.ART_QUESTION
+            elif style & wx.ICON_INFORMATION:
+                artid = wx.ART_INFORMATION
 
+            if artid is not None:
+                bitmap = wx.ArtProvider.GetBitmap(artid, wx.ART_MESSAGE_BOX, isize)
+                
+        if bitmap:
+            bitmap = wx.StaticBitmap(self, -1, bitmap)
+        else:
+            bitmap = isize # will be a spacer when added to the sizer
+            
+        # Sizer to contain the icon, text area and buttons
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(bitmap, 0, wx.TOP|wx.LEFT, 12)
+        sizer.Add((10,10))
+        
+        # Make the text area
+        messageSizer = wx.BoxSizer(wx.VERTICAL)
+        if 'wxMac' in wx.PlatformInfo and caption:
+            caption = wx.StaticText(self, -1, caption)
+            caption.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+            messageSizer.Add(caption)
+            messageSizer.Add((10,10))
+        
+        stext = wx.StaticText(self, -1, message)
+        #stext.SetLabelMarkup(message)  Wrap() causes all markup to be lost, so don't try to use it yet...
+        stext.Wrap(self.CONTENT_MAX_W)
+        messageSizer.Add(stext)
 
-            dialogNames = [
-                'alertDialog',
-                'colorDialog',
-                'directoryDialog',
-                'fileDialog',
-                'findDialog',
-                'fontDialog',
-                'messageDialog',
-                'multipleChoiceDialog',
-                'openFileDialog',
-                'saveFileDialog',
-                'scrolledMessageDialog',
-                'singleChoiceDialog',
-                'textEntryDialog',
-            ]
+        if msg2:
+            messageSizer.Add((15,15))
+            t = wx.TextCtrl(self, style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH|wx.TE_DONTWRAP)
+            t.SetValue(msg2)
+            
+            # Set size to be used by the sizer based on the message content,
+            # with good maximums
+            dc = wx.ClientDC(t)
+            dc.SetFont(t.GetFont())
+            w,h,lh = dc.GetMultiLineTextExtent(msg2)
+            w = min(self.CONTENT_MAX_W, 10 + w + wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X))
+            h = min(self.CONTENT_MAX_H, 10 + h)
+            t.SetMinSize((w,h))
+            messageSizer.Add(t, 0, wx.EXPAND)
+            
+        # Make the buttons
+        buttonSizer = self.CreateStdDialogButtonSizer(
+            style & (wx.OK | wx.CANCEL | wx.YES_NO | wx.NO_DEFAULT 
+                     | wx.CANCEL_DEFAULT | wx.YES_DEFAULT | wx.OK_DEFAULT
+                     ))
+        self.Bind(wx.EVT_BUTTON, self.OnButton)
+        if btnLabels:
+            for sid, label in btnLabels.iteritems():
+                btn = self.FindWindowById(sid)
+                if btn:
+                    btn.SetLabel(label)
+        messageSizer.Add(wx.Size(1, 15))
+        messageSizer.Add(buttonSizer, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 12)
+        
+        sizer.Add(messageSizer, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        self.SetSizer(sizer)
+        self.Fit()
+        if parent:
+            self.CenterOnParent()
+        else:
+            self.CenterOnScreen()
+                    
+        for c in self.Children:
+            if isinstance(c, wx.Button):
+                wx.CallAfter(c.SetFocus)
+                break
 
-            self.nameList = wx.ListBox(panel, -1,
-                                       size=(130, 180),
-                                       choices=dialogNames,
-                                       style=wx.LB_SINGLE)
-            self.Bind(wx.EVT_LISTBOX, self.OnNameListSelected, self.nameList)
+            
+    def OnButton(self, evt):
+        if self.IsModal():
+            self.EndModal(evt.EventObject.Id)
+        else:
+            self.Close()
+        
+        
+        
+            
+def MultiMessageBox(message, caption, msg2="", style=wx.OK, parent=None, 
+                    icon=None, btnLabels=None):
+    """
+    A function like wx.MessageBox which uses MultiMessageDialog.
+    """
+    #if not style & wx.ICON_NONE and not style & wx.ICON_MASK:
+    if not style & wx.ICON_MASK:
+        if style & wx.YES:
+            style |= wx.ICON_QUESTION
+        else:
+            style |= wx.ICON_INFORMATION
 
-            tstyle = wx.TE_RICH2 | wx.TE_PROCESS_TAB | wx.TE_MULTILINE
-            self.text1 = wx.TextCtrl(panel, -1, size=(200, 180), style=tstyle)
+    dlg = MultiMessageDialog(parent, message, caption, msg2, style, 
+                             icon=icon, btnLabels=btnLabels)
+    ans = dlg.ShowModal()
+    dlg.Destroy()
+    
+    if ans == wx.ID_OK:
+        return wx.OK
+    elif ans == wx.ID_YES:
+        return wx.YES
+    elif ans == wx.ID_NO:
+        return wx.NO
+    elif ans == wx.ID_CANCEL:
+        return wx.CANCEL
 
-            sizer = wx.BoxSizer(wx.HORIZONTAL)
-            sizer.Add(self.nameList, 0, wx.EXPAND|wx.ALL, 20)
-            sizer.Add(self.text1, 1,  wx.EXPAND|wx.ALL, 20)
-
-            panel.SetSizer(sizer)
-
-            self.SetTopWindow(frame)
-            frame.Show(1)
-            return 1
-
-
-        def OnNameListSelected(self, evt):
-            import pprint
-            sel = evt.GetString()
-            result = None
-            if sel == 'alertDialog':
-                result = alertDialog(message='Danger Will Robinson')
-            elif sel == 'colorDialog':
-                result = colorDialog()
-            elif sel == 'directoryDialog':
-                result = directoryDialog()
-            elif sel == 'fileDialog':
-                wildcard = "JPG files (*.jpg;*.jpeg)|*.jpeg;*.JPG;*.JPEG;*.jpg|GIF files (*.gif)|*.GIF;*.gif|All Files (*.*)|*.*"
-                result = fileDialog(None, 'Open', '', '', wildcard)
-            elif sel == 'findDialog':
-                result = findDialog()
-            elif sel == 'fontDialog':
-                result = fontDialog()
-            elif sel == 'messageDialog':
-                result = messageDialog(None, 'Hello from Python and wxPython!',
-                          'A Message Box', wx.OK | wx.ICON_INFORMATION)
-                          #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION)
-                #result = messageDialog(None, 'message', 'title')
-            elif sel == 'multipleChoiceDialog':
-                result = multipleChoiceDialog(None, "message", "title", ['one', 'two', 'three'])
-            elif sel == 'openFileDialog':
-                result = openFileDialog()
-            elif sel == 'saveFileDialog':
-                result = saveFileDialog()
-            elif sel == 'scrolledMessageDialog':
-                msg = "Can't find the file dialog.py"
-                try:
-                    # read this source file and then display it
-                    import sys
-                    filename = sys.argv[-1]
-                    fp = open(filename)
-                    message = fp.read()
-                    fp.close()
-                except:
-                    pass
-                result = scrolledMessageDialog(None, message, filename)
-            elif sel == 'singleChoiceDialog':
-                result = singleChoiceDialog(None, "message", "title", ['one', 'two', 'three'])
-            elif sel == 'textEntryDialog':
-                result = textEntryDialog(None, "message", "title", "text")
-
-            if result:
-                #self.text1.SetValue(pprint.pformat(result.__dict__))
-                self.text1.SetValue(str(result))
-
-    app = MyApp(True)
-    app.MainLoop()
-
-
+    print "unexpected return code from MultiMessageDialog??"
+    return wx.CANCEL
+            
+            
+#---------------------------------------------------------------------------

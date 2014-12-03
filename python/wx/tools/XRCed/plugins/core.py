@@ -2,7 +2,7 @@
 # Purpose:      Core components
 # Author:       Roman Rolinsky <rolinsky@femagsoft.com>
 # Created:      31.05.2007
-# RCS-ID:       $Id: core.py 64627 2010-06-18 18:17:45Z ROL $
+# RCS-ID:       $Id: core.py 71860 2012-06-25 15:46:16Z ROL $
 
 import wx
 from wx.tools.XRCed import component, images, attribute, params, view
@@ -39,12 +39,12 @@ c = Frame('wxFrame', ['frame','window','top_level'],
               image=images.TreeFrame.GetImage())
 c.isTopLevel = True
 c.addStyles('wxDEFAULT_FRAME_STYLE', 'wxDEFAULT_DIALOG_STYLE', 'wxCAPTION', 
-            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
-            'wxRESIZE_BORDER', 'wxRESIZE_BOX', 'wxCLOSE_BOX',
+            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
+            'wxRESIZE_BORDER', 'wxCLOSE_BOX',
             'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX',
             'wxFRAME_NO_TASKBAR', 'wxFRAME_SHAPED', 'wxFRAME_TOOL_WINDOW',
             'wxFRAME_FLOAT_ON_PARENT',
-            'wxNO_3D', 'wxTAB_TRAVERSAL')
+            'wxTAB_TRAVERSAL')
 c.addExStyles('wxFRAME_EX_CONTEXTHELP', 'wxFRAME_EX_METAL')
 c.addEvents('EVT_SIZE', 'EVT_CLOSE', 'EVT_MENU_HIGHLIGHT', 'EVT_ICONIZE', 'EVT_MAXIMIZE',
             'EVT_ACTIVATE', 'EVT_UPDATE_UI')
@@ -73,12 +73,12 @@ c = MDIParentFrame('wxMDIParentFrame', ['mdi_parent_frame','top_level'],
               image=images.TreeFrame.GetImage())
 c.isTopLevel = True
 c.addStyles('wxDEFAULT_FRAME_STYLE', 'wxDEFAULT_DIALOG_STYLE', 'wxCAPTION', 
-            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
-            'wxRESIZE_BORDER', 'wxRESIZE_BOX', 'wxCLOSE_BOX',
+            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
+            'wxRESIZE_BORDER', 'wxCLOSE_BOX',
             'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX',
             'wxFRAME_NO_TASKBAR', 'wxFRAME_SHAPED', 'wxFRAME_TOOL_WINDOW',
             'wxFRAME_FLOAT_ON_PARENT', 'wxFRAME_NO_WINDOW_MENU',
-            'wxNO_3D', 'wxTAB_TRAVERSAL')
+            'wxTAB_TRAVERSAL')
 c.addExStyles('wxFRAME_EX_METAL')
 c.addEvents('EVT_SIZE', 'EVT_CLOSE', 'EVT_MENU_HIGHLIGHT', 'EVT_ICONIZE', 'EVT_MAXIMIZE',
             'EVT_ACTIVATE', 'EVT_UPDATE_UI')
@@ -106,12 +106,12 @@ c = MDIChildFrame('wxMDIChildFrame', ['mdi_child_frame','window'],
               ['pos', 'size', 'title', 'centered'],
               image=images.TreeFrame.GetImage())
 c.addStyles('wxDEFAULT_FRAME_STYLE', 'wxDEFAULT_DIALOG_STYLE', 'wxCAPTION', 
-            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
-            'wxRESIZE_BORDER', 'wxRESIZE_BOX', 'wxCLOSE_BOX',
+            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
+            'wxRESIZE_BORDER', 'wxCLOSE_BOX',
             'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX',
             'wxFRAME_NO_TASKBAR', 'wxFRAME_SHAPED', 'wxFRAME_TOOL_WINDOW',
             'wxFRAME_FLOAT_ON_PARENT', 'wxFRAME_NO_WINDOW_MENU',
-            'wxNO_3D', 'wxTAB_TRAVERSAL')
+            'wxTAB_TRAVERSAL')
 c.addExStyles('wxFRAME_EX_METAL')
 c.addEvents('EVT_SIZE', 'EVT_CLOSE', 'EVT_MENU_HIGHLIGHT', 'EVT_ICONIZE', 'EVT_MAXIMIZE',
             'EVT_ACTIVATE', 'EVT_UPDATE_UI')
@@ -126,12 +126,12 @@ c = component.Container('wxDialog', ['frame','window','top_level'],
               image=images.TreeDialog.GetImage())
 c.isTopLevel = True
 c.setSpecial('icon', attribute.BitmapAttribute)
-c.addStyles('wxDEFAULT_DIALOG_STYLE', 'wxDEFAULT_FRAME_STYLE', 'wxCAPTION', 
-            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
-            'wxRESIZE_BORDER', 'wxRESIZE_BOX', 'wxCLOSE_BOX',
+c.addStyles('wxDEFAULT_DIALOG_STYLE', 'wxCAPTION', 
+            'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
+            'wxRESIZE_BORDER', 'wxCLOSE_BOX',
             'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX',
-            'wxDIALOG_MODAL', 'wxDIALOG_MODELESS', 'wxDIALOG_NO_PARENT',
-            'wxNO_3D', 'wxTAB_TRAVERSAL')
+            'wxDIALOG_NO_PARENT', 'wxFRAME_SHAPED',
+            'wxTAB_TRAVERSAL')
 c.addExStyles('wxDIALOG_EX_CONTEXTHELP', 'wxDIALOG_EX_METAL')
 c.addEvents('EVT_INIT_DIALOG', 'EVT_SIZE', 'EVT_CLOSE', 
             'EVT_ICONIZE', 'EVT_MAXIMIZE', 'EVT_ACTIVATE', 'EVT_UPDATE_UI')
@@ -144,7 +144,7 @@ component.Manager.setTool(c, 'Windows', bitmaps.wxDialog.GetBitmap(), (0,1))
 c = component.Container('wxPanel', ['window', 'top_level', 'control'], 
               ['pos', 'size'],
               image=images.TreePanel.GetImage())
-c.addStyles('wxNO_3D', 'wxTAB_TRAVERSAL')
+c.addStyles('wxTAB_TRAVERSAL')
 component.Manager.register(c)
 component.Manager.setMenu(c, 'TOP_LEVEL', 'panel', 'wxPanel', 30)
 component.Manager.setMenu(c, 'container', 'panel', 'wxPanel', 10)
@@ -213,16 +213,9 @@ component.Manager.setMenu(c, 'container', 'simple wizard page', 'wxWizardPageSim
 class ParamButtons(params.ParamBinaryOr):
     '''Button flags.'''
     values = ['wxOK', 'wxCANCEL', 'wxYES', 'wxNO', 'wxHELP', 'wxNO_DEFAULT']
-class ParamSheetStyle(params.ParamBinaryOr):
-    '''Button flags.'''
-    values = ['wxPROPSHEET_DEFAULT', 'wxPROPSHEET_NOTEBOOK',
-            'wxPROPSHEET_CHOICEBOOK', 'wxPROPSHEET_LISTBOOK', 
-# Tool book needs an image list
-#            'wxPROPSHEET_TOOLBOOK', 'wxPROPSHEET_BUTTONTOOLBOOK',
-            'wxPROPSHEET_TREEBOOK', 'wxPROPSHEET_SHRINKTOFIT']
 c = component.SmartContainer('wxPropertySheetDialog', ['frame','book','window','top_level'], 
-                   ['pos', 'size', 'title', 'centered', 'icon', 'sheetstyle', 'buttons'],
-                   params={'buttons': ParamButtons, 'sheetstyle': ParamSheetStyle},
+                   ['pos', 'size', 'title', 'centered', 'icon', 'buttons'],
+                   params={'buttons': ParamButtons},
                    implicit_klass='propertysheetpage', 
                    implicit_page='PropertySheetPage', 
                    implicit_attributes=['label', 'selected', 'bitmap'],
@@ -235,7 +228,7 @@ c.addStyles('wxDEFAULT_DIALOG_STYLE', 'wxCAPTION', 'wxFRAME_SHAPED',
             'wxTAB_TRAVERSAL', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU', 
             'wxRESIZE_BORDER', 'wxCLOSE_BOX', 'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX',
             'wxDIALOG_MODAL', 'wxDIALOG_MODELESS', 'wxDIALOG_NO_PARENT',
-            'wxNO_3D', 'wxTAB_TRAVERSAL')
+            'wxTAB_TRAVERSAL')
 c.addExStyles('wxDIALOG_EX_CONTEXTHELP', 'wxDIALOG_EX_METAL')
 c.addEvents('EVT_INIT_DIALOG', 'EVT_SIZE', 'EVT_CLOSE', 
             'EVT_ICONIZE', 'EVT_MAXIMIZE', 'EVT_ACTIVATE', 'EVT_UPDATE_UI')
@@ -342,7 +335,7 @@ component.Manager.setTool(c, 'Sizers', pos=(1,2))
 ### wxScrolledWindow
 
 c = component.Container('wxScrolledWindow', ['window', 'control'], ['pos', 'size'])
-c.addStyles('wxHSCROLL', 'wxVSCROLL', 'wxNO_3D', 'wxTAB_TRAVERSAL')
+c.addStyles('wxHSCROLL', 'wxVSCROLL', 'wxTAB_TRAVERSAL')
 c.addEvents('EVT_SCROLLWIN_TOP',
             'EVT_SCROLLWIN_BOTTOM',
             'EVT_SCROLLWIN_LINEUP',
@@ -358,12 +351,13 @@ component.Manager.setTool(c, 'Panels', pos=(3,0))
 ### wxSplitterWindow
 
 c = component.Container('wxSplitterWindow', ['book', 'window', 'control'],
-              ['pos', 'size', 'orientation', 'sashpos', 'minsize'],
+              ['pos', 'size', 'orientation', 'sashpos', 'minsize', 'gravity'],
+              # note: no flt[0..1], so just leaving gravity as text
               params={'orientation': params.ParamOrientation, 
                       'sashpos': params.ParamUnit, 
                       'minsize': params.ParamUnit},
               image=images.TreeSplitterWindow.GetImage())
-c.addStyles('wxSP_3D', 'wxSP_3DSASH', 'wxSP_3DBORDER', 
+c.addStyles('wxSP_3D', 'wxSP_3DSASH', 'wxSP_3DBORDER', 'wxSP_BORDER',
             'wxSP_FULLSASH', 'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT', 'wxSP_LIVE_UPDATE',
             'wxSP_NO_XP_THEME')
 c.addEvents('EVT_SPLITTER_SASH_POS_CHANGING', 'EVT_SPLITTER_SASH_POS_CHANGED',
@@ -380,9 +374,11 @@ c = component.SmartContainer('wxNotebook', ['book', 'window', 'control'], ['pos'
                    implicit_attributes=['label', 'selected', 'bitmap'],
                    implicit_params={'label': params.ParamText, 'selected': params.ParamBool},
                    image=images.TreeNotebook.GetImage())
-c.addStyles('wxNB_TOP', 'wxNB_LEFT', 'wxNB_RIGHT', 'wxNB_BOTTOM',
-            'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE', 'wxNB_NOPAGETHEME', 
-            'wxNB_FLAT')
+c.addStyles('wxBK_DEFAULT', 'wxBK_TOP', 'wxBK_LEFT', 'wxBK_RIGHT', 'wxBK_BOTTOM',
+            'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE', 'wxNB_NOPAGETHEME')
+c.addEquivStyles({'wxBK_DEFAULT': 'wxNB_DEFAULT', 'wxBK_LEFT': 'wxNB_LEFT',
+                  'wxBK_RIGHT': 'wxNB_RIGHT', 'wxBK_TOP': 'wxNB_TOP',
+                  'wxBK_BOTTOM': 'wxNB_BOTTOM'})
 c.setSpecial('bitmap', attribute.BitmapAttribute)
 c.addEvents('EVT_NOTEBOOK_PAGE_CHANGED', 'EVT_NOTEBOOK_PAGE_CHANGING')
 component.Manager.register(c)
@@ -396,7 +392,10 @@ c = component.SmartContainer('wxChoicebook', ['book', 'window', 'control'], ['po
                    implicit_page='ChoicebookPage', 
                    implicit_attributes=['label', 'selected', 'bitmap'],
                    implicit_params={'label': params.ParamText, 'selected': params.ParamBool})
-c.addStyles('wxCHB_DEFAULT', 'wxCHB_LEFT', 'wxCHB_RIGHT', 'wxCHB_TOP', 'wxCHB_BOTTOM')
+c.addStyles('wxBK_DEFAULT', 'wxBK_TOP', 'wxBK_LEFT', 'wxBK_RIGHT', 'wxBK_BOTTOM')
+c.addEquivStyles({'wxBK_DEFAULT': 'wxCHB_DEFAULT', 'wxBK_LEFT': 'wxCHB_LEFT',
+                  'wxBK_RIGHT': 'wxCHB_RIGHT', 'wxBK_TOP': 'wxCHB_TOP',
+                  'wxBK_BOTTOM': 'wxCHB_BOTTOM'})
 c.setSpecial('bitmap', attribute.BitmapAttribute)
 c.addEvents('EVT_CHOICEBOOK_PAGE_CHANGED', 'EVT_CHOICEBOOK_PAGE_CHANGING')
 component.Manager.register(c)
@@ -414,7 +413,10 @@ c = ListBook('wxListbook', ['book', 'window', 'control'], ['pos', 'size'],
              implicit_page='ListbookPage', 
              implicit_attributes=['label', 'selected', 'bitmap'],
              implicit_params={'label': params.ParamText, 'selected': params.ParamBool})
-c.addStyles('wxLB_DEFAULT', 'wxLB_LEFT', 'wxLB_RIGHT', 'wxLB_TOP', 'wxLB_BOTTOM')
+c.addStyles('wxBK_DEFAULT', 'wxBK_LEFT', 'wxBK_RIGHT', 'wxBK_TOP', 'wxBK_BOTTOM')
+c.addEquivStyles({'wxBK_DEFAULT': 'wxLB_DEFAULT', 'wxBK_LEFT': 'wxLB_LEFT',
+                  'wxBK_RIGHT': 'wxLB_RIGHT', 'wxBK_TOP': 'wxLB_TOP',
+                  'wxBK_BOTTOM': 'wxLB_BOTTOM'})
 c.setSpecial('bitmap', attribute.BitmapAttribute)
 c.addEvents('EVT_LISTBOOK_PAGE_CHANGED', 'EVT_LISTBOOK_PAGE_CHANGING')
 component.Manager.register(c)
@@ -442,12 +444,25 @@ component.Manager.register(c)
 component.Manager.setMenu(c, 'container', 'treebook', 'wxTreebook', 70)
 component.Manager.setTool(c, 'Panels', pos=(1,1), span=(1,2))
 
+### wxCollapsiblePane
+
+c = component.SmartContainer('wxCollapsiblePane', ['book', 'window', 'control'], ['pos', 'size', 'label', 'collapsed'],
+                   implicit_klass='panewindow', 
+                   implicit_page='', 
+                   implicit_attributes=[])
+c.addStyles('wxCP_NO_TLW_RESIZE', 'wxCP_DEFAULT_STYLE')
+c.setParamClass('collapsed', params.ParamBool)
+c.addEvents('EVT_COMMAND_COLLPANE_CHANGED')
+component.Manager.register(c)
+component.Manager.setMenu(c, 'container', 'collapsible pane', 'wxCollapsiblePane', 71)
+
 ################################################################################
 # Menus
 
 ### wxMenuBar
 
 class MenuBar(component.SimpleContainer):
+    isTestable = True
     # Menubar should be shown in a normal frame
     def makeTestWin(self, res, name):
         frame = wx.Frame(None, -1, '%s: %s' % (self.klass, name), name=STD_NAME)
@@ -493,6 +508,7 @@ component.Manager.setTool(c, 'Menus', pos=(1,2))
 ### wxToolBar
 
 class ToolBar(component.SimpleContainer):
+    isTestable = True
     # Toolbar should be shown in a normal frame
     def makeTestWin(self, res, name):
         frame = wx.Frame(None, -1, '%s: %s' % (self.klass, name), name=STD_NAME)
@@ -507,7 +523,8 @@ c = ToolBar('wxToolBar', ['toolbar', 'top_level', 'control'],
              image=images.TreeToolBar.GetImage())
 c.addStyles('wxTB_FLAT', 'wxTB_DOCKABLE', 'wxTB_VERTICAL', 'wxTB_HORIZONTAL',
             'wxTB_3DBUTTONS','wxTB_TEXT', 'wxTB_NOICONS', 'wxTB_NODIVIDER',
-            'wxTB_NOALIGN', 'wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT')
+            'wxTB_NOALIGN', 'wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT',
+            'wxTB_TOP', 'wxTB_LEFT', 'wxTB_RIGHT', 'wxTB_BOTTOM')
 c.setParamClass('dontattachtoframe', params.ParamBool)
 c.setParamClass('bitmapsize', params.ParamPosSize)
 c.setParamClass('margins', params.ParamPosSize)
@@ -543,6 +560,14 @@ c.hasName = False
 component.Manager.register(c)
 component.Manager.setMenu(c, 'ROOT', 'separator', 'separator', 20)
 component.Manager.setTool(c, 'Menus', pos=(0,2))
+
+### wxBreak
+
+c = component.SimpleComponent('break', ['break'], [],
+                    image=images.TreeSeparator.GetImage())
+c.hasName = False
+component.Manager.register(c)
+component.Manager.setMenu(c, 'ROOT', 'break', 'break', 21)
 
 ### wxStatusBar
 

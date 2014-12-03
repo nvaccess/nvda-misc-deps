@@ -717,9 +717,9 @@ class SlicesShell(editwindow.EditWindow):
                               "white", grouping_color)
             
             self.MarkerDefine(READLINE_BG, stc.STC_MARK_FULLRECT,
-                              wx.Color(191,191,191), wx.Color(191,191,191))
+                              wx.Colour(191,191,191), wx.Colour(191,191,191))
             self.MarkerDefine(INPUT_READLINE, stc.STC_MARK_CHARACTER+ord('<'),
-                              input_color, wx.Color(191,191,191))
+                              input_color, wx.Colour(191,191,191))
             
             if enableShellMode:
                 self.mode='ShellMode'
@@ -756,7 +756,7 @@ class SlicesShell(editwindow.EditWindow):
                               "white", output_color)
             
             self.MarkerDefine(OUTPUT_BG,             stc.STC_MARK_BACKGROUND,
-                              "white", wx.Color(242,242,255))
+                              "white", wx.Colour(242,242,255))
             
             # Markers for folding margin...
             self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPEN,    stc.STC_MARK_BOXMINUS,

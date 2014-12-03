@@ -51,17 +51,11 @@ def _swig_setattr_nondynamic_method(set):
     return set_attr
 
 
-USE_TEXTATTREX = _richtext.USE_TEXTATTREX
 import _windows
 import _core
+import _controls
 wx = _core 
 __docfilter__ = wx.__DocFilter(globals()) 
-TEXT_ALIGNMENT_DEFAULT = _richtext.TEXT_ALIGNMENT_DEFAULT
-TEXT_ALIGNMENT_LEFT = _richtext.TEXT_ALIGNMENT_LEFT
-TEXT_ALIGNMENT_CENTRE = _richtext.TEXT_ALIGNMENT_CENTRE
-TEXT_ALIGNMENT_CENTER = _richtext.TEXT_ALIGNMENT_CENTER
-TEXT_ALIGNMENT_RIGHT = _richtext.TEXT_ALIGNMENT_RIGHT
-TEXT_ALIGNMENT_JUSTIFIED = _richtext.TEXT_ALIGNMENT_JUSTIFIED
 #---------------------------------------------------------------------------
 
 RICHTEXT_TYPE_ANY = _richtext.RICHTEXT_TYPE_ANY
@@ -76,11 +70,6 @@ RICHTEXT_VARIABLE_WIDTH = _richtext.RICHTEXT_VARIABLE_WIDTH
 RICHTEXT_VARIABLE_HEIGHT = _richtext.RICHTEXT_VARIABLE_HEIGHT
 RICHTEXT_LAYOUT_SPECIFIED_RECT = _richtext.RICHTEXT_LAYOUT_SPECIFIED_RECT
 RICHTEXT_DRAW_IGNORE_CACHE = _richtext.RICHTEXT_DRAW_IGNORE_CACHE
-RICHTEXT_HITTEST_NONE = _richtext.RICHTEXT_HITTEST_NONE
-RICHTEXT_HITTEST_BEFORE = _richtext.RICHTEXT_HITTEST_BEFORE
-RICHTEXT_HITTEST_AFTER = _richtext.RICHTEXT_HITTEST_AFTER
-RICHTEXT_HITTEST_ON = _richtext.RICHTEXT_HITTEST_ON
-RICHTEXT_HITTEST_OUTSIDE = _richtext.RICHTEXT_HITTEST_OUTSIDE
 RICHTEXT_FORMATTED = _richtext.RICHTEXT_FORMATTED
 RICHTEXT_UNFORMATTED = _richtext.RICHTEXT_UNFORMATTED
 RICHTEXT_CACHE_SIZE = _richtext.RICHTEXT_CACHE_SIZE
@@ -97,66 +86,846 @@ RICHTEXT_SETSTYLE_REMOVE = _richtext.RICHTEXT_SETSTYLE_REMOVE
 RICHTEXT_INSERT_NONE = _richtext.RICHTEXT_INSERT_NONE
 RICHTEXT_INSERT_WITH_PREVIOUS_PARAGRAPH_STYLE = _richtext.RICHTEXT_INSERT_WITH_PREVIOUS_PARAGRAPH_STYLE
 RICHTEXT_INSERT_INTERACTIVE = _richtext.RICHTEXT_INSERT_INTERACTIVE
-TEXT_ATTR_TEXT_COLOUR = _richtext.TEXT_ATTR_TEXT_COLOUR
-TEXT_ATTR_BACKGROUND_COLOUR = _richtext.TEXT_ATTR_BACKGROUND_COLOUR
-TEXT_ATTR_FONT_FACE = _richtext.TEXT_ATTR_FONT_FACE
-TEXT_ATTR_FONT_SIZE = _richtext.TEXT_ATTR_FONT_SIZE
-TEXT_ATTR_FONT_WEIGHT = _richtext.TEXT_ATTR_FONT_WEIGHT
-TEXT_ATTR_FONT_ITALIC = _richtext.TEXT_ATTR_FONT_ITALIC
-TEXT_ATTR_FONT_UNDERLINE = _richtext.TEXT_ATTR_FONT_UNDERLINE
-TEXT_ATTR_FONT = _richtext.TEXT_ATTR_FONT
-TEXT_ATTR_ALIGNMENT = _richtext.TEXT_ATTR_ALIGNMENT
-TEXT_ATTR_LEFT_INDENT = _richtext.TEXT_ATTR_LEFT_INDENT
-TEXT_ATTR_RIGHT_INDENT = _richtext.TEXT_ATTR_RIGHT_INDENT
-TEXT_ATTR_TABS = _richtext.TEXT_ATTR_TABS
-TEXT_ATTR_PARA_SPACING_AFTER = _richtext.TEXT_ATTR_PARA_SPACING_AFTER
-TEXT_ATTR_PARA_SPACING_BEFORE = _richtext.TEXT_ATTR_PARA_SPACING_BEFORE
-TEXT_ATTR_LINE_SPACING = _richtext.TEXT_ATTR_LINE_SPACING
-TEXT_ATTR_CHARACTER_STYLE_NAME = _richtext.TEXT_ATTR_CHARACTER_STYLE_NAME
-TEXT_ATTR_PARAGRAPH_STYLE_NAME = _richtext.TEXT_ATTR_PARAGRAPH_STYLE_NAME
-TEXT_ATTR_BULLET_STYLE = _richtext.TEXT_ATTR_BULLET_STYLE
-TEXT_ATTR_BULLET_NUMBER = _richtext.TEXT_ATTR_BULLET_NUMBER
-TEXT_ATTR_BULLET_TEXT = _richtext.TEXT_ATTR_BULLET_TEXT
-TEXT_ATTR_BULLET_NAME = _richtext.TEXT_ATTR_BULLET_NAME
-TEXT_ATTR_URL = _richtext.TEXT_ATTR_URL
-TEXT_ATTR_PAGE_BREAK = _richtext.TEXT_ATTR_PAGE_BREAK
-TEXT_ATTR_EFFECTS = _richtext.TEXT_ATTR_EFFECTS
-TEXT_ATTR_OUTLINE_LEVEL = _richtext.TEXT_ATTR_OUTLINE_LEVEL
 TEXT_ATTR_KEEP_FIRST_PARA_STYLE = _richtext.TEXT_ATTR_KEEP_FIRST_PARA_STYLE
-TEXT_ATTR_BULLET_STYLE_NONE = _richtext.TEXT_ATTR_BULLET_STYLE_NONE
-TEXT_ATTR_BULLET_STYLE_ARABIC = _richtext.TEXT_ATTR_BULLET_STYLE_ARABIC
-TEXT_ATTR_BULLET_STYLE_LETTERS_UPPER = _richtext.TEXT_ATTR_BULLET_STYLE_LETTERS_UPPER
-TEXT_ATTR_BULLET_STYLE_LETTERS_LOWER = _richtext.TEXT_ATTR_BULLET_STYLE_LETTERS_LOWER
-TEXT_ATTR_BULLET_STYLE_ROMAN_UPPER = _richtext.TEXT_ATTR_BULLET_STYLE_ROMAN_UPPER
-TEXT_ATTR_BULLET_STYLE_ROMAN_LOWER = _richtext.TEXT_ATTR_BULLET_STYLE_ROMAN_LOWER
-TEXT_ATTR_BULLET_STYLE_SYMBOL = _richtext.TEXT_ATTR_BULLET_STYLE_SYMBOL
-TEXT_ATTR_BULLET_STYLE_BITMAP = _richtext.TEXT_ATTR_BULLET_STYLE_BITMAP
-TEXT_ATTR_BULLET_STYLE_PARENTHESES = _richtext.TEXT_ATTR_BULLET_STYLE_PARENTHESES
-TEXT_ATTR_BULLET_STYLE_PERIOD = _richtext.TEXT_ATTR_BULLET_STYLE_PERIOD
-TEXT_ATTR_BULLET_STYLE_STANDARD = _richtext.TEXT_ATTR_BULLET_STYLE_STANDARD
-TEXT_ATTR_BULLET_STYLE_RIGHT_PARENTHESIS = _richtext.TEXT_ATTR_BULLET_STYLE_RIGHT_PARENTHESIS
-TEXT_ATTR_BULLET_STYLE_OUTLINE = _richtext.TEXT_ATTR_BULLET_STYLE_OUTLINE
-TEXT_ATTR_BULLET_STYLE_ALIGN_LEFT = _richtext.TEXT_ATTR_BULLET_STYLE_ALIGN_LEFT
-TEXT_ATTR_BULLET_STYLE_ALIGN_RIGHT = _richtext.TEXT_ATTR_BULLET_STYLE_ALIGN_RIGHT
-TEXT_ATTR_BULLET_STYLE_ALIGN_CENTRE = _richtext.TEXT_ATTR_BULLET_STYLE_ALIGN_CENTRE
-TEXT_ATTR_EFFECT_NONE = _richtext.TEXT_ATTR_EFFECT_NONE
-TEXT_ATTR_EFFECT_CAPITALS = _richtext.TEXT_ATTR_EFFECT_CAPITALS
-TEXT_ATTR_EFFECT_SMALL_CAPITALS = _richtext.TEXT_ATTR_EFFECT_SMALL_CAPITALS
-TEXT_ATTR_EFFECT_STRIKETHROUGH = _richtext.TEXT_ATTR_EFFECT_STRIKETHROUGH
-TEXT_ATTR_EFFECT_DOUBLE_STRIKETHROUGH = _richtext.TEXT_ATTR_EFFECT_DOUBLE_STRIKETHROUGH
-TEXT_ATTR_EFFECT_SHADOW = _richtext.TEXT_ATTR_EFFECT_SHADOW
-TEXT_ATTR_EFFECT_EMBOSS = _richtext.TEXT_ATTR_EFFECT_EMBOSS
-TEXT_ATTR_EFFECT_OUTLINE = _richtext.TEXT_ATTR_EFFECT_OUTLINE
-TEXT_ATTR_EFFECT_ENGRAVE = _richtext.TEXT_ATTR_EFFECT_ENGRAVE
-TEXT_ATTR_EFFECT_SUPERSCRIPT = _richtext.TEXT_ATTR_EFFECT_SUPERSCRIPT
-TEXT_ATTR_EFFECT_SUBSCRIPT = _richtext.TEXT_ATTR_EFFECT_SUBSCRIPT
-TEXT_ATTR_LINE_SPACING_NORMAL = _richtext.TEXT_ATTR_LINE_SPACING_NORMAL
-TEXT_ATTR_LINE_SPACING_HALF = _richtext.TEXT_ATTR_LINE_SPACING_HALF
-TEXT_ATTR_LINE_SPACING_TWICE = _richtext.TEXT_ATTR_LINE_SPACING_TWICE
-TEXT_ATTR_CHARACTER = _richtext.TEXT_ATTR_CHARACTER
-TEXT_ATTR_PARAGRAPH = _richtext.TEXT_ATTR_PARAGRAPH
-TEXT_ATTR_ALL = _richtext.TEXT_ATTR_ALL
+RICHTEXT_HITTEST_NONE = _richtext.RICHTEXT_HITTEST_NONE
+RICHTEXT_HITTEST_BEFORE = _richtext.RICHTEXT_HITTEST_BEFORE
+RICHTEXT_HITTEST_AFTER = _richtext.RICHTEXT_HITTEST_AFTER
+RICHTEXT_HITTEST_ON = _richtext.RICHTEXT_HITTEST_ON
+RICHTEXT_HITTEST_OUTSIDE = _richtext.RICHTEXT_HITTEST_OUTSIDE
+RICHTEXT_HITTEST_NO_NESTED_OBJECTS = _richtext.RICHTEXT_HITTEST_NO_NESTED_OBJECTS
+RICHTEXT_HITTEST_NO_FLOATING_OBJECTS = _richtext.RICHTEXT_HITTEST_NO_FLOATING_OBJECTS
+TEXT_BOX_ATTR_FLOAT = _richtext.TEXT_BOX_ATTR_FLOAT
+TEXT_BOX_ATTR_CLEAR = _richtext.TEXT_BOX_ATTR_CLEAR
+TEXT_BOX_ATTR_COLLAPSE_BORDERS = _richtext.TEXT_BOX_ATTR_COLLAPSE_BORDERS
+TEXT_BOX_ATTR_VERTICAL_ALIGNMENT = _richtext.TEXT_BOX_ATTR_VERTICAL_ALIGNMENT
+TEXT_BOX_ATTR_BOX_STYLE_NAME = _richtext.TEXT_BOX_ATTR_BOX_STYLE_NAME
+TEXT_ATTR_UNITS_TENTHS_MM = _richtext.TEXT_ATTR_UNITS_TENTHS_MM
+TEXT_ATTR_UNITS_PIXELS = _richtext.TEXT_ATTR_UNITS_PIXELS
+TEXT_ATTR_UNITS_PERCENTAGE = _richtext.TEXT_ATTR_UNITS_PERCENTAGE
+TEXT_ATTR_UNITS_POINTS = _richtext.TEXT_ATTR_UNITS_POINTS
+TEXT_ATTR_UNITS_MASK = _richtext.TEXT_ATTR_UNITS_MASK
+TEXT_BOX_ATTR_POSITION_STATIC = _richtext.TEXT_BOX_ATTR_POSITION_STATIC
+TEXT_BOX_ATTR_POSITION_RELATIVE = _richtext.TEXT_BOX_ATTR_POSITION_RELATIVE
+TEXT_BOX_ATTR_POSITION_ABSOLUTE = _richtext.TEXT_BOX_ATTR_POSITION_ABSOLUTE
+TEXT_BOX_ATTR_POSITION_MASK = _richtext.TEXT_BOX_ATTR_POSITION_MASK
 #---------------------------------------------------------------------------
+
+class TextAttrDimension(object):
+    """Proxy of C++ TextAttrDimension class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self) -> TextAttrDimension
+        __init__(self, int value, int units=TEXT_ATTR_UNITS_TENTHS_MM) -> TextAttrDimension
+        """
+        _richtext.TextAttrDimension_swiginit(self,_richtext.new_TextAttrDimension(*args))
+    __swig_destroy__ = _richtext.delete_TextAttrDimension
+    __del__ = lambda self : None;
+    def Reset(*args, **kwargs):
+        """Reset(self)"""
+        return _richtext.TextAttrDimension_Reset(*args, **kwargs)
+
+    def EqPartial(*args, **kwargs):
+        """EqPartial(self, TextAttrDimension dim) -> bool"""
+        return _richtext.TextAttrDimension_EqPartial(*args, **kwargs)
+
+    def Apply(*args, **kwargs):
+        """Apply(self, TextAttrDimension dim, TextAttrDimension compareWith=None) -> bool"""
+        return _richtext.TextAttrDimension_Apply(*args, **kwargs)
+
+    def CollectCommonAttributes(*args, **kwargs):
+        """
+        CollectCommonAttributes(self, TextAttrDimension attr, TextAttrDimension clashingAttr, 
+            TextAttrDimension absentAttr)
+        """
+        return _richtext.TextAttrDimension_CollectCommonAttributes(*args, **kwargs)
+
+    def __eq__(*args, **kwargs):
+        """__eq__(self, TextAttrDimension dim) -> bool"""
+        return _richtext.TextAttrDimension___eq__(*args, **kwargs)
+
+    def GetValue(*args, **kwargs):
+        """GetValue(self) -> int"""
+        return _richtext.TextAttrDimension_GetValue(*args, **kwargs)
+
+    def GetValueMM(*args, **kwargs):
+        """GetValueMM(self) -> float"""
+        return _richtext.TextAttrDimension_GetValueMM(*args, **kwargs)
+
+    def SetValueMM(*args, **kwargs):
+        """SetValueMM(self, float value)"""
+        return _richtext.TextAttrDimension_SetValueMM(*args, **kwargs)
+
+    def SetValue(*args):
+        """
+        SetValue(self, int value)
+        SetValue(self, int value, TextAttrDimensionFlags flags)
+        SetValue(self, TextAttrDimension dim)
+        """
+        return _richtext.TextAttrDimension_SetValue(*args)
+
+    def GetUnits(*args, **kwargs):
+        """GetUnits(self) -> int"""
+        return _richtext.TextAttrDimension_GetUnits(*args, **kwargs)
+
+    def SetUnits(*args, **kwargs):
+        """SetUnits(self, int units)"""
+        return _richtext.TextAttrDimension_SetUnits(*args, **kwargs)
+
+    def GetPosition(*args, **kwargs):
+        """GetPosition(self) -> int"""
+        return _richtext.TextAttrDimension_GetPosition(*args, **kwargs)
+
+    def SetPosition(*args, **kwargs):
+        """SetPosition(self, int pos)"""
+        return _richtext.TextAttrDimension_SetPosition(*args, **kwargs)
+
+    def GetFlags(*args, **kwargs):
+        """GetFlags(self) -> TextAttrDimensionFlags"""
+        return _richtext.TextAttrDimension_GetFlags(*args, **kwargs)
+
+    def SetFlags(*args, **kwargs):
+        """SetFlags(self, TextAttrDimensionFlags flags)"""
+        return _richtext.TextAttrDimension_SetFlags(*args, **kwargs)
+
+    m_value = property(_richtext.TextAttrDimension_m_value_get, _richtext.TextAttrDimension_m_value_set)
+    m_flags = property(_richtext.TextAttrDimension_m_flags_get, _richtext.TextAttrDimension_m_flags_set)
+_richtext.TextAttrDimension_swigregister(TextAttrDimension)
+
+class TextAttrDimensions(object):
+    """Proxy of C++ TextAttrDimensions class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> TextAttrDimensions"""
+        _richtext.TextAttrDimensions_swiginit(self,_richtext.new_TextAttrDimensions(*args, **kwargs))
+    __swig_destroy__ = _richtext.delete_TextAttrDimensions
+    __del__ = lambda self : None;
+    def Reset(*args, **kwargs):
+        """Reset(self)"""
+        return _richtext.TextAttrDimensions_Reset(*args, **kwargs)
+
+    def __eq__(*args, **kwargs):
+        """__eq__(self, TextAttrDimensions dims) -> bool"""
+        return _richtext.TextAttrDimensions___eq__(*args, **kwargs)
+
+    def EqPartial(*args, **kwargs):
+        """EqPartial(self, TextAttrDimensions dims) -> bool"""
+        return _richtext.TextAttrDimensions_EqPartial(*args, **kwargs)
+
+    def Apply(*args, **kwargs):
+        """Apply(self, TextAttrDimensions dims, TextAttrDimensions compareWith=None) -> bool"""
+        return _richtext.TextAttrDimensions_Apply(*args, **kwargs)
+
+    def CollectCommonAttributes(*args, **kwargs):
+        """
+        CollectCommonAttributes(self, TextAttrDimensions attr, TextAttrDimensions clashingAttr, 
+            TextAttrDimensions absentAttr)
+        """
+        return _richtext.TextAttrDimensions_CollectCommonAttributes(*args, **kwargs)
+
+    def RemoveStyle(*args, **kwargs):
+        """RemoveStyle(self, TextAttrDimensions attr) -> bool"""
+        return _richtext.TextAttrDimensions_RemoveStyle(*args, **kwargs)
+
+    def GetLeft(*args, **kwargs):
+        """GetLeft(self) -> TextAttrDimension"""
+        return _richtext.TextAttrDimensions_GetLeft(*args, **kwargs)
+
+    def GetRight(*args, **kwargs):
+        """GetRight(self) -> TextAttrDimension"""
+        return _richtext.TextAttrDimensions_GetRight(*args, **kwargs)
+
+    def GetTop(*args, **kwargs):
+        """GetTop(self) -> TextAttrDimension"""
+        return _richtext.TextAttrDimensions_GetTop(*args, **kwargs)
+
+    def GetBottom(*args, **kwargs):
+        """GetBottom(self) -> TextAttrDimension"""
+        return _richtext.TextAttrDimensions_GetBottom(*args, **kwargs)
+
+    def IsValid(*args, **kwargs):
+        """IsValid(self) -> bool"""
+        return _richtext.TextAttrDimensions_IsValid(*args, **kwargs)
+
+    m_left = property(_richtext.TextAttrDimensions_m_left_get, _richtext.TextAttrDimensions_m_left_set)
+    m_top = property(_richtext.TextAttrDimensions_m_top_get, _richtext.TextAttrDimensions_m_top_set)
+    m_right = property(_richtext.TextAttrDimensions_m_right_get, _richtext.TextAttrDimensions_m_right_set)
+    m_bottom = property(_richtext.TextAttrDimensions_m_bottom_get, _richtext.TextAttrDimensions_m_bottom_set)
+_richtext.TextAttrDimensions_swigregister(TextAttrDimensions)
+
+class TextAttrDimensionConverter(object):
+    """Proxy of C++ TextAttrDimensionConverter class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self, DC dc, double scale=1.0, Size parentSize=DefaultSize) -> TextAttrDimensionConverter
+        __init__(self, int ppi, double scale=1.0, Size parentSize=DefaultSize) -> TextAttrDimensionConverter
+        """
+        _richtext.TextAttrDimensionConverter_swiginit(self,_richtext.new_TextAttrDimensionConverter(*args))
+    __swig_destroy__ = _richtext.delete_TextAttrDimensionConverter
+    __del__ = lambda self : None;
+    def GetPixels(*args, **kwargs):
+        """GetPixels(self, TextAttrDimension dim, int direction=HORIZONTAL) -> int"""
+        return _richtext.TextAttrDimensionConverter_GetPixels(*args, **kwargs)
+
+    def GetTenthsMM(*args, **kwargs):
+        """GetTenthsMM(self, TextAttrDimension dim) -> int"""
+        return _richtext.TextAttrDimensionConverter_GetTenthsMM(*args, **kwargs)
+
+    def ConvertTenthsMMToPixels(*args, **kwargs):
+        """ConvertTenthsMMToPixels(self, int units) -> int"""
+        return _richtext.TextAttrDimensionConverter_ConvertTenthsMMToPixels(*args, **kwargs)
+
+    def ConvertPixelsToTenthsMM(*args, **kwargs):
+        """ConvertPixelsToTenthsMM(self, int pixels) -> int"""
+        return _richtext.TextAttrDimensionConverter_ConvertPixelsToTenthsMM(*args, **kwargs)
+
+    m_ppi = property(_richtext.TextAttrDimensionConverter_m_ppi_get, _richtext.TextAttrDimensionConverter_m_ppi_set)
+    m_scale = property(_richtext.TextAttrDimensionConverter_m_scale_get, _richtext.TextAttrDimensionConverter_m_scale_set)
+    m_parentSize = property(_richtext.TextAttrDimensionConverter_m_parentSize_get, _richtext.TextAttrDimensionConverter_m_parentSize_set)
+_richtext.TextAttrDimensionConverter_swigregister(TextAttrDimensionConverter)
+
+TEXT_BOX_ATTR_BORDER_NONE = _richtext.TEXT_BOX_ATTR_BORDER_NONE
+TEXT_BOX_ATTR_BORDER_SOLID = _richtext.TEXT_BOX_ATTR_BORDER_SOLID
+TEXT_BOX_ATTR_BORDER_DOTTED = _richtext.TEXT_BOX_ATTR_BORDER_DOTTED
+TEXT_BOX_ATTR_BORDER_DASHED = _richtext.TEXT_BOX_ATTR_BORDER_DASHED
+TEXT_BOX_ATTR_BORDER_DOUBLE = _richtext.TEXT_BOX_ATTR_BORDER_DOUBLE
+TEXT_BOX_ATTR_BORDER_GROOVE = _richtext.TEXT_BOX_ATTR_BORDER_GROOVE
+TEXT_BOX_ATTR_BORDER_RIDGE = _richtext.TEXT_BOX_ATTR_BORDER_RIDGE
+TEXT_BOX_ATTR_BORDER_INSET = _richtext.TEXT_BOX_ATTR_BORDER_INSET
+TEXT_BOX_ATTR_BORDER_OUTSET = _richtext.TEXT_BOX_ATTR_BORDER_OUTSET
+TEXT_BOX_ATTR_BORDER_STYLE = _richtext.TEXT_BOX_ATTR_BORDER_STYLE
+TEXT_BOX_ATTR_BORDER_COLOUR = _richtext.TEXT_BOX_ATTR_BORDER_COLOUR
+TEXT_BOX_ATTR_BORDER_THIN = _richtext.TEXT_BOX_ATTR_BORDER_THIN
+TEXT_BOX_ATTR_BORDER_MEDIUM = _richtext.TEXT_BOX_ATTR_BORDER_MEDIUM
+TEXT_BOX_ATTR_BORDER_THICK = _richtext.TEXT_BOX_ATTR_BORDER_THICK
+TEXT_BOX_ATTR_FLOAT_NONE = _richtext.TEXT_BOX_ATTR_FLOAT_NONE
+TEXT_BOX_ATTR_FLOAT_LEFT = _richtext.TEXT_BOX_ATTR_FLOAT_LEFT
+TEXT_BOX_ATTR_FLOAT_RIGHT = _richtext.TEXT_BOX_ATTR_FLOAT_RIGHT
+TEXT_BOX_ATTR_CLEAR_NONE = _richtext.TEXT_BOX_ATTR_CLEAR_NONE
+TEXT_BOX_ATTR_CLEAR_LEFT = _richtext.TEXT_BOX_ATTR_CLEAR_LEFT
+TEXT_BOX_ATTR_CLEAR_RIGHT = _richtext.TEXT_BOX_ATTR_CLEAR_RIGHT
+TEXT_BOX_ATTR_CLEAR_BOTH = _richtext.TEXT_BOX_ATTR_CLEAR_BOTH
+TEXT_BOX_ATTR_COLLAPSE_NONE = _richtext.TEXT_BOX_ATTR_COLLAPSE_NONE
+TEXT_BOX_ATTR_COLLAPSE_FULL = _richtext.TEXT_BOX_ATTR_COLLAPSE_FULL
+TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_NONE = _richtext.TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_NONE
+TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_TOP = _richtext.TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_TOP
+TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_CENTRE = _richtext.TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_CENTRE
+TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_BOTTOM = _richtext.TEXT_BOX_ATTR_VERTICAL_ALIGNMENT_BOTTOM
+class TextAttrBorder(object):
+    """Proxy of C++ TextAttrBorder class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> TextAttrBorder"""
+        _richtext.TextAttrBorder_swiginit(self,_richtext.new_TextAttrBorder(*args, **kwargs))
+    def __eq__(*args, **kwargs):
+        """__eq__(self, TextAttrBorder border) -> bool"""
+        return _richtext.TextAttrBorder___eq__(*args, **kwargs)
+
+    def Reset(*args, **kwargs):
+        """Reset(self)"""
+        return _richtext.TextAttrBorder_Reset(*args, **kwargs)
+
+    def EqPartial(*args, **kwargs):
+        """EqPartial(self, TextAttrBorder border) -> bool"""
+        return _richtext.TextAttrBorder_EqPartial(*args, **kwargs)
+
+    def Apply(*args, **kwargs):
+        """Apply(self, TextAttrBorder border, TextAttrBorder compareWith=None) -> bool"""
+        return _richtext.TextAttrBorder_Apply(*args, **kwargs)
+
+    def RemoveStyle(*args, **kwargs):
+        """RemoveStyle(self, TextAttrBorder attr) -> bool"""
+        return _richtext.TextAttrBorder_RemoveStyle(*args, **kwargs)
+
+    def CollectCommonAttributes(*args, **kwargs):
+        """CollectCommonAttributes(self, TextAttrBorder attr, TextAttrBorder clashingAttr, TextAttrBorder absentAttr)"""
+        return _richtext.TextAttrBorder_CollectCommonAttributes(*args, **kwargs)
+
+    def SetStyle(*args, **kwargs):
+        """SetStyle(self, int style)"""
+        return _richtext.TextAttrBorder_SetStyle(*args, **kwargs)
+
+    def GetStyle(*args, **kwargs):
+        """GetStyle(self) -> int"""
+        return _richtext.TextAttrBorder_GetStyle(*args, **kwargs)
+
+    def SetColour(*args):
+        """
+        SetColour(self, unsigned long colour)
+        SetColour(self, Colour colour)
+        """
+        return _richtext.TextAttrBorder_SetColour(*args)
+
+    def GetColourLong(*args, **kwargs):
+        """GetColourLong(self) -> unsigned long"""
+        return _richtext.TextAttrBorder_GetColourLong(*args, **kwargs)
+
+    def GetColour(*args, **kwargs):
+        """GetColour(self) -> Colour"""
+        return _richtext.TextAttrBorder_GetColour(*args, **kwargs)
+
+    def GetWidth(*args):
+        """
+        GetWidth(self) -> TextAttrDimension
+        GetWidth(self) -> TextAttrDimension
+        """
+        return _richtext.TextAttrBorder_GetWidth(*args)
+
+    def SetWidth(*args):
+        """
+        SetWidth(self, TextAttrDimension width)
+        SetWidth(self, int value, int units=TEXT_ATTR_UNITS_TENTHS_MM)
+        """
+        return _richtext.TextAttrBorder_SetWidth(*args)
+
+    def HasStyle(*args, **kwargs):
+        """HasStyle(self) -> bool"""
+        return _richtext.TextAttrBorder_HasStyle(*args, **kwargs)
+
+    def HasColour(*args, **kwargs):
+        """HasColour(self) -> bool"""
+        return _richtext.TextAttrBorder_HasColour(*args, **kwargs)
+
+    def HasWidth(*args, **kwargs):
+        """HasWidth(self) -> bool"""
+        return _richtext.TextAttrBorder_HasWidth(*args, **kwargs)
+
+    def IsValid(*args, **kwargs):
+        """IsValid(self) -> bool"""
+        return _richtext.TextAttrBorder_IsValid(*args, **kwargs)
+
+    def MakeValid(*args, **kwargs):
+        """MakeValid(self)"""
+        return _richtext.TextAttrBorder_MakeValid(*args, **kwargs)
+
+    def GetFlags(*args, **kwargs):
+        """GetFlags(self) -> int"""
+        return _richtext.TextAttrBorder_GetFlags(*args, **kwargs)
+
+    def SetFlags(*args, **kwargs):
+        """SetFlags(self, int flags)"""
+        return _richtext.TextAttrBorder_SetFlags(*args, **kwargs)
+
+    def AddFlag(*args, **kwargs):
+        """AddFlag(self, int flag)"""
+        return _richtext.TextAttrBorder_AddFlag(*args, **kwargs)
+
+    def RemoveFlag(*args, **kwargs):
+        """RemoveFlag(self, int flag)"""
+        return _richtext.TextAttrBorder_RemoveFlag(*args, **kwargs)
+
+    m_borderStyle = property(_richtext.TextAttrBorder_m_borderStyle_get, _richtext.TextAttrBorder_m_borderStyle_set)
+    m_borderColour = property(_richtext.TextAttrBorder_m_borderColour_get, _richtext.TextAttrBorder_m_borderColour_set)
+    m_borderWidth = property(_richtext.TextAttrBorder_m_borderWidth_get, _richtext.TextAttrBorder_m_borderWidth_set)
+    m_flags = property(_richtext.TextAttrBorder_m_flags_get, _richtext.TextAttrBorder_m_flags_set)
+_richtext.TextAttrBorder_swigregister(TextAttrBorder)
+
+class TextAttrBorders(object):
+    """Proxy of C++ TextAttrBorders class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> TextAttrBorders"""
+        _richtext.TextAttrBorders_swiginit(self,_richtext.new_TextAttrBorders(*args, **kwargs))
+    def __eq__(*args, **kwargs):
+        """__eq__(self, TextAttrBorders borders) -> bool"""
+        return _richtext.TextAttrBorders___eq__(*args, **kwargs)
+
+    def SetStyle(*args, **kwargs):
+        """SetStyle(self, int style)"""
+        return _richtext.TextAttrBorders_SetStyle(*args, **kwargs)
+
+    def SetColour(*args):
+        """
+        SetColour(self, unsigned long colour)
+        SetColour(self, Colour colour)
+        """
+        return _richtext.TextAttrBorders_SetColour(*args)
+
+    def SetWidth(*args):
+        """
+        SetWidth(self, TextAttrDimension width)
+        SetWidth(self, int value, int units=TEXT_ATTR_UNITS_TENTHS_MM)
+        """
+        return _richtext.TextAttrBorders_SetWidth(*args)
+
+    def Reset(*args, **kwargs):
+        """Reset(self)"""
+        return _richtext.TextAttrBorders_Reset(*args, **kwargs)
+
+    def EqPartial(*args, **kwargs):
+        """EqPartial(self, TextAttrBorders borders) -> bool"""
+        return _richtext.TextAttrBorders_EqPartial(*args, **kwargs)
+
+    def Apply(*args, **kwargs):
+        """Apply(self, TextAttrBorders borders, TextAttrBorders compareWith=None) -> bool"""
+        return _richtext.TextAttrBorders_Apply(*args, **kwargs)
+
+    def RemoveStyle(*args, **kwargs):
+        """RemoveStyle(self, TextAttrBorders attr) -> bool"""
+        return _richtext.TextAttrBorders_RemoveStyle(*args, **kwargs)
+
+    def CollectCommonAttributes(*args, **kwargs):
+        """
+        CollectCommonAttributes(self, TextAttrBorders attr, TextAttrBorders clashingAttr, 
+            TextAttrBorders absentAttr)
+        """
+        return _richtext.TextAttrBorders_CollectCommonAttributes(*args, **kwargs)
+
+    def IsValid(*args, **kwargs):
+        """IsValid(self) -> bool"""
+        return _richtext.TextAttrBorders_IsValid(*args, **kwargs)
+
+    def GetLeft(*args):
+        """
+        GetLeft(self) -> TextAttrBorder
+        GetLeft(self) -> TextAttrBorder
+        """
+        return _richtext.TextAttrBorders_GetLeft(*args)
+
+    def GetRight(*args):
+        """
+        GetRight(self) -> TextAttrBorder
+        GetRight(self) -> TextAttrBorder
+        """
+        return _richtext.TextAttrBorders_GetRight(*args)
+
+    def GetTop(*args):
+        """
+        GetTop(self) -> TextAttrBorder
+        GetTop(self) -> TextAttrBorder
+        """
+        return _richtext.TextAttrBorders_GetTop(*args)
+
+    def GetBottom(*args):
+        """
+        GetBottom(self) -> TextAttrBorder
+        GetBottom(self) -> TextAttrBorder
+        """
+        return _richtext.TextAttrBorders_GetBottom(*args)
+
+    m_left = property(_richtext.TextAttrBorders_m_left_get, _richtext.TextAttrBorders_m_left_set)
+    m_right = property(_richtext.TextAttrBorders_m_right_get, _richtext.TextAttrBorders_m_right_set)
+    m_top = property(_richtext.TextAttrBorders_m_top_get, _richtext.TextAttrBorders_m_top_set)
+    m_bottom = property(_richtext.TextAttrBorders_m_bottom_get, _richtext.TextAttrBorders_m_bottom_set)
+_richtext.TextAttrBorders_swigregister(TextAttrBorders)
+
+class TextBoxAttr(object):
+    """Proxy of C++ TextBoxAttr class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self) -> TextBoxAttr
+        __init__(self, TextBoxAttr attr) -> TextBoxAttr
+        """
+        _richtext.TextBoxAttr_swiginit(self,_richtext.new_TextBoxAttr(*args))
+    def Init(*args, **kwargs):
+        """Init(self)"""
+        return _richtext.TextBoxAttr_Init(*args, **kwargs)
+
+    def Reset(*args, **kwargs):
+        """Reset(self)"""
+        return _richtext.TextBoxAttr_Reset(*args, **kwargs)
+
+    def __eq__(*args, **kwargs):
+        """__eq__(self, TextBoxAttr attr) -> bool"""
+        return _richtext.TextBoxAttr___eq__(*args, **kwargs)
+
+    def EqPartial(*args, **kwargs):
+        """EqPartial(self, TextBoxAttr attr) -> bool"""
+        return _richtext.TextBoxAttr_EqPartial(*args, **kwargs)
+
+    def Apply(*args, **kwargs):
+        """Apply(self, TextBoxAttr style, TextBoxAttr compareWith=None) -> bool"""
+        return _richtext.TextBoxAttr_Apply(*args, **kwargs)
+
+    def CollectCommonAttributes(*args, **kwargs):
+        """CollectCommonAttributes(self, TextBoxAttr attr, TextBoxAttr clashingAttr, TextBoxAttr absentAttr)"""
+        return _richtext.TextBoxAttr_CollectCommonAttributes(*args, **kwargs)
+
+    def RemoveStyle(*args, **kwargs):
+        """RemoveStyle(self, TextBoxAttr attr) -> bool"""
+        return _richtext.TextBoxAttr_RemoveStyle(*args, **kwargs)
+
+    def SetFlags(*args, **kwargs):
+        """SetFlags(self, int flags)"""
+        return _richtext.TextBoxAttr_SetFlags(*args, **kwargs)
+
+    def GetFlags(*args, **kwargs):
+        """GetFlags(self) -> int"""
+        return _richtext.TextBoxAttr_GetFlags(*args, **kwargs)
+
+    def HasFlag(*args, **kwargs):
+        """HasFlag(self, int flag) -> bool"""
+        return _richtext.TextBoxAttr_HasFlag(*args, **kwargs)
+
+    def RemoveFlag(*args, **kwargs):
+        """RemoveFlag(self, int flag)"""
+        return _richtext.TextBoxAttr_RemoveFlag(*args, **kwargs)
+
+    def AddFlag(*args, **kwargs):
+        """AddFlag(self, int flag)"""
+        return _richtext.TextBoxAttr_AddFlag(*args, **kwargs)
+
+    def GetFloatMode(*args, **kwargs):
+        """GetFloatMode(self) -> int"""
+        return _richtext.TextBoxAttr_GetFloatMode(*args, **kwargs)
+
+    def SetFloatMode(*args, **kwargs):
+        """SetFloatMode(self, int mode)"""
+        return _richtext.TextBoxAttr_SetFloatMode(*args, **kwargs)
+
+    def HasFloatMode(*args, **kwargs):
+        """HasFloatMode(self) -> bool"""
+        return _richtext.TextBoxAttr_HasFloatMode(*args, **kwargs)
+
+    def IsFloating(*args, **kwargs):
+        """IsFloating(self) -> bool"""
+        return _richtext.TextBoxAttr_IsFloating(*args, **kwargs)
+
+    def GetClearMode(*args, **kwargs):
+        """GetClearMode(self) -> int"""
+        return _richtext.TextBoxAttr_GetClearMode(*args, **kwargs)
+
+    def SetClearMode(*args, **kwargs):
+        """SetClearMode(self, int mode)"""
+        return _richtext.TextBoxAttr_SetClearMode(*args, **kwargs)
+
+    def HasClearMode(*args, **kwargs):
+        """HasClearMode(self) -> bool"""
+        return _richtext.TextBoxAttr_HasClearMode(*args, **kwargs)
+
+    def GetCollapseBorders(*args, **kwargs):
+        """GetCollapseBorders(self) -> int"""
+        return _richtext.TextBoxAttr_GetCollapseBorders(*args, **kwargs)
+
+    def SetCollapseBorders(*args, **kwargs):
+        """SetCollapseBorders(self, int collapse)"""
+        return _richtext.TextBoxAttr_SetCollapseBorders(*args, **kwargs)
+
+    def HasCollapseBorders(*args, **kwargs):
+        """HasCollapseBorders(self) -> bool"""
+        return _richtext.TextBoxAttr_HasCollapseBorders(*args, **kwargs)
+
+    def GetVerticalAlignment(*args, **kwargs):
+        """GetVerticalAlignment(self) -> int"""
+        return _richtext.TextBoxAttr_GetVerticalAlignment(*args, **kwargs)
+
+    def SetVerticalAlignment(*args, **kwargs):
+        """SetVerticalAlignment(self, int verticalAlignment)"""
+        return _richtext.TextBoxAttr_SetVerticalAlignment(*args, **kwargs)
+
+    def HasVerticalAlignment(*args, **kwargs):
+        """HasVerticalAlignment(self) -> bool"""
+        return _richtext.TextBoxAttr_HasVerticalAlignment(*args, **kwargs)
+
+    def GetMargins(*args):
+        """
+        GetMargins(self) -> TextAttrDimensions
+        GetMargins(self) -> TextAttrDimensions
+        """
+        return _richtext.TextBoxAttr_GetMargins(*args)
+
+    def GetLeftMargin(*args):
+        """
+        GetLeftMargin(self) -> TextAttrDimension
+        GetLeftMargin(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetLeftMargin(*args)
+
+    def GetRightMargin(*args):
+        """
+        GetRightMargin(self) -> TextAttrDimension
+        GetRightMargin(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetRightMargin(*args)
+
+    def GetTopMargin(*args):
+        """
+        GetTopMargin(self) -> TextAttrDimension
+        GetTopMargin(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetTopMargin(*args)
+
+    def GetBottomMargin(*args):
+        """
+        GetBottomMargin(self) -> TextAttrDimension
+        GetBottomMargin(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetBottomMargin(*args)
+
+    def GetPosition(*args):
+        """
+        GetPosition(self) -> TextAttrDimensions
+        GetPosition(self) -> TextAttrDimensions
+        """
+        return _richtext.TextBoxAttr_GetPosition(*args)
+
+    def GetLeft(*args):
+        """
+        GetLeft(self) -> TextAttrDimension
+        GetLeft(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetLeft(*args)
+
+    def GetRight(*args):
+        """
+        GetRight(self) -> TextAttrDimension
+        GetRight(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetRight(*args)
+
+    def GetTop(*args):
+        """
+        GetTop(self) -> TextAttrDimension
+        GetTop(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetTop(*args)
+
+    def GetBottom(*args):
+        """
+        GetBottom(self) -> TextAttrDimension
+        GetBottom(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetBottom(*args)
+
+    def GetPadding(*args):
+        """
+        GetPadding(self) -> TextAttrDimensions
+        GetPadding(self) -> TextAttrDimensions
+        """
+        return _richtext.TextBoxAttr_GetPadding(*args)
+
+    def GetLeftPadding(*args):
+        """
+        GetLeftPadding(self) -> TextAttrDimension
+        GetLeftPadding(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetLeftPadding(*args)
+
+    def GetRightPadding(*args):
+        """
+        GetRightPadding(self) -> TextAttrDimension
+        GetRightPadding(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetRightPadding(*args)
+
+    def GetTopPadding(*args):
+        """
+        GetTopPadding(self) -> TextAttrDimension
+        GetTopPadding(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetTopPadding(*args)
+
+    def GetBottomPadding(*args):
+        """
+        GetBottomPadding(self) -> TextAttrDimension
+        GetBottomPadding(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetBottomPadding(*args)
+
+    def GetBorder(*args):
+        """
+        GetBorder(self) -> TextAttrBorders
+        GetBorder(self) -> TextAttrBorders
+        """
+        return _richtext.TextBoxAttr_GetBorder(*args)
+
+    def GetLeftBorder(*args):
+        """
+        GetLeftBorder(self) -> TextAttrBorder
+        GetLeftBorder(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetLeftBorder(*args)
+
+    def GetTopBorder(*args):
+        """
+        GetTopBorder(self) -> TextAttrBorder
+        GetTopBorder(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetTopBorder(*args)
+
+    def GetRightBorder(*args):
+        """
+        GetRightBorder(self) -> TextAttrBorder
+        GetRightBorder(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetRightBorder(*args)
+
+    def GetBottomBorder(*args):
+        """
+        GetBottomBorder(self) -> TextAttrBorder
+        GetBottomBorder(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetBottomBorder(*args)
+
+    def GetOutline(*args):
+        """
+        GetOutline(self) -> TextAttrBorders
+        GetOutline(self) -> TextAttrBorders
+        """
+        return _richtext.TextBoxAttr_GetOutline(*args)
+
+    def GetLeftOutline(*args):
+        """
+        GetLeftOutline(self) -> TextAttrBorder
+        GetLeftOutline(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetLeftOutline(*args)
+
+    def GetTopOutline(*args):
+        """
+        GetTopOutline(self) -> TextAttrBorder
+        GetTopOutline(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetTopOutline(*args)
+
+    def GetRightOutline(*args):
+        """
+        GetRightOutline(self) -> TextAttrBorder
+        GetRightOutline(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetRightOutline(*args)
+
+    def GetBottomOutline(*args):
+        """
+        GetBottomOutline(self) -> TextAttrBorder
+        GetBottomOutline(self) -> TextAttrBorder
+        """
+        return _richtext.TextBoxAttr_GetBottomOutline(*args)
+
+    def GetSize(*args):
+        """
+        GetSize(self) -> wxTextAttrSize
+        GetSize(self) -> wxTextAttrSize
+        """
+        return _richtext.TextBoxAttr_GetSize(*args)
+
+    def SetSize(*args, **kwargs):
+        """SetSize(self, wxTextAttrSize sz)"""
+        return _richtext.TextBoxAttr_SetSize(*args, **kwargs)
+
+    def GetWidth(*args):
+        """
+        GetWidth(self) -> TextAttrDimension
+        GetWidth(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetWidth(*args)
+
+    def GetHeight(*args):
+        """
+        GetHeight(self) -> TextAttrDimension
+        GetHeight(self) -> TextAttrDimension
+        """
+        return _richtext.TextBoxAttr_GetHeight(*args)
+
+    def GetBoxStyleName(*args, **kwargs):
+        """GetBoxStyleName(self) -> String"""
+        return _richtext.TextBoxAttr_GetBoxStyleName(*args, **kwargs)
+
+    def SetBoxStyleName(*args, **kwargs):
+        """SetBoxStyleName(self, String name)"""
+        return _richtext.TextBoxAttr_SetBoxStyleName(*args, **kwargs)
+
+    def HasBoxStyleName(*args, **kwargs):
+        """HasBoxStyleName(self) -> bool"""
+        return _richtext.TextBoxAttr_HasBoxStyleName(*args, **kwargs)
+
+    m_flags = property(_richtext.TextBoxAttr_m_flags_get, _richtext.TextBoxAttr_m_flags_set)
+    m_margins = property(_richtext.TextBoxAttr_m_margins_get, _richtext.TextBoxAttr_m_margins_set)
+    m_padding = property(_richtext.TextBoxAttr_m_padding_get, _richtext.TextBoxAttr_m_padding_set)
+    m_position = property(_richtext.TextBoxAttr_m_position_get, _richtext.TextBoxAttr_m_position_set)
+    m_size = property(_richtext.TextBoxAttr_m_size_get, _richtext.TextBoxAttr_m_size_set)
+    m_border = property(_richtext.TextBoxAttr_m_border_get, _richtext.TextBoxAttr_m_border_set)
+    m_outline = property(_richtext.TextBoxAttr_m_outline_get, _richtext.TextBoxAttr_m_outline_set)
+    m_floatMode = property(_richtext.TextBoxAttr_m_floatMode_get, _richtext.TextBoxAttr_m_floatMode_set)
+    m_clearMode = property(_richtext.TextBoxAttr_m_clearMode_get, _richtext.TextBoxAttr_m_clearMode_set)
+    m_collapseMode = property(_richtext.TextBoxAttr_m_collapseMode_get, _richtext.TextBoxAttr_m_collapseMode_set)
+    m_verticalAlignment = property(_richtext.TextBoxAttr_m_verticalAlignment_get, _richtext.TextBoxAttr_m_verticalAlignment_set)
+    m_boxStyleName = property(_richtext.TextBoxAttr_m_boxStyleName_get, _richtext.TextBoxAttr_m_boxStyleName_set)
+_richtext.TextBoxAttr_swigregister(TextBoxAttr)
+
+#---------------------------------------------------------------------------
+
+class RichTextAttr(_controls.TextAttr):
+    """Proxy of C++ RichTextAttr class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self, TextAttr attr) -> RichTextAttr
+        __init__(self, RichTextAttr attr) -> RichTextAttr
+        __init__(self) -> RichTextAttr
+        """
+        _richtext.RichTextAttr_swiginit(self,_richtext.new_RichTextAttr(*args))
+    __swig_destroy__ = _richtext.delete_RichTextAttr
+    __del__ = lambda self : None;
+    def Copy(*args, **kwargs):
+        """Copy(self, RichTextAttr attr)"""
+        return _richtext.RichTextAttr_Copy(*args, **kwargs)
+
+    def __eq__(*args, **kwargs):
+        """__eq__(self, RichTextAttr attr) -> bool"""
+        return _richtext.RichTextAttr___eq__(*args, **kwargs)
+
+    def EqPartial(*args, **kwargs):
+        """EqPartial(self, RichTextAttr attr) -> bool"""
+        return _richtext.RichTextAttr_EqPartial(*args, **kwargs)
+
+    def Apply(*args, **kwargs):
+        """Apply(self, RichTextAttr style, RichTextAttr compareWith=None) -> bool"""
+        return _richtext.RichTextAttr_Apply(*args, **kwargs)
+
+    def CollectCommonAttributes(*args, **kwargs):
+        """CollectCommonAttributes(self, RichTextAttr attr, RichTextAttr clashingAttr, RichTextAttr absentAttr)"""
+        return _richtext.RichTextAttr_CollectCommonAttributes(*args, **kwargs)
+
+    def RemoveStyle(*args, **kwargs):
+        """RemoveStyle(self, RichTextAttr attr) -> bool"""
+        return _richtext.RichTextAttr_RemoveStyle(*args, **kwargs)
+
+    def GetTextBoxAttr(*args):
+        """
+        GetTextBoxAttr(self) -> TextBoxAttr
+        GetTextBoxAttr(self) -> TextBoxAttr
+        """
+        return _richtext.RichTextAttr_GetTextBoxAttr(*args)
+
+    def SetTextBoxAttr(*args, **kwargs):
+        """SetTextBoxAttr(self, TextBoxAttr attr)"""
+        return _richtext.RichTextAttr_SetTextBoxAttr(*args, **kwargs)
+
+    m_textBoxAttr = property(_richtext.RichTextAttr_m_textBoxAttr_get, _richtext.RichTextAttr_m_textBoxAttr_set)
+_richtext.RichTextAttr_swigregister(RichTextAttr)
+
+class RichTextFontTable(_core.Object):
+    """Proxy of C++ RichTextFontTable class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> RichTextFontTable"""
+        _richtext.RichTextFontTable_swiginit(self,_richtext.new_RichTextFontTable(*args, **kwargs))
+    __swig_destroy__ = _richtext.delete_RichTextFontTable
+    __del__ = lambda self : None;
+    def IsOk(*args, **kwargs):
+        """IsOk(self) -> bool"""
+        return _richtext.RichTextFontTable_IsOk(*args, **kwargs)
+
+    def FindFont(*args, **kwargs):
+        """FindFont(self, RichTextAttr fontSpec) -> Font"""
+        return _richtext.RichTextFontTable_FindFont(*args, **kwargs)
+
+    def Clear(*args, **kwargs):
+        """Clear(self)"""
+        return _richtext.RichTextFontTable_Clear(*args, **kwargs)
+
+_richtext.RichTextFontTable_swigregister(RichTextFontTable)
 
 class RichTextRange(object):
     """
@@ -307,411 +1076,34 @@ class RichTextRange(object):
     Start = property(GetStart,SetStart,doc="See `GetStart` and `SetStart`") 
 _richtext.RichTextRange_swigregister(RichTextRange)
 
-#---------------------------------------------------------------------------
-
-class TextAttrEx(object):
-    """
-    The TextAttrEx class stores information about the various attributes
-    for a block of text, including font, colour, indents, alignments, and
-    etc.
-    """
+class RichTextDrawingContext(_core.Object):
+    """Proxy of C++ RichTextDrawingContext class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """
-        __init__(self) -> TextAttrEx
-
-        The TextAttrEx class stores information about the various attributes
-        for a block of text, including font, colour, indents, alignments, and
-        etc.
-        """
-        _richtext.TextAttrEx_swiginit(self,_richtext.new_TextAttrEx(*args, **kwargs))
-    __swig_destroy__ = _richtext.delete_TextAttrEx
-    __del__ = lambda self : None;
+        """__init__(self, RichTextBuffer buffer) -> RichTextDrawingContext"""
+        _richtext.RichTextDrawingContext_swiginit(self,_richtext.new_RichTextDrawingContext(*args, **kwargs))
     def Init(*args, **kwargs):
         """Init(self)"""
-        return _richtext.TextAttrEx_Init(*args, **kwargs)
+        return _richtext.RichTextDrawingContext_Init(*args, **kwargs)
 
-    def Copy(*args, **kwargs):
-        """Copy(self, TextAttrEx attr)"""
-        return _richtext.TextAttrEx_Copy(*args, **kwargs)
+    def HasVirtualAttributes(*args, **kwargs):
+        """HasVirtualAttributes(self, RichTextObject obj) -> bool"""
+        return _richtext.RichTextDrawingContext_HasVirtualAttributes(*args, **kwargs)
 
-    def SetTextColour(*args, **kwargs):
-        """SetTextColour(self, Colour colText)"""
-        return _richtext.TextAttrEx_SetTextColour(*args, **kwargs)
+    def GetVirtualAttributes(*args, **kwargs):
+        """GetVirtualAttributes(self, RichTextObject obj) -> RichTextAttr"""
+        return _richtext.RichTextDrawingContext_GetVirtualAttributes(*args, **kwargs)
 
-    def SetBackgroundColour(*args, **kwargs):
-        """SetBackgroundColour(self, Colour colBack)"""
-        return _richtext.TextAttrEx_SetBackgroundColour(*args, **kwargs)
+    def ApplyVirtualAttributes(*args, **kwargs):
+        """ApplyVirtualAttributes(self, RichTextAttr attr, RichTextObject obj) -> bool"""
+        return _richtext.RichTextDrawingContext_ApplyVirtualAttributes(*args, **kwargs)
 
-    def SetFont(*args, **kwargs):
-        """SetFont(self, Font font, long flags=TEXT_ATTR_FONT)"""
-        return _richtext.TextAttrEx_SetFont(*args, **kwargs)
-
-    def SetAlignment(*args, **kwargs):
-        """SetAlignment(self, int alignment)"""
-        return _richtext.TextAttrEx_SetAlignment(*args, **kwargs)
-
-    def SetTabs(*args, **kwargs):
-        """SetTabs(self, wxArrayInt tabs)"""
-        return _richtext.TextAttrEx_SetTabs(*args, **kwargs)
-
-    def SetLeftIndent(*args, **kwargs):
-        """SetLeftIndent(self, int indent, int subIndent=0)"""
-        return _richtext.TextAttrEx_SetLeftIndent(*args, **kwargs)
-
-    def SetRightIndent(*args, **kwargs):
-        """SetRightIndent(self, int indent)"""
-        return _richtext.TextAttrEx_SetRightIndent(*args, **kwargs)
-
-    def SetFlags(*args, **kwargs):
-        """SetFlags(self, long flags)"""
-        return _richtext.TextAttrEx_SetFlags(*args, **kwargs)
-
-    def HasTextColour(*args, **kwargs):
-        """HasTextColour(self) -> bool"""
-        return _richtext.TextAttrEx_HasTextColour(*args, **kwargs)
-
-    def HasBackgroundColour(*args, **kwargs):
-        """HasBackgroundColour(self) -> bool"""
-        return _richtext.TextAttrEx_HasBackgroundColour(*args, **kwargs)
-
-    def HasFont(*args, **kwargs):
-        """HasFont(self) -> bool"""
-        return _richtext.TextAttrEx_HasFont(*args, **kwargs)
-
-    def HasAlignment(*args, **kwargs):
-        """HasAlignment(self) -> bool"""
-        return _richtext.TextAttrEx_HasAlignment(*args, **kwargs)
-
-    def HasTabs(*args, **kwargs):
-        """HasTabs(self) -> bool"""
-        return _richtext.TextAttrEx_HasTabs(*args, **kwargs)
-
-    def HasLeftIndent(*args, **kwargs):
-        """HasLeftIndent(self) -> bool"""
-        return _richtext.TextAttrEx_HasLeftIndent(*args, **kwargs)
-
-    def HasRightIndent(*args, **kwargs):
-        """HasRightIndent(self) -> bool"""
-        return _richtext.TextAttrEx_HasRightIndent(*args, **kwargs)
-
-    def HasFlag(*args, **kwargs):
-        """HasFlag(self, long flag) -> bool"""
-        return _richtext.TextAttrEx_HasFlag(*args, **kwargs)
-
-    def GetTextColour(*args, **kwargs):
-        """GetTextColour(self) -> Colour"""
-        return _richtext.TextAttrEx_GetTextColour(*args, **kwargs)
-
-    def GetBackgroundColour(*args, **kwargs):
-        """GetBackgroundColour(self) -> Colour"""
-        return _richtext.TextAttrEx_GetBackgroundColour(*args, **kwargs)
-
-    def GetFont(*args, **kwargs):
-        """GetFont(self) -> Font"""
-        return _richtext.TextAttrEx_GetFont(*args, **kwargs)
-
-    def GetAlignment(*args, **kwargs):
-        """GetAlignment(self) -> int"""
-        return _richtext.TextAttrEx_GetAlignment(*args, **kwargs)
-
-    def GetTabs(*args, **kwargs):
-        """GetTabs(self) -> wxArrayInt"""
-        return _richtext.TextAttrEx_GetTabs(*args, **kwargs)
-
-    def GetLeftIndent(*args, **kwargs):
-        """GetLeftIndent(self) -> long"""
-        return _richtext.TextAttrEx_GetLeftIndent(*args, **kwargs)
-
-    def GetLeftSubIndent(*args, **kwargs):
-        """GetLeftSubIndent(self) -> long"""
-        return _richtext.TextAttrEx_GetLeftSubIndent(*args, **kwargs)
-
-    def GetRightIndent(*args, **kwargs):
-        """GetRightIndent(self) -> long"""
-        return _richtext.TextAttrEx_GetRightIndent(*args, **kwargs)
-
-    def GetFlags(*args, **kwargs):
-        """GetFlags(self) -> long"""
-        return _richtext.TextAttrEx_GetFlags(*args, **kwargs)
-
-    def SetCharacterStyleName(*args, **kwargs):
-        """SetCharacterStyleName(self, String name)"""
-        return _richtext.TextAttrEx_SetCharacterStyleName(*args, **kwargs)
-
-    def SetParagraphStyleName(*args, **kwargs):
-        """SetParagraphStyleName(self, String name)"""
-        return _richtext.TextAttrEx_SetParagraphStyleName(*args, **kwargs)
-
-    def SetListStyleName(*args, **kwargs):
-        """SetListStyleName(self, String name)"""
-        return _richtext.TextAttrEx_SetListStyleName(*args, **kwargs)
-
-    def SetParagraphSpacingAfter(*args, **kwargs):
-        """SetParagraphSpacingAfter(self, int spacing)"""
-        return _richtext.TextAttrEx_SetParagraphSpacingAfter(*args, **kwargs)
-
-    def SetParagraphSpacingBefore(*args, **kwargs):
-        """SetParagraphSpacingBefore(self, int spacing)"""
-        return _richtext.TextAttrEx_SetParagraphSpacingBefore(*args, **kwargs)
-
-    def SetLineSpacing(*args, **kwargs):
-        """SetLineSpacing(self, int spacing)"""
-        return _richtext.TextAttrEx_SetLineSpacing(*args, **kwargs)
-
-    def SetBulletStyle(*args, **kwargs):
-        """SetBulletStyle(self, int style)"""
-        return _richtext.TextAttrEx_SetBulletStyle(*args, **kwargs)
-
-    def SetBulletNumber(*args, **kwargs):
-        """SetBulletNumber(self, int n)"""
-        return _richtext.TextAttrEx_SetBulletNumber(*args, **kwargs)
-
-    def SetBulletText(*args, **kwargs):
-        """SetBulletText(self, String text)"""
-        return _richtext.TextAttrEx_SetBulletText(*args, **kwargs)
-
-    def SetBulletName(*args, **kwargs):
-        """SetBulletName(self, String name)"""
-        return _richtext.TextAttrEx_SetBulletName(*args, **kwargs)
-
-    def SetBulletFont(*args, **kwargs):
-        """SetBulletFont(self, String bulletFont)"""
-        return _richtext.TextAttrEx_SetBulletFont(*args, **kwargs)
-
-    def SetURL(*args, **kwargs):
-        """SetURL(self, String url)"""
-        return _richtext.TextAttrEx_SetURL(*args, **kwargs)
-
-    def SetPageBreak(*args, **kwargs):
-        """SetPageBreak(self, bool pageBreak=True)"""
-        return _richtext.TextAttrEx_SetPageBreak(*args, **kwargs)
-
-    def SetTextEffects(*args, **kwargs):
-        """SetTextEffects(self, int effects)"""
-        return _richtext.TextAttrEx_SetTextEffects(*args, **kwargs)
-
-    def SetTextEffectFlags(*args, **kwargs):
-        """SetTextEffectFlags(self, int effects)"""
-        return _richtext.TextAttrEx_SetTextEffectFlags(*args, **kwargs)
-
-    def SetOutlineLevel(*args, **kwargs):
-        """SetOutlineLevel(self, int level)"""
-        return _richtext.TextAttrEx_SetOutlineLevel(*args, **kwargs)
-
-    def SetFontSize(*args, **kwargs):
-        """SetFontSize(self, int pointSize)"""
-        return _richtext.TextAttrEx_SetFontSize(*args, **kwargs)
-
-    def SetFontStyle(*args, **kwargs):
-        """SetFontStyle(self, int fontStyle)"""
-        return _richtext.TextAttrEx_SetFontStyle(*args, **kwargs)
-
-    def SetFontWeight(*args, **kwargs):
-        """SetFontWeight(self, int fontWeight)"""
-        return _richtext.TextAttrEx_SetFontWeight(*args, **kwargs)
-
-    def SetFontFaceName(*args, **kwargs):
-        """SetFontFaceName(self, String faceName)"""
-        return _richtext.TextAttrEx_SetFontFaceName(*args, **kwargs)
-
-    def SetFontUnderlined(*args, **kwargs):
-        """SetFontUnderlined(self, bool underlined)"""
-        return _richtext.TextAttrEx_SetFontUnderlined(*args, **kwargs)
-
-    def GetCharacterStyleName(*args, **kwargs):
-        """GetCharacterStyleName(self) -> String"""
-        return _richtext.TextAttrEx_GetCharacterStyleName(*args, **kwargs)
-
-    def GetParagraphStyleName(*args, **kwargs):
-        """GetParagraphStyleName(self) -> String"""
-        return _richtext.TextAttrEx_GetParagraphStyleName(*args, **kwargs)
-
-    def GetListStyleName(*args, **kwargs):
-        """GetListStyleName(self) -> String"""
-        return _richtext.TextAttrEx_GetListStyleName(*args, **kwargs)
-
-    def GetParagraphSpacingAfter(*args, **kwargs):
-        """GetParagraphSpacingAfter(self) -> int"""
-        return _richtext.TextAttrEx_GetParagraphSpacingAfter(*args, **kwargs)
-
-    def GetParagraphSpacingBefore(*args, **kwargs):
-        """GetParagraphSpacingBefore(self) -> int"""
-        return _richtext.TextAttrEx_GetParagraphSpacingBefore(*args, **kwargs)
-
-    def GetLineSpacing(*args, **kwargs):
-        """GetLineSpacing(self) -> int"""
-        return _richtext.TextAttrEx_GetLineSpacing(*args, **kwargs)
-
-    def GetBulletStyle(*args, **kwargs):
-        """GetBulletStyle(self) -> int"""
-        return _richtext.TextAttrEx_GetBulletStyle(*args, **kwargs)
-
-    def GetBulletNumber(*args, **kwargs):
-        """GetBulletNumber(self) -> int"""
-        return _richtext.TextAttrEx_GetBulletNumber(*args, **kwargs)
-
-    def GetBulletText(*args, **kwargs):
-        """GetBulletText(self) -> String"""
-        return _richtext.TextAttrEx_GetBulletText(*args, **kwargs)
-
-    def GetBulletName(*args, **kwargs):
-        """GetBulletName(self) -> String"""
-        return _richtext.TextAttrEx_GetBulletName(*args, **kwargs)
-
-    def GetBulletFont(*args, **kwargs):
-        """GetBulletFont(self) -> String"""
-        return _richtext.TextAttrEx_GetBulletFont(*args, **kwargs)
-
-    def GetURL(*args, **kwargs):
-        """GetURL(self) -> String"""
-        return _richtext.TextAttrEx_GetURL(*args, **kwargs)
-
-    def GetTextEffects(*args, **kwargs):
-        """GetTextEffects(self) -> int"""
-        return _richtext.TextAttrEx_GetTextEffects(*args, **kwargs)
-
-    def GetTextEffectFlags(*args, **kwargs):
-        """GetTextEffectFlags(self) -> int"""
-        return _richtext.TextAttrEx_GetTextEffectFlags(*args, **kwargs)
-
-    def GetOutlineLevel(*args, **kwargs):
-        """GetOutlineLevel(self) -> int"""
-        return _richtext.TextAttrEx_GetOutlineLevel(*args, **kwargs)
-
-    def HasFontWeight(*args, **kwargs):
-        """HasFontWeight(self) -> bool"""
-        return _richtext.TextAttrEx_HasFontWeight(*args, **kwargs)
-
-    def HasFontSize(*args, **kwargs):
-        """HasFontSize(self) -> bool"""
-        return _richtext.TextAttrEx_HasFontSize(*args, **kwargs)
-
-    def HasFontItalic(*args, **kwargs):
-        """HasFontItalic(self) -> bool"""
-        return _richtext.TextAttrEx_HasFontItalic(*args, **kwargs)
-
-    def HasFontUnderlined(*args, **kwargs):
-        """HasFontUnderlined(self) -> bool"""
-        return _richtext.TextAttrEx_HasFontUnderlined(*args, **kwargs)
-
-    def HasFontFaceName(*args, **kwargs):
-        """HasFontFaceName(self) -> bool"""
-        return _richtext.TextAttrEx_HasFontFaceName(*args, **kwargs)
-
-    def HasParagraphSpacingAfter(*args, **kwargs):
-        """HasParagraphSpacingAfter(self) -> bool"""
-        return _richtext.TextAttrEx_HasParagraphSpacingAfter(*args, **kwargs)
-
-    def HasParagraphSpacingBefore(*args, **kwargs):
-        """HasParagraphSpacingBefore(self) -> bool"""
-        return _richtext.TextAttrEx_HasParagraphSpacingBefore(*args, **kwargs)
-
-    def HasLineSpacing(*args, **kwargs):
-        """HasLineSpacing(self) -> bool"""
-        return _richtext.TextAttrEx_HasLineSpacing(*args, **kwargs)
-
-    def HasCharacterStyleName(*args, **kwargs):
-        """HasCharacterStyleName(self) -> bool"""
-        return _richtext.TextAttrEx_HasCharacterStyleName(*args, **kwargs)
-
-    def HasParagraphStyleName(*args, **kwargs):
-        """HasParagraphStyleName(self) -> bool"""
-        return _richtext.TextAttrEx_HasParagraphStyleName(*args, **kwargs)
-
-    def HasListStyleName(*args, **kwargs):
-        """HasListStyleName(self) -> bool"""
-        return _richtext.TextAttrEx_HasListStyleName(*args, **kwargs)
-
-    def HasBulletStyle(*args, **kwargs):
-        """HasBulletStyle(self) -> bool"""
-        return _richtext.TextAttrEx_HasBulletStyle(*args, **kwargs)
-
-    def HasBulletNumber(*args, **kwargs):
-        """HasBulletNumber(self) -> bool"""
-        return _richtext.TextAttrEx_HasBulletNumber(*args, **kwargs)
-
-    def HasBulletText(*args, **kwargs):
-        """HasBulletText(self) -> bool"""
-        return _richtext.TextAttrEx_HasBulletText(*args, **kwargs)
-
-    def HasBulletName(*args, **kwargs):
-        """HasBulletName(self) -> bool"""
-        return _richtext.TextAttrEx_HasBulletName(*args, **kwargs)
-
-    def HasURL(*args, **kwargs):
-        """HasURL(self) -> bool"""
-        return _richtext.TextAttrEx_HasURL(*args, **kwargs)
-
-    def HasPageBreak(*args, **kwargs):
-        """HasPageBreak(self) -> bool"""
-        return _richtext.TextAttrEx_HasPageBreak(*args, **kwargs)
-
-    def HasTextEffects(*args, **kwargs):
-        """HasTextEffects(self) -> bool"""
-        return _richtext.TextAttrEx_HasTextEffects(*args, **kwargs)
-
-    def HasTextEffect(*args, **kwargs):
-        """HasTextEffect(self, int effect) -> bool"""
-        return _richtext.TextAttrEx_HasTextEffect(*args, **kwargs)
-
-    def HasOutlineLevel(*args, **kwargs):
-        """HasOutlineLevel(self) -> bool"""
-        return _richtext.TextAttrEx_HasOutlineLevel(*args, **kwargs)
-
-    def IsCharacterStyle(*args, **kwargs):
-        """IsCharacterStyle(self) -> bool"""
-        return _richtext.TextAttrEx_IsCharacterStyle(*args, **kwargs)
-
-    def IsParagraphStyle(*args, **kwargs):
-        """IsParagraphStyle(self) -> bool"""
-        return _richtext.TextAttrEx_IsParagraphStyle(*args, **kwargs)
-
-    def IsDefault(*args, **kwargs):
-        """IsDefault(self) -> bool"""
-        return _richtext.TextAttrEx_IsDefault(*args, **kwargs)
-
-    def CombineEx(*args, **kwargs):
-        """CombineEx(TextAttrEx attr, TextAttrEx attrDef, RichTextCtrl text) -> TextAttrEx"""
-        return _richtext.TextAttrEx_CombineEx(*args, **kwargs)
-
-    CombineEx = staticmethod(CombineEx)
-    Alignment = property(GetAlignment,SetAlignment) 
-    BackgroundColour = property(GetBackgroundColour,SetBackgroundColour) 
-    Flags = property(GetFlags,SetFlags) 
-    Font = property(GetFont,SetFont) 
-    LeftIndent = property(GetLeftIndent,SetLeftIndent) 
-    LeftSubIndent = property(GetLeftSubIndent) 
-    RightIndent = property(GetRightIndent,SetRightIndent) 
-    Tabs = property(GetTabs,SetTabs) 
-    TextColour = property(GetTextColour,SetTextColour) 
-    CharacterStyleName = property(GetCharacterStyleName,SetCharacterStyleName) 
-    ParagraphStyleName = property(GetParagraphStyleName,SetParagraphStyleName) 
-    ListStyleName = property(GetListStyleName,SetListStyleName) 
-    ParagraphSpacingAfter = property(GetParagraphSpacingAfter,SetParagraphSpacingAfter) 
-    ParagraphSpacingBefore = property(GetParagraphSpacingBefore,SetParagraphSpacingBefore) 
-    LineSpacing = property(GetLineSpacing,SetLineSpacing) 
-    BulletStyle = property(GetBulletStyle,SetBulletStyle) 
-    BulletNumber = property(GetBulletNumber,SetBulletNumber) 
-    BulletText = property(GetBulletText,SetBulletText) 
-    BulletName = property(GetBulletName,SetBulletName) 
-    BulletFont = property(GetBulletFont,SetBulletFont) 
-    URL = property(GetURL,SetURL) 
-    TextEffects = property(GetTextEffects,SetTextEffects) 
-    TextEffectFlags = property(GetTextEffectFlags,SetTextEffectFlags) 
-    OutlineLevel = property(GetOutlineLevel,SetOutlineLevel) 
-_richtext.TextAttrEx_swigregister(TextAttrEx)
+    m_buffer = property(_richtext.RichTextDrawingContext_m_buffer_get, _richtext.RichTextDrawingContext_m_buffer_set)
+_richtext.RichTextDrawingContext_swigregister(RichTextDrawingContext)
 cvar = _richtext.cvar
 RICHTEXT_ALL = cvar.RICHTEXT_ALL
 RICHTEXT_NONE = cvar.RICHTEXT_NONE
-
-def TextAttrEx_CombineEx(*args, **kwargs):
-  """TextAttrEx_CombineEx(TextAttrEx attr, TextAttrEx attrDef, RichTextCtrl text) -> TextAttrEx"""
-  return _richtext.TextAttrEx_CombineEx(*args, **kwargs)
-
-# an alias for compatibility
-RichTextAttr = TextAttrEx
 
 class RichTextObject(_core.Object):
     """
@@ -771,21 +1163,32 @@ class RichTextObject(_core.Object):
     __del__ = lambda self : None;
     def Draw(*args, **kwargs):
         """
-        Draw(self, DC dc, RichTextRange range, RichTextRange selectionRange, 
-            Rect rect, int descent, int style) -> bool
+        Draw(self, DC dc, RichTextDrawingContext context, RichTextRange range, 
+            wxRichTextSelection selection, Rect rect, 
+            int descent, int style) -> bool
         """
         return _richtext.RichTextObject_Draw(*args, **kwargs)
 
     def Layout(*args, **kwargs):
-        """Layout(self, DC dc, Rect rect, int style) -> bool"""
+        """
+        Layout(self, DC dc, RichTextDrawingContext context, Rect rect, Rect parentRect, 
+            int style) -> bool
+        """
         return _richtext.RichTextObject_Layout(*args, **kwargs)
 
     def HitTest(*args, **kwargs):
-        """HitTest(self, DC dc, Point pt, long OUTPUT) -> int"""
+        """
+        HitTest(self, DC dc, RichTextDrawingContext context, Point pt, long OUTPUT, 
+            RichTextObject obj, RichTextObject contextObj, 
+            int flags=0) -> int
+        """
         return _richtext.RichTextObject_HitTest(*args, **kwargs)
 
     def FindPosition(*args, **kwargs):
-        """FindPosition(self, DC dc, long index, Point OUTPUT, int OUTPUT, bool forceLineStart) -> bool"""
+        """
+        FindPosition(self, DC dc, RichTextDrawingContext context, long index, 
+            Point OUTPUT, int OUTPUT, bool forceLineStart) -> bool
+        """
         return _richtext.RichTextObject_FindPosition(*args, **kwargs)
 
     def GetBestSize(*args, **kwargs):
@@ -795,7 +1198,8 @@ class RichTextObject(_core.Object):
     def GetRangeSize(*args, **kwargs):
         """
         GetRangeSize(self, RichTextRange range, Size OUTPUT, int OUTPUT, DC dc, 
-            int flags, Point position=wxPoint(0,0)) -> bool
+            RichTextDrawingContext context, int flags, 
+            Point position=wxPoint(0,0)) -> bool
         """
         return _richtext.RichTextObject_GetRangeSize(*args, **kwargs)
 
@@ -815,25 +1219,67 @@ class RichTextObject(_core.Object):
         """IsEmpty(self) -> bool"""
         return _richtext.RichTextObject_IsEmpty(*args, **kwargs)
 
+    def IsFloatable(*args, **kwargs):
+        """IsFloatable(self) -> bool"""
+        return _richtext.RichTextObject_IsFloatable(*args, **kwargs)
+
+    def IsFloating(*args, **kwargs):
+        """IsFloating(self) -> bool"""
+        return _richtext.RichTextObject_IsFloating(*args, **kwargs)
+
+    def GetFloatDirection(*args, **kwargs):
+        """GetFloatDirection(self) -> int"""
+        return _richtext.RichTextObject_GetFloatDirection(*args, **kwargs)
+
     def GetTextForRange(*args, **kwargs):
         """GetTextForRange(self, RichTextRange range) -> String"""
         return _richtext.RichTextObject_GetTextForRange(*args, **kwargs)
 
     def CanMerge(*args, **kwargs):
-        """CanMerge(self, RichTextObject object) -> bool"""
+        """CanMerge(self, RichTextObject object, RichTextDrawingContext context) -> bool"""
         return _richtext.RichTextObject_CanMerge(*args, **kwargs)
 
-    def Merge(self, obj):
-        """Merge(self, RichTextObject object) -> bool"""
-        val = _richtext.RichTextObject_Merge(self, obj)
-        if val:
-            obj.this.own(True)
-        return val
+    def Merge(self, obj, context):
+          """Merge(self, RichTextObject object) -> bool"""
+          val = _richtext.RichTextObject_Merge(self, obj, context)
+          if val:
+              obj.this.own(True)
+          return val
 
 
     def Dump(*args, **kwargs):
         """Dump(self) -> String"""
         return _richtext.RichTextObject_Dump(*args, **kwargs)
+
+    def CanEditProperties(*args, **kwargs):
+        """CanEditProperties(self) -> bool"""
+        return _richtext.RichTextObject_CanEditProperties(*args, **kwargs)
+
+    def EditProperties(*args, **kwargs):
+        """EditProperties(self, Window parent, RichTextBuffer buffer) -> bool"""
+        return _richtext.RichTextObject_EditProperties(*args, **kwargs)
+
+    def ImportFromXML(*args, **kwargs):
+        """
+        ImportFromXML(self, RichTextBuffer buffer, wxXmlNode node, RichTextXMLHandler handler, 
+            bool recurse) -> bool
+        """
+        return _richtext.RichTextObject_ImportFromXML(*args, **kwargs)
+
+    def ExportXML(*args):
+        """
+        ExportXML(self, wxOutputStream stream, int indent, RichTextXMLHandler handler) -> bool
+        ExportXML(self, wxXmlNode parent, RichTextXMLHandler handler) -> bool
+        """
+        return _richtext.RichTextObject_ExportXML(*args)
+
+    def UsesParagraphAttributes(*args, **kwargs):
+        """UsesParagraphAttributes(self) -> bool"""
+        return _richtext.RichTextObject_UsesParagraphAttributes(*args, **kwargs)
+
+    def GetXMLNodeName(*args, **kwargs):
+        """GetXMLNodeName(self) -> String"""
+        return _richtext.RichTextObject_GetXMLNodeName(*args, **kwargs)
 
     def GetCachedSize(*args, **kwargs):
         """GetCachedSize(self) -> Size"""
@@ -867,15 +1313,6 @@ class RichTextObject(_core.Object):
         return _richtext.RichTextObject_GetRange(*args, **kwargs)
 
     Range = property(GetRange,SetRange) 
-    def GetDirty(*args, **kwargs):
-        """GetDirty(self) -> bool"""
-        return _richtext.RichTextObject_GetDirty(*args, **kwargs)
-
-    def SetDirty(*args, **kwargs):
-        """SetDirty(self, bool dirty)"""
-        return _richtext.RichTextObject_SetDirty(*args, **kwargs)
-
-    Dirty = property(GetDirty,SetDirty) 
     def IsComposite(*args, **kwargs):
         """IsComposite(self) -> bool"""
         return _richtext.RichTextObject_IsComposite(*args, **kwargs)
@@ -914,11 +1351,11 @@ class RichTextObject(_core.Object):
         return _richtext.RichTextObject_GetBottomMargin(*args, **kwargs)
 
     def SetAttributes(*args, **kwargs):
-        """SetAttributes(self, TextAttrEx attr)"""
+        """SetAttributes(self, RichTextAttr attr)"""
         return _richtext.RichTextObject_SetAttributes(*args, **kwargs)
 
     def GetAttributes(*args, **kwargs):
-        """GetAttributes(self) -> TextAttrEx"""
+        """GetAttributes(self) -> RichTextAttr"""
         return _richtext.RichTextObject_GetAttributes(*args, **kwargs)
 
     Attributes = property(GetAttributes,SetAttributes) 
@@ -956,15 +1393,111 @@ class RichTextObject(_core.Object):
         return _richtext.RichTextObject_ConvertTenthsMMToPixelsDC(*args, **kwargs)
 
     def ConvertTenthsMMToPixels(*args, **kwargs):
-        """ConvertTenthsMMToPixels(int ppi, int units) -> int"""
+        """ConvertTenthsMMToPixels(int ppi, int units, double scale=1.0) -> int"""
         return _richtext.RichTextObject_ConvertTenthsMMToPixels(*args, **kwargs)
 
     ConvertTenthsMMToPixels = staticmethod(ConvertTenthsMMToPixels)
+    def ConvertPixelsToTenthsMM(*args):
+        """
+        ConvertPixelsToTenthsMM(DC dc, int pixels) -> int
+        ConvertPixelsToTenthsMM(int ppi, int pixels, double scale=1.0) -> int
+        """
+        return _richtext.RichTextObject_ConvertPixelsToTenthsMM(*args)
+
+    ConvertPixelsToTenthsMM = staticmethod(ConvertPixelsToTenthsMM)
+    def DrawBoxAttributes(*args, **kwargs):
+        """
+        DrawBoxAttributes(DC dc, RichTextBuffer buffer, RichTextAttr attr, Rect boxRect, 
+            int flags=0) -> bool
+        """
+        return _richtext.RichTextObject_DrawBoxAttributes(*args, **kwargs)
+
+    DrawBoxAttributes = staticmethod(DrawBoxAttributes)
+    def DrawBorder(*args, **kwargs):
+        """
+        DrawBorder(DC dc, RichTextBuffer buffer, TextAttrBorders attr, 
+            Rect rect, int flags=0) -> bool
+        """
+        return _richtext.RichTextObject_DrawBorder(*args, **kwargs)
+
+    DrawBorder = staticmethod(DrawBorder)
+    def GetBoxRects(*args, **kwargs):
+        """
+        GetBoxRects(DC dc, RichTextBuffer buffer, RichTextAttr attr, Rect marginRect, 
+            Rect borderRect, Rect contentRect, 
+            Rect paddingRect, Rect outlineRect) -> bool
+        """
+        return _richtext.RichTextObject_GetBoxRects(*args, **kwargs)
+
+    GetBoxRects = staticmethod(GetBoxRects)
+    def GetTotalMargin(*args, **kwargs):
+        """
+        GetTotalMargin(DC dc, RichTextBuffer buffer, RichTextAttr attr, int leftMargin, 
+            int rightMargin, int topMargin, 
+            int bottomMargin) -> bool
+        """
+        return _richtext.RichTextObject_GetTotalMargin(*args, **kwargs)
+
+    GetTotalMargin = staticmethod(GetTotalMargin)
+    def AdjustAvailableSpace(*args, **kwargs):
+        """
+        AdjustAvailableSpace(DC dc, RichTextBuffer buffer, RichTextAttr parentAttr, 
+            RichTextAttr childAttr, Rect availableParentSpace, 
+            Rect availableContainerSpace) -> Rect
+        """
+        return _richtext.RichTextObject_AdjustAvailableSpace(*args, **kwargs)
+
+    AdjustAvailableSpace = staticmethod(AdjustAvailableSpace)
 _richtext.RichTextObject_swigregister(RichTextObject)
 
 def RichTextObject_ConvertTenthsMMToPixels(*args, **kwargs):
-  """RichTextObject_ConvertTenthsMMToPixels(int ppi, int units) -> int"""
+  """RichTextObject_ConvertTenthsMMToPixels(int ppi, int units, double scale=1.0) -> int"""
   return _richtext.RichTextObject_ConvertTenthsMMToPixels(*args, **kwargs)
+
+def RichTextObject_ConvertPixelsToTenthsMM(*args):
+  """
+    ConvertPixelsToTenthsMM(DC dc, int pixels) -> int
+    RichTextObject_ConvertPixelsToTenthsMM(int ppi, int pixels, double scale=1.0) -> int
+    """
+  return _richtext.RichTextObject_ConvertPixelsToTenthsMM(*args)
+
+def RichTextObject_DrawBoxAttributes(*args, **kwargs):
+  """
+    RichTextObject_DrawBoxAttributes(DC dc, RichTextBuffer buffer, RichTextAttr attr, Rect boxRect, 
+        int flags=0) -> bool
+    """
+  return _richtext.RichTextObject_DrawBoxAttributes(*args, **kwargs)
+
+def RichTextObject_DrawBorder(*args, **kwargs):
+  """
+    RichTextObject_DrawBorder(DC dc, RichTextBuffer buffer, TextAttrBorders attr, 
+        Rect rect, int flags=0) -> bool
+    """
+  return _richtext.RichTextObject_DrawBorder(*args, **kwargs)
+
+def RichTextObject_GetBoxRects(*args, **kwargs):
+  """
+    RichTextObject_GetBoxRects(DC dc, RichTextBuffer buffer, RichTextAttr attr, Rect marginRect, 
+        Rect borderRect, Rect contentRect, 
+        Rect paddingRect, Rect outlineRect) -> bool
+    """
+  return _richtext.RichTextObject_GetBoxRects(*args, **kwargs)
+
+def RichTextObject_GetTotalMargin(*args, **kwargs):
+  """
+    RichTextObject_GetTotalMargin(DC dc, RichTextBuffer buffer, RichTextAttr attr, int leftMargin, 
+        int rightMargin, int topMargin, 
+        int bottomMargin) -> bool
+    """
+  return _richtext.RichTextObject_GetTotalMargin(*args, **kwargs)
+
+def RichTextObject_AdjustAvailableSpace(*args, **kwargs):
+  """
+    RichTextObject_AdjustAvailableSpace(DC dc, RichTextBuffer buffer, RichTextAttr parentAttr, 
+        RichTextAttr childAttr, Rect availableParentSpace, 
+        Rect availableContainerSpace) -> Rect
+    """
+  return _richtext.RichTextObject_AdjustAvailableSpace(*args, **kwargs)
 
 class RichTextObjectList_iterator(object):
     """This class serves as an iterator for a wxRichTextObjectList object."""
@@ -1057,35 +1590,25 @@ class RichTextCompositeObject(RichTextObject):
         return _richtext.RichTextCompositeObject_DeleteChildren(*args, **kwargs)
 
     def Defragment(*args, **kwargs):
-        """Defragment(self) -> bool"""
+        """Defragment(self, RichTextDrawingContext context, RichTextRange range=wxRICHTEXT_ALL) -> bool"""
         return _richtext.RichTextCompositeObject_Defragment(*args, **kwargs)
 
 _richtext.RichTextCompositeObject_swigregister(RichTextCompositeObject)
 
-class RichTextBox(RichTextCompositeObject):
-    """This defines a 2D space to lay out objects."""
+class RichTextParagraphLayoutBox(RichTextCompositeObject):
+    """This box knows how to lay out paragraphs."""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args): 
         """
-        __init__(self, RichTextObject parent=None) -> RichTextBox
+        __init__(self, RichTextObject parent=None) -> RichTextParagraphLayoutBox
+        __init__(self, RichTextParagraphLayoutBox obj) -> RichTextParagraphLayoutBox
 
-        This defines a 2D space to lay out objects.
+        This box knows how to lay out paragraphs.
         """
-        _richtext.RichTextBox_swiginit(self,_richtext.new_RichTextBox(*args, **kwargs))
-    def Copy(*args, **kwargs):
-        """Copy(self, RichTextBox obj)"""
-        return _richtext.RichTextBox_Copy(*args, **kwargs)
-
-_richtext.RichTextBox_swigregister(RichTextBox)
-
-class RichTextParagraphLayoutBox(RichTextBox):
-    """Proxy of C++ RichTextParagraphLayoutBox class"""
-    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
-        """__init__(self, RichTextObject parent=None) -> RichTextParagraphLayoutBox"""
-        _richtext.RichTextParagraphLayoutBox_swiginit(self,_richtext.new_RichTextParagraphLayoutBox(*args, **kwargs))
+        _richtext.RichTextParagraphLayoutBox_swiginit(self,_richtext.new_RichTextParagraphLayoutBox(*args))
+    __swig_destroy__ = _richtext.delete_RichTextParagraphLayoutBox
+    __del__ = lambda self : None;
     def SetRichTextCtrl(*args, **kwargs):
         """SetRichTextCtrl(self, RichTextCtrl ctrl)"""
         return _richtext.RichTextParagraphLayoutBox_SetRichTextCtrl(*args, **kwargs)
@@ -1106,6 +1629,18 @@ class RichTextParagraphLayoutBox(RichTextBox):
         """GetStyleSheet(self) -> wxRichTextStyleSheet"""
         return _richtext.RichTextParagraphLayoutBox_GetStyleSheet(*args, **kwargs)
 
+    def DrawFloats(*args, **kwargs):
+        """
+        DrawFloats(self, DC dc, RichTextDrawingContext context, RichTextRange range, 
+            wxRichTextSelection selection, Rect rect, 
+            int descent, int style)
+        """
+        return _richtext.RichTextParagraphLayoutBox_DrawFloats(*args, **kwargs)
+
+    def MoveAnchoredObjectToParagraph(*args, **kwargs):
+        """MoveAnchoredObjectToParagraph(self, RichTextParagraph from, RichTextParagraph to, RichTextObject obj)"""
+        return _richtext.RichTextParagraphLayoutBox_MoveAnchoredObjectToParagraph(*args, **kwargs)
+
     def Init(*args, **kwargs):
         """Init(self)"""
         return _richtext.RichTextParagraphLayoutBox_Init(*args, **kwargs)
@@ -1119,15 +1654,15 @@ class RichTextParagraphLayoutBox(RichTextBox):
         return _richtext.RichTextParagraphLayoutBox_Reset(*args, **kwargs)
 
     def AddParagraph(*args, **kwargs):
-        """AddParagraph(self, String text, TextAttrEx paraStyle=None) -> RichTextRange"""
+        """AddParagraph(self, String text, RichTextAttr paraStyle=None) -> RichTextRange"""
         return _richtext.RichTextParagraphLayoutBox_AddParagraph(*args, **kwargs)
 
     def AddImage(*args, **kwargs):
-        """AddImage(self, Image image, TextAttrEx paraStyle=None) -> RichTextRange"""
+        """AddImage(self, Image image, RichTextAttr paraStyle=None) -> RichTextRange"""
         return _richtext.RichTextParagraphLayoutBox_AddImage(*args, **kwargs)
 
     def AddParagraphs(*args, **kwargs):
-        """AddParagraphs(self, String text, TextAttrEx paraStyle=None) -> RichTextRange"""
+        """AddParagraphs(self, String text, RichTextAttr paraStyle=None) -> RichTextRange"""
         return _richtext.RichTextParagraphLayoutBox_AddParagraphs(*args, **kwargs)
 
     def GetLineAtPosition(*args, **kwargs):
@@ -1191,52 +1726,65 @@ class RichTextParagraphLayoutBox(RichTextBox):
         return _richtext.RichTextParagraphLayoutBox_PositionToXY(*args, **kwargs)
 
     def SetStyle(*args, **kwargs):
-        """SetStyle(self, RichTextRange range, TextAttrEx style, int flags=RICHTEXT_SETSTYLE_WITH_UNDO) -> bool"""
+        """SetStyle(self, RichTextRange range, RichTextAttr style, int flags=RICHTEXT_SETSTYLE_WITH_UNDO) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_SetStyle(*args, **kwargs)
 
     def GetStyle(*args, **kwargs):
-        """GetStyle(self, long position, TextAttrEx style) -> bool"""
+        """GetStyle(self, long position, RichTextAttr style) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_GetStyle(*args, **kwargs)
 
     def GetUncombinedStyle(*args, **kwargs):
-        """GetUncombinedStyle(self, long position, TextAttrEx style) -> bool"""
+        """GetUncombinedStyle(self, long position, RichTextAttr style) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_GetUncombinedStyle(*args, **kwargs)
 
+    def DoGetStyle(*args, **kwargs):
+        """DoGetStyle(self, long position, RichTextAttr style, bool combineStyles=True) -> bool"""
+        return _richtext.RichTextParagraphLayoutBox_DoGetStyle(*args, **kwargs)
+
     def GetStyleForRange(*args, **kwargs):
-        """GetStyleForRange(self, RichTextRange range, TextAttrEx style) -> bool"""
+        """GetStyleForRange(self, RichTextRange range, RichTextAttr style) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_GetStyleForRange(*args, **kwargs)
 
     def CollectStyle(*args, **kwargs):
         """
-        CollectStyle(self, TextAttrEx currentStyle, TextAttrEx style, long multipleStyleAttributes, 
-            int multipleTextEffectAttributes) -> bool
+        CollectStyle(self, RichTextAttr currentStyle, RichTextAttr style, RichTextAttr clashingAttr, 
+            RichTextAttr absentAttr) -> bool
         """
         return _richtext.RichTextParagraphLayoutBox_CollectStyle(*args, **kwargs)
 
-    def SetListStyle(*args, **kwargs):
+    def SetListStyle(*args):
         """
+        SetListStyle(self, RichTextRange range, wxRichTextListStyleDefinition def, 
+            int flags=RICHTEXT_SETSTYLE_WITH_UNDO, int startFrom=1, 
+            int specifiedLevel=-1) -> bool
         SetListStyle(self, RichTextRange range, String defName, int flags=RICHTEXT_SETSTYLE_WITH_UNDO, 
             int startFrom=1, int specifiedLevel=-1) -> bool
         """
-        return _richtext.RichTextParagraphLayoutBox_SetListStyle(*args, **kwargs)
+        return _richtext.RichTextParagraphLayoutBox_SetListStyle(*args)
 
     def ClearListStyle(*args, **kwargs):
         """ClearListStyle(self, RichTextRange range, int flags=RICHTEXT_SETSTYLE_WITH_UNDO) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_ClearListStyle(*args, **kwargs)
 
-    def NumberList(*args, **kwargs):
+    def NumberList(*args):
         """
+        NumberList(self, RichTextRange range, wxRichTextListStyleDefinition def=None, 
+            int flags=RICHTEXT_SETSTYLE_WITH_UNDO, 
+            int startFrom=1, int specifiedLevel=-1) -> bool
         NumberList(self, RichTextRange range, String defName, int flags=RICHTEXT_SETSTYLE_WITH_UNDO, 
             int startFrom=1, int specifiedLevel=-1) -> bool
         """
-        return _richtext.RichTextParagraphLayoutBox_NumberList(*args, **kwargs)
+        return _richtext.RichTextParagraphLayoutBox_NumberList(*args)
 
-    def PromoteList(*args, **kwargs):
+    def PromoteList(*args):
         """
+        PromoteList(self, int promoteBy, RichTextRange range, wxRichTextListStyleDefinition def=None, 
+            int flags=RICHTEXT_SETSTYLE_WITH_UNDO, 
+            int specifiedLevel=-1) -> bool
         PromoteList(self, int promoteBy, RichTextRange range, String defName, 
             int flags=RICHTEXT_SETSTYLE_WITH_UNDO, int specifiedLevel=-1) -> bool
         """
-        return _richtext.RichTextParagraphLayoutBox_PromoteList(*args, **kwargs)
+        return _richtext.RichTextParagraphLayoutBox_PromoteList(*args)
 
     def DoNumberList(*args, **kwargs):
         """
@@ -1248,15 +1796,15 @@ class RichTextParagraphLayoutBox(RichTextBox):
         return _richtext.RichTextParagraphLayoutBox_DoNumberList(*args, **kwargs)
 
     def FindNextParagraphNumber(*args, **kwargs):
-        """FindNextParagraphNumber(self, RichTextParagraph previousParagraph, TextAttrEx attr) -> bool"""
+        """FindNextParagraphNumber(self, RichTextParagraph previousParagraph, RichTextAttr attr) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_FindNextParagraphNumber(*args, **kwargs)
 
     def HasCharacterAttributes(*args, **kwargs):
-        """HasCharacterAttributes(self, RichTextRange range, TextAttrEx style) -> bool"""
+        """HasCharacterAttributes(self, RichTextRange range, RichTextAttr style) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_HasCharacterAttributes(*args, **kwargs)
 
     def HasParagraphAttributes(*args, **kwargs):
-        """HasParagraphAttributes(self, RichTextRange range, TextAttrEx style) -> bool"""
+        """HasParagraphAttributes(self, RichTextRange range, RichTextAttr style) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_HasParagraphAttributes(*args, **kwargs)
 
     def InsertFragment(*args, **kwargs):
@@ -1284,30 +1832,54 @@ class RichTextParagraphLayoutBox(RichTextBox):
         return _richtext.RichTextParagraphLayoutBox_GetText(*args, **kwargs)
 
     def SetDefaultStyle(*args, **kwargs):
-        """SetDefaultStyle(self, TextAttrEx style) -> bool"""
+        """SetDefaultStyle(self, RichTextAttr style) -> bool"""
         return _richtext.RichTextParagraphLayoutBox_SetDefaultStyle(*args, **kwargs)
 
     def GetDefaultStyle(*args, **kwargs):
-        """GetDefaultStyle(self) -> TextAttrEx"""
+        """GetDefaultStyle(self) -> RichTextAttr"""
         return _richtext.RichTextParagraphLayoutBox_GetDefaultStyle(*args, **kwargs)
 
     def SetBasicStyle(*args, **kwargs):
-        """SetBasicStyle(self, TextAttrEx style)"""
+        """SetBasicStyle(self, RichTextAttr style)"""
         return _richtext.RichTextParagraphLayoutBox_SetBasicStyle(*args, **kwargs)
 
     def GetBasicStyle(*args, **kwargs):
-        """GetBasicStyle(self) -> TextAttrEx"""
+        """GetBasicStyle(self) -> RichTextAttr"""
         return _richtext.RichTextParagraphLayoutBox_GetBasicStyle(*args, **kwargs)
 
     def Invalidate(*args, **kwargs):
         """Invalidate(self, RichTextRange invalidRange=wxRICHTEXT_ALL)"""
         return _richtext.RichTextParagraphLayoutBox_Invalidate(*args, **kwargs)
 
+    def UpdateFloatingObjects(*args, **kwargs):
+        """UpdateFloatingObjects(self, Rect availableRect, RichTextObject untilObj=None) -> bool"""
+        return _richtext.RichTextParagraphLayoutBox_UpdateFloatingObjects(*args, **kwargs)
+
     def GetInvalidRange(*args, **kwargs):
         """GetInvalidRange(self, bool wholeParagraphs=False) -> RichTextRange"""
         return _richtext.RichTextParagraphLayoutBox_GetInvalidRange(*args, **kwargs)
 
+    def GetFloatCollector(*args, **kwargs):
+        """GetFloatCollector(self) -> wxRichTextFloatCollector"""
+        return _richtext.RichTextParagraphLayoutBox_GetFloatCollector(*args, **kwargs)
+
 _richtext.RichTextParagraphLayoutBox_swigregister(RichTextParagraphLayoutBox)
+
+class RichTextBox(RichTextCompositeObject):
+    """Proxy of C++ RichTextBox class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        """
+        __init__(self, RichTextObject parent=None) -> RichTextBox
+        __init__(self, RichTextBox obj) -> RichTextBox
+        """
+        _richtext.RichTextBox_swiginit(self,_richtext.new_RichTextBox(*args))
+    def Copy(*args, **kwargs):
+        """Copy(self, RichTextBox obj)"""
+        return _richtext.RichTextBox_Copy(*args, **kwargs)
+
+_richtext.RichTextBox_swigregister(RichTextBox)
 
 class RichTextLine(object):
     """
@@ -1399,8 +1971,8 @@ class RichTextParagraph(RichTextBox):
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
         """
-        __init__(self, String text, RichTextObject parent=None, TextAttrEx paraStyle=None, 
-            TextAttrEx charStyle=None) -> RichTextParagraph
+        __init__(self, String text, RichTextObject parent=None, RichTextAttr paraStyle=None, 
+            RichTextAttr charStyle=None) -> RichTextParagraph
 
         This object represents a single paragraph (or in a straight text
         editor, a line).
@@ -1421,7 +1993,7 @@ class RichTextParagraph(RichTextBox):
         return _richtext.RichTextParagraph_ClearLines(*args, **kwargs)
 
     def ApplyParagraphStyle(*args, **kwargs):
-        """ApplyParagraphStyle(self, TextAttrEx attr, Rect rect)"""
+        """ApplyParagraphStyle(self, RichTextLine line, RichTextAttr attr, Rect rect, DC dc)"""
         return _richtext.RichTextParagraph_ApplyParagraphStyle(*args, **kwargs)
 
     def InsertText(*args, **kwargs):
@@ -1445,7 +2017,11 @@ class RichTextParagraph(RichTextBox):
         return _richtext.RichTextParagraph_GetContiguousPlainText(*args, **kwargs)
 
     def FindWrapPosition(*args, **kwargs):
-        """FindWrapPosition(self, RichTextRange range, DC dc, int availableSpace, long wrapPosition) -> bool"""
+        """
+        FindWrapPosition(self, RichTextRange range, DC dc, RichTextDrawingContext context, 
+            int availableSpace, long wrapPosition, 
+            wxArrayInt partialExtents) -> bool
+        """
         return _richtext.RichTextParagraph_FindWrapPosition(*args, **kwargs)
 
     def FindObjectAtPosition(*args, **kwargs):
@@ -1465,7 +2041,7 @@ class RichTextParagraph(RichTextBox):
         return _richtext.RichTextParagraph_ClearUnusedLines(*args, **kwargs)
 
     def GetCombinedAttributes(*args, **kwargs):
-        """GetCombinedAttributes(self, TextAttrEx contentStyle=None) -> TextAttrEx"""
+        """GetCombinedAttributes(self, RichTextAttr contentStyle=None) -> RichTextAttr"""
         return _richtext.RichTextParagraph_GetCombinedAttributes(*args, **kwargs)
 
     def GetFirstLineBreakPosition(*args, **kwargs):
@@ -1508,7 +2084,7 @@ class RichTextPlainText(RichTextObject):
     def __init__(self, *args, **kwargs): 
         """
         __init__(self, String text=wxEmptyString, RichTextObject parent=None, 
-            TextAttrEx style=None) -> RichTextPlainText
+            RichTextAttr style=None) -> RichTextPlainText
 
         This object represents a single piece of text.
         """
@@ -1535,20 +2111,28 @@ class RichTextImage(RichTextObject):
     """This object represents an image."""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args): 
         """
         __init__(self, RichTextObject parent=None) -> RichTextImage
+        __init__(self, Image image, RichTextObject parent=None, RichTextAttr charStyle=None) -> RichTextImage
+        __init__(self, wxRichTextImageBlock imageBlock, RichTextObject parent=None, 
+            RichTextAttr charStyle=None) -> RichTextImage
+        __init__(self, RichTextImage obj) -> RichTextImage
 
         This object represents an image.
         """
-        _richtext.RichTextImage_swiginit(self,_richtext.new_RichTextImage(*args, **kwargs))
-    def GetImage(*args, **kwargs):
-        """GetImage(self) -> Image"""
-        return _richtext.RichTextImage_GetImage(*args, **kwargs)
+        _richtext.RichTextImage_swiginit(self,_richtext.new_RichTextImage(*args))
+    def GetImageCache(*args, **kwargs):
+        """GetImageCache(self) -> Bitmap"""
+        return _richtext.RichTextImage_GetImageCache(*args, **kwargs)
 
-    def SetImage(*args, **kwargs):
-        """SetImage(self, Image image)"""
-        return _richtext.RichTextImage_SetImage(*args, **kwargs)
+    def SetImageCache(*args, **kwargs):
+        """SetImageCache(self, Bitmap bitmap)"""
+        return _richtext.RichTextImage_SetImageCache(*args, **kwargs)
+
+    def ResetImageCache(*args, **kwargs):
+        """ResetImageCache(self)"""
+        return _richtext.RichTextImage_ResetImageCache(*args, **kwargs)
 
     def GetImageBlock(*args, **kwargs):
         """GetImageBlock(self) -> wxRichTextImageBlock"""
@@ -1558,13 +2142,9 @@ class RichTextImage(RichTextObject):
         """Copy(self, RichTextImage obj)"""
         return _richtext.RichTextImage_Copy(*args, **kwargs)
 
-    def LoadFromBlock(*args, **kwargs):
-        """LoadFromBlock(self) -> bool"""
-        return _richtext.RichTextImage_LoadFromBlock(*args, **kwargs)
-
-    def MakeBlock(*args, **kwargs):
-        """MakeBlock(self) -> bool"""
-        return _richtext.RichTextImage_MakeBlock(*args, **kwargs)
+    def LoadImageCache(*args, **kwargs):
+        """LoadImageCache(self, DC dc, bool resetCache=False) -> bool"""
+        return _richtext.RichTextImage_LoadImageCache(*args, **kwargs)
 
 _richtext.RichTextImage_swigregister(RichTextImage)
 
@@ -1617,14 +2197,13 @@ class RichTextBuffer(RichTextParagraphLayoutBox):
     """This is a kind of box, used to represent the whole buffer."""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
-    def __init__(self, *args): 
+    def __init__(self, *args, **kwargs): 
         """
         __init__(self) -> RichTextBuffer
-        __init__(self, RichTextBuffer obj) -> RichTextBuffer
 
         This is a kind of box, used to represent the whole buffer.
         """
-        _richtext.RichTextBuffer_swiginit(self,_richtext.new_RichTextBuffer(*args))
+        _richtext.RichTextBuffer_swiginit(self,_richtext.new_RichTextBuffer(*args, **kwargs))
     __swig_destroy__ = _richtext.delete_RichTextBuffer
     __del__ = lambda self : None;
     def GetCommandProcessor(*args, **kwargs):
@@ -1646,6 +2225,14 @@ class RichTextBuffer(RichTextParagraphLayoutBox):
     def PopStyleSheet(*args, **kwargs):
         """PopStyleSheet(self) -> wxRichTextStyleSheet"""
         return _richtext.RichTextBuffer_PopStyleSheet(*args, **kwargs)
+
+    def GetFontTable(*args, **kwargs):
+        """GetFontTable(self) -> RichTextFontTable"""
+        return _richtext.RichTextBuffer_GetFontTable(*args, **kwargs)
+
+    def SetFontTable(*args, **kwargs):
+        """SetFontTable(self, RichTextFontTable table)"""
+        return _richtext.RichTextBuffer_SetFontTable(*args, **kwargs)
 
     def Init(*args, **kwargs):
         """Init(self)"""
@@ -1724,7 +2311,7 @@ class RichTextBuffer(RichTextParagraphLayoutBox):
         return _richtext.RichTextBuffer_CanPasteFromClipboard(*args, **kwargs)
 
     def BeginStyle(*args, **kwargs):
-        """BeginStyle(self, TextAttrEx style) -> bool"""
+        """BeginStyle(self, RichTextAttr style) -> bool"""
         return _richtext.RichTextBuffer_BeginStyle(*args, **kwargs)
 
     def EndStyle(*args, **kwargs):
@@ -1948,7 +2535,10 @@ class RichTextBuffer(RichTextParagraphLayoutBox):
         return _richtext.RichTextBuffer_IsModified(*args, **kwargs)
 
     def GetStyleForNewParagraph(*args, **kwargs):
-        """GetStyleForNewParagraph(self, long pos, bool caretPosition=False, bool lookUpNewParaStyle=False) -> TextAttrEx"""
+        """
+        GetStyleForNewParagraph(self, RichTextBuffer buffer, long pos, bool caretPosition=False, 
+            bool lookUpNewParaStyle=False) -> RichTextAttr
+        """
         return _richtext.RichTextBuffer_GetStyleForNewParagraph(*args, **kwargs)
 
     def GetHandlers(*args, **kwargs):
@@ -2050,6 +2640,16 @@ class RichTextBuffer(RichTextParagraphLayoutBox):
         """SetScale(self, double scale)"""
         return _richtext.RichTextBuffer_SetScale(*args, **kwargs)
 
+    def GetFloatingLayoutMode(*args, **kwargs):
+        """GetFloatingLayoutMode() -> bool"""
+        return _richtext.RichTextBuffer_GetFloatingLayoutMode(*args, **kwargs)
+
+    GetFloatingLayoutMode = staticmethod(GetFloatingLayoutMode)
+    def SetFloatingLayoutMode(*args, **kwargs):
+        """SetFloatingLayoutMode(bool mode)"""
+        return _richtext.RichTextBuffer_SetFloatingLayoutMode(*args, **kwargs)
+
+    SetFloatingLayoutMode = staticmethod(SetFloatingLayoutMode)
 _richtext.RichTextBuffer_swigregister(RichTextBuffer)
 
 def RichTextBuffer_GetHandlers(*args):
@@ -2125,6 +2725,14 @@ def RichTextBuffer_GetBulletProportion(*args):
 def RichTextBuffer_SetBulletProportion(*args, **kwargs):
   """RichTextBuffer_SetBulletProportion(float prop)"""
   return _richtext.RichTextBuffer_SetBulletProportion(*args, **kwargs)
+
+def RichTextBuffer_GetFloatingLayoutMode(*args):
+  """RichTextBuffer_GetFloatingLayoutMode() -> bool"""
+  return _richtext.RichTextBuffer_GetFloatingLayoutMode(*args)
+
+def RichTextBuffer_SetFloatingLayoutMode(*args, **kwargs):
+  """RichTextBuffer_SetFloatingLayoutMode(bool mode)"""
+  return _richtext.RichTextBuffer_SetFloatingLayoutMode(*args, **kwargs)
 
 #---------------------------------------------------------------------------
 
@@ -2246,21 +2854,21 @@ class RichTextRenderer(_core.Object):
     __del__ = lambda self : None;
     def DrawStandardBullet(*args, **kwargs):
         """
-        DrawStandardBullet(self, RichTextParagraph paragraph, DC dc, TextAttrEx attr, 
+        DrawStandardBullet(self, RichTextParagraph paragraph, DC dc, RichTextAttr attr, 
             Rect rect) -> bool
         """
         return _richtext.RichTextRenderer_DrawStandardBullet(*args, **kwargs)
 
     def DrawTextBullet(*args, **kwargs):
         """
-        DrawTextBullet(self, RichTextParagraph paragraph, DC dc, TextAttrEx attr, 
+        DrawTextBullet(self, RichTextParagraph paragraph, DC dc, RichTextAttr attr, 
             Rect rect, String text) -> bool
         """
         return _richtext.RichTextRenderer_DrawTextBullet(*args, **kwargs)
 
     def DrawBitmapBullet(*args, **kwargs):
         """
-        DrawBitmapBullet(self, RichTextParagraph paragraph, DC dc, TextAttrEx attr, 
+        DrawBitmapBullet(self, RichTextParagraph paragraph, DC dc, RichTextAttr attr, 
             Rect rect) -> bool
         """
         return _richtext.RichTextRenderer_DrawBitmapBullet(*args, **kwargs)
@@ -2289,11 +2897,7 @@ RE_CENTRE_CARET = _richtext.RE_CENTRE_CARET
 RICHTEXT_SHIFT_DOWN = _richtext.RICHTEXT_SHIFT_DOWN
 RICHTEXT_CTRL_DOWN = _richtext.RICHTEXT_CTRL_DOWN
 RICHTEXT_ALT_DOWN = _richtext.RICHTEXT_ALT_DOWN
-RICHTEXT_SELECTED = _richtext.RICHTEXT_SELECTED
-RICHTEXT_TAGGED = _richtext.RICHTEXT_TAGGED
-RICHTEXT_FOCUSSED = _richtext.RICHTEXT_FOCUSSED
-RICHTEXT_IS_FOCUS = _richtext.RICHTEXT_IS_FOCUS
-class RichTextCtrl(_core.Control):
+class RichTextCtrl(_core.Control,_core.TextCtrlIface,_windows.ScrollHelper):
     """Proxy of C++ RichTextCtrl class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
@@ -2320,34 +2924,6 @@ class RichTextCtrl(_core.Control):
         """GetValue(self) -> String"""
         return _richtext.RichTextCtrl_GetValue(*args, **kwargs)
 
-    def SetValue(*args, **kwargs):
-        """SetValue(self, String value)"""
-        return _richtext.RichTextCtrl_SetValue(*args, **kwargs)
-
-    def GetRange(*args, **kwargs):
-        """GetRange(self, long from, long to) -> String"""
-        return _richtext.RichTextCtrl_GetRange(*args, **kwargs)
-
-    def GetLineLength(*args, **kwargs):
-        """GetLineLength(self, long lineNo) -> int"""
-        return _richtext.RichTextCtrl_GetLineLength(*args, **kwargs)
-
-    def GetLineText(*args, **kwargs):
-        """GetLineText(self, long lineNo) -> String"""
-        return _richtext.RichTextCtrl_GetLineText(*args, **kwargs)
-
-    def GetNumberOfLines(*args, **kwargs):
-        """GetNumberOfLines(self) -> int"""
-        return _richtext.RichTextCtrl_GetNumberOfLines(*args, **kwargs)
-
-    def IsModified(*args, **kwargs):
-        """IsModified(self) -> bool"""
-        return _richtext.RichTextCtrl_IsModified(*args, **kwargs)
-
-    def IsEditable(*args, **kwargs):
-        """IsEditable(self) -> bool"""
-        return _richtext.RichTextCtrl_IsEditable(*args, **kwargs)
-
     def IsSingleLine(*args, **kwargs):
         """IsSingleLine(self) -> bool"""
         return _richtext.RichTextCtrl_IsSingleLine(*args, **kwargs)
@@ -2355,19 +2931,6 @@ class RichTextCtrl(_core.Control):
     def IsMultiLine(*args, **kwargs):
         """IsMultiLine(self) -> bool"""
         return _richtext.RichTextCtrl_IsMultiLine(*args, **kwargs)
-
-    def GetSelection(*args, **kwargs):
-        """
-        GetSelection() --> (start, end)
-
-        Returns the start and end positions of the current selection.  If the
-        values are the same then there is no selection.
-        """
-        return _richtext.RichTextCtrl_GetSelection(*args, **kwargs)
-
-    def GetStringSelection(*args, **kwargs):
-        """GetStringSelection(self) -> String"""
-        return _richtext.RichTextCtrl_GetStringSelection(*args, **kwargs)
 
     def GetFilename(*args, **kwargs):
         """GetFilename(self) -> String"""
@@ -2394,6 +2957,34 @@ class RichTextCtrl(_core.Control):
         during sizing.
         """
         return _richtext.RichTextCtrl_GetDelayedLayoutThreshold(*args, **kwargs)
+
+    def GetFullLayoutRequired(*args, **kwargs):
+        """GetFullLayoutRequired(self) -> bool"""
+        return _richtext.RichTextCtrl_GetFullLayoutRequired(*args, **kwargs)
+
+    def SetFullLayoutRequired(*args, **kwargs):
+        """SetFullLayoutRequired(self, bool b)"""
+        return _richtext.RichTextCtrl_SetFullLayoutRequired(*args, **kwargs)
+
+    def GetFullLayoutTime(*args, **kwargs):
+        """GetFullLayoutTime(self) -> wxLongLong"""
+        return _richtext.RichTextCtrl_GetFullLayoutTime(*args, **kwargs)
+
+    def SetFullLayoutTime(*args, **kwargs):
+        """SetFullLayoutTime(self, wxLongLong t)"""
+        return _richtext.RichTextCtrl_SetFullLayoutTime(*args, **kwargs)
+
+    def GetFullLayoutSavedPosition(*args, **kwargs):
+        """GetFullLayoutSavedPosition(self) -> long"""
+        return _richtext.RichTextCtrl_GetFullLayoutSavedPosition(*args, **kwargs)
+
+    def SetFullLayoutSavedPosition(*args, **kwargs):
+        """SetFullLayoutSavedPosition(self, long p)"""
+        return _richtext.RichTextCtrl_SetFullLayoutSavedPosition(*args, **kwargs)
+
+    def ForceDelayedLayout(*args, **kwargs):
+        """ForceDelayedLayout(self)"""
+        return _richtext.RichTextCtrl_ForceDelayedLayout(*args, **kwargs)
 
     def SetTextCursor(*args, **kwargs):
         """
@@ -2427,6 +3018,50 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_GetURLCursor(*args, **kwargs)
 
+    def GetCaretAtLineStart(*args, **kwargs):
+        """GetCaretAtLineStart(self) -> bool"""
+        return _richtext.RichTextCtrl_GetCaretAtLineStart(*args, **kwargs)
+
+    def SetCaretAtLineStart(*args, **kwargs):
+        """SetCaretAtLineStart(self, bool atStart)"""
+        return _richtext.RichTextCtrl_SetCaretAtLineStart(*args, **kwargs)
+
+    def GetDragging(*args, **kwargs):
+        """GetDragging(self) -> bool"""
+        return _richtext.RichTextCtrl_GetDragging(*args, **kwargs)
+
+    def SetDragging(*args, **kwargs):
+        """SetDragging(self, bool dragging)"""
+        return _richtext.RichTextCtrl_SetDragging(*args, **kwargs)
+
+    def GetPreDrag(*args, **kwargs):
+        """GetPreDrag(self) -> bool"""
+        return _richtext.RichTextCtrl_GetPreDrag(*args, **kwargs)
+
+    def SetPreDrag(*args, **kwargs):
+        """SetPreDrag(self, bool pd)"""
+        return _richtext.RichTextCtrl_SetPreDrag(*args, **kwargs)
+
+    def GetDragStartPoint(*args, **kwargs):
+        """GetDragStartPoint(self) -> Point"""
+        return _richtext.RichTextCtrl_GetDragStartPoint(*args, **kwargs)
+
+    def SetDragStartPoint(*args, **kwargs):
+        """SetDragStartPoint(self, Point sp)"""
+        return _richtext.RichTextCtrl_SetDragStartPoint(*args, **kwargs)
+
+    def GetDragStartTime(*args, **kwargs):
+        """GetDragStartTime(self) -> DateTime"""
+        return _richtext.RichTextCtrl_GetDragStartTime(*args, **kwargs)
+
+    def SetDragStartTime(*args, **kwargs):
+        """SetDragStartTime(self, DateTime st)"""
+        return _richtext.RichTextCtrl_SetDragStartTime(*args, **kwargs)
+
+    def GetBufferBitmap(*args, **kwargs):
+        """GetBufferBitmap(self) -> Bitmap"""
+        return _richtext.RichTextCtrl_GetBufferBitmap(*args, **kwargs)
+
     def GetContextMenu(*args, **kwargs):
         """GetContextMenu(self) -> Menu"""
         return _richtext.RichTextCtrl_GetContextMenu(*args, **kwargs)
@@ -2435,17 +3070,13 @@ class RichTextCtrl(_core.Control):
         """SetContextMenu(self, Menu menu)"""
         return _richtext.RichTextCtrl_SetContextMenu(*args, **kwargs)
 
-    def Clear(*args, **kwargs):
-        """Clear(self)"""
-        return _richtext.RichTextCtrl_Clear(*args, **kwargs)
+    def GetSelectionAnchor(*args, **kwargs):
+        """GetSelectionAnchor(self) -> long"""
+        return _richtext.RichTextCtrl_GetSelectionAnchor(*args, **kwargs)
 
-    def Replace(*args, **kwargs):
-        """Replace(self, long from, long to, String value)"""
-        return _richtext.RichTextCtrl_Replace(*args, **kwargs)
-
-    def Remove(*args, **kwargs):
-        """Remove(self, long from, long to)"""
-        return _richtext.RichTextCtrl_Remove(*args, **kwargs)
+    def SetSelectionAnchor(*args, **kwargs):
+        """SetSelectionAnchor(self, long anchor)"""
+        return _richtext.RichTextCtrl_SetSelectionAnchor(*args, **kwargs)
 
     def LoadFile(*args, **kwargs):
         """
@@ -2480,24 +3111,6 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_GetHandlerFlags(*args, **kwargs)
 
-    def MarkDirty(*args, **kwargs):
-        """
-        MarkDirty(self)
-
-        Sets the dirty flag, meaning that the contents of the control have
-        changed and need to be saved.
-        """
-        return _richtext.RichTextCtrl_MarkDirty(*args, **kwargs)
-
-    def DiscardEdits(*args, **kwargs):
-        """
-        DiscardEdits(self)
-
-        Clears the dirty flag.
-        :see: `MarkDirty`
-        """
-        return _richtext.RichTextCtrl_DiscardEdits(*args, **kwargs)
-
     def SetMaxLength(*args, **kwargs):
         """
         SetMaxLength(self, unsigned long len)
@@ -2507,25 +3120,9 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_SetMaxLength(*args, **kwargs)
 
-    def WriteText(*args, **kwargs):
-        """
-        WriteText(self, String text)
-
-        Insert text at the current position.
-        """
-        return _richtext.RichTextCtrl_WriteText(*args, **kwargs)
-
-    def AppendText(*args, **kwargs):
-        """
-        AppendText(self, String text)
-
-        Append text to the end of the document.
-        """
-        return _richtext.RichTextCtrl_AppendText(*args, **kwargs)
-
     def SetStyle(*args, **kwargs):
         """
-        SetStyle(self, RichTextRange range, TextAttrEx style) -> bool
+        SetStyle(self, RichTextRange range, RichTextAttr style) -> bool
 
         Set the style for the text in ``range`` to ``style``
         """
@@ -2533,7 +3130,7 @@ class RichTextCtrl(_core.Control):
 
     def GetStyle(*args, **kwargs):
         """
-        GetStyle(self, long position, TextAttrEx style) -> bool
+        GetStyle(self, long position, RichTextAttr style) -> bool
 
         Retrieve the style used at the given position.  Copies the style
         values at ``position`` into the ``style`` parameter and returns ``True``
@@ -2543,7 +3140,7 @@ class RichTextCtrl(_core.Control):
 
     def GetStyleForRange(*args, **kwargs):
         """
-        GetStyleForRange(self, RichTextRange range, TextAttrEx style) -> bool
+        GetStyleForRange(self, RichTextRange range, RichTextAttr style) -> bool
 
         Get the common set of styles for the range
         """
@@ -2551,7 +3148,7 @@ class RichTextCtrl(_core.Control):
 
     def SetStyleEx(*args, **kwargs):
         """
-        SetStyleEx(self, RichTextRange range, TextAttrEx style, int flags=RICHTEXT_SETSTYLE_WITH_UNDO) -> bool
+        SetStyleEx(self, RichTextRange range, RichTextAttr style, int flags=RICHTEXT_SETSTYLE_WITH_UNDO) -> bool
 
         Extended style setting operation with flags including:
         RICHTEXT_SETSTYLE_WITH_UNDO, RICHTEXT_SETSTYLE_OPTIMIZE,
@@ -2561,7 +3158,7 @@ class RichTextCtrl(_core.Control):
 
     def GetUncombinedStyle(*args, **kwargs):
         """
-        GetUncombinedStyle(self, long position, TextAttrEx style) -> bool
+        GetUncombinedStyle(self, long position, RichTextAttr style) -> bool
 
         Get the content (uncombined) attributes for this position.  Copies the
         style values at ``position`` into the ``style`` parameter and returns
@@ -2571,7 +3168,7 @@ class RichTextCtrl(_core.Control):
 
     def SetDefaultStyle(*args, **kwargs):
         """
-        SetDefaultStyle(self, TextAttrEx style) -> bool
+        SetDefaultStyle(self, RichTextAttr style) -> bool
 
         Set the style used by default for the rich text document.
         """
@@ -2579,7 +3176,7 @@ class RichTextCtrl(_core.Control):
 
     def GetDefaultStyle(*args, **kwargs):
         """
-        GetDefaultStyle(self) -> TextAttrEx
+        GetDefaultStyle(self) -> RichTextAttr
 
         Retrieves a copy of the default style object.
         """
@@ -2614,41 +3211,6 @@ class RichTextCtrl(_core.Control):
         """Delete(self, RichTextRange range) -> bool"""
         return _richtext.RichTextCtrl_Delete(*args, **kwargs)
 
-    def XYToPosition(*args, **kwargs):
-        """
-        XYToPosition(self, long x, long y) -> long
-
-        Translate a col,row coordinants into a document position.
-        """
-        return _richtext.RichTextCtrl_XYToPosition(*args, **kwargs)
-
-    def PositionToXY(*args, **kwargs):
-        """
-        PositionToXY(self, long pos) --> (x, y)
-
-        Retrieves the col,row for the given position within the document
-        """
-        return _richtext.RichTextCtrl_PositionToXY(*args, **kwargs)
-
-    def ShowPosition(*args, **kwargs):
-        """
-        ShowPosition(self, long position)
-
-        Ensure that the given position in the document is visible.
-        """
-        return _richtext.RichTextCtrl_ShowPosition(*args, **kwargs)
-
-    def HitTest(*args, **kwargs):
-        """
-        HitTest(self, Point pt) --> (result, pos)
-
-        Returns the character position at the given point in pixels.  Note
-        that ``pt`` should be given in device coordinates, and not be adjusted
-        for the client area origin nor for scrolling.  The return value is a
-        tuple of the hit test result and the position.
-        """
-        return _richtext.RichTextCtrl_HitTest(*args, **kwargs)
-
     def HitTestXY(*args, **kwargs):
         """
         HitTestRC(self, Point pt) --> (result, col, row)
@@ -2660,30 +3222,12 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_HitTestXY(*args, **kwargs)
 
-    def Copy(*args, **kwargs):
+    def FindContainerAtPoint(*args, **kwargs):
         """
-        Copy(self)
-
-        Copies the selected text to the clipboard.
+        FindContainerAtPoint(self, Point pt, long position, int hit, RichTextObject hitObj, 
+            int flags=0) -> RichTextParagraphLayoutBox
         """
-        return _richtext.RichTextCtrl_Copy(*args, **kwargs)
-
-    def Cut(*args, **kwargs):
-        """
-        Cut(self)
-
-        Copies the selected text to the clipboard and removes the selection.
-        """
-        return _richtext.RichTextCtrl_Cut(*args, **kwargs)
-
-    def Paste(*args, **kwargs):
-        """
-        Paste(self)
-
-        Pastes text from the clipboard into the document at the current
-        insertion point.
-        """
-        return _richtext.RichTextCtrl_Paste(*args, **kwargs)
+        return _richtext.RichTextCtrl_FindContainerAtPoint(*args, **kwargs)
 
     def DeleteSelection(*args, **kwargs):
         """
@@ -2693,31 +3237,6 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_DeleteSelection(*args, **kwargs)
 
-    def CanCopy(*args, **kwargs):
-        """
-        CanCopy(self) -> bool
-
-        Returns ``True`` if the selection can be copied to the clipboard.
-        """
-        return _richtext.RichTextCtrl_CanCopy(*args, **kwargs)
-
-    def CanCut(*args, **kwargs):
-        """
-        CanCut(self) -> bool
-
-        Returns ``True`` if the selection can be cut to the clipboard.
-        """
-        return _richtext.RichTextCtrl_CanCut(*args, **kwargs)
-
-    def CanPaste(*args, **kwargs):
-        """
-        CanPaste(self) -> bool
-
-        Returns ``True`` if the current contents of the clipboard can be
-        pasted into the document.
-        """
-        return _richtext.RichTextCtrl_CanPaste(*args, **kwargs)
-
     def CanDeleteSelection(*args, **kwargs):
         """
         CanDeleteSelection(self) -> bool
@@ -2725,98 +3244,6 @@ class RichTextCtrl(_core.Control):
         Returns ``True`` if the selection can be removed from the document.
         """
         return _richtext.RichTextCtrl_CanDeleteSelection(*args, **kwargs)
-
-    def Undo(*args, **kwargs):
-        """
-        Undo(self)
-
-        If the last operation can be undone, undoes the last operation.
-        """
-        return _richtext.RichTextCtrl_Undo(*args, **kwargs)
-
-    def Redo(*args, **kwargs):
-        """
-        Redo(self)
-
-        If the last operation can be redone, redoes the last operation.
-        """
-        return _richtext.RichTextCtrl_Redo(*args, **kwargs)
-
-    def CanUndo(*args, **kwargs):
-        """
-        CanUndo(self) -> bool
-
-        Returns ``True`` if the last operation can be undone.
-        """
-        return _richtext.RichTextCtrl_CanUndo(*args, **kwargs)
-
-    def CanRedo(*args, **kwargs):
-        """
-        CanRedo(self) -> bool
-
-        Returns ``True`` if the last operation can be redone.
-        """
-        return _richtext.RichTextCtrl_CanRedo(*args, **kwargs)
-
-    def SetInsertionPoint(*args, **kwargs):
-        """
-        SetInsertionPoint(self, long pos)
-
-        Sets the insertion point at the given position.
-        """
-        return _richtext.RichTextCtrl_SetInsertionPoint(*args, **kwargs)
-
-    def SetInsertionPointEnd(*args, **kwargs):
-        """
-        SetInsertionPointEnd(self)
-
-        Moves the insertion point to the end of the document.
-        """
-        return _richtext.RichTextCtrl_SetInsertionPointEnd(*args, **kwargs)
-
-    def GetInsertionPoint(*args, **kwargs):
-        """
-        GetInsertionPoint(self) -> long
-
-        Returns the insertion point. This is defined as the zero based index
-        of the character position to the right of the insertion point.
-        """
-        return _richtext.RichTextCtrl_GetInsertionPoint(*args, **kwargs)
-
-    def GetLastPosition(*args, **kwargs):
-        """
-        GetLastPosition(self) -> long
-
-        Returns the zero based index of the last position in the document.
-        """
-        return _richtext.RichTextCtrl_GetLastPosition(*args, **kwargs)
-
-    def SetSelection(*args, **kwargs):
-        """
-        SetSelection(self, long from, long to)
-
-        Selects the text starting at the first position up to (but not
-        including) the character at the last position. If both parameters are
-        equal to -1 then all text in the control is selected.
-        """
-        return _richtext.RichTextCtrl_SetSelection(*args, **kwargs)
-
-    def SelectAll(*args, **kwargs):
-        """
-        SelectAll(self)
-
-        Select all text in the document.
-        """
-        return _richtext.RichTextCtrl_SelectAll(*args, **kwargs)
-
-    def SetEditable(*args, **kwargs):
-        """
-        SetEditable(self, bool editable)
-
-        Makes the document editable or read-only, overriding the RE_READONLY
-        flag.
-        """
-        return _richtext.RichTextCtrl_SetEditable(*args, **kwargs)
 
     def HasSelection(*args, **kwargs):
         """HasSelection(self) -> bool"""
@@ -2874,12 +3301,12 @@ class RichTextCtrl(_core.Control):
         return _richtext.RichTextCtrl_LineBreak(*args, **kwargs)
 
     def SetBasicStyle(*args, **kwargs):
-        """SetBasicStyle(self, TextAttrEx style)"""
+        """SetBasicStyle(self, RichTextAttr style)"""
         return _richtext.RichTextCtrl_SetBasicStyle(*args, **kwargs)
 
     def GetBasicStyle(*args, **kwargs):
         """
-        GetBasicStyle(self) -> TextAttrEx
+        GetBasicStyle(self) -> RichTextAttr
 
         Get basic (overall) style
         """
@@ -2887,7 +3314,7 @@ class RichTextCtrl(_core.Control):
 
     def BeginStyle(*args, **kwargs):
         """
-        BeginStyle(self, TextAttrEx style) -> bool
+        BeginStyle(self, RichTextAttr style) -> bool
 
         Begin using a style
         """
@@ -3465,7 +3892,7 @@ class RichTextCtrl(_core.Control):
 
     def HasCharacterAttributes(*args, **kwargs):
         """
-        HasCharacterAttributes(self, RichTextRange range, TextAttrEx style) -> bool
+        HasCharacterAttributes(self, RichTextRange range, RichTextAttr style) -> bool
 
         Test if this whole range has character attributes of the specified
         kind. If any of the attributes are different within the range, the
@@ -3478,7 +3905,7 @@ class RichTextCtrl(_core.Control):
 
     def HasParagraphAttributes(*args, **kwargs):
         """
-        HasParagraphAttributes(self, RichTextRange range, TextAttrEx style) -> bool
+        HasParagraphAttributes(self, RichTextRange range, RichTextAttr style) -> bool
 
         Test if this whole range has paragraph attributes of the specified
         kind. If any of the attributes are different within the range, the
@@ -3513,6 +3940,10 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_IsSelectionUnderlined(*args, **kwargs)
 
+    def DoesSelectionHaveTextEffectFlag(*args, **kwargs):
+        """DoesSelectionHaveTextEffectFlag(self, int flag) -> bool"""
+        return _richtext.RichTextCtrl_DoesSelectionHaveTextEffectFlag(*args, **kwargs)
+
     def IsSelectionAligned(*args, **kwargs):
         """
         IsSelectionAligned(self, int alignment) -> bool
@@ -3544,6 +3975,10 @@ class RichTextCtrl(_core.Control):
         Apply underline to the selection
         """
         return _richtext.RichTextCtrl_ApplyUnderlineToSelection(*args, **kwargs)
+
+    def ApplyTextEffectToSelection(*args, **kwargs):
+        """ApplyTextEffectToSelection(self, int flags) -> bool"""
+        return _richtext.RichTextCtrl_ApplyTextEffectToSelection(*args, **kwargs)
 
     def ApplyAlignmentToSelection(*args, **kwargs):
         """
@@ -3598,19 +4033,22 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_ApplyStyleSheet(*args, **kwargs)
 
-    Buffer = property(GetBuffer,doc="See `GetBuffer`") 
-    DefaultStyle = property(GetDefaultStyle,SetDefaultStyle,doc="See `GetDefaultStyle` and `SetDefaultStyle`") 
-    DelayedLayoutThreshold = property(GetDelayedLayoutThreshold,SetDelayedLayoutThreshold,doc="See `GetDelayedLayoutThreshold` and `SetDelayedLayoutThreshold`") 
-    Filename = property(GetFilename,SetFilename,doc="See `GetFilename` and `SetFilename`") 
-    InsertionPoint = property(GetInsertionPoint,SetInsertionPoint,doc="See `GetInsertionPoint` and `SetInsertionPoint`") 
-    InternalSelectionRange = property(GetInternalSelectionRange,SetInternalSelectionRange,doc="See `GetInternalSelectionRange` and `SetInternalSelectionRange`") 
-    LastPosition = property(GetLastPosition,doc="See `GetLastPosition`") 
-    NumberOfLines = property(GetNumberOfLines,doc="See `GetNumberOfLines`") 
-    Selection = property(GetSelection,SetSelectionRange,doc="See `GetSelection` and `SetSelection`") 
-    SelectionRange = property(GetSelectionRange,SetSelectionRange,doc="See `GetSelectionRange` and `SetSelectionRange`") 
-    StringSelection = property(GetStringSelection,doc="See `GetStringSelection`") 
-    StyleSheet = property(GetStyleSheet,SetStyleSheet,doc="See `GetStyleSheet` and `SetStyleSheet`") 
-    Value = property(GetValue,SetValue,doc="See `GetValue` and `SetValue`") 
+    def ShowContextMenu(*args, **kwargs):
+        """ShowContextMenu(self, Menu menu, Point pt, bool addPropertyCommands=True) -> bool"""
+        return _richtext.RichTextCtrl_ShowContextMenu(*args, **kwargs)
+
+    def PrepareContextMenu(*args, **kwargs):
+        """PrepareContextMenu(self, Menu menu, Point pt, bool addPropertyCommands=True) -> int"""
+        return _richtext.RichTextCtrl_PrepareContextMenu(*args, **kwargs)
+
+    Buffer = property(GetBuffer) 
+    DelayedLayoutThreshold = property(GetDelayedLayoutThreshold,SetDelayedLayoutThreshold) 
+    Filename = property(GetFilename,SetFilename) 
+    InternalSelectionRange = property(GetInternalSelectionRange,SetInternalSelectionRange) 
+    SelectionRange = property(GetSelectionRange,SetSelectionRange) 
+    StyleSheet = property(GetStyleSheet,SetStyleSheet) 
+    TextCursor = property(GetTextCursor,SetTextCursor) 
+    URLCursor = property(GetURLCursor,SetURLCursor) 
     def SetupScrollbars(*args, **kwargs):
         """SetupScrollbars(self, bool atTop=False)"""
         return _richtext.RichTextCtrl_SetupScrollbars(*args, **kwargs)
@@ -3700,23 +4138,12 @@ class RichTextCtrl(_core.Control):
         return _richtext.RichTextCtrl_IsDefaultStyleShowing(*args, **kwargs)
 
     def SetAndShowDefaultStyle(*args, **kwargs):
-        """SetAndShowDefaultStyle(self, wxRichTextAttr attr)"""
+        """SetAndShowDefaultStyle(self, RichTextAttr attr)"""
         return _richtext.RichTextCtrl_SetAndShowDefaultStyle(*args, **kwargs)
 
     def GetFirstVisiblePoint(*args, **kwargs):
         """GetFirstVisiblePoint(self) -> Point"""
         return _richtext.RichTextCtrl_GetFirstVisiblePoint(*args, **kwargs)
-
-    def SetScrollbars(*args, **kwargs):
-        """
-        SetScrollbars(self, int pixelsPerUnitX, int pixelsPerUnitY, int noUnitsX, 
-            int noUnitsY, int xPos=0, int yPos=0, bool noRefresh=False)
-        """
-        return _richtext.RichTextCtrl_SetScrollbars(*args, **kwargs)
-
-    def Scroll(*args, **kwargs):
-        """Scroll(self, int x, int y)"""
-        return _richtext.RichTextCtrl_Scroll(*args, **kwargs)
 
     def GetScrollPageSize(*args, **kwargs):
         """GetScrollPageSize(self, int orient) -> int"""
@@ -3729,18 +4156,6 @@ class RichTextCtrl(_core.Control):
     def SetScrollRate(*args, **kwargs):
         """SetScrollRate(self, int xstep, int ystep)"""
         return _richtext.RichTextCtrl_SetScrollRate(*args, **kwargs)
-
-    def GetScrollPixelsPerUnit(*args, **kwargs):
-        """
-        GetScrollPixelsPerUnit() -> (xUnit, yUnit)
-
-        Get the size of one logical unit in physical units.
-        """
-        return _richtext.RichTextCtrl_GetScrollPixelsPerUnit(*args, **kwargs)
-
-    def EnableScrolling(*args, **kwargs):
-        """EnableScrolling(self, bool x_scrolling, bool y_scrolling)"""
-        return _richtext.RichTextCtrl_EnableScrolling(*args, **kwargs)
 
     def GetViewStart(*args, **kwargs):
         """
@@ -3780,22 +4195,6 @@ class RichTextCtrl(_core.Control):
         """
         return _richtext.RichTextCtrl_CalcUnscrolledPosition(*args)
 
-    def AdjustScrollbars(*args, **kwargs):
-        """AdjustScrollbars(self)"""
-        return _richtext.RichTextCtrl_AdjustScrollbars(*args, **kwargs)
-
-    def CalcScrollInc(*args, **kwargs):
-        """CalcScrollInc(self, ScrollWinEvent event) -> int"""
-        return _richtext.RichTextCtrl_CalcScrollInc(*args, **kwargs)
-
-    def SetTargetWindow(*args, **kwargs):
-        """SetTargetWindow(self, Window target)"""
-        return _richtext.RichTextCtrl_SetTargetWindow(*args, **kwargs)
-
-    def GetTargetWindow(*args, **kwargs):
-        """GetTargetWindow(self) -> Window"""
-        return _richtext.RichTextCtrl_GetTargetWindow(*args, **kwargs)
-
     def SetTargetRect(*args, **kwargs):
         """SetTargetRect(self, Rect rect)"""
         return _richtext.RichTextCtrl_SetTargetRect(*args, **kwargs)
@@ -3805,20 +4204,16 @@ class RichTextCtrl(_core.Control):
         return _richtext.RichTextCtrl_GetTargetRect(*args, **kwargs)
 
     def IsEmpty(*args, **kwargs):
-        """IsEmpty(self) -> bool"""
-        return _richtext.RichTextCtrl_IsEmpty(*args, **kwargs)
+        """
+        IsEmpty(self) -> bool
 
-    def ChangeValue(*args, **kwargs):
-        """ChangeValue(self, String value)"""
-        return _richtext.RichTextCtrl_ChangeValue(*args, **kwargs)
+        Returns True if the value in the text field is empty.
+        """
+        return _richtext.RichTextCtrl_IsEmpty(*args, **kwargs)
 
     def SetModified(*args, **kwargs):
         """SetModified(self, bool modified)"""
         return _richtext.RichTextCtrl_SetModified(*args, **kwargs)
-
-    def EmulateKeyPress(*args, **kwargs):
-        """EmulateKeyPress(self, KeyEvent event) -> bool"""
-        return _richtext.RichTextCtrl_EmulateKeyPress(*args, **kwargs)
 
 _richtext.RichTextCtrl_swigregister(RichTextCtrl)
 RichTextCtrlNameStr = cvar.RichTextCtrlNameStr
@@ -3845,6 +4240,7 @@ wxEVT_COMMAND_RICHTEXT_CONTENT_INSERTED = _richtext.wxEVT_COMMAND_RICHTEXT_CONTE
 wxEVT_COMMAND_RICHTEXT_CONTENT_DELETED = _richtext.wxEVT_COMMAND_RICHTEXT_CONTENT_DELETED
 wxEVT_COMMAND_RICHTEXT_STYLE_CHANGED = _richtext.wxEVT_COMMAND_RICHTEXT_STYLE_CHANGED
 wxEVT_COMMAND_RICHTEXT_SELECTION_CHANGED = _richtext.wxEVT_COMMAND_RICHTEXT_SELECTION_CHANGED
+wxEVT_COMMAND_RICHTEXT_BUFFER_RESET = _richtext.wxEVT_COMMAND_RICHTEXT_BUFFER_RESET
 EVT_RICHTEXT_LEFT_CLICK = wx.PyEventBinder(wxEVT_COMMAND_RICHTEXT_LEFT_CLICK, 1)
 EVT_RICHTEXT_RIGHT_CLICK = wx.PyEventBinder(wxEVT_COMMAND_RICHTEXT_RIGHT_CLICK, 1)
 EVT_RICHTEXT_MIDDLE_CLICK = wx.PyEventBinder(wxEVT_COMMAND_RICHTEXT_MIDDLE_CLICK, 1)
@@ -3862,6 +4258,7 @@ EVT_RICHTEXT_CONTENT_INSERTED = wx.PyEventBinder( wxEVT_COMMAND_RICHTEXT_CONTENT
 EVT_RICHTEXT_CONTENT_DELETED = wx.PyEventBinder( wxEVT_COMMAND_RICHTEXT_CONTENT_DELETED, 1)
 EVT_RICHTEXT_STYLE_CHANGED = wx.PyEventBinder( wxEVT_COMMAND_RICHTEXT_STYLE_CHANGED, 1)
 EVT_RICHTEXT_SELECTION_CHANGED = wx.PyEventBinder( wxEVT_COMMAND_RICHTEXT_SELECTION_CHANGED, 1)    
+EVT_RICHTEXT_BUFFER_RESET = wx.PyEventBinder( wxEVT_COMMAND_RICHTEXT_BUFFER_RESET, 1)
 
 class RichTextEvent(_core.NotifyEvent):
     """Proxy of C++ RichTextEvent class"""

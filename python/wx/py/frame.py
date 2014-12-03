@@ -1,8 +1,8 @@
 """Base frame with menu."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id: frame.py 63479 2010-02-14 05:24:22Z RD $"
-__revision__ = "$Revision: 63479 $"[11:-2]
+__cvsid__ = "$Id$"
+__revision__ = "$Revision$"[11:-2]
 
 import wx
 import os
@@ -41,7 +41,6 @@ ID_NAMESPACE = wx.NewId()
 ID_PASTE_PLUS = wx.NewId()
 ID_WRAP = wx.NewId()
 ID_TOGGLE_MAXIMIZE = wx.NewId()
-ID_USEAA = wx.NewId()
 ID_SHOW_LINENUMBERS = wx.NewId()
 ID_ENABLESHELLMODE = wx.NewId()
 ID_ENABLEAUTOSYMPY = wx.NewId()
@@ -201,10 +200,6 @@ class Frame(wx.Frame):
         m.AppendMenu(ID_CALLTIPS, '&Call Tips', self.calltipsMenu,
                      'Call Tip Options')
                 
-        if wx.Platform == "__WXMAC__":
-            m.Append(ID_USEAA, '&Use AntiAliasing',
-                     'Use anti-aliased fonts', wx.ITEM_CHECK)
-            
         m.AppendSeparator()
 
         self.historyMenu = wx.Menu()
@@ -291,7 +286,6 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnCallTipsShow, id=ID_CALLTIPS_SHOW)
         self.Bind(wx.EVT_MENU, self.OnCallTipsInsert, id=ID_CALLTIPS_INSERT)
         self.Bind(wx.EVT_MENU, self.OnWrap, id=ID_WRAP)
-        self.Bind(wx.EVT_MENU, self.OnUseAA, id=ID_USEAA)
         self.Bind(wx.EVT_MENU, self.OnToggleMaximize, id=ID_TOGGLE_MAXIMIZE)
         self.Bind(wx.EVT_MENU, self.OnShowLineNumbers, id=ID_SHOW_LINENUMBERS)
         self.Bind(wx.EVT_MENU, self.OnEnableShellMode, id=ID_ENABLESHELLMODE)
@@ -336,7 +330,6 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_CALLTIPS_SHOW)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_CALLTIPS_INSERT)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_WRAP)
-        self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_USEAA)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_SHOW_LINENUMBERS)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_ENABLESHELLMODE)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_ENABLEAUTOSYMPY)
@@ -497,10 +490,6 @@ class Frame(wx.Frame):
         win.SetWrapMode(event.IsChecked())
         wx.FutureCall(1, self.shell.EnsureCaretVisible)
 
-    def OnUseAA(self, event):
-        win = wx.Window.FindFocus()
-        win.SetUseAntiAliasing(event.IsChecked())
-
     def OnSaveHistory(self, event):
         self.autoSaveHistory = event.IsChecked()
 
@@ -655,8 +644,6 @@ class Frame(wx.Frame):
                 event.Check(win.callTipInsert)
             elif id == ID_WRAP:
                 event.Check(win.GetWrapMode())
-            elif id == ID_USEAA:
-                event.Check(win.GetUseAntiAliasing())
 
             elif id == ID_SHOW_LINENUMBERS:
                 event.Check(win.lineNumbers)
@@ -873,7 +860,7 @@ class ShellFrameMixin:
                 f.close()
             except:
                 d = wx.MessageDialog(self, "Error saving history file.",
-                                     "Error", wx.ICON_EXCLAMATION)
+                                     "Error", wx.ICON_EXCLAMATION|wx.OK)
                 d.ShowModal()
                 d.Destroy()
                 raise
@@ -891,7 +878,7 @@ class ShellFrameMixin:
                                     history=self.shell.history)
                 except:
                     d = wx.MessageDialog(self, "Error loading history file.",
-                                         "Error", wx.ICON_EXCLAMATION)
+                                         "Error", wx.ICON_EXCLAMATION|wx.OK)
                     d.ShowModal()
                     d.Destroy()
 
@@ -950,7 +937,7 @@ class ShellFrameMixin:
                 f.close()
             except:
                 d = wx.MessageDialog(self, "Error saving startup file.",
-                                     "Error", wx.ICON_EXCLAMATION)
+                                     "Error", wx.ICON_EXCLAMATION|wx.OK)
                 d.ShowModal()
                 d.Destroy()
 

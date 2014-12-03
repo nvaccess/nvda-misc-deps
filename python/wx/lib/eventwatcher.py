@@ -54,7 +54,7 @@ def buildWxEventMap():
 
 def addModuleEvents(module):
     """
-    Adds all the items in module that start with 'EVT_' to the event
+    Adds all the items in module that start with ``EVT_`` to the event
     data structures used by the EventWatcher.
     """
     if _eventBinders is None:
@@ -78,7 +78,13 @@ def _makeSourceString(wdgt):
     if wdgt is None:
         return "None"
     else:
-        return '%s "%s" (%d)' % (wdgt.__class__.__name__, wdgt.GetName(), wdgt.GetId())
+        name = ''
+        id = 0
+        if hasattr(wdgt, 'GetName'):
+            name = wdgt.GetName()
+        if hasattr(wdgt, 'GetId'):
+            id = wdgt.GetId()
+        return '%s "%s" (%d)' % (wdgt.__class__.__name__, name, id)
 
 def _makeAttribString(evt):
     "Find all the getters"
@@ -190,6 +196,10 @@ class EventChooser(wx.Panel):
         wx.Panel.__init__(self, *args, **kw)
         self.updateCallback = lambda: None
         self.doUpdate = True
+        self._event_name_filter = wx.SearchCtrl(self)
+        self._event_name_filter.ShowCancelButton(True)
+        self._event_name_filter.Bind(wx.EVT_TEXT, lambda evt: self.setWatchList(self.watchList))
+        self._event_name_filter.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self._ClearEventFilter)
         self.lc = EventChooser.EventChooserLC(self)
         btn1 = wx.Button(self, -1, "All")
         btn2 = wx.Button(self, -1, "None")
@@ -207,6 +217,7 @@ class EventChooser(wx.Panel):
         btnSizer.Add(btn2, 0, wx.ALL, 5)
         
         sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self._event_name_filter, 0, wx.EXPAND|wx.ALL, 5)
         sizer.Add(self.lc, 1, wx.EXPAND)
         sizer.Add(btnSizer)
         self.SetSizer(sizer)
@@ -217,15 +228,20 @@ class EventChooser(wx.Panel):
     
     def setWatchList(self, watchList):
         self.doUpdate = False
+        searched = self._event_name_filter.GetValue().lower()
         self.watchList = watchList
         self.lc.DeleteAllItems()
-        for count, (item, flag) in enumerate(watchList):
+        count = 0
+        for index, (item, flag) in enumerate(watchList):
             typeId = item.typeId
             text = _eventIdMap.get(typeId, "[Unknown]")
+            if text.lower().find(searched) == -1:
+                continue
             self.lc.InsertStringItem(count, text)
-            self.lc.SetItemData(count, count)
+            self.lc.SetItemData(count, index)
             if flag:
                 self.lc.CheckItem(count)
+            count += 1
         self.lc.SortItems(self.sortCompare)
         self.doUpdate = True
         self.updateCallback()
@@ -263,8 +279,10 @@ class EventChooser(wx.Panel):
         text1 = _eventIdMap.get(item1.typeId)
         text2 = _eventIdMap.get(item2.typeId)
         return cmp(text1, text2)
-        
-        
+
+    def _ClearEventFilter(self, evt):
+        self._event_name_filter.SetValue("")
+
 #----------------------------------------------------------------------------
 
 class EventWatcher(wx.Frame):

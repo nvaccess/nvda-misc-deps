@@ -5,7 +5,7 @@
 # Author:      Robin Dunn
 #
 # Created:     15-Oct-2006
-# RCS-ID:      $Id: wordwrap.py 64235 2010-05-06 18:20:36Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2006 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

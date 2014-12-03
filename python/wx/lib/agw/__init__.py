@@ -9,27 +9,27 @@ already rich wxPython widgets set.
 Description:
 
 AGW contains many different modules, listed below. Items labelled with 
-an asterisk were already present in `wx.lib` before:
+an asterisk were already present in :mod:`lib` before:
 
-- AdvancedSplash: reproduces the behaviour of `wx.SplashScreen`, with more
+- AdvancedSplash: reproduces the behaviour of :class:`SplashScreen`, with more
   advanced features like custom shapes and text animations;
 - AquaButton: this is another custom-drawn button class which
   *approximatively* mimics the behaviour of Aqua buttons on the Mac;
-- AUI: a pure-Python implementation of `wx.aui`, with many bug fixes and
-  new features like HUD docking and L{AuiNotebook} tab arts;
+- AUI: a pure-Python implementation of :mod:`~lib.agw.aui`, with many bug fixes and
+  new features like HUD docking and :class:`~lib.agw.aui.auibook.AuiNotebook` tab arts;
 - BalloonTip: allows you to display tooltips in a balloon style window
   (actually a frame), similarly to the Windows XP balloon help;
 - ButtonPanel (*): a panel with gradient background shading with the
   possibility to add buttons and controls still respecting the gradient
   background;
-- CubeColourDialog: an alternative implementation of `wx.ColourDialog`, it
+- CubeColourDialog: an alternative implementation of :class:`ColourDialog`, it
   offers different functionalities like colour wheel and RGB cube;
-- CustomTreeCtrl (*): mimics the behaviour of `wx.TreeCtrl`, with almost the
+- CustomTreeCtrl (*): mimics the behaviour of :class:`TreeCtrl`, with almost the
   same base functionalities plus a bunch of enhancements and goodies;
 - FlatMenu: as the name implies, it is a generic menu implementation,
-  offering the same `wx.MenuBar`/`wx.Menu`/`wx.ToolBar` capabilities and much more;
-- FlatNotebook (*): a full implementation of the `wx.Notebook`, and designed
-  to be a drop-in replacement for `wx.Notebook` with enhanced capabilities;
+  offering the same :class:`MenuBar` / :class:`Menu` / :class:`ToolBar` capabilities and much more;
+- FlatNotebook (*): a full implementation of the :class:`Notebook`, and designed
+  to be a drop-in replacement for :class:`Notebook` with enhanced capabilities;
 - FloatSpin: this class implements a floating point spinctrl, cabable (in
   theory) of handling infinite-precision floating point numbers;
 - FoldPanelBar (*): a control that contains multiple panels that can be
@@ -37,17 +37,19 @@ an asterisk were already present in `wx.lib` before:
 - FourWaySplitter: this is a layout manager which manages four children like
   four panes in a window, similar to many CAD software interfaces;
 - GenericMessageDialog: it is a possible replacement for the standard
-  `wx.MessageDialog`, with a fancier look and extended functionalities;
+  :class:`MessageDialog`, with a fancier look and extended functionalities;
 - GradientButton: another custom-drawn button class which mimics Windows CE
   mobile gradient buttons, using a tri-vertex blended gradient background;
 - HyperLinkCtrl (*): this widget acts line an hyper link in a typical browser;
-- HyperTreeList: a class that mimics the behaviour of `wx.gizmos.TreeListCtrl`,
+- HyperTreeList: a class that mimics the behaviour of :class:`gizmos.TreeListCtrl`,
   with almost the same base functionalities plus some more enhancements;
+- InfoBar: a transient window shown at top or bottom of its parent window to display
+  non-critical information to the user;
 - KnobCtrl: a widget which lets the user select a numerical value by
   rotating it, like a slider with a wheel shape;
 - LabelBook and FlatImageBook: these are a quasi-full implementations of
-  `wx.ListBook`, with additional features;
-- MultiDirDialog: it represents a possible replacement for `wx.DirDialog`,
+  :class:`ListBook`, with additional features;
+- MultiDirDialog: it represents a possible replacement for :class:`DirDialog`,
   with the additional ability of selecting multiple folders at once and a
   fancier look;
 - PeakMeter: this widget mimics the behaviour of LED equalizers that are
@@ -58,12 +60,12 @@ an asterisk were already present in `wx.lib` before:
 - PieCtrl and ProgressPie: these are simple classes that reproduce the
   behavior of a pie chart, in a static or progress-gauge-like way;
 - PyBusyInfo: constructs a busy info window and displays a message in it:
-  it is similar to `wx.BusyInfo`;
+  it is similar to :class:`BusyInfo`;
 - PyCollapsiblePane: a pure Python implementation of the original wxWidgets
-  C++ code of `wx.CollapsiblePane`, with customizable buttons;
-- PyGauge: a generic `wx.Gauge` implementation, it supports the determinate
-  mode functions as `wx.Gauge`;
-- PyProgress: it is similar to `wx.ProgressDialog` in indeterminated mode, but
+  C++ code of :class:`CollapsiblePane`, with customizable buttons;
+- PyGauge: a generic :class:`Gauge` implementation, it supports the determinate
+  mode functions as :class:`Gauge`;
+- PyProgress: it is similar to :class:`ProgressDialog` in indeterminated mode, but
   with a different gauge appearance and a different spinning behavior;
 - RibbonBar: the RibbonBar library is a set of classes for writing a ribbon
   user interface, similar to the user interface present in recent versions
@@ -73,19 +75,23 @@ an asterisk were already present in `wx.lib` before:
   you can find in text editors software;
 - ShapedButton: this class tries to fill the lack of "custom shaped" controls
   in wxPython. It can be used to build round buttons or elliptic buttons;
+- ShortcutEditor: a widget that allows the user to customize and change 
+  keyboard shortcuts via a dialog;
 - SpeedMeter: this widget tries to reproduce the behavior of some car
   controls (but not only), by creating an "angular" control;
-- SuperToolTip: a class that mimics the behaviour of `wx.TipWindow` and
+- SuperToolTip: a class that mimics the behaviour of :class:`TipWindow` and
   generic tooltips, with many features and highly customizable;
 - ThumbnailCtrl: a widget that can be used to display a series of images
   in a "thumbnail" format; it mimics, for example, the Windows Explorer
   behavior when you select the "view thumbnails" option;
 - ToasterBox: a cross-platform widget to make the creation of MSN-style
   "toaster" popups easier;
-- UltimateListCtrl: mimics the behaviour of `wx.ListCtrl`, with almost the same
+- UltimateListCtrl: mimics the behaviour of :class:`ListCtrl`, with almost the same
   base functionalities plus some more enhancements;
+- XLSGrid: a class based on :class:`grid.Grid` that can be used to faithfully
+  reproduce the appearance of a Microsoft Excel spreadsheets;
 - ZoomBar: a class that *appoximatively* mimics the behaviour of the Mac Dock,
-  inside a `wx.Panel`.
+  inside a :class:`Panel`.
 
 
 Bugs and Limitations: many, patches and fixes welcome :-D
@@ -110,13 +116,13 @@ Please let me know if you are using AGW!
 You can contact me at:
 
 andrea.gavana@gmail.com
-gavana@kpo.kz
+andrea.gavana@maerskoil.com
 
-AGW version: 0.9.1
+AGW version: 0.9.7
 
-Last updated: 21 Jun 2011, 22.00 GMT
+Last updated: 15 February 2014, 23.00 GMT
 
 """
 
-__version__ = "0.9.1"
+__version__ = "0.9.7"
 __author__ = "Andrea Gavana <andrea.gavana@gmail.com>"

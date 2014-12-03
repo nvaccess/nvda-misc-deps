@@ -3,7 +3,7 @@
 # Python Code By:
 #
 # Andrea Gavana, @ 25 Sep 2005
-# Latest Revision: 14 Apr 2010, 12.00 GMT
+# Latest Revision: 14 Mar 2012, 21.00 GMT
 #
 #
 # TODO List/Caveats
@@ -25,7 +25,7 @@
 # Write To Me At:
 #
 # andrea.gavana@gmail.com
-# gavana@kpo.kz
+# andrea.gavana@maerskoil.com
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
@@ -35,23 +35,23 @@
 
 
 """
-SpeedMeter tries to reproduce the behavior of some car controls (but not only),
+:class:`SpeedMeter` tries to reproduce the behavior of some car controls (but not only),
 by creating an "angular" control (actually, circular).
 
 
 Description
 ===========
 
-SpeedMeter tries to reproduce the behavior of some car controls (but not only),
+:class:`SpeedMeter` tries to reproduce the behavior of some car controls (but not only),
 by creating an "angular" control (actually, circular). I remember to have seen
 it somewhere, and i decided to implement it in wxPython.
 
-SpeedMeter starts its construction from an empty bitmap, and it uses some
-functions of the `wx.DC` class to create the rounded effects. everything is
-processed in the `Draw()` method of SpeedMeter class.
+:class:`SpeedMeter` starts its construction from an empty bitmap, and it uses some
+functions of the :class:`DC` class to create the rounded effects. everything is
+processed in the `Draw()` method of :class:`SpeedMeter` class.
 
-This implementation allows you to use either directly the `wx.PaintDC`, or the
-better (for me) double buffered style with `wx.BufferedPaintDC`. the double
+This implementation allows you to use either directly the :class:`PaintDC`, or the
+better (for me) double buffered style with :class:`BufferedPaintDC`. the double
 buffered implementation has been adapted from the wxPython wiki example:
 
 http://wiki.wxpython.org/index.cgi/doublebuffereddrawing
@@ -60,27 +60,84 @@ http://wiki.wxpython.org/index.cgi/doublebuffereddrawing
 Usage
 =====
 
-Sample usage::
+Usage example::
 
-    speedwindow1 = SM.SpeedMeter(parent, bufferedstyle,
-                                 agwStyle, mousestyle)
+    import wx
+    import wx.lib.agw.speedmeter as SM
 
+    class MyFrame(wx.Frame):
 
-None of the options (a part of parent class) are strictly required, if you
-use the defaults you get a very simple SpeedMeter. 
+        def __init__(self, parent):
+        
+            wx.Frame.__init__(self, parent, -1, "SpeedMeter Demo")
+
+            speed = SM.SpeedMeter(self, agwStyle=SM.SM_DRAW_HAND|SM.SM_DRAW_SECTORS|SM.SM_DRAW_MIDDLE_TEXT|SM.SM_DRAW_SECONDARY_TICKS)
+
+            # Set The Region Of Existence Of SpeedMeter (Always In Radians!!!!)
+            speed.SetAngleRange(-pi/6, 7*pi/6)
+
+            # Create The Intervals That Will Divide Our SpeedMeter In Sectors        
+            intervals = range(0, 201, 20)
+            speed.SetIntervals(intervals)
+
+            # Assign The Same Colours To All Sectors (We Simulate A Car Control For Speed)
+            # Usually This Is Black
+            colours = [wx.BLACK]*10
+            speed.SetIntervalColours(colours)
+
+            # Assign The Ticks: Here They Are Simply The String Equivalent Of The Intervals
+            ticks = [str(interval) for interval in intervals]
+            speed.SetTicks(ticks)
+            # Set The Ticks/Tick Markers Colour
+            speed.SetTicksColour(wx.WHITE)
+            # We Want To Draw 5 Secondary Ticks Between The Principal Ticks
+            speed.SetNumberOfSecondaryTicks(5)
+
+            # Set The Font For The Ticks Markers
+            speed.SetTicksFont(wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL))
+                                           
+            # Set The Text In The Center Of SpeedMeter
+            speed.SetMiddleText("Km/h")
+            # Assign The Colour To The Center Text
+            speed.SetMiddleTextColour(wx.WHITE)
+            # Assign A Font To The Center Text
+            speed.SetMiddleTextFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD))
+
+            # Set The Colour For The Hand Indicator
+            speed.SetHandColour(wx.Colour(255, 50, 0))
+
+            # Do Not Draw The External (Container) Arc. Drawing The External Arc May
+            # Sometimes Create Uglier Controls. Try To Comment This Line And See It
+            # For Yourself!
+            speed.DrawExternalArc(False)        
+
+            # Set The Current Value For The SpeedMeter
+            speed.SetSpeedValue(44)
+        
+        
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
+
 
 
 Methods and Settings
 ====================
 
-SpeedMeter is highly customizable, and in particular you can set:
+:class:`SpeedMeter` is highly customizable, and in particular you can set:
 
-- The start and end angle of existence for SpeedMeter;
-- The intervals in which you divide the SpeedMeter (numerical values);
+- The start and end angle of existence for :class:`SpeedMeter`;
+- The intervals in which you divide the :class:`SpeedMeter` (numerical values);
 - The corresponding thicks for the intervals;
 - The interval colours (different intervals may have different filling colours);
 - The ticks font and colour;
-- The background colour (outsize the SpeedMeter region);
+- The background colour (outsize the :class:`SpeedMeter` region);
 - The external arc colour;
 - The hand (arrow) colour;
 - The hand's shadow colour;
@@ -90,7 +147,7 @@ SpeedMeter is highly customizable, and in particular you can set:
 - The direction of increasing speed ("advance" or "reverse");
 - The text to be drawn in the middle and its font;
 - The icon to be drawn in the middle;
-- The first and second gradient colours (that fills the SpeedMeter control);
+- The first and second gradient colours (that fills the :class:`SpeedMeter` control);
 - The current value.
 
 
@@ -112,7 +169,7 @@ Window Styles               Hex Value   Description
 ``SM_DRAW_MIDDLE_TEXT``            0x80 Some text is printed in the middle of the control near the center.
 ``SM_DRAW_MIDDLE_ICON``           0x100 An icon is drawn in the middle of the control near the center.
 ``SM_DRAW_GRADIENT``              0x200 A gradient of colours will fill the control.
-``SM_DRAW_FANCY_TICKS``           0x400 With this style you can use xml tags to create some custom text and draw it at the ticks position. See `wx.lib.fancytext` for the tags.
+``SM_DRAW_FANCY_TICKS``           0x400 With this style you can use xml tags to create some custom text and draw it at the ticks position. See :mod:`lib.fancytext` for the tags.
 =========================== =========== ==================================================
 
 
@@ -125,9 +182,9 @@ Events Processing
 License And Version
 ===================
 
-SpeedMeter is distributed under the wxPython license.
+:class:`SpeedMeter` is distributed under the wxPython license.
 
-Latest revision: Andrea Gavana @ 14 Apr 2010, 12.00 GMT
+Latest revision: Andrea Gavana @ 14 Mar 2012, 21.00 GMT
 
 Version 0.3
 
@@ -150,7 +207,9 @@ from math import pi, sin, cos, log, sqrt, atan2
 # SM_BUFFERED_DC Uses The Double Buffered Drawing Style
 
 SM_NORMAL_DC = 0
+""" Uses the normal :class:`PaintDC`. """
 SM_BUFFERED_DC = 1
+""" Uses a double buffered drawing code. """
 
 #----------------------------------------------------------------------
 # SpeedMeter Styles
@@ -179,8 +238,7 @@ SM_BUFFERED_DC = 1
 SM_ROTATE_TEXT = 1
 """ Draws the ticks rotated: the ticks are rotated accordingly to the tick marks positions. """
 SM_DRAW_SECTORS = 2
-""" Different intervals are painted in differend colours (every sector of the""" \
-""" circle has its own colour). """
+""" Different intervals are painted in differend colours (every sector of the circle has its own colour). """
 SM_DRAW_PARTIAL_SECTORS = 4
 """ Every interval has its own colour, but only a circle corona is painted near the ticks. """
 SM_DRAW_HAND = 8
@@ -198,8 +256,7 @@ SM_DRAW_MIDDLE_ICON = 256
 SM_DRAW_GRADIENT = 512
 """ A gradient of colours will fill the control. """
 SM_DRAW_FANCY_TICKS = 1024
-""" With this style you can use xml tags to create some custom text and""" \
-""" draw it at the ticks position. See `wx.lib.fancytext` for the tags. """
+""" With this style you can use xml tags to create some custom text and draw it at the ticks position. See :mod:`lib.fancytext` for the tags. """
 
 #----------------------------------------------------------------------
 # Event Binding
@@ -208,7 +265,7 @@ SM_DRAW_FANCY_TICKS = 1024
 #                 SpeedMeter Value Interactively
 
 SM_MOUSE_TRACK = 1
-
+""" Flag to allow the left/right click of the mouse to change the :class:`SpeedMeter` value interactively. """
 
 fontfamily = range(70, 78)
 familyname = ["default", "decorative", "roman", "script", "swiss", "modern", "teletype"]
@@ -231,7 +288,7 @@ stylesname = ["normal", "italic", "slant"]
 
 class BufferedWindow(wx.Window):
     """
-    A Buffered window class.
+    A buffered window class.
 
     To use it, subclass it and define a `Draw(dc)` method that takes a `dc`
     to draw to. In that method, put the code needed to draw the picture
@@ -239,7 +296,7 @@ class BufferedWindow(wx.Window):
     screen will be automatically updated when a Paint event is received.
 
     When the drawing needs to change, you app needs to call the
-    L{BufferedWindow.UpdateDrawing} method. Since the drawing is stored in a bitmap, you
+    :meth:`BufferedWindow.UpdateDrawing() <BufferedWindow.UpdateDrawing>` method. Since the drawing is stored in a bitmap, you
     can also save the drawing to file by calling the
     `SaveToFile(self, file_name, file_type)` method.
     """
@@ -276,7 +333,7 @@ class BufferedWindow(wx.Window):
         """
         This method should be overridden when sub-classed.
 
-        :param `dc`: an instance of `wx.DC`.        
+        :param `dc`: an instance of :class:`DC`.        
         """
 
         pass
@@ -284,9 +341,9 @@ class BufferedWindow(wx.Window):
 
     def OnPaint(self, event):
         """
-        Handles the ``wx.EVT_PAINT`` event for L{BufferedWindow}.
+        Handles the ``wx.EVT_PAINT`` event for :class:`BufferedWindow`.
 
-        :param `event`: a `wx.PaintEvent` event to be processed.
+        :param `event`: a :class:`PaintEvent` event to be processed.
         """
 
         if self._bufferedstyle == SM_BUFFERED_DC:
@@ -298,9 +355,9 @@ class BufferedWindow(wx.Window):
 
     def OnSize(self,event):
         """
-        Handles the ``wx.EVT_SIZE`` event for L{BufferedWindow}.
+        Handles the ``wx.EVT_SIZE`` event for :class:`BufferedWindow`.
 
-        :param `event`: a `wx.SizeEvent` event to be processed.
+        :param `event`: a :class:`SizeEvent` event to be processed.
         """
         
         self.Width, self.Height = self.GetClientSizeTuple()
@@ -353,7 +410,7 @@ class BufferedWindow(wx.Window):
 
 class SpeedMeter(BufferedWindow):
     """
-    SpeedMeter tries to reproduce the behavior of some car controls (but not only),
+    :class:`SpeedMeter` tries to reproduce the behavior of some car controls (but not only),
     by creating an "angular" control (actually, circular).
 
     This is the main class implementation.
@@ -371,7 +428,7 @@ class SpeedMeter(BufferedWindow):
          chosen by either the windowing system or wxPython, depending on platform;
         :param `size`: the control size. A value of (-1, -1) indicates a default size,
          chosen by either the windowing system or wxPython, depending on platform;
-        :param `agwStyle`: this value specifies the L{SpeedMeter} styles, and can be a
+        :param `agwStyle`: this value specifies the :class:`SpeedMeter` styles, and can be a
          combination of the following bits:
 
          =========================== =========== ==================================================
@@ -387,22 +444,22 @@ class SpeedMeter(BufferedWindow):
          ``SM_DRAW_MIDDLE_TEXT``            0x80 Some text is printed in the middle of the control near the center.
          ``SM_DRAW_MIDDLE_ICON``           0x100 An icon is drawn in the middle of the control near the center.
          ``SM_DRAW_GRADIENT``              0x200 A gradient of colours will fill the control.
-         ``SM_DRAW_FANCY_TICKS``           0x400 With this style you can use xml tags to create some custom text and draw it at the ticks position. See `wx.lib.fancytext` for the tags.
+         ``SM_DRAW_FANCY_TICKS``           0x400 With this style you can use xml tags to create some custom text and draw it at the ticks position. See :mod:`lib.fancytext` for the tags.
          =========================== =========== ==================================================
          
-        :param `bufferedstyle`: this value allows you to use the normal `wx.PaintDC` or the
+        :param `bufferedstyle`: this value allows you to use the normal :class:`PaintDC` or the
          double buffered drawing options:
 
          =========================== =========== ==================================================
          Buffered Styles             Hex Value   Description
          =========================== =========== ==================================================
-         ``SM_NORMAL_DC``                    0x0 Uses the normal `wx.PaintDC`
+         ``SM_NORMAL_DC``                    0x0 Uses the normal :class:`PaintDC`
          ``SM_BUFFERED_DC``                  0x1 Uses the double buffered drawing style
          =========================== =========== ==================================================
 
-        :param `mousestyle`: this value allows you to use the mouse to change the L{SpeedMeter}
+        :param `mousestyle`: this value allows you to use the mouse to change the :class:`SpeedMeter`
          value interactively with left click/drag events. If set to ``SM_MOUSE_TRACK``, the mouse
-         left click/drag allow you to change the L{SpeedMeter} value interactively.
+         left click/drag allow you to change the :class:`SpeedMeter` value interactively.
         """
 
         self._agwStyle = agwStyle
@@ -473,7 +530,7 @@ class SpeedMeter(BufferedWindow):
         Draws everything on the empty bitmap.
         Here all the chosen styles are applied.
 
-        :param `dc`: an instance of `wx.DC`.        
+        :param `dc`: an instance of :class:`DC`.        
         """
 
         size  = self.GetClientSize()
@@ -1080,7 +1137,7 @@ class SpeedMeter(BufferedWindow):
 
     def SetIntervals(self, intervals=None):
         """
-        Sets the intervals for L{SpeedMeter} (main ticks numeric values).
+        Sets the intervals for :class:`SpeedMeter` (main ticks numeric values).
 
         :param `intervals`: a Python list of main ticks to be displayed. If defaulted
          to ``None``, the list `[0, 50, 100]` is used.
@@ -1093,17 +1150,17 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetIntervals(self):
-        """ Returns the intervals for L{SpeedMeter}, a Python list of main ticks displayed. """
+        """ Returns the intervals for :class:`SpeedMeter`, a Python list of main ticks displayed. """
 
         return self._intervals
 
 
     def SetSpeedValue(self, value=None):
         """
-        Sets the current value for L{SpeedMeter}.
+        Sets the current value for :class:`SpeedMeter`.
 
         :param `value`: a floating point number representing the current value. If defaulted
-         to ``None``, the L{SpeedMeter} value will be the middle point of the control range.
+         to ``None``, the :class:`SpeedMeter` value will be the middle point of the control range.
         """
 
         if value is None:
@@ -1124,14 +1181,14 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetSpeedValue(self):
-        """ Returns the current value for L{SpeedMeter}. """
+        """ Returns the current value for :class:`SpeedMeter`. """
 
         return self._speedvalue
 
 
     def SetAngleRange(self, start=0, end=pi):
         """
-        Sets the range of existence for L{SpeedMeter}.
+        Sets the range of existence for :class:`SpeedMeter`.
 
         :param `start`: the starting angle, in radians;
         :param `end`: the ending angle, in radians.        
@@ -1142,7 +1199,7 @@ class SpeedMeter(BufferedWindow):
 
     def GetAngleRange(self):
         """
-        Returns the range of existence for L{SpeedMeter}.
+        Returns the range of existence for :class:`SpeedMeter`.
         The returned values are in radians.
         """
 
@@ -1154,7 +1211,7 @@ class SpeedMeter(BufferedWindow):
         Sets the colours for the intervals.
 
         :param `colours`: a Python list of colours. The length of this list should be
-         the same as the number of circle sectors in L{SpeedMeter}. If defaulted to ``None``,
+         the same as the number of circle sectors in :class:`SpeedMeter`. If defaulted to ``None``,
          all the intervals will have a white colour.
          
         :note: Every interval (circle sector) should have a colour.
@@ -1189,7 +1246,7 @@ class SpeedMeter(BufferedWindow):
 
     def SetTicks(self, ticks=None):
         """
-        Sets the ticks for L{SpeedMeter} intervals (main ticks string values).
+        Sets the ticks for :class:`SpeedMeter` intervals (main ticks string values).
 
         :param `ticks`: a Python list of strings, representing the ticks values.
          If defaulted to ``None``, the ticks will be taken from the interval values.
@@ -1218,7 +1275,7 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetTicks(self):
-        """ Returns the ticks for L{SpeedMeter} intervals (main ticks string values)."""
+        """ Returns the ticks for :class:`SpeedMeter` intervals (main ticks string values)."""
 
         if hasattr(self, "_intervalticks"):
             return self._intervalticks
@@ -1230,7 +1287,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the ticks font.
 
-        :param `font`: a valid `wx.Font` object. If defaulted to ``None``, some standard
+        :param `font`: a valid :class:`Font` object. If defaulted to ``None``, some standard
          font will be chosen automatically.
         """
 
@@ -1252,7 +1309,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the ticks colour.
 
-        :param `colour`: a valid `wx.Colour` object. If defaulted to ``None``, the
+        :param `colour`: a valid :class:`Colour` object. If defaulted to ``None``, the
          ticks colour will be set as blue.
         """
 
@@ -1270,10 +1327,10 @@ class SpeedMeter(BufferedWindow):
 
     def SetSpeedBackground(self, colour=None):
         """
-        Sets the background colour outside the L{SpeedMeter} control.
+        Sets the background colour outside the :class:`SpeedMeter` control.
 
-        :param `colour`: a valid `wx.Colour` object. If defaulted to ``None``, the
-         L{SpeedMeter} background will be taken from the system default.
+        :param `colour`: a valid :class:`Colour` object. If defaulted to ``None``, the
+         :class:`SpeedMeter` background will be taken from the system default.
         """
 
         if colour is None:
@@ -1283,7 +1340,7 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetSpeedBackground(self):
-        """ Returns the background colour outside the L{SpeedMeter} control."""
+        """ Returns the background colour outside the :class:`SpeedMeter` control."""
 
         return self._speedbackground
 
@@ -1292,7 +1349,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the hand (arrow indicator) colour.
 
-        :param `colour`: a valid `wx.Colour` object. If defaulted to ``None``, the arrow
+        :param `colour`: a valid :class:`Colour` object. If defaulted to ``None``, the arrow
          indicator will be red.
         """
 
@@ -1312,7 +1369,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the external arc colour (thicker line).
 
-        :param `colour`: a valid `wx.Colour` object. If defaulted to ``None``, the arc
+        :param `colour`: a valid :class:`Colour` object. If defaulted to ``None``, the arc
          colour will be black.
         """
 
@@ -1332,7 +1389,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the hand's shadow colour.
 
-        :param `colour`: a valid `wx.Colour` object. If defaulted to ``None``, the shadow
+        :param `colour`: a valid :class:`Colour` object. If defaulted to ``None``, the shadow
          colour will be light grey.
         """
 
@@ -1353,9 +1410,9 @@ class SpeedMeter(BufferedWindow):
         Sets the partial filler colour.
 
         A circle corona near the ticks will be filled with this colour, from
-        the starting value to the current value of L{SpeedMeter}.
+        the starting value to the current value of :class:`SpeedMeter`.
 
-        :param `colour`: a valid `wx.Colour` object.
+        :param `colour`: a valid :class:`Colour` object.
         """
 
         if colour is None:
@@ -1372,7 +1429,7 @@ class SpeedMeter(BufferedWindow):
 
     def SetDirection(self, direction=None):
         """
-        Sets the direction of advancing L{SpeedMeter} value.
+        Sets the direction of advancing :class:`SpeedMeter` value.
 
         :param `direction`: specifying "advance" will move the hand in clock-wise direction
          (like normal car speed control), while using "reverse" will move it counterclock-wise
@@ -1389,7 +1446,7 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetDirection(self):
-        """ Returns the direction of advancing L{SpeedMeter} value."""
+        """ Returns the direction of advancing :class:`SpeedMeter` value."""
 
         return self._direction
 
@@ -1419,9 +1476,9 @@ class SpeedMeter(BufferedWindow):
 
     def SetMiddleText(self, text=None):
         """
-        Sets the text to be drawn near the center of L{SpeedMeter}.
+        Sets the text to be drawn near the center of :class:`SpeedMeter`.
 
-        :param `text`: the text to be drawn near the center of L{SpeedMeter}. If
+        :param `text`: the text to be drawn near the center of :class:`SpeedMeter`. If
          defaulted to ``None``, an empty string will be used.
         """
 
@@ -1432,7 +1489,7 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetMiddleText(self):
-        """ Returns the text to be drawn near the center of L{SpeedMeter}. """
+        """ Returns the text to be drawn near the center of :class:`SpeedMeter`. """
 
         return self._middletext
 
@@ -1441,7 +1498,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the font for the text in the middle.
 
-        :param `font`: a valid `wx.Font` object. If defaulted to ``None``, some
+        :param `font`: a valid :class:`Font` object. If defaulted to ``None``, some
          standard font will be generated.
         """
 
@@ -1465,7 +1522,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the colour for the text in the middle.
 
-        :param `colour`: a valid `wx.Colour` object. If defaulted to ``None``, the text
+        :param `colour`: a valid :class:`Colour` object. If defaulted to ``None``, the text
          in the middle will be painted in blue.
         """
 
@@ -1483,9 +1540,9 @@ class SpeedMeter(BufferedWindow):
 
     def SetMiddleIcon(self, icon):
         """
-        Sets the icon to be drawn near the center of L{SpeedMeter}.
+        Sets the icon to be drawn near the center of :class:`SpeedMeter`.
 
-        :param `icon`: a valid `wx.Bitmap` object.
+        :param `icon`: a valid :class:`Bitmap` object.
         """
 
         if icon.Ok():
@@ -1495,7 +1552,7 @@ class SpeedMeter(BufferedWindow):
 
 
     def GetMiddleIcon(self):
-        """ Returns the icon to be drawn near the center of L{SpeedMeter}. """
+        """ Returns the icon to be drawn near the center of :class:`SpeedMeter`. """
 
         return self._middleicon
 
@@ -1510,10 +1567,10 @@ class SpeedMeter(BufferedWindow):
         """
         Converts the input values into logical x, y coordinates.
 
-        :param `radius`: the L{SpeedMeter} radius;
+        :param `radius`: the :class:`SpeedMeter` radius;
         :param `angle`: the angular position of the mouse;
-        :param `centerX`: the `x` position of the L{SpeedMeter} center;
-        :param `centerX`: the `y` position of the L{SpeedMeter} center.        
+        :param `centerX`: the `x` position of the :class:`SpeedMeter` center;
+        :param `centerX`: the `y` position of the :class:`SpeedMeter` center.        
         """
 
         x = radius*cos(angle) + centerX
@@ -1547,7 +1604,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the first gradient colour (near the ticks).
 
-        :param `colour`: a valid `wx.Colour` object.
+        :param `colour`: a valid :class:`Colour` object.
         """
 
         if colour is None:
@@ -1566,7 +1623,7 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the second gradient colour (near the center).
 
-        :param `colour`: a valid `wx.Colour` object.
+        :param `colour`: a valid :class:`Colour` object.
         """
 
         if colour is None:
@@ -1585,9 +1642,9 @@ class SpeedMeter(BufferedWindow):
         """
         Sets the style for the hand (arrow indicator).
 
-        :param `style`: by specifying "Hand", L{SpeedMeter} will draw a polygon
+        :param `style`: by specifying "Hand", :class:`SpeedMeter` will draw a polygon
          that simulates the car speed control indicator. Using "Arrow" will force
-         L{SpeedMeter} to draw a simple arrow. If defaulted to ``None``, "Hand" will
+         :class:`SpeedMeter` to draw a simple arrow. If defaulted to ``None``, "Hand" will
          be used.
          """
 
@@ -1619,11 +1676,11 @@ class SpeedMeter(BufferedWindow):
 
     def OnMouseMotion(self, event):
         """
-        Handles the ``wx.EVT_MOUSE_EVENTS`` event for L{SpeedMeter}.
+        Handles the ``wx.EVT_MOUSE_EVENTS`` event for :class:`SpeedMeter`.
 
-        :param `event`: a `wx.MouseEvent` event to be processed.
+        :param `event`: a :class:`MouseEvent` event to be processed.
 
-        :note: Here only left clicks/drags are involved. Should L{SpeedMeter}
+        :note: Here only left clicks/drags are involved. Should :class:`SpeedMeter`
          have something more?
         """
 

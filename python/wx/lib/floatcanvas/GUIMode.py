@@ -5,7 +5,7 @@ Module that holds the GUI modes used by FloatCanvas
 
 Note that this can only be imported after a wx.App() has been created.
 
-This approach was inpired by Christian Blouin, who also wrote the initial
+This approach was inspired by Christian Blouin, who also wrote the initial
 version of the code.
 
 """
@@ -104,6 +104,16 @@ class GUIBase(object):
         """
         pass
 
+## some mix-ins for use with the other modes:
+class ZoomWithMouseWheel():
+    def OnWheel(self, event):
+        point = event.Position
+        if event.GetWheelRotation() < 0:
+            self.Canvas.Zoom(0.9, point, centerCoords = "pixel", keepPointInPlace=True)
+        else:
+            self.Canvas.Zoom(1.1, point, centerCoords = "pixel", keepPointInPlace=True)
+
+
 class GUIMouse(GUIBase):
     """
 
@@ -166,11 +176,16 @@ class GUIMouse(GUIBase):
 
     def OnMove(self, event):
         ## The Move event always gets raised, even if there is a hit-test
+        EventType = FloatCanvas.EVT_FC_MOTION
+        # process the object hit test for EVT_MOTION bindings
+        self.Canvas.HitTest(event, EventType)
+        # process enter and leave events
         self.Canvas.MouseOverTest(event)
-        self.Canvas._RaiseMouseEvent(event,FloatCanvas.EVT_FC_MOTION)
+        # then raise the event on the canvas
+        self.Canvas._RaiseMouseEvent(event, EventType)
 
 
-class GUIMove(GUIBase):
+class GUIMove(ZoomWithMouseWheel, GUIBase):
     """
     Mode that moves the image (pans).
     It doesn't change any coordinates, it only changes what the viewport is
@@ -278,16 +293,7 @@ class GUIMove(GUIBase):
         dc.EndDrawing()
         #self.Canvas.Update()
 
-    def OnWheel(self, event):
-        """
-           By default, zoom in/out by a 0.1 factor per Wheel event.
-        """
-        if event.GetWheelRotation() < 0:
-            self.Canvas.Zoom(0.9)
-        else:
-            self.Canvas.Zoom(1.1)
-
-class GUIZoomIn(GUIBase):
+class GUIZoomIn(ZoomWithMouseWheel, GUIBase):
  
     def __init__(self, canvas=None):
         GUIBase.__init__(self, canvas)
@@ -353,13 +359,8 @@ class GUIZoomIn(GUIBase):
     def OnRightDown(self, event):
         self.Canvas.Zoom(1/1.5, event.GetPosition(), centerCoords="pixel")
 
-    def OnWheel(self, event):
-        if event.GetWheelRotation() < 0:
-            self.Canvas.Zoom(0.9)
-        else:
-            self.Canvas.Zoom(1.1)
 
-class GUIZoomOut(GUIBase):
+class GUIZoomOut(ZoomWithMouseWheel, GUIBase):
 
     def __init__(self, Canvas=None):
         GUIBase.__init__(self, Canvas)
@@ -370,12 +371,6 @@ class GUIZoomOut(GUIBase):
 
     def OnRightDown(self, event):
         self.Canvas.Zoom(1.5, event.GetPosition(), centerCoords="pixel")
-
-    def OnWheel(self, event):
-        if event.GetWheelRotation() < 0:
-            self.Canvas.Zoom(0.9)
-        else:
-            self.Canvas.Zoom(1.1)
 
     def OnMove(self, event):
         # Always raise the Move event.

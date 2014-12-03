@@ -15,8 +15,8 @@ Provides a dialog for downloading, installing and configuring plugins or Editra.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__cvsid__ = "$Id: plugdlg.py 67856 2011-06-04 21:14:06Z CJP $"
-__revision__ = "$Revision: 67856 $"
+__cvsid__ = "$Id: plugdlg.py 70229 2012-01-01 01:27:10Z CJP $"
+__revision__ = "$Revision: 70229 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -35,6 +35,7 @@ import ed_msg
 import util
 import ed_txt
 from profiler import Profile_Get, Profile_Set
+import ed_basewin
 import eclib
 
 #-----------------------------------------------------------------------------#
@@ -144,6 +145,7 @@ class PluginDialog(wx.Frame):
         ed_msg.Subscribe(self.OnThemeChange, ed_msg.EDMSG_THEME_CHANGED)
 
     def OnDestroy(self, evt):
+        """Cleanup message handlers on delete"""
         if evt.GetId() == self.GetId():
             ed_msg.Unsubscribe(self.OnThemeChange)
         evt.Skip()
@@ -171,10 +173,8 @@ class PluginDialog(wx.Frame):
             self._nb.Refresh()
 
     def OnClose(self, evt):
-        """Handles closing the dialog and unregistering it from
-        the mainloop.
-        @param evt: Event fired that called this handler
-        @type evt: wx.EVT_CLOSE
+        """Handles closing the dialog and unregistering it from the mainloop.
+        @param evt: wx.EVT_CLOSE
 
         """
         if self._dl_pg.IsDownloading():
@@ -223,8 +223,7 @@ class PluginDialog(wx.Frame):
 
     def OnPageChanging(self, evt):
         """Updates pages as they are being changed to.
-        @param evt: Event fired that called this handler
-        @type evt: segmentbk.EVT_SB_PAGE_CHANGING
+        @param evt: segmentbk.EVT_SB_PAGE_CHANGING
 
         """
         cur_pg = evt.GetSelection()
@@ -286,7 +285,6 @@ class ConfigPanel(eclib.ControlBox):
         identifier is the combination of the name and version
         strings.
         @param name: name of item in list
-        @type name: string
         @return: identifier for the named list item
 
         """
@@ -299,8 +297,7 @@ class ConfigPanel(eclib.ControlBox):
     def OnNotify(self, evt):
         """Handles the notification events that are
         posted from the list control.
-        @param evt: Event fired that called this handler
-        @type evt: ed_event.NotificationEvent
+        @param evt: ed_event.NotificationEvent
 
         """
         e_id = evt.GetId()
@@ -316,7 +313,7 @@ class ConfigPanel(eclib.ControlBox):
             else:
                 imglst = parent.GetImageList()
                 imglst.append(bmp)
-                idx = len(imgst) - 1
+                idx = len(imglst) - 1
 
             label = cfg_obj.GetLabel()
             panel = cfg_obj.GetConfigPanel(parent)
@@ -350,34 +347,33 @@ class ConfigPanel(eclib.ControlBox):
                       key=unicode.lower)
         uninstalled = Profile_Get('UNINSTALL_PLUGINS', default=list())
 
-        for item in keys:
-            val = config[item]
-            self._list.Freeze()
-            mod = sys.modules.get(item)
-            dist = p_mgr.GetPluginDistro(item)
-            if dist is not None:
-                item = dist.project_name
-                version = dist.version
-            else:
-                version = str(getattr(mod, '__version__', _("Unknown")))
+        with eclib.Freezer(self._list) as _tmp:
+            for item in keys:
+                val = config[item]
+                mod = sys.modules.get(item)
+                dist = p_mgr.GetPluginDistro(item)
+                if dist is not None:
+                    item = dist.project_name
+                    version = dist.version
+                else:
+                    version = str(getattr(mod, '__version__', _("Unknown")))
 
-            pdata = PluginData()
-            pdata.SetName(item)
-            desc = getattr(mod, '__doc__', None)
-            if not isinstance(desc, basestring):
-                desc = _("No Description Available")
-            pdata.SetDescription(desc.strip())
-            pdata.SetAuthor(getattr(mod, '__author__', _("Unknown")))
-            pdata.SetVersion(version)
-            pdata.SetDist(dist)
-            pbi = PBPluginItem(self._list, mod, pdata, None)
+                pdata = PluginData()
+                pdata.SetName(item)
+                desc = getattr(mod, '__doc__', None)
+                if not isinstance(desc, basestring):
+                    desc = _("No Description Available")
+                pdata.SetDescription(desc.strip())
+                pdata.SetAuthor(getattr(mod, '__author__', _("Unknown")))
+                pdata.SetVersion(version)
+                pdata.SetDist(dist)
+                pbi = PBPluginItem(self._list, mod, pdata, None)
 
-            pbi.SetChecked(val)
-            util.Log("[pluginmgr][info] Adding %s to list" % item)
-            self._list.AppendItem(pbi)
-            if pbi.GetInstallPath() in uninstalled:
-                pbi.Enable(False)
-            self._list.Thaw()
+                pbi.SetChecked(val)
+                util.Log("[pluginmgr][info] Adding %s to list" % item)
+                self._list.AppendItem(pbi)
+                if pbi.GetInstallPath() in uninstalled:
+                    pbi.Enable(False)
 
         self._list.SendSizeEvent()
         return self._list.GetItemCount()
@@ -405,33 +401,32 @@ class ConfigPanel(eclib.ControlBox):
         bmp = wx.ArtProvider.GetBitmap(wx.ART_ERROR, wx.ART_TOOLBAR, (32, 32))
         msg = _("This plugin requires a newer version of Editra.")
 
-        for item in keys:
-            val = errors[item]
-            self._list.Freeze()
-            mod = sys.modules.get(val)
-            dist = p_mgr.GetPluginDistro(item)
-            if dist is not None:
-                item = dist.project_name
-                version = dist.version
-            else:
-                version = unicode(getattr(mod, '__version__', _("Unknown")))
+        with eclib.Freezer(self._list) as _tmp:
+            for item in keys:
+                val = errors[item]
+                mod = sys.modules.get(val)
+                dist = p_mgr.GetPluginDistro(item)
+                if dist is not None:
+                    item = dist.project_name
+                    version = dist.version
+                else:
+                    version = unicode(getattr(mod, '__version__', _("Unknown")))
 
-            pin = PluginData()
-            pin.SetName(item)
-            pin.SetAuthor(getattr(mod, '__author__', _("Unknown")))
-            pin.SetVersion(version)
-            pin.SetDist(dist)
-            pbi = PluginErrorItem(self._list, pin, msg, bmp=bmp)
+                pin = PluginData()
+                pin.SetName(item)
+                pin.SetAuthor(getattr(mod, '__author__', _("Unknown")))
+                pin.SetVersion(version)
+                pin.SetDist(dist)
+                pbi = PluginErrorItem(self._list, pin, msg, bmp=bmp)
 
-            self._list.AppendItem(pbi)
-            self._list.Thaw()
+                self._list.AppendItem(pbi)
 
         self._list.SendSizeEvent()
         return self._list.GetItemCount()
 
 #-----------------------------------------------------------------------------#
 
-class DownloadPanel(eclib.ControlBox):
+class DownloadPanel(ed_basewin.EdBaseCtrlBox):
     """Creates a panel with controls for downloading plugins."""
     ID_DOWNLOAD = wx.NewId()
     EGG_PATTERN = re.compile(r"(?P<name>[^-]+)"
@@ -439,9 +434,9 @@ class DownloadPanel(eclib.ControlBox):
     re.VERBOSE | re.IGNORECASE
     ).match
 
-    def __init__(self, parent, style=wx.NO_BORDER):
+    def __init__(self, parent):
         """Initializes the panel"""
-        eclib.ControlBox.__init__(self, parent, style=style)
+        super(DownloadPanel, self).__init__(parent)
 
         # Attributes
         self._p_list = dict()           # list of available plugins/meta
@@ -451,9 +446,7 @@ class DownloadPanel(eclib.ControlBox):
         self._list = eclib.PanelBox(self)
 
         # Layout Panel
-        self.CreateControlBar(wx.BOTTOM)
-        cbar = self.GetControlBar(wx.BOTTOM)
-        cbar.SetVMargin(1, 2)
+        cbar = self.CreateControlBar(wx.BOTTOM)
         cbar.AddStretchSpacer()
         self._downlb = wx.Button(cbar, DownloadPanel.ID_DOWNLOAD, _("Download"))
         self._downlb.Disable()
@@ -508,7 +501,6 @@ class DownloadPanel(eclib.ControlBox):
         """Formats a list of plugin data served by the server into
         PluginData objects for usage in the list view.
         @return: PluginData of all available plugins
-        @rtype: dict
 
         """
         plugins = data
@@ -546,8 +538,14 @@ class DownloadPanel(eclib.ControlBox):
         to_clean = list()
         for pin in p_list:
             cfg_id = config_pg.GetItemIdentifier(pin.lower())
-            if cfg_id is not None and cfg_id[1] >= p_list[pin].GetVersion():
-                to_clean.append(pin)
+            if cfg_id is not None:
+                try:
+                    cur_id = [int(v) for v in cfg_id[1].split(".")]
+                    dl_id = [int(v) for v in p_list[pin].GetVersion().split(".")]
+                except:
+                    continue
+                if cur_id >= dl_id: # Installed version is >= avail dl
+                    to_clean.append(pin)
 
         for item in to_clean:
             del p_list[item]
@@ -565,8 +563,7 @@ class DownloadPanel(eclib.ControlBox):
     def IsDownloading(self):
         """Returns whether the panel has active download
         threads or not.
-        @return: status of downloading
-        @rtype: boolean
+        @return: bool
 
         """
         if self._eggcount:
@@ -576,8 +573,7 @@ class DownloadPanel(eclib.ControlBox):
 
     def OnButton(self, evt):
         """Handles the Button Events.
-        @param evt: Event that called this handler
-        @type evt: wx.EVT_BUTTON
+        @param evt: wx.EVT_BUTTON
 
         """
         e_id = evt.GetId()
@@ -600,11 +596,9 @@ class DownloadPanel(eclib.ControlBox):
     def OnNotify(self, evt):
         """Handles the notification events that are posted by the
         list control when items are checked.
-        @param evt: Event that called this handler
-        @type evt: ed_event.NotificationEvent
+        @param evt: ed_event.NotificationEvent
 
         """
-        index = evt.GetId()
         pin, enable = evt.GetValue()
         self._dl_list[pin] = enable
 
@@ -631,14 +625,11 @@ class DownloadPanel(eclib.ControlBox):
         """
         if self._list.GetItemCount():
             self._list.DeleteAllItems()
-
         pins = sorted([ name for name in self._p_list.keys() ], key=unicode.lower)
-        self.Freeze()
-        for item in pins:
-            pbi = PBDownloadItem(self._list, self._p_list[item], None)
-            self._list.AppendItem(pbi)
-
-        self.Thaw()
+        with eclib.Freezer(self) as _tmp:
+            for item in pins:
+                pbi = PBDownloadItem(self._list, self._p_list[item], None)
+                self._list.AppendItem(pbi)
         self._list.SendSizeEvent()
         return self._list.GetItemCount()
 
@@ -734,19 +725,19 @@ def _DownloadPlugin(*args):
 
 #-----------------------------------------------------------------------------#
 
-class InstallPanel(eclib.ControlBox):
+class InstallPanel(ed_basewin.EdBaseCtrlBox):
     """Creates a panel for installing plugins."""
     ID_INSTALL = wx.NewId()
     ID_USER = wx.NewId()
     ID_SYS = wx.NewId()
     ID_REMOVE_ITEM = wx.NewId()
 
-    def __init__(self, parent, style=wx.NO_BORDER):
+    def __init__(self, parent):
         """Initializes the panel"""
-        eclib.ControlBox.__init__(self, parent, style=style)
+        super(InstallPanel, self).__init__(parent)
 
         # Attributes
-        self.CreateControlBar(wx.BOTTOM)
+        bbar = self.CreateControlBar(wx.BOTTOM)
         toolt = wx.ToolTip(_("To add a new item drag and drop the plugin file "
                              "into the list.\n\nTo remove an item select it "
                              "and hit Delete or Backspace."))
@@ -756,8 +747,6 @@ class InstallPanel(eclib.ControlBox):
         self._install.SetDropTarget(util.DropTargetFT(self._install,
                                                       None, self.OnDrop))
 
-        bbar = self.GetControlBar(wx.BOTTOM)
-        bbar.SetVMargin(1, 2)
         self._instb = wx.Button(bbar, self.ID_INSTALL, _("Install"))
         self._instb.Disable()
         self._usercb = wx.CheckBox(bbar, self.ID_USER, _("User Directory"))
@@ -848,7 +837,6 @@ class InstallPanel(eclib.ControlBox):
         the items name if it is an in memory file from the
         download page.
         @param item: path or name of plugin item
-        @type item: string
 
         """
         if self._install.FindString(item) == wx.NOT_FOUND:
@@ -859,8 +847,7 @@ class InstallPanel(eclib.ControlBox):
 
     def OnButton(self, evt):
         """Handles button events generated by the panel.
-        @param evt: Event that called this handler
-        @type evt: wx.EVT_BUTTON
+        @param evt: wx.EVT_BUTTON
 
         """
         if evt.GetId() == self.ID_INSTALL:
@@ -871,8 +858,7 @@ class InstallPanel(eclib.ControlBox):
     def OnCheckBox(self, evt):
         """Handles the checkbox events to make sure that
         only one of the two check boxes is checked at a time
-        @param evt: Event that called this handler
-        @type evt: wx.EVT_CHECKBOX
+        @param evt: wx.EVT_CHECKBOX
 
         """
         e_id = evt.GetId()
@@ -892,7 +878,7 @@ class InstallPanel(eclib.ControlBox):
 
     def OnDrop(self, files):
         """Get Drop files and place paths in control
-        @status: should also check entry points in addition to filetype
+        @todo: should also check entry points in addition to filetype
         @param files: list of file paths
         @postcondition: all non egg files are filtered only placing
                         the eggs in the list.
@@ -909,8 +895,7 @@ class InstallPanel(eclib.ControlBox):
     def OnKeyUp(self, evt):
         """Key Event handler. Removes the selected item from
         the list control when the delete or backspace kis is pressed.
-        @param evt: Event that called this handler
-        @type evt: wx.KeyEvent(wx.EVT_KEY_UP)
+        @param evt: wx.KeyEvent(wx.EVT_KEY_UP)
 
         """
         if evt.GetKeyCode() in [wx.WXK_DELETE, wx.WXK_BACK]:
@@ -932,6 +917,8 @@ class PBPluginItem(eclib.PanelBoxItemBase):
         @param parent: L{PanelBox}
         @param mod: module
         @param pdata: PluginData
+        @keyword bmp: Plugin Icon
+        @keyword enabled: Plugin is currently enabled (bool)
 
         """
         super(PBPluginItem, self).__init__(parent)
@@ -1099,6 +1086,8 @@ class PBDownloadItem(PBPluginItem):
     def __init__(self, parent, pdata, bmp=None):
         """Create the PanelBoxItem
         @param parent: L{PanelBox}
+        @param pdata: PluginData
+        @keyword bmp: Plugin Icon
 
         """
         super(PBDownloadItem, self).__init__(parent, None, pdata, bmp=bmp)
@@ -1181,9 +1170,12 @@ class PluginData(plugin.PluginData):
     """
     def __init__(self, name=u'', descript=u'', \
                  author=u'', ver=u'', url=u''):
-        """Extends PluginData to include information about url
-        to get it from.
-        @param url: url to download plugin from
+        """Extends PluginData to include information about url to get it from.
+        @keyword name: Plugin name
+        @keyword descript: Plugin short description
+        @keyword author: Plugin Author Name
+        @keyword ver: Plugin Version (Unicode)
+        @keyword url: url to download plugin from
 
         """
         super(PluginData, self).__init__(name, descript, author, ver)

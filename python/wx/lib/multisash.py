@@ -6,7 +6,7 @@
 #
 # Created:      2002/11/20
 # Version:      0.1
-# RCS-ID:       $Id: multisash.py 33037 2005-03-24 20:37:48Z RD $
+# RCS-ID:       $Id$
 # License:      wxWindows license
 #----------------------------------------------------------------------
 # 12/09/2003 - Jeff Grimmett (grimmtooth@softhome.net)
@@ -495,7 +495,7 @@ class MultiSizer(wx.Window):
     def OnMouseMove(self,evt):
         if self.isDrag:
             DrawSash(self.dragTarget,self.px,self.py,self.side)
-            self.px,self.py = self.ClientToScreenXY(evt.m_x,evt.m_y)
+            self.px,self.py = self.ClientToScreenXY(evt.x, evt.y)
             self.px,self.py = self.dragTarget.ScreenToClientXY(self.px,self.py)
             DrawSash(self.dragTarget,self.px,self.py,self.side)
         else:
@@ -505,7 +505,7 @@ class MultiSizer(wx.Window):
         self.dragTarget = self.GetParent().SizeTarget(not self.side)
         if self.dragTarget:
             self.isDrag = True
-            self.px,self.py = self.ClientToScreenXY(evt.m_x,evt.m_y)
+            self.px,self.py = self.ClientToScreenXY(evt.x, evt.y)
             self.px,self.py = self.dragTarget.ScreenToClientXY(self.px,self.py)
             DrawSash(self.dragTarget,self.px,self.py,self.side)
             self.CaptureMouse()
@@ -581,7 +581,7 @@ class MultiCreator(wx.Window):
         if self.isDrag:
             parent = self.GetParent()
             DrawSash(parent,self.px,self.py,self.side)
-            self.px,self.py = self.ClientToScreenXY(evt.m_x,evt.m_y)
+            self.px,self.py = self.ClientToScreenXY(evt.x, evt.y)
             self.px,self.py = parent.ScreenToClientXY(self.px,self.py)
             DrawSash(parent,self.px,self.py,self.side)
         else:
@@ -590,7 +590,7 @@ class MultiCreator(wx.Window):
     def OnPress(self,evt):
         self.isDrag = True
         parent = self.GetParent()
-        self.px,self.py = self.ClientToScreenXY(evt.m_x,evt.m_y)
+        self.px,self.py = self.ClientToScreenXY(evt.x, evt.y)
         self.px,self.py = parent.ScreenToClientXY(self.px,self.py)
         DrawSash(parent,self.px,self.py,self.side)
         self.CaptureMouse()

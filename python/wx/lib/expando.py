@@ -6,7 +6,7 @@
 # Author:      Robin Dunn
 #
 # Created:     18-Sept-2006
-# RCS-ID:      $Id: expando.py 61396 2009-07-10 22:41:37Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2006 by Total Control Software
 # Licence:     wxWindows license
 #
@@ -47,6 +47,7 @@ class ExpandoTextCtrl(wx.TextCtrl):
     other layout adjustments that may be needed.
     """
     _defaultHeight = -1
+    _leading = 1   # TODO: find a way to calculate this, it may vary by platform
     
     def __init__(self, parent, id=-1, value="",
                  pos=wx.DefaultPosition,  size=wx.DefaultSize,
@@ -126,7 +127,7 @@ class ExpandoTextCtrl(wx.TextCtrl):
         if numLines != self.numLines:
             self.numLines = numLines
             charHeight = self.GetCharHeight()
-            height = numLines * charHeight + self.extraHeight
+            height = numLines * (charHeight+self._leading) + self.extraHeight
             if not (self.maxHeight != -1 and height > self.maxHeight):
                 # The size is changing...  if the control is not in a
                 # sizer then we just want to change the size and
@@ -145,7 +146,7 @@ class ExpandoTextCtrl(wx.TextCtrl):
                         self.GetContainingSizer().Layout()
                 else:
                     self.SetSize((-1, height))
-                # send notification that layout is needed
+                # send notification that layout may be needed
                 evt = wx.PyCommandEvent(wxEVT_ETC_LAYOUT_NEEDED, self.GetId())
                 evt.SetEventObject(self)
                 evt.height = height
@@ -165,20 +166,19 @@ class ExpandoTextCtrl(wx.TextCtrl):
         return sz.height
 
 
-    if 'wxGTK' in wx.PlatformInfo: ## and wx.VERSION < (2,7):   it's broke again in 2.7.2...
-        # the wxGTK version of GetNumberOfLines in 2.6 doesn't count
-        # wrapped lines, so we need to implement our own.  This is
-        # fixed in 2.7.
+    if 'wxGTK' in wx.PlatformInfo or 'wxOSX-cocoa' in wx.PlatformInfo: 
+        # GetNumberOfLines in some ports doesn't count wrapped lines, so we
+        # need to implement our own.
         def GetNumberOfLines(self):
             text = self.GetValue()
-            width = self.GetSize().width
+            width = self.GetClientSize().width
             dc = wx.ClientDC(self)
             dc.SetFont(self.GetFont())
             count = 0 
             for line in text.split('\n'):
                 count += 1
                 w, h = dc.GetTextExtent(line)
-                if w > width:
+                if w > width - self._getExtra():
                     # the width of the text is wider than the control,
                     # calc how many lines it will be wrapped to
                     count += self._wrapLine(line, dc, width)
@@ -187,12 +187,19 @@ class ExpandoTextCtrl(wx.TextCtrl):
                 count = 1
             return count
 
-
+        def _getExtra(self):
+            if 'wxOSX-cocoa' in wx.PlatformInfo:
+                return wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)
+            else:
+                return 0
+            
         def _wrapLine(self, line, dc, width):
             # Estimate where the control will wrap the lines and
             # return the count of extra lines needed.
-            pte = dc.GetPartialTextExtents(line)            
+            pte = dc.GetPartialTextExtents(line)  
             width -= wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)
+            if not pte or width < pte[0]:
+                return 1
             idx = 0
             start = 0
             count = 0
@@ -207,7 +214,10 @@ class ExpandoTextCtrl(wx.TextCtrl):
                     if spc != -1:
                         idx = spc + 1
                         spc = -1
-                    start = pte[idx]
+                    try:
+                        start = pte[idx]
+                    except IndexError:
+                        start = pte[-1]
                 else:
                     idx += 1
             return count

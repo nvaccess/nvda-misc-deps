@@ -14,8 +14,8 @@ Shelf plugin and control implementation
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_shelf.py 68233 2011-07-12 03:01:16Z CJP $"
-__revision__ = "$Revision: 68233 $"
+__svnid__ = "$Id: ed_shelf.py 72821 2012-10-29 22:48:49Z CJP $"
+__revision__ = "$Revision: 72821 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -29,6 +29,7 @@ from profiler import Profile_Get
 import ed_msg
 import plugin
 import iface
+import ed_fmgr
 from extern import aui
 import ed_book
 import ebmlib
@@ -65,14 +66,16 @@ class Shelf(plugin.Plugin):
 
         """
         # First check if the parent has an instance already
-        parent = parent
         mgr = parent.GetFrameManager()
         if mgr.GetPane(Shelf.SHELF_NAME).IsOk():
             return
 
-        shelf = EdShelfBook(parent)
-        mgr.AddPane(shelf,
-                    wx.aui.AuiPaneInfo().Name(Shelf.SHELF_NAME).\
+        # HACK - fixes mouse event issues that result in wrong
+        #        tab indexes being reported in the notebook.
+        wrapper = ShelfWrapper(parent)
+        shelf = wrapper.GetShelf()
+        mgr.AddPane(wrapper,
+                    ed_fmgr.EdPaneInfo().Name(Shelf.SHELF_NAME).\
                             Caption(_("Shelf")).Bottom().Layer(0).\
                             CloseButton(True).MaximizeButton(True).\
                             BestSize(wx.Size(500,250)))
@@ -119,6 +122,8 @@ class Shelf(plugin.Plugin):
 #--------------------------------------------------------------------------#
 
 class EdShelfBook(ed_book.EdBaseBook):
+    ID_SHELF_SUBMENU = wx.NewId()
+    ID_CLOSE_LIKE_TABS = wx.NewId()
     """Shelf notebook control"""
     def __init__(self, parent):
         style = aui.AUI_NB_BOTTOM | \
@@ -130,18 +135,20 @@ class EdShelfBook(ed_book.EdBaseBook):
         super(EdShelfBook, self).__init__(parent, style=style)
 
         # Attributes
-        self._parent = parent
         self._open = dict()
         self._name2idx = dict() # For settings maintenance
         self._menu = ebmlib.ContextMenuManager()
         self._mcback = None
-
-        # Setup
-        self.SetSashDClickUnsplit(True)
+        self._mw = None
 
         # Event Handlers
-        self.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_UP, self.OnRightUp)
-        self.Bind(aui.EVT_AUINOTEBOOK_BG_RIGHT_UP, self.OnRightUp)
+        # HACK: binding to self works differently than parent catching it
+        #       binding here causes incorrect mouse coords to be sent to
+        #       event handler during click events!
+#        self.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_UP, self.OnTabRightUp)
+        self.Bind(aui.EVT_AUINOTEBOOK_BG_RIGHT_UP, self.OnBgRightUp)
+        self.Bind(aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.OnItemClose)
+        self.Bind(wx.EVT_MENU, self.OnTabMenu)
         self.Bind(wx.EVT_WINDOW_DESTROY, self.OnDestroy, self)
 
         # Message handlers
@@ -154,13 +161,42 @@ class EdShelfBook(ed_book.EdBaseBook):
             ed_msg.Unsubscribe(self.OnUpdateTabs)
         evt.Skip()
 
-    def OnRightUp(self, evt):
+    def OnTabRightUp(self, evt):
+        """Tab right click handler"""
+        self._menu.Clear()
+        if self.MenuCallback:
+            sel = self.GetPageIndex(evt.Page)
+            s_lbl = self.GetPageText(sel)
+            s_lbl = s_lbl.rsplit('-')[0].strip()
+            tab_menu = ed_menu.EdMenu()
+            tab_menu.Append(EdShelfBook.ID_CLOSE_LIKE_TABS,
+                            _("Close All '%s'") % s_lbl)
+            self._menu.AddHandler(EdShelfBook.ID_CLOSE_LIKE_TABS,
+                                  lambda tab, evt: self.CloseAll(s_lbl))
+            tab_menu.AppendSeparator()
+            shelf_menu = self.MenuCallback()
+            tab_menu.AppendMenu(EdShelfBook.ID_SHELF_SUBMENU, 
+                                _("Open"), shelf_menu)
+            self._menu.Menu = tab_menu
+            self.PopupMenu(self._menu.Menu)
+
+    def OnBgRightUp(self, evt):
         """Show context menu"""
         self._menu.Clear()
         if self.MenuCallback:
             self._menu.Menu = self.MenuCallback()
             self.PopupMenu(self._menu.Menu)
 
+    def OnTabMenu(self, evt):
+        """Handle tab menu events"""
+        handler = self._menu.GetHandler(evt.Id)
+        if handler is not None:
+            handler(self.GetCurrentPage(), evt)
+        else:
+            evt.Skip()
+
+    MainWindow = property(lambda self: self._mw,
+                          lambda self, mw: setattr(self, '_mw', mw))
     BitmapCallbacks = property(lambda self: self._name2idx)
     MenuCallback = property(lambda self: self._mcback,
                             lambda self, funct: setattr(self, '_mcback', funct))
@@ -183,13 +219,44 @@ class EdShelfBook(ed_book.EdBaseBook):
         self.SetPageBitmap(self.GetPageCount()-1, bmp)
         self._open[name] = self._open.get(name, 0) + 1
 
+    def OnItemClose(self, evt):
+        """Callback for when pages are closed"""
+#        name = self.GetPageText(evt.GetSelection())
+#        name = name.rsplit('-')[0].strip()
+#        self._open[name] = self._open.get(name, 1) - 1
+        evt.Skip()
+
+    def CloseAll(self, name):
+        """Close all of 'name' shelf items
+        @param name: shelf item name (string)
+
+        """
+        idxs = self.GetAllIndexes(name)
+        idxs.reverse()
+        for idx in idxs:
+            self.DeletePage(idx)
+
+    def GetAllIndexes(self, name):
+        """Get all the indexes of pages of the item identified
+        by 'name'.
+        @param name: shelf item name (string)
+
+        """
+        idxs = list()
+        for pg in range(self.GetPageCount()):
+            lbl = self.GetPageText(pg)
+            lbl = PGNUM_PAT.sub(u"", lbl)
+            if lbl == name:
+                idxs.append(pg)
+        return idxs
+
     def EnsureShelfVisible(self):
         """Make sure the Shelf is visible
         @precondition: Shelf.Init has been called
         @postcondition: Shelf is shown
 
         """
-        mgr = self._parent.GetFrameManager()
+        mgr = self.MainWindow.GetFrameManager()
         pane = mgr.GetPane(Shelf.SHELF_NAME)
         if not pane.IsShown():
             pane.Show()
@@ -212,7 +279,7 @@ class EdShelfBook(ed_book.EdBaseBook):
         @return: ed_main.MainWindow
 
         """
-        return self._parent
+        return self.MainWindow
 
     def GetOpen(self):
         """Get the list of open shelf items
@@ -226,7 +293,7 @@ class EdShelfBook(ed_book.EdBaseBook):
         @postcondition: Shelf is hidden by aui manager
 
         """
-        mgr = self._parent.GetFrameManager()
+        mgr = self.MainWindow.GetFrameManager()
         pane = mgr.GetPane(Shelf.SHELF_NAME)
         if pane.IsOk():
             pane.Hide()
@@ -238,7 +305,7 @@ class EdShelfBook(ed_book.EdBaseBook):
         @param item_name: name of Item to look for
 
         """
-        for page in xrange(self.GetPageCount()):
+        for page in range(self.GetPageCount()):
             if self.GetPageText(page).startswith(item_name):
                 return True
         return False
@@ -248,7 +315,7 @@ class EdShelfBook(ed_book.EdBaseBook):
         @return: bool
 
         """
-        mgr = self._parent.GetFrameManager()
+        mgr = self.MainWindow.GetFrameManager()
         pane = mgr.GetPane(Shelf.SHELF_NAME)
         if pane.IsOk():
             return pane.IsShown()
@@ -257,6 +324,9 @@ class EdShelfBook(ed_book.EdBaseBook):
 
     def OnUpdateTabs(self, msg):
         """Update all tab images depending upon current settings"""
+        if not self:
+            return
+        
         if not Profile_Get('TABICONS', default=True):
             for page in range(self.GetPageCount()):
                 self.SetPageBitmap(page, wx.NullBitmap)
@@ -346,7 +416,7 @@ class EdShelfDelegate(object):
         """
         rval = list()
         if self._shelf is not None:
-            for page in xrange(self._shelf.GetPageCount()):
+            for page in range(self._shelf.GetPageCount()):
                 rval.append(re.sub(PGNUM_PAT, u'', 
                             self._shelf.GetPageText(page), 1))
         return rval
@@ -453,7 +523,7 @@ class EdShelfDelegate(object):
                 mgr = parent.GetFrameManager()
                 pane = mgr.GetPane(Shelf.SHELF_NAME)
                 if pane is not None:
-                    page = pane.window.GetCurrentPage()
+                    page = pane.window.Book.GetCurrentPage()
                     if hasattr(page, 'SetFocus'):
                         page.SetFocus()
         else:
@@ -490,7 +560,15 @@ class EdShelfDelegate(object):
             return
         else:
             self.EnsureShelfVisible()
-            window = item.CreateItem(self._shelf)
+            # Guard against crashes in creating plugin derived objects
+            # log error to log and continue running.
+            window = None
+            try:
+                window = item.CreateItem(self._shelf)
+            except Exception, msg:
+                self._log("[shelf][err] CreateItem failed: %s" % msg)
+                return
+
             bmp = wx.NullBitmap
             if hasattr(item, 'GetBitmap'):
                 self._shelf.BitmapCallbacks[repr(window.__class__)] = item.GetBitmap
@@ -506,7 +584,7 @@ class EdShelfDelegate(object):
         @return: reference to the selected page or None if no instance is
 
         """
-        for page in xrange(self._shelf.GetPageCount()):
+        for page in range(self._shelf.GetPageCount()):
             if self._shelf.GetPageText(page).startswith(item_name):
                 self._shelf.SetSelection(page)
                 return self._shelf.GetPage(page)
@@ -542,7 +620,6 @@ class EdShelfDelegate(object):
     def StockShelf(self, i_list):
         """Fill the shelf by opening an ordered list of items
         @param i_list: List of named L{ShelfI} instances
-        @type i_list: list of strings
         @return: bool (True if all loaded / False otherwise)
 
         """
@@ -574,3 +651,27 @@ class EdShelfDelegate(object):
             evt.Enable(False)
         else:
             evt.Enable(True)
+
+#-----------------------------------------------------------------------------#
+
+class ShelfWrapper(wx.Panel):
+    def __init__(self, parent):
+        super(ShelfWrapper, self).__init__(parent)
+
+        self._shelf = EdShelfBook(self)
+        self._shelf.MainWindow = parent
+
+        # Setup
+        sizer = wx.BoxSizer()
+        sizer.Add(self._shelf, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+
+        self.Bind(aui.EVT_AUINOTEBOOK_TAB_RIGHT_UP, self.OnTabRightUp)
+
+    Book = property(lambda self: self._shelf)
+
+    def GetShelf(self):
+        return self._shelf
+
+    def OnTabRightUp(self, evt):
+        self._shelf.OnTabRightUp(evt)

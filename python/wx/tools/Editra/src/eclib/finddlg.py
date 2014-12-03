@@ -35,8 +35,8 @@ eclib.ctrlbox
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: finddlg.py 68232 2011-07-12 02:08:53Z CJP $"
-__revision__ = "$Revision: 68232 $"
+__svnid__ = "$Id: finddlg.py 71666 2012-06-06 17:55:42Z CJP $"
+__revision__ = "$Revision: 71666 $"
 
 __all__ = ["FindBox", "FindEvent", "FindPanel", "FindReplaceDlg",
            "MiniFindReplaceDlg", "AdvFindReplaceDlg",
@@ -179,6 +179,8 @@ class FindEvent(wx.PyCommandEvent):
     """
     def __init__(self, etype, eid=wx.ID_ANY, flags=0):
         """Creates the event object
+        @param etype: Event Type
+        @keyword eid: Event ID
         @keyword flags: Find/Replace flags
 
         """
@@ -388,9 +390,8 @@ class FindReplaceDlgBase:
         self.Bind(_EVT_MODE_CHANGE, self._OnModeChange)
         self.Bind(_EVT_DO_CLOSE_DLG, lambda evt: self._SendCloseEvent())
         self.Bind(wx.EVT_MENU, lambda evt: self._SendCloseEvent(), id=wx.ID_CLOSE)
-        self.Bind(wx.EVT_SET_FOCUS,
-                  lambda evt: self._panel.SetFocus() and evt.Skip())
-        self.Bind(wx.EVT_SHOW, lambda evt: self._panel.SetFocus())
+        self.Bind(wx.EVT_SET_FOCUS, self._OnSetFocus)
+        self.Bind(wx.EVT_SHOW, self._OnShow)
 
     def __DoLayout(self):
         """Layout the dialog"""
@@ -416,6 +417,15 @@ class FindReplaceDlgBase:
         if self.GetDialogMode() != AFR_STYLE_FINDDIALOG:
             title = self._rtitle
         self.SetTitle(title)
+
+    def _OnSetFocus(self, evt):
+        if self and self._panel:
+            self._panel.SetFocus()
+            evt.Skip()
+
+    def _OnShow(self, evt):
+        if self and self._panel:
+            self._panel.SetFocus()
 
     def GetData(self):
         """Get the FindReplaceData used by this dialog"""
@@ -479,6 +489,15 @@ class FindReplaceDlgBase:
 
         """
         self._box.SetBoxMode(mode == AFR_STYLE_FINDDIALOG)
+
+    def SetDirectoryGetter(self, dgetter):
+        """Set a callback for retrieving the current directory. This method
+        is used for providing context when popping up dialogs such as the
+        Choose Directory dialog.
+        @param dgetter: callable() => unicode
+
+        """
+        self._panel.SetDirectoryGetter(dgetter)
 
     def SetFileFilters(self, filters):
         """Set the file filters field value
@@ -718,6 +737,7 @@ class FindPanel(wx.Panel):
         self._sizers = dict()
         self._paths = dict()
         self._fdata = fdata
+        self._dgetter = lambda : u""
         self._lastSearch = u''
 
         # Layout
@@ -820,7 +840,7 @@ class FindPanel(wx.Panel):
         # File Filters
         self._sizers['filter'] = wx.BoxSizer(wx.VERTICAL)
         self._filters = wx.TextCtrl(self)
-        tt_txt = _("Enter wildcard shell patterns for matching files (*.txt).")
+        tt_txt = _("Wildcard shell patterns for matching files (*.txt *.html).")
         self._filters.SetToolTipString(tt_txt)
 
         # Disable spell checking on mac for this control
@@ -1044,9 +1064,12 @@ class FindPanel(wx.Panel):
             else:
                 evt.SetReplaceString(None)
 
+            if stype >= LOCATION_IN_FILES or stype == LOCATION_IN_CURRENT_DIR:
+                evt.SetFileFilters(self.GetFileFilters())
             if stype >= LOCATION_IN_FILES:
+                # For IN_CURRENT_DIR it is up to client to determine directory
+                # based on what current means to the application.
                 evt.SetDirectory(self._paths.get(lookin_idx, u''))
-                evt.SetFileFilters(self._filters.GetValue())
 
             wx.PostEvent(self.GetParent(), evt)
             return True
@@ -1096,7 +1119,7 @@ class FindPanel(wx.Panel):
         @param evt: wx.EVT_CHOICE
 
         """
-        e_id = evt.GetId()
+        e_id = evt.Id
         if e_id == ID_LOOKIN:
             self._UpdateContext()
             choice = self._lookin.GetSelection()
@@ -1114,8 +1137,9 @@ class FindPanel(wx.Panel):
         @param evt: wx.EVT_BUTTON
 
         """
-        if evt.GetId() == ID_CHOOSE_DIR:
-            dlg = wx.DirDialog(self, _("Choose Search Folder"))
+        if evt.Id == ID_CHOOSE_DIR:
+            dname = self._dgetter()
+            dlg = wx.DirDialog(self, _("Choose Search Folder"), defaultPath=dname)
             if dlg.ShowModal() == wx.ID_OK:
                 path = dlg.GetPath()
                 if path is not None and len(path):
@@ -1136,8 +1160,8 @@ class FindPanel(wx.Panel):
                  ID_REGEX : AFR_REGEX,
                  ID_RECURSE : AFR_RECURSIVE,
                  wx.ID_UP : AFR_UP }
-        eid = evt.GetId()
-        eobj = evt.GetEventObject()
+        eid = evt.Id
+        eobj = evt.EventObject
         if eid in fmap:
             if eobj.GetValue():
                 self.SetFlag(fmap[eid])
@@ -1156,7 +1180,7 @@ class FindPanel(wx.Panel):
 
         """
         # TODO: support count in files?
-        if evt.GetId() in (wx.ID_FIND, ID_COUNT, wx.ID_REPLACE) and \
+        if evt.Id in (wx.ID_FIND, ID_COUNT, wx.ID_REPLACE) and \
            self._lookin.GetSelection() > LOCATION_CURRENT_DOC:
             evt.Enable(False)
         else:
@@ -1200,6 +1224,17 @@ class FindPanel(wx.Panel):
         self._fdata = None
         self._fdata = data
         self._ConfigureControls()
+
+    def SetDirectoryGetter(self, dgetter):
+        """Set a callback for retrieving the current directory. This method
+        is used for providing context when popping up dialogs such as the
+        Choose Directory dialog.
+        @param dgetter: callable() => unicode
+
+        """
+        if not callable(dgetter):
+            dgetter = lambda : u""
+        self._dgetter = dgetter
 
     def SetFileFilters(self, filters):
         """Set the file filters field values

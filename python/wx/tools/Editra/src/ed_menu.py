@@ -7,6 +7,8 @@
 ###############################################################################
 
 """
+@package: Editra.src.ed_menu
+
 Provides an advanced menu class for easily creating menus and setting their
 related bitmaps when available from Editra's ArtProvider. The Keybinder class
 for managing keybindings and profiles is also provided by this module.
@@ -14,11 +16,11 @@ for managing keybindings and profiles is also provided by this module.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_menu.py 68038 2011-06-24 17:18:05Z CJP $"
-__revision__ = "$Revision: 68038 $"
+__svnid__ = "$Id: ed_menu.py 70229 2012-01-01 01:27:10Z CJP $"
+__revision__ = "$Revision: 70229 $"
 
 #--------------------------------------------------------------------------#
-# Dependancies
+# Dependencies
 import os
 import wx
 
@@ -51,6 +53,10 @@ class EdMenu(wx.Menu):
     def Append(self, id_, text=u'', helpstr=u'', \
                kind=wx.ITEM_NORMAL, use_bmp=True):
         """Append a MenuItem
+        @param id_: New MenuItem ID
+        @keyword text: Menu Label
+        @keyword helpstr: Help String
+        @keyword kind: MenuItem type
         @keyword use_bmp: try and set a bitmap if an appropriate one is
                           available in the ArtProvider
 
@@ -72,6 +78,7 @@ class EdMenu(wx.Menu):
     def AppendItem(self, item, use_bmp=True):
         """Appends a MenuItem to the menu and adds an associated
         bitmap if one is available, unless use_bmp is set to false.
+        @param item: wx.MenuItem
         @keyword use_bmp: try and set a bitmap if an appropriate one is
                           available in the ArtProvider
 
@@ -84,6 +91,11 @@ class EdMenu(wx.Menu):
                kind=wx.ITEM_NORMAL, use_bmp=True):
         """Insert an item at position and attach a bitmap
         if one is available.
+        @param pos: Position to insert new item at
+        @param id_: New MenuItem ID
+        @keyword label: Menu Label
+        @keyword helpstr: Help String
+        @keyword kind: MenuItem type
         @keyword use_bmp: try and set a bitmap if an appropriate one is
                           available in the ArtProvider
 
@@ -98,6 +110,11 @@ class EdMenu(wx.Menu):
         """Inserts the given item after the specified item id in
         the menu. If the id cannot be found then the item will appended
         to the end of the menu.
+        @param item_id: Menu ID to insert after
+        @param id_: New MenuItem ID
+        @keyword label: Menu Label
+        @keyword helpstr: Help String
+        @keyword kind: MenuItem type
         @keyword use_bmp: try and set a bitmap if an appropriate one is
                           available in the ArtProvider
         @return: the inserted menu item
@@ -120,6 +137,11 @@ class EdMenu(wx.Menu):
         """Inserts the given item before the specified item id in
         the menu. If the id cannot be found then the item will appended
         to the end of the menu.
+        @param item_id: Menu ID to insert new item before
+        @param id_: New MenuItem ID
+        @keyword label: Menu Label
+        @keyword helpstr: Help String
+        @keyword kind: MenuItem type
         @keyword use_bmp: try and set a bitmap if an appropriate one is
                           available in the ArtProvider
         @return: menu item that was inserted
@@ -143,6 +165,10 @@ class EdMenu(wx.Menu):
         alphabetically. The optional parameter 'after' is used
         specify an item id to start the alphabetical lookup after.
         Otherwise the lookup begins from the first item in the menu.
+        @param id_: New MenuItem ID
+        @keyword label: Menu Label
+        @keyword helpstr: Help String
+        @keyword kind: MenuItem type
         @keyword after: id of item to start alpha lookup after
         @keyword use_bmp: try and set a bitmap if an appropriate one is
                           available in the ArtProvider
@@ -236,6 +262,7 @@ class KeyBinder(object):
     @classmethod
     def GetCurrentProfile(cls):
         """Get the name of the currently set key profile if one exists
+        @param cls: Class Object
         @return: string or None
 
         """
@@ -244,6 +271,7 @@ class KeyBinder(object):
     @classmethod
     def GetCurrentProfileDict(cls):
         """Get the dictionary of keybindings
+        @param cls: Class Object
         @return: dict
 
         """
@@ -304,6 +332,7 @@ class KeyBinder(object):
     @classmethod
     def GetRawBinding(cls, item_id):
         """Get the raw key binding tuple
+        @param cls: Class Object
         @param item_id: MenuItem Id
         @return: tuple
 
@@ -314,6 +343,7 @@ class KeyBinder(object):
     def FindMenuId(cls, keyb):
         """Find the menu item ID that the
         keybinding is currently associated with.
+        @param cls: Class Object
         @param keyb: tuple of unicode (u'Ctrl', u'C')
         @return: int (-1 if not found)
 
@@ -332,7 +362,8 @@ class KeyBinder(object):
         cls.cprofile = None
 
     def LoadKeyProfile(self, pname):
-        """Load a key profile into the binder
+        """Load a key profile from profile directory into the binder
+        by name.
         @param pname: name of key profile to load
 
         """
@@ -340,12 +371,23 @@ class KeyBinder(object):
             ppath = None
         else:
             ppath = self.GetProfilePath(pname)
+        self.LoadKeyProfileFile(ppath)
 
+    def LoadKeyProfileFile(self, path):
+        """Load a key profile from the given path
+        @param path: full path to file
+
+        """
         keydict = dict()
-        if ppath is not None and os.path.exists(ppath):
-            reader = util.GetFileReader(ppath)
+        pname = None
+        if path:
+            pname = os.path.basename(path)
+            pname = pname.rsplit('.', 1)[0]
+
+        if pname is not None and os.path.exists(path):
+            reader = util.GetFileReader(path)
             if reader != -1:
-                util.Log("[keybinder][info] Loading KeyProfile: %s" % ppath)
+                util.Log("[keybinder][info] Loading KeyProfile: %s" % path)
                 for line in reader:
                     parts = line.split(u'=', 1)
                     # Check that the line was formatted properly
@@ -361,9 +403,15 @@ class KeyBinder(object):
                             nctrl = len([key for key in tmp
                                          if key not in (u'Ctrl', u'Alt', u'Shift')])
                             if nctrl:
-                                keydict[item_id] = tmp
                                 if parts[1].strip().endswith(u'++'):
-                                    keydict[item_id].append(u'+')
+                                    tmp.append(u'+')
+                                kb = tuple(tmp)
+                                if kb in keydict.values():
+                                    for mid, b in keydict.iteritems():
+                                        if kb == b:
+                                            del keydict[mid]
+                                            break
+                                keydict[item_id] = tuple(tmp)
                             else:
                                 # Invalid key binding
                                 continue
@@ -373,7 +421,7 @@ class KeyBinder(object):
                 KeyBinder.cprofile = pname
                 return
             else:
-                util.Log("[keybinder][err] Couldn't read %s" % ppath)
+                util.Log("[keybinder][err] Couldn't read %s" % path)
         elif pname is not None:
             # Fallback to default keybindings
             util.Log("[keybinder][err] Failed to load bindings from %s" % pname)
@@ -402,6 +450,7 @@ class KeyBinder(object):
     @classmethod
     def SetBinding(cls, item_id, keys):
         """Set the keybinding of a menu id
+        @param cls: Class Object
         @param item_id: item to set
         @param keys: string or list of key strings ['Ctrl', 'S']
 
@@ -427,6 +476,7 @@ class KeyBinder(object):
     @classmethod
     def SetProfileName(cls, pname):
         """Set the name of the current profile
+        @param cls: Class Object
         @param pname: name to set profile to
 
         """
@@ -435,6 +485,7 @@ class KeyBinder(object):
     @classmethod
     def SetProfileDict(cls, keyprofile):
         """Set the keyprofile using a dictionary of id => bindings
+        @param cls: Class Object
         @param keyprofile: { menu_id : (u'Ctrl', u'C'), }
 
         """
@@ -477,33 +528,40 @@ class EdMenuBar(wx.MenuBar):
         ed_msg.Subscribe(self.OnLoadProfile, ed_msg.EDMSG_MENU_LOADPROFILE)
         ed_msg.Subscribe(self.OnCreateLexerMenu, ed_msg.EDMSG_CREATE_LEXER_MENU)
 
-    def CreateLexerMenu(self):
+    def GenLexerMenu(self):
         """Create the Lexer menu"""
         settingsmenu = self._menus['settings']
         item = settingsmenu.FindItemById(ed_glob.ID_LEXER)
         if item:
             settingsmenu.Remove(ed_glob.ID_LEXER)
-        mconfig = profiler.Profile_Get('LEXERMENU', default=list())
-        mconfig.sort()
 
         # Create the menu
         langmenu = wx.Menu()
         langmenu.Append(ed_glob.ID_LEXER_CUSTOM, _("Customize..."),
                         _("Customize the items shown in this menu."))
         langmenu.AppendSeparator()
+        EdMenuBar.PopulateLexerMenu(langmenu)
+        settingsmenu.AppendMenu(ed_glob.ID_LEXER, _("Lexers"),
+                                langmenu,
+                                _("Manually Set a Lexer/Syntax"))
 
+    @staticmethod
+    def PopulateLexerMenu(langmenu):
+        """Create a menu with all the lexer options
+        @return: wx.Menu
+
+        """
+        mconfig = profiler.Profile_Get('LEXERMENU', default=list())
+        mconfig.sort()
         for label in mconfig:
             lid = synglob.GetIdFromDescription(label)
             langmenu.Append(lid, label,
                             _("Switch Lexer to %s") % label, wx.ITEM_CHECK)
 
-        settingsmenu.AppendMenu(ed_glob.ID_LEXER, _("Lexers"),
-                                langmenu,
-                                _("Manually Set a Lexer/Syntax"))
-
     @classmethod
     def DeleteKeyProfile(cls, pname):
         """Remove named keyprofile
+        @param cls: Class Object
         @param pname: keyprofile name
         @return: True if removed, False otherwise
 
@@ -820,7 +878,7 @@ class EdMenuBar(wx.MenuBar):
         self.Append(settingsmenu, _("&Settings"))
         self._menus['settings'] = settingsmenu
 
-        self.CreateLexerMenu()
+        self.GenLexerMenu()
 
     def GenToolsMenu(self):
         """Makes and attaches the tools menu
@@ -830,6 +888,8 @@ class EdMenuBar(wx.MenuBar):
         toolsmenu = EdMenu()
         toolsmenu.AppendEx(ed_glob.ID_COMMAND, _("Editor Command"),
                          _("Goto command buffer"))
+        toolsmenu.AppendEx(ed_glob.ID_SESSION_BAR, _("Session Manager"),
+                         _("Show the session manager bar"))
         toolsmenu.AppendEx(ed_glob.ID_PLUGMGR, _("Plugin Manager"),
                          _("Manage, Download, and Install plugins"))
         toolsmenu.AppendEx(ed_glob.ID_STYLE_EDIT, _("Style Editor"),
@@ -873,6 +933,7 @@ class EdMenuBar(wx.MenuBar):
     @classmethod
     def GetKeyBinder(cls):
         """Return the classes keybinder object
+        @param cls: Class Object
         @return: KeyBinder
 
         """
@@ -899,6 +960,7 @@ class EdMenuBar(wx.MenuBar):
     @classmethod
     def NewKeyProfile(cls, pname):
         """Make a new key profile that is a clone of the current one
+        @param cls: Class Object
         @param pname: Name to give new profile
 
         """
@@ -907,7 +969,7 @@ class EdMenuBar(wx.MenuBar):
 
     def OnCreateLexerMenu(self, msg):
         """Recreate the lexer menu"""
-        self.CreateLexerMenu()
+        self.GenLexerMenu()
 
     def OnLoadProfile(self, msg):
         """Load and set the current key profile
@@ -963,8 +1025,8 @@ class EdMenuBar(wx.MenuBar):
     def ResetIcons(self):
         """Walk through each menu item in all of the bars menu and
         reapply icons where possible.
-        @status: Dont use, sort of works on mac, does nothing on gtk, and causes
-                 graphical glitches on msw.
+        @note: Don't use, sort of works on mac, does nothing on gtk, and causes
+               graphical glitches on msw.
 
         """
         for menu in self.GetMenus():
@@ -1052,6 +1114,7 @@ _DEFAULT_BINDING = { # File Menu
 
                      # Tools Menu
                      ed_glob.ID_COMMAND : (u"Ctrl", u"E"),
+                     ed_glob.ID_SESSION_BAR : (u"Ctrl", u"K"),
                      ed_glob.ID_RUN_LAUNCH : (u"F5",),
                      ed_glob.ID_LAUNCH_LAST : (u"Shift", u"F5")
                      }

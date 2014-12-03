@@ -11,11 +11,20 @@ FILE: css.py
 @author: Cody Precord
 @summary: Lexer configuration file for Cascading Style Sheets.
 
+    0. CSS1 Properties
+    1. Pseudo-classes
+    2. CSS2 Properties
+    3. CSS3 Properties
+    4. Pseudo-elements
+    5. Browser-Specific CSS Properties
+    6. Browser-Specific Pseudo-classes
+    7. Browser-Specific Pseudo-elements
+
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: _css.py 66902 2011-02-16 14:04:01Z CJP $"
-__revision__ = "$Revision: 66902 $"
+__svnid__ = "$Id: _css.py 72399 2012-08-29 19:56:26Z CJP $"
+__revision__ = "$Revision: 72399 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -30,7 +39,7 @@ import syndata
 
 #---- Keyword Specifications ----#
 
-# CSS1 Keywords (Idenifiers)
+# CSS1 Keywords (Identifiers)
 CSS1_KEYWORDS = (0, "font-family font-style font-variant font-weight font-size "
                     "font color background-color background-image "
                     "background-repeat background-position background "
@@ -48,10 +57,17 @@ CSS1_KEYWORDS = (0, "font-family font-style font-variant font-weight font-size "
                     "background-attachment")
 
 # CSS Psuedo Classes
-CSS_PSUEDO_CLASS = (1, "link visited active hover focus before after left "
-                       "right lang first-letter first-line first-child")
+CSS_PSUEDO_CLASS = (1, "link active visited indeterminate default "
+                        # CSS 2
+                        "first-child focus hover lang left right first "
+                        # CSS 3
+                        "empty enabled disabled checked not root target "
+                        "only-child last-child nth-child nth-last-child "
+                        "first-of-type last-of-type nth-of-type "
+                        "nth-last-of-type only-of-type valid invalid required "
+                        "optional")
 
-# CSS2 Keywords (Identifers2)
+# CSS2 Keywords (Identifiers)
 # This is meant for css2 specific keywords, but in order to get a better
 # coloring effect this will contain special css properties as well.
 CSS2_KEYWORDS = (2, "ActiveBorder ActiveCaption AppWorkspace Background "
@@ -83,6 +99,30 @@ CSS2_KEYWORDS = (2, "ActiveBorder ActiveCaption AppWorkspace Background "
                     "visible volume wait wider widows width widths yellow "
                     "z-index outline left")
 
+# CSS3 Keywords
+CSS3_KEYWORDS = (3, "border-radius border-top-left-radius "
+                    "border-top-right-radius border-bottom-left-radius "
+                    "border-bottom-right-radius border-image "
+                    "border-image-outset border-image-repeat "
+                    "border-image-source border-image-slice border-image-width "
+                    "break-after break-before break-inside columns "
+                    "column-count column-fill column-gap column-rule "
+                    "column-rule-color column-rule-style column-rule-width "
+                    "column-span column-width @keframes animation "
+                    "animation-delay animation-direction animation-duration "
+                    "animation-fill-mode animation-iteration-count "
+                    "animation-name animation-play-state "
+                    "animation-timing-function transition transition-delay "
+                    "transition-duration transition-timing-function "
+                    "transition-property backface-visibility perspective "
+                    "perspective-origin transform transform-origin "
+                    "transform-style background-clip background-origin "
+                    "background-size overflow-x overflow-y overflow-style "
+                    "marquee-direction marquee-play-count marquee-speed "
+                    "marquee-style box-shadow box-decoration-break opacity")
+
+PSEUDO_ELEMENTS = (4, "first-letter first-line before after selection")
+
 #---- Syntax Style Specs ----#
 SYNTAX_ITEMS = [ (stc.STC_CSS_DEFAULT, 'default_style'),
                  (stc.STC_CSS_ATTRIBUTE, 'funct_style'),
@@ -104,10 +144,13 @@ SYNTAX_ITEMS = [ (stc.STC_CSS_DEFAULT, 'default_style'),
 
 # TODO: add styling and keywords for new style regions in 2.9
 if wx.VERSION >= (2, 9, 0, 0, ''):
+    # Browser specific identifiers
     SYNTAX_ITEMS.append((stc.STC_CSS_EXTENDED_IDENTIFIER, 'default_style'))
     SYNTAX_ITEMS.append((stc.STC_CSS_EXTENDED_PSEUDOCLASS, 'default_style'))
     SYNTAX_ITEMS.append((stc.STC_CSS_EXTENDED_PSEUDOELEMENT, 'default_style'))
-    SYNTAX_ITEMS.append((stc.STC_CSS_IDENTIFIER3, 'default_style'))
+    # CSS3 Properties
+    SYNTAX_ITEMS.append((stc.STC_CSS_IDENTIFIER3, 'keyword2_style'))
+    # Pseudo elements
     SYNTAX_ITEMS.append((stc.STC_CSS_PSEUDOELEMENT, 'default_style'))
 
 #---- Extra Properties ----#
@@ -126,7 +169,16 @@ class SyntaxData(syndata.SyntaxDataBase):
 
     def GetKeywords(self):
         """Returns Specified Keywords List """
-        return [CSS1_KEYWORDS , CSS_PSUEDO_CLASS, CSS2_KEYWORDS]
+        kwlist = [CSS1_KEYWORDS , CSS_PSUEDO_CLASS]
+        # 2.9 supports CSS3 so for 2.8 just add CSS3 keywords to the css2 list 
+        if wx.VERSION < (2, 9, 0, 0, ''):
+            css2_kw = (CSS2_KEYWORDS[0], " ".join((CSS2_KEYWORDS[1], CSS3_KEYWORDS[1])))
+            kwlist.append(css2_kw)
+        else:
+            kwlist.append(CSS2_KEYWORDS)
+            kwlist.append(CSS3_KEYWORDS)
+            kwlist.append(PSEUDO_ELEMENTS)
+        return kwlist
 
     def GetSyntaxSpec(self):
         """Syntax Specifications """

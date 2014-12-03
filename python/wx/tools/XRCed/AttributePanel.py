@@ -2,7 +2,7 @@
 # Purpose:      View components for editing attributes
 # Author:       Roman Rolinsky <rolinsky@mema.ucl.ac.be>
 # Created:      17.06.2007
-# RCS-ID:       $Id: AttributePanel.py 65408 2010-08-25 22:52:11Z RD $
+# RCS-ID:       $Id: AttributePanel.py 73215 2012-12-19 18:05:05Z RD $
 
 import string
 import wx
@@ -128,11 +128,15 @@ class Panel(wx.Panel):
         self.undo = None        # pending undo object
 
     def SetData(self, container, comp, node):
-        self.Freeze()
 
         oldLabel = self.nb.GetPageText(self.nb.GetSelection())
         self.nb.SetSelection(0)
         map(self.nb.RemovePage, range(self.nb.GetPageCount()-1, 0, -1))
+
+        # Don't freeze while removing the pages, but do it
+        # after the removes instead.  See
+        # https://groups.google.com/d/topic/wxpython-users/I8AJgkUCPj8/discussion
+        self.Freeze()
         
         self.container = container
         self.comp = comp
@@ -191,7 +195,8 @@ class Panel(wx.Panel):
 
         if comp.styles or comp.genericStyles:
             # Create style page
-            panel = params.StylePanel(self.pageStyle, comp.styles, comp.genericStyles)
+            panel = params.StylePanel(self.pageStyle, comp.styles, comp.genericStyles,
+                                      equiv = comp.equivStyles)
             panels.append(panel)
             self.pageStyle.SetPanel(panel)
             self.nb.AddPage(self.pageStyle, 'Style')
@@ -200,7 +205,7 @@ class Panel(wx.Panel):
         if comp.exStyles or comp.genericExStyles:
             # Create extra style page
             panel = params.StylePanel(self.pageExStyle, comp.exStyles + comp.genericExStyles, 
-                                      tag='exstyle')
+                                      tag='exstyle', equiv = comp.equivStyles)
             panels.append(panel)
             self.pageExStyle.SetPanel(panel)
             self.nb.AddPage(self.pageExStyle, 'ExStyle')
@@ -272,9 +277,7 @@ class Panel(wx.Panel):
     def SetStyleValues(self, panel, style):
         panel.style = style
         panel.node = self.node
-        styles = map(string.strip, style.split('|')) # to list
-        for s,w in panel.controls:
-            w.SetValue(s in styles)
+        panel.SetValues([('XRCED', style)])
 
     # Set data for a style panel
     def SetCodeValues(self, panel, data):

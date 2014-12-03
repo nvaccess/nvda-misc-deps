@@ -203,7 +203,7 @@ class HtmlParser(_core.Object):
         return _html.HtmlParser_DoneParser(*args, **kwargs)
 
     def DoParsing(*args, **kwargs):
-        """DoParsing(self, int begin_pos, int end_pos)"""
+        """DoParsing(self)"""
         return _html.HtmlParser_DoParsing(*args, **kwargs)
 
     def StopParsing(*args, **kwargs):
@@ -214,10 +214,6 @@ class HtmlParser(_core.Object):
         """AddTagHandler(self, HtmlTagHandler handler)"""
         return _html.HtmlParser_AddTagHandler(*args, **kwargs)
 
-    def GetSource(*args, **kwargs):
-        """GetSource(self) -> String"""
-        return _html.HtmlParser_GetSource(*args, **kwargs)
-
     def PushTagHandler(*args, **kwargs):
         """PushTagHandler(self, HtmlTagHandler handler, String tags)"""
         return _html.HtmlParser_PushTagHandler(*args, **kwargs)
@@ -225,6 +221,10 @@ class HtmlParser(_core.Object):
     def PopTagHandler(*args, **kwargs):
         """PopTagHandler(self)"""
         return _html.HtmlParser_PopTagHandler(*args, **kwargs)
+
+    def GetSource(*args, **kwargs):
+        """GetSource(self) -> String"""
+        return _html.HtmlParser_GetSource(*args, **kwargs)
 
     def GetInnerSource(*args, **kwargs):
         """GetInnerSource(self, HtmlTag tag) -> String"""
@@ -257,11 +257,6 @@ class HtmlWinParser(HtmlParser):
         """GetCharWidth(self) -> int"""
         return _html.HtmlWinParser_GetCharWidth(*args, **kwargs)
 
-    def GetWindow(*args, **kwargs):
-        """GetWindow(self) -> HtmlWindow"""
-        return _html.HtmlWinParser_GetWindow(*args, **kwargs)
-
-    GetWindow = wx._deprecated(GetWindow) 
     def GetWindowInterface(*args, **kwargs):
         """GetWindowInterface(self) -> HtmlWindowInterface"""
         return _html.HtmlWinParser_GetWindowInterface(*args, **kwargs)
@@ -297,6 +292,10 @@ class HtmlWinParser(HtmlParser):
     def SetFontSize(*args, **kwargs):
         """SetFontSize(self, int s)"""
         return _html.HtmlWinParser_SetFontSize(*args, **kwargs)
+
+    def SetFontPointSize(*args, **kwargs):
+        """SetFontPointSize(self, int pt)"""
+        return _html.HtmlWinParser_SetFontPointSize(*args, **kwargs)
 
     def GetFontBold(*args, **kwargs):
         """GetFontBold(self) -> int"""
@@ -346,6 +345,9 @@ class HtmlWinParser(HtmlParser):
         """SetLinkColor(self, Colour clr)"""
         return _html.HtmlWinParser_SetLinkColor(*args, **kwargs)
 
+    GetLinkColour = GetLinkColor
+    SetLinkColour = SetLinkColor
+
     def GetActualColor(*args, **kwargs):
         """GetActualColor(self) -> Colour"""
         return _html.HtmlWinParser_GetActualColor(*args, **kwargs)
@@ -383,6 +385,7 @@ class HtmlWinParser(HtmlParser):
     FontUnderlined = property(GetFontUnderlined,SetFontUnderlined,doc="See `GetFontUnderlined` and `SetFontUnderlined`") 
     Link = property(GetLink,SetLink,doc="See `GetLink` and `SetLink`") 
     LinkColor = property(GetLinkColor,SetLinkColor,doc="See `GetLinkColor` and `SetLinkColor`") 
+    LinkColour = property(GetLinkColour,SetLinkColour,doc="See `GetLinkColour` and `SetLinkColour`") 
     WindowInterface = property(GetWindowInterface,doc="See `GetWindowInterface`") 
 _html.HtmlWinParser_swigregister(HtmlWinParser)
 
@@ -481,36 +484,14 @@ class HtmlSelection(object):
         """GetToPos(self) -> Point"""
         return _html.HtmlSelection_GetToPos(*args, **kwargs)
 
-    def GetFromPrivPos(*args, **kwargs):
-        """GetFromPrivPos(self) -> Point"""
-        return _html.HtmlSelection_GetFromPrivPos(*args, **kwargs)
-
-    def GetToPrivPos(*args, **kwargs):
-        """GetToPrivPos(self) -> Point"""
-        return _html.HtmlSelection_GetToPrivPos(*args, **kwargs)
-
-    def SetFromPrivPos(*args, **kwargs):
-        """SetFromPrivPos(self, Point pos)"""
-        return _html.HtmlSelection_SetFromPrivPos(*args, **kwargs)
-
-    def SetToPrivPos(*args, **kwargs):
-        """SetToPrivPos(self, Point pos)"""
-        return _html.HtmlSelection_SetToPrivPos(*args, **kwargs)
-
-    def ClearPrivPos(*args, **kwargs):
-        """ClearPrivPos(self)"""
-        return _html.HtmlSelection_ClearPrivPos(*args, **kwargs)
-
     def IsEmpty(*args, **kwargs):
         """IsEmpty(self) -> bool"""
         return _html.HtmlSelection_IsEmpty(*args, **kwargs)
 
     FromCell = property(GetFromCell,doc="See `GetFromCell`") 
     FromPos = property(GetFromPos,doc="See `GetFromPos`") 
-    FromPrivPos = property(GetFromPrivPos,SetFromPrivPos,doc="See `GetFromPrivPos` and `SetFromPrivPos`") 
     ToCell = property(GetToCell,doc="See `GetToCell`") 
     ToPos = property(GetToPos,doc="See `GetToPos`") 
-    ToPrivPos = property(GetToPrivPos,SetToPrivPos,doc="See `GetToPrivPos` and `SetToPrivPos`") 
 _html.HtmlSelection_swigregister(HtmlSelection)
 
 HTML_SEL_OUT = _html.HTML_SEL_OUT
@@ -678,11 +659,6 @@ class HtmlCell(_core.Object):
         """GetMouseCursor(self, HtmlWindowInterface window) -> Cursor"""
         return _html.HtmlCell_GetMouseCursor(*args, **kwargs)
 
-    def GetCursor(*args, **kwargs):
-        """GetCursor(self) -> Cursor"""
-        return _html.HtmlCell_GetCursor(*args, **kwargs)
-
-    GetCursor = wx._deprecated(GetCursor) 
     def IsFormattingCell(*args, **kwargs):
         """IsFormattingCell(self) -> bool"""
         return _html.HtmlCell_IsFormattingCell(*args, **kwargs)
@@ -767,7 +743,6 @@ class HtmlCell(_core.Object):
         """ConvertToText(self, HtmlSelection sel) -> String"""
         return _html.HtmlCell_ConvertToText(*args, **kwargs)
 
-    Cursor = property(GetCursor,doc="See `GetCursor`") 
     Depth = property(GetDepth,doc="See `GetDepth`") 
     Descent = property(GetDescent,doc="See `GetDescent`") 
     FirstChild = property(GetFirstChild,doc="See `GetFirstChild`") 
@@ -806,6 +781,15 @@ class HtmlWordCell(HtmlCell):
         return _html.HtmlWordCell_SetPreviousWord(*args, **kwargs)
 
 _html.HtmlWordCell_swigregister(HtmlWordCell)
+
+class HtmlWordWithTabsCell(HtmlWordCell):
+    """Proxy of C++ HtmlWordWithTabsCell class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, String word, String wordOrig, size_t linepos, DC dc) -> HtmlWordWithTabsCell"""
+        _html.HtmlWordWithTabsCell_swiginit(self,_html.new_HtmlWordWithTabsCell(*args, **kwargs))
+_html.HtmlWordWithTabsCell_swigregister(HtmlWordWithTabsCell)
 
 class HtmlContainerCell(HtmlCell):
     """Proxy of C++ HtmlContainerCell class"""
@@ -871,7 +855,7 @@ class HtmlContainerCell(HtmlCell):
         return _html.HtmlContainerCell_GetBackgroundColour(*args, **kwargs)
 
     def SetBorder(*args, **kwargs):
-        """SetBorder(self, Colour clr1, Colour clr2)"""
+        """SetBorder(self, Colour clr1, Colour clr2, int border=1)"""
         return _html.HtmlContainerCell_SetBorder(*args, **kwargs)
 
     def GetFirstChild(*args, **kwargs):
@@ -1035,9 +1019,12 @@ class HtmlWindow(_windows.ScrolledWindow):
         """GetRelatedFrame(self) -> Frame"""
         return _html.HtmlWindow_GetRelatedFrame(*args, **kwargs)
 
-    def SetRelatedStatusBar(*args, **kwargs):
-        """SetRelatedStatusBar(self, int bar)"""
-        return _html.HtmlWindow_SetRelatedStatusBar(*args, **kwargs)
+    def SetRelatedStatusBar(*args):
+        """
+        SetRelatedStatusBar(self, int bar)
+        SetRelatedStatusBar(self, StatusBar ?, int index=0)
+        """
+        return _html.HtmlWindow_SetRelatedStatusBar(*args)
 
     def SetFonts(*args, **kwargs):
         """SetFonts(self, String normal_face, String fixed_face, PyObject sizes=None)"""
@@ -1146,22 +1133,22 @@ class HtmlWindow(_windows.ScrolledWindow):
 
     def base_OnLinkClicked(*args, **kw):
         return HtmlWindow.OnLinkClicked(*args, **kw)
-    base_OnLinkClicked = wx._deprecated(base_OnLinkClicked,
+    base_OnLinkClicked = wx.deprecated(base_OnLinkClicked,
                                    "Please use HtmlWindow.OnLinkClicked instead.")
 
     def base_OnSetTitle(*args, **kw):
         return HtmlWindow.OnSetTitle(*args, **kw)
-    base_OnSetTitle = wx._deprecated(base_OnSetTitle,
+    base_OnSetTitle = wx.deprecated(base_OnSetTitle,
                                    "Please use HtmlWindow.OnSetTitle instead.")
 
     def base_OnCellMouseHover(*args, **kw):
         return HtmlWindow.OnCellMouseHover(*args, **kw)
-    base_OnCellMouseHover = wx._deprecated(base_OnCellMouseHover,
+    base_OnCellMouseHover = wx.deprecated(base_OnCellMouseHover,
                                    "Please use HtmlWindow.OnCellMouseHover instead.")
 
     def base_OnCellClicked(*args, **kw):
         return HtmlWindow.OnCellClicked(*args, **kw)
-    base_OnCellClicked = wx._deprecated(base_OnCellClicked,
+    base_OnCellClicked = wx.deprecated(base_OnCellClicked,
                                    "Please use HtmlWindow.OnCellClicked instead.")
 
     def GetClassDefaultAttributes(*args, **kwargs):
@@ -1239,9 +1226,12 @@ class HtmlDCRenderer(_core.Object):
         _html.HtmlDCRenderer_swiginit(self,_html.new_HtmlDCRenderer(*args, **kwargs))
     __swig_destroy__ = _html.delete_HtmlDCRenderer
     __del__ = lambda self : None;
-    def SetDC(*args, **kwargs):
-        """SetDC(self, DC dc, int maxwidth)"""
-        return _html.HtmlDCRenderer_SetDC(*args, **kwargs)
+    def SetDC(*args):
+        """
+        SetDC(self, DC dc, double pixel_scale=1.0)
+        SetDC(self, DC dc, double pixel_scale, double font_scale)
+        """
+        return _html.HtmlDCRenderer_SetDC(*args)
 
     def SetSize(*args, **kwargs):
         """SetSize(self, int width, int height)"""
@@ -1344,19 +1334,19 @@ class HtmlEasyPrinting(_core.Object):
     __swig_destroy__ = _html.delete_HtmlEasyPrinting
     __del__ = lambda self : None;
     def PreviewFile(*args, **kwargs):
-        """PreviewFile(self, String htmlfile)"""
+        """PreviewFile(self, String htmlfile) -> bool"""
         return _html.HtmlEasyPrinting_PreviewFile(*args, **kwargs)
 
     def PreviewText(*args, **kwargs):
-        """PreviewText(self, String htmltext, String basepath=EmptyString)"""
+        """PreviewText(self, String htmltext, String basepath=EmptyString) -> bool"""
         return _html.HtmlEasyPrinting_PreviewText(*args, **kwargs)
 
     def PrintFile(*args, **kwargs):
-        """PrintFile(self, String htmlfile)"""
+        """PrintFile(self, String htmlfile) -> bool"""
         return _html.HtmlEasyPrinting_PrintFile(*args, **kwargs)
 
     def PrintText(*args, **kwargs):
-        """PrintText(self, String htmltext, String basepath=EmptyString)"""
+        """PrintText(self, String htmltext, String basepath=EmptyString) -> bool"""
         return _html.HtmlEasyPrinting_PrintText(*args, **kwargs)
 
     def PageSetup(*args, **kwargs):
@@ -1395,8 +1385,18 @@ class HtmlEasyPrinting(_core.Object):
         """SetParentWindow(self, Window window)"""
         return _html.HtmlEasyPrinting_SetParentWindow(*args, **kwargs)
 
+    def GetName(*args, **kwargs):
+        """GetName(self) -> String"""
+        return _html.HtmlEasyPrinting_GetName(*args, **kwargs)
+
+    def SetName(*args, **kwargs):
+        """SetName(self, String name)"""
+        return _html.HtmlEasyPrinting_SetName(*args, **kwargs)
+
     PageSetupData = property(GetPageSetupData,doc="See `GetPageSetupData`") 
     PrintData = property(GetPrintData,doc="See `GetPrintData`") 
+    ParentWindow = property(GetParentWindow,SetParentWindow) 
+    Name = property(GetName,SetName) 
 _html.HtmlEasyPrinting_swigregister(HtmlEasyPrinting)
 
 #---------------------------------------------------------------------------
@@ -1759,6 +1759,10 @@ class HtmlHelpFrame(_windows.Frame):
         """AddGrabIfNeeded(self)"""
         return _html.HtmlHelpFrame_AddGrabIfNeeded(*args, **kwargs)
 
+    def SetShouldPreventAppExit(*args, **kwargs):
+        """SetShouldPreventAppExit(self, bool enable)"""
+        return _html.HtmlHelpFrame_SetShouldPreventAppExit(*args, **kwargs)
+
     def GetController(*args, **kwargs):
         """GetController(self) -> HtmlHelpController"""
         return _html.HtmlHelpFrame_GetController(*args, **kwargs)
@@ -1931,6 +1935,10 @@ class HtmlHelpController(HelpControllerBase):
         _html.HtmlHelpController_swiginit(self,_html.new_HtmlHelpController(*args, **kwargs))
     __swig_destroy__ = _html.delete_HtmlHelpController
     __del__ = lambda self : None;
+    def SetShouldPreventAppExit(*args, **kwargs):
+        """SetShouldPreventAppExit(self, bool enable)"""
+        return _html.HtmlHelpController_SetShouldPreventAppExit(*args, **kwargs)
+
     def GetHelpWindow(*args, **kwargs):
         """GetHelpWindow(self) -> HtmlHelpWindow"""
         return _html.HtmlHelpController_GetHelpWindow(*args, **kwargs)

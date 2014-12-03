@@ -51,7 +51,7 @@ class BBox(N.ndarray):
         if arr[0,0] > arr[1,0] or arr[0,1] > arr[1,1]:
             # note: zero sized BB OK.
             raise ValueError("BBox values not aligned: \n minimum values must be less that maximum values")
-        return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
+        return N.ndarray.__new__(subtype, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
     def Overlaps(self, BB):
         """
@@ -255,5 +255,49 @@ def InfBBox():
     arr = N.array(((-N.inf, -N.inf),(N.inf, N.inf)), N.float)
     return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
-   
+class RectBBox(BBox):
+    """
+    subclass of a BBox that can be used for a rotated Rectangle
+    
+    contributed by MArco Oster (marco.oster@bioquant.uni-heidelberg.de)
+
+    """
+    
+    def __new__(self, data, edges=None):
+        return BBox.__new__(self, data)
+
+    def __init__(self, data, edges=None):
+        ''' assume edgepoints are ordered such you can walk along all edges with left rotation sense
+            This may be:
+            left-top
+            left-bottom
+            right-bottom
+            right-top
+
+            or any rotation.
+        '''
+        BBox.BBox(data)
+        self.edges = np.asarray(edges)
+
+        print "new rectbbox created"
+
+
+    def ac_leftOf_ab(self, a, b, c):
+        ab = np.array(b) - np.array(a)
+        ac = np.array(c) - np.array(a)
+
+        return (ac[0]*ab[1] - ac[1]*ab[0]) <= 0
+
+    def PointInside(self, point):
+        print "point inside called"
+
+        for edge in xrange(4):
+            if self.ac_leftOf_ab(self.edges[edge],
+                                 self.edges[(edge+1)%4],
+                                 point):
+                continue
+            else:
+                return False
+        return True 
+    
    

@@ -3,7 +3,7 @@
 # Ported From Angelo Mandato C++ Code By:
 #
 # Andrea Gavana, @ 27 Mar 2005
-# Latest Revision: 27 Nov 2009, 17.00 GMT
+# Latest Revision: 14 Mar 2012, 21.00 GMT
 #
 #
 # Original Web Site (For The C++ Code):
@@ -17,7 +17,7 @@
 # write to me at:
 #
 # andrea.gavana@gmail.com
-# gavana@kpo.kz
+# andrea.gavana@maerskoil.com
 #
 # Or, obviously, to the wxPython mailing list!!!
 #
@@ -26,20 +26,67 @@
 # --------------------------------------------------------------------------- #
 
 """
-HyperLinkCtrl is a control for wxPython that acts like a hyper link
+:class:`HyperLinkCtrl` is a control for wxPython that acts like a hyper link
 in a typical browser.
 
 
 Description
 ===========
 
-`HyperLinkCtrl` is a control for wxPython that acts like a hyper link
+:class:`HyperLinkCtrl` is a control for wxPython that acts like a hyper link
 in a typical browser. Latest features include the ability to capture
 your own left, middle, and right click events to perform your own
 custom event handling and ability to open link in a new or current
 browser window.
 
 Special thanks to Robin Dunn for the event binder for the 3 mouse buttons.
+
+
+Usage
+=====
+
+Usage example::
+
+    import wx
+    import wx.lib.agw.hyperlink as hl
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+        
+            wx.Frame.__init__(self, parent, -1, "HyperLink Demo")
+
+            panel = wx.Panel(self, -1)
+
+            # Default Web links:
+            hyper1 = hl.HyperLinkCtrl(panel, -1, "wxPython Main Page", pos=(100, 100),
+                                      URL="http://www.wxpython.org/")
+            
+            
+            # Web link with underline rollovers, opens in same window
+            hyper2 = hl.HyperLinkCtrl(panel, -1, "My Home Page", pos=(100, 150),
+                                      URL="http://xoomer.virgilio.it/infinity77/")
+                                      
+            hyper2.AutoBrowse(False)
+            hyper2.SetColours("BLUE", "BLUE", "BLUE")
+            hyper2.EnableRollover(True)
+            hyper2.SetUnderlines(False, False, True)
+            hyper2.SetBold(True)
+            hyper2.OpenInSameWindow(True)
+            hyper2.SetToolTip(wx.ToolTip("Hello World!"))
+            hyper2.UpdateLink()
+        
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
+    
 
 
 Window Styles
@@ -65,9 +112,9 @@ Event Name               Description
 License And Version
 ===================
 
-HyperLinkCtrl is distributed under the wxPython license.
+:class:`HyperLinkCtrl` is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 27 Nov 2009, 17.00 GMT
+Latest Revision: Andrea Gavana @ 14 Mar 2012, 21.00 GMT
 
 Version 0.6
 
@@ -84,6 +131,7 @@ webbrowser.PROCESS_CREATION_DELAY = 0
 
 # To show a popup that copies the hyperlinks on the clipboard
 wxHYPERLINKS_POPUP_COPY = 1000
+""" Flag used to show a popup that copies the hyperlinks on the clipboard. """
 
 
 #-----------------------------------#
@@ -107,13 +155,14 @@ EVT_HYPERLINK_RIGHT = wx.PyEventBinder(wxEVT_HYPERLINK_RIGHT, 1)
 """ Handles a right mouse button event. Sent when the right mouse button is""" \
 """ clicked, but only if `DoPopup` is set to ``False``. """
 
+
 # ------------------------------------------------------------
 # This class implements the event listener for the hyperlinks
 # ------------------------------------------------------------
 
 class HyperLinkEvent(wx.PyCommandEvent):
     """
-    Event object sent in response to clicking on a L{HyperLinkCtrl}.
+    Event object sent in response to clicking on a :class:`HyperLinkCtrl`.
     """
 
     def __init__(self, eventType, eventId):
@@ -132,7 +181,7 @@ class HyperLinkEvent(wx.PyCommandEvent):
         """
         Sets the event position.
 
-        :param `pos`: an instance of `wx.Point`.        
+        :param `pos`: an instance of :class:`Point`.        
         """
         
         self._pos = pos
@@ -152,7 +201,7 @@ class HyperLinkEvent(wx.PyCommandEvent):
 
 class HyperLinkCtrl(StaticText):
     """
-    L{HyperLinkCtrl} is a control for wxPython that acts like a hyper
+    :class:`HyperLinkCtrl` is a control for wxPython that acts like a hyper
     link in a typical browser. Latest features include the ability to
     capture your own left, middle, and right click events to perform
     your own custom event handling and ability to open link in a new
@@ -254,9 +303,9 @@ class HyperLinkCtrl(StaticText):
 
     def OnMouseEvent(self, event):
         """
-        Handles the ``wx.EVT_MOUSE_EVENTS`` events for L{HyperLinkCtrl}.
+        Handles the ``wx.EVT_MOUSE_EVENTS`` events for :class:`HyperLinkCtrl`.
 
-        :param `event`: a `wx.MouseEvent` event to be processed.        
+        :param `event`: a :class:`MouseEvent` event to be processed.        
         """
 
         if event.Moving():
@@ -332,11 +381,11 @@ class HyperLinkCtrl(StaticText):
 
     def OnPopUpCopy(self, event):
         """
-        Handles the ``wx.EVT_MENU`` event for L{HyperLinkCtrl}.
+        Handles the ``wx.EVT_MENU`` event for :class:`HyperLinkCtrl`.
 
-        :param `event`: a `wx.MenuEvent` event to be processed.
+        :param `event`: a :class:`MenuEvent` event to be processed.
         
-        :note: This method copies the data from the L{HyperLinkCtrl} to the clipboard.
+        :note: This method copies the data from the :class:`HyperLinkCtrl` to the clipboard.
         """
 
         wx.TheClipboard.UsePrimarySelection(False)
@@ -382,7 +431,7 @@ class HyperLinkCtrl(StaticText):
     def DisplayError(self, ErrorMessage, ReportErrors=True):
         """
         Displays an error message (according to the `ReportErrors` parameter) in a
-        `wx.MessageBox`.
+        :class:`MessageBox`.
 
         :param `ErrorMessage`: a string representing the error to display;
         :param `ReportErrors`: ``True`` to display error dialog if an error occurrs
@@ -401,11 +450,11 @@ class HyperLinkCtrl(StaticText):
         - Visited link: VIOLET
         - Rollover: BLUE
 
-        :param `link`: a valid `wx.Colour` to use as text foreground for new links
+        :param `link`: a valid :class:`Colour` to use as text foreground for new links
          (default=RED);
-        :param `visited`: a valid `wx.Colour` to use as text foreground for visited
+        :param `visited`: a valid :class:`Colour` to use as text foreground for visited
          links (default=VIOLET);
-        :param `rollover`: a valid `wx.Colour` to use as text foreground for links
+        :param `rollover`: a valid :class:`Colour` to use as text foreground for links
          rollovers (default=BLUE).
         """
         
@@ -454,7 +503,7 @@ class HyperLinkCtrl(StaticText):
         """
         Sets link cursor properties.
 
-        :param `cur`: an integer representing a `wx.StockCursor` constant.
+        :param `cur`: an integer representing a :class:`StockCursor` constant.
         """
         
         self._CursorHand = wx.StockCursor(cur)
@@ -484,9 +533,9 @@ class HyperLinkCtrl(StaticText):
 
     def SetBold(self, Bold=False):
         """
-        Sets the L{HyperLinkCtrl} label in bold text.
+        Sets the :class:`HyperLinkCtrl` label in bold text.
 
-        :param `Bold`: ``True`` to set the L{HyperLinkCtrl} label as bold, ``False``
+        :param `Bold`: ``True`` to set the :class:`HyperLinkCtrl` label as bold, ``False``
          otherwise.
         """
         
@@ -494,23 +543,23 @@ class HyperLinkCtrl(StaticText):
 
         
     def GetBold(self):
-        """ Returns whether the L{HyperLinkCtrl} has text in bold or not. """
+        """ Returns whether the :class:`HyperLinkCtrl` has text in bold or not. """
         
         return self._Bold
 
 
     def SetURL(self, URL):
         """
-        Sets the L{HyperLinkCtrl} text to the specified URL.
+        Sets the :class:`HyperLinkCtrl` text to the specified URL.
 
-        :param `URL`: the new URL associated with L{HyperLinkCtrl}.
+        :param `URL`: the new URL associated with :class:`HyperLinkCtrl`.
         """
         
         self._URL = URL
 
         
     def GetURL(self):
-        """ Retrieve the URL associated to the L{HyperLinkCtrl}. """
+        """ Retrieve the URL associated to the :class:`HyperLinkCtrl`. """
         
         return self._URL
 

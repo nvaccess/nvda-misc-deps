@@ -4,7 +4,7 @@
 # Email:        wsadkin@nameconnector.com
 # Created:      02/11/2003
 # Copyright:    (c) 2003 by Will Sadkin, 2003
-# RCS-ID:       $Id: combobox.py 45970 2007-05-11 19:55:57Z RD $
+# RCS-ID:       $Id$
 # License:      wxWidgets license
 #----------------------------------------------------------------------------
 #
@@ -71,6 +71,7 @@ class MaskedComboBoxEventHandler(wx.EvtHandler):
                                                                         ## track of previous value for undo
 
 
+
 class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
     """
     Base class for generic masked edit comboboxes; allows auto-complete of values.
@@ -89,6 +90,8 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
 
 
         kwargs['choices'] = choices                 ## set up maskededit to work with choice list too
+
+        self._prevSelection = (-1, -1)
 
         ## Since combobox completion is case-insensitive, always validate same way
         if not kwargs.has_key('compareNoCase'):
@@ -194,7 +197,8 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
     def OnWindowDestroy(self, event):
         # clean up associated event handler object:
         if self.RemoveEventHandler(self.evt_handler):
-            self.evt_handler.Destroy()
+            wx.CallAfter(self.evt_handler.Destroy)
+        event.Skip()        
 
 
     def _CalcSize(self, size=None):
@@ -232,7 +236,8 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
         REQUIRED by any class derived from MaskedEditMixin.
         """
 ##        dbg('MaskedComboBox::_SetSelection: setting mark to (%d, %d)' % (sel_start, sel_to))
-        return self.SetMark( sel_start, sel_to )
+        if not self.__readonly:
+            return self.SetMark( sel_start, sel_to )
 
 
     def _GetInsertionPoint(self):
@@ -247,7 +252,8 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
 
     def _SetInsertionPoint(self, pos):
 ##        dbg('MaskedComboBox::_SetInsertionPoint(%d)' % pos)
-        self.SetInsertionPoint(pos)
+        if not self.__readonly:
+            self.SetInsertionPoint(pos)
 
 
     def IsEmpty(*args, **kw):
@@ -415,10 +421,11 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
         This function defines the undo operation for the control. (The default
         undo is 1-deep.)
         """
-        if self._mask:
-            self._Undo()
-        else:
-            wx.ComboBox.Undo()       # else revert to base control behavior
+        if not self.__readonly:
+            if self._mask:
+                self._Undo()
+            else:
+                wx.ComboBox.Undo(self)       # else revert to base control behavior
 
     def Append( self, choice, clientData=None ):
         """
@@ -656,26 +663,34 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
         return keep_processing
 
 
-    def _OnAutoSelect(self, field, match_index):
+    def _OnAutoSelect(self, field, match_index=None):
         """
         Override mixin (empty) autocomplete handler, so that autocompletion causes
         combobox to update appropriately.
+        Additionally allow items that aren't in the drop down.
         """
-##        dbg('MaskedComboBox::OnAutoSelect(%d, %d)' % (field._index, match_index), indent=1)
-##        field._autoCompleteIndex = match_index
-        if field == self._ctrl_constraints:
-            self.SetSelection(match_index)
-##            dbg('issuing combo selection event')
-            self.GetEventHandler().ProcessEvent(
-                MaskedComboBoxSelectEvent( self.GetId(), match_index, self ) )
-        self._CheckValid()
-##        dbg('field._autoCompleteIndex:', match_index)
-##        dbg('self.GetCurrentSelection():', self.GetCurrentSelection())
-        end = self._goEnd(getPosOnly=True)
-##        dbg('scheduling set of end position to:', end)
-        # work around bug in wx 2.5
-        wx.CallAfter(self.SetInsertionPoint, 0)
-        wx.CallAfter(self.SetInsertionPoint, end)
+##        dbg('MaskedComboBox::OnAutoSelect(%d, %s)' % (field._index, repr(match_index)), indent=1)
+##        field._autoCompleteIndex = match
+        if isinstance(match_index, int):
+            if field == self._ctrl_constraints:
+                self.SetSelection(match_index)
+##                dbg('issuing combo selection event')
+                self.GetEventHandler().ProcessEvent(
+                    MaskedComboBoxSelectEvent( self.GetId(), match_index, self ) )
+            self._CheckValid()
+##            dbg('field._autoCompleteIndex:', match)
+##            dbg('self.GetCurrentSelection():', self.GetCurrentSelection())
+            end = self._goEnd(getPosOnly=True)
+##            dbg('scheduling set of end position to:', end)
+            # work around bug in wx 2.5
+            wx.CallAfter(self.SetInsertionPoint, 0)
+            wx.CallAfter(self.SetInsertionPoint, end)
+        elif isinstance(match_index, str) or isinstance(match_index, unicode):
+##            dbg('CallAfter SetValue')
+            #  Preserve the textbox contents
+            #  See commentary in _OnReturn docstring.
+            wx.CallAfter(self.SetValue, match_index)
+####            dbg('queuing insertion after .SetValue', replace_to)
 ##        dbg(indent=0)
 
 
@@ -688,6 +703,7 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
         (the base control!) is a value in the list, then it schedules a
         programmatic wxComboBox.SetSelection() call to pick the appropriate
         item in the list. (and then does the usual OnReturn bit.)
+        If the value isn't a value in the list then allow the current textbox contents to stay.
         """
 ##        dbg('MaskedComboBox::OnReturn', indent=1)
 ##        dbg('current value: "%s"' % self.GetValue(), 'current selection:', self.GetCurrentSelection())
@@ -696,6 +712,11 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
 ##            wx.CallAfter(self.SetSelection, self._ctrl_constraints._autoCompleteIndex)
             self.replace_next_combobox_event = True
             self.correct_selection = self._ctrl_constraints._autoCompleteIndex
+        else:
+            # Not doing this causes the item to be empty after hitting return on a non-selection while the drop
+            # down is showing. Not all masked comboboxes require choices from an autocomplete list.
+            self.replace_next_combobox_event = True
+            self.correct_selection = self._GetValue()
         event.m_keyCode = wx.WXK_TAB
         event.Skip()
 ##        dbg(indent=0)

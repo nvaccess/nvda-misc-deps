@@ -5,7 +5,7 @@
 # Author:      Robin Dunn
 #
 # Created:     18-Jan-2009
-# RCS-ID:      $Id: utils.py 58205 2009-01-18 20:37:52Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2009 Total Control Software
 # Licence:     wxWidgets license
 #----------------------------------------------------------------------

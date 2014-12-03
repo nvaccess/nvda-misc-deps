@@ -2,7 +2,7 @@
 # Purpose:      Presenter part
 # Author:       Roman Rolinsky <rolinsky@femagsoft.com>
 # Created:      07.06.2007
-# RCS-ID:       $Id: presenter.py 64627 2010-06-18 18:17:45Z ROL $
+# RCS-ID:       $Id: presenter.py 71860 2012-06-25 15:46:16Z ROL $
 
 import os,tempfile,shutil
 from xml.parsers import expat
@@ -623,6 +623,12 @@ class _Presenter:
             return
         # Close old window, remember where it was
         comp = Manager.getNodeComp(node)
+        # Use parent object if the current one does not support test view
+        testWinItem = item
+        while not comp.isTestable:
+            testWinItem = view.tree.GetItemParent(testWinItem)
+            node = view.tree.GetPyData(testWinItem)
+            comp = Manager.getNodeComp(node)
         # Create memory XML file
         elem = node.cloneNode(True)
         if not node.hasAttribute('name'):
@@ -645,7 +651,6 @@ class _Presenter:
         Manager.preload(res)
         # Same module list
         res.Load('memory:test.xrc')
-        object = None
         testWin = view.testWin
         try:
             try:
@@ -655,17 +660,19 @@ class _Presenter:
                 # Reset previous tree item and locate tool
                 if testWin.item:
                     view.tree.SetItemBold(testWin.item, False)
-                testWin.SetView(frame, object, item)
+                testWin.SetView(frame, object, testWinItem)
                 testWin.Show()
-                view.tree.SetItemBold(item, True)
+                view.tree.SetItemBold(testWinItem, True)
+                # For reused frame, object is not positioned immediately 
+                wx.CallAfter(self.highlight, item)
             except EOFError:
                 pass
-            except NotImplementedError:
-                wx.LogError('Test window not implemented for %s' % node.getAttribute('class'))
+            except TestWinError:
+                wx.LogError('Test window could not be created for %s' % node.getAttribute('class'))
                 logger.exception('error creating test view')
             except:
-                logger.exception('error creating test view')
                 wx.LogError('Error creating test view')
+                logger.exception('error creating test view')
                 if get_debug(): raise
         finally:
             # Cleanup
@@ -677,6 +684,7 @@ class _Presenter:
         TRACE('closeTestWin')
         if not view.testWin.object: return
         view.tree.SetItemBold(view.testWin.item, False)
+        view.tree.Refresh()
         view.frame.tb.ToggleTool(view.frame.ID_TOOL_LOCATE, False)
         if view.frame.miniFrame:
             view.frame.miniFrame.tb.ToggleTool(view.frame.ID_TOOL_LOCATE, False)

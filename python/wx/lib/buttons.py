@@ -6,7 +6,7 @@
 # Author:      Robin Dunn
 #
 # Created:     9-Dec-1999
-# RCS-ID:      $Id: buttons.py 67475 2011-04-13 18:23:42Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 1999 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -62,7 +62,7 @@ class GenButton(wx.PyControl):
                  name = "genbutton"):
         cstyle = style
         if cstyle & wx.BORDER_MASK == 0:
-            cstyle = wx.BORDER_NONE
+            cstyle |= wx.BORDER_NONE
         wx.PyControl.__init__(self, parent, id, pos, size, cstyle, validator, name)
         
         self.up = True
@@ -308,7 +308,8 @@ class GenButton(wx.PyControl):
                 parDef = self.GetParent().GetBackgroundColour() == parAttr.colBg
                 if myDef and parDef:
                     if wx.Platform == "__WXMAC__":
-                        brush.MacSetTheme(1) # 1 == kThemeBrushDialogBackgroundActive
+                        c = wx.MacThemeColour(1) # 1 == kThemeBrushDialogBackgroundActive
+                        brush = wx.Brush(c)
                     elif wx.Platform == "__WXMSW__":
                         if self.DoEraseBackground(dc):
                             brush = None

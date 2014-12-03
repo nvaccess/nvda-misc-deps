@@ -13,8 +13,8 @@ Editra.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_basewin.py 67857 2011-06-05 00:16:24Z CJP $"
-__revision__ = "$Revision: 67857 $"
+__svnid__ = "$Id: ed_basewin.py 71697 2012-06-08 15:20:22Z CJP $"
+__revision__ = "$Revision: 71697 $"
 
 #--------------------------------------------------------------------------#
 # Imports
@@ -48,6 +48,48 @@ def FindMainWindow(window):
                 return tlw
 
         return None
+
+#--------------------------------------------------------------------------#
+
+class EDBaseFileTree(eclib.FileTree):
+    """Base file view control. Contains some common functionality
+    that should not be included in the low level control.
+
+    """
+    def __init__(self, parent):
+        super(EDBaseFileTree, self).__init__(parent)
+
+        # Message Handlers
+        ed_msg.Subscribe(self.OnActivateMsg, ed_msg.EDMSG_UI_MW_ACTIVATE)
+
+        # Events
+        self.Bind(wx.EVT_WINDOW_DESTROY, self.OnDestroy)
+
+    def OnDestroy(self, event):
+        """Cleanup message handlers"""
+        if self:
+            ed_msg.Unsubscribe(self.OnActivateMsg)
+            self.DoOnDestroy()
+        event.Skip()
+
+    def OnActivateMsg(self, msg):
+        """Handle activation messages"""
+        mw = FindMainWindow(self)
+        if mw and msg.Context == mw.Id:
+            self.DoOnActivate(msg.Data['active'])
+
+    #---- Interface ----#
+
+    def DoOnActivate(self, active):
+        """Handle activation event
+        @param active: bool - window active or inactive
+
+        """
+        pass
+
+    def DoOnDestroy(self):
+        """Handle window destruction"""
+        pass
 
 #--------------------------------------------------------------------------#
 
@@ -98,6 +140,7 @@ class EdBaseCtrlBox(eclib.ControlBox):
             ed_msg.Unsubscribe(self._OnFontChange)
 
     def _OnFontChange(self, msg):
+        """Update font of all controls"""
         if not self:
             return
         font = msg.GetData()
@@ -121,15 +164,7 @@ class EdBaseCtrlBox(eclib.ControlBox):
         """
         ctrlbar = self.GetControlBar(cbarpos)
         assert ctrlbar is not None, "No ControlBar at cbarpos"
-        if not isinstance(bmp, wx.Bitmap):
-            assert isinstance(bmp, int)
-            bmp = wx.ArtProvider.GetBitmap(str(bmp), wx.ART_MENU)
-        if bmp.IsNull() or not bmp.IsOk():
-            bmp = None
-        btn = eclib.PlateButton(ctrlbar, wx.ID_ANY, lbl, bmp,
-                                style=eclib.PB_STYLE_NOBG)
-        ctrlbar.AddControl(btn, align)
-        return btn
+        return ctrlbar.AddPlateButton(lbl, bmp, align)
 
     def CreateControlBar(self, pos=wx.TOP):
         """Override for CreateControlBar to automatically set the
@@ -137,6 +172,29 @@ class EdBaseCtrlBox(eclib.ControlBox):
 
         """
         cbar = super(EdBaseCtrlBox, self).CreateControlBar(pos)
+        cbar.__class__ = EdBaseCtrlBar
         if wx.Platform == '__WXGTK__':
-            cbar.SetWindowStyle(eclib.CTRLBAR_STYLE_DEFAULT)
+            cbar.SetWindowStyle(eclib.CTRLBAR_STYLE_DEFAULT|\
+                                eclib.CTRLBAR_STYLE_BORDER_TOP|\
+                                eclib.CTRLBAR_STYLE_BORDER_BOTTOM)
+        cbar.SetMargins(2,2)
         return cbar
+
+class EdBaseCtrlBar(eclib.ControlBar):
+    def AddPlateButton(self, lbl=u"", bmp=-1, align=wx.ALIGN_LEFT):
+        """Add an eclib.PlateButton 
+        @keyword lbl: Button Label
+        @keyword bmp: Bitmap or EditraArtProvider ID
+        @keyword align: button alignment
+        @return: PlateButton instance
+
+        """
+        if not isinstance(bmp, wx.Bitmap):
+            assert isinstance(bmp, int)
+            bmp = wx.ArtProvider.GetBitmap(str(bmp), wx.ART_MENU)
+        if bmp.IsNull() or not bmp.IsOk():
+            bmp = None
+        btn = eclib.PlateButton(self, wx.ID_ANY, lbl, bmp,
+                                style=eclib.PB_STYLE_NOBG)
+        self.AddControl(btn, align)
+        return btn

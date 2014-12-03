@@ -15,8 +15,8 @@ messages from ed_msg to display progress of different actions.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_statbar.py 66482 2010-12-28 21:57:50Z CJP $"
-__revision__ = "$Revision: 66482 $"
+__svnid__ = "$Id: ed_statbar.py 70229 2012-01-01 01:27:10Z CJP $"
+__revision__ = "$Revision: 70229 $"
 
 #--------------------------------------------------------------------------#
 # Imports
@@ -27,6 +27,7 @@ import wx.stc
 import ed_glob
 import util
 import ed_msg
+import ed_menu
 from syntax.synglob import GetDescriptionFromId
 from eclib import ProgressStatusBar, EncodingDialog
 from extern.decorlib import anythread
@@ -51,6 +52,7 @@ class EdStatBar(ProgressStatusBar):
         self._widths = list()
         self._cleanup_timer = wx.Timer(self, EdStatBar.ID_CLEANUP_TIMER)
         self._eolmenu = wx.Menu()
+        self._lexmenu = None
         self._log = wx.GetApp().GetLog()
 
         # Setup
@@ -84,6 +86,10 @@ class EdStatBar(ProgressStatusBar):
 
     def OnDestroy(self, evt):
         """Unsubscribe from messages"""
+        if self._lexmenu:
+            self._lexmenu.Destroy()
+        if self._eolmenu:
+            self._eolmenu.Destroy()
         if evt.GetId() == self.GetId():
             ed_msg.Unsubscribe(self.OnProgress)
             ed_msg.Unsubscribe(self.OnUpdateText)
@@ -144,7 +150,7 @@ class EdStatBar(ProgressStatusBar):
 
     def GetMainWindow(self):
         """Method required for L{ed_msg.mwcontext}"""
-        return self.GetParent()
+        return self.TopLevelParent
 
     def OnExpireMessage(self, evt):
         """Handle Expiring the status message when the oneshot timer
@@ -158,8 +164,7 @@ class EdStatBar(ProgressStatusBar):
 
     def OnLeftDClick(self, evt):
         """Handlers mouse left double click on status bar
-        @param evt: Event fired that called this handler
-        @type evt: 
+        @param evt: wx.MouseEvent
         @note: Assumes parent is MainWindow instance
 
         """
@@ -205,6 +210,14 @@ class EdStatBar(ProgressStatusBar):
             #       check to ensure reference is still valid.
             if dlg:
                 dlg.Destroy()
+        elif self.GetFieldRect(ed_glob.SB_LEXER).Contains(pt):
+            # Change Lexer popup menu
+            if self._lexmenu:
+                self._lexmenu.Destroy()
+            self._lexmenu = wx.Menu()
+            ed_menu.EdMenuBar.PopulateLexerMenu(self._lexmenu)
+            rect = self.GetFieldRect(ed_glob.SB_LEXER)
+            self.PopupMenu(self._lexmenu, (rect.x, rect.y))
         else:
             evt.Skip()
 

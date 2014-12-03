@@ -7,7 +7,7 @@
 # Author:      Robin Dunn
 #
 # Created:     20-Mar-2009
-# RCS-ID:      $Id: gridlabelrenderer.py 67478 2011-04-13 18:25:25Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2009 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -100,7 +100,7 @@ class GridWithLabelRenderersMixin(object):
         rows = self.CalcRowLabelsExposed(window.GetUpdateRegion())
         if rows == [-1]:
             return
-
+        
         x, y = self.CalcUnscrolledPosition((0,0))
         pt = dc.GetDeviceOrigin()
         dc.SetDeviceOrigin(pt.x, pt.y-y)
@@ -124,7 +124,7 @@ class GridWithLabelRenderersMixin(object):
         cols = self.CalcColLabelsExposed(window.GetUpdateRegion())
         if cols == [-1]:
             return
-
+        
         x, y = self.CalcUnscrolledPosition((0,0))
         pt = dc.GetDeviceOrigin()
         dc.SetDeviceOrigin(pt.x-x, pt.y)

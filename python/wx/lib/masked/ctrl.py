@@ -3,7 +3,7 @@
 # Author:       Will Sadkin
 # Created:      09/24/2003
 # Copyright:   (c) 2003 by Will Sadkin
-# RCS-ID:      $Id: ctrl.py 29787 2004-10-11 22:13:18Z RD $
+# RCS-ID:      $Id$
 # License:     wxWindows license
 #----------------------------------------------------------------------------
 # 12/09/2003 - Jeff Grimmett (grimmtooth@softhome.net)
@@ -42,8 +42,8 @@ controlType can be one of::
 These constants are also available individually, ie, you can
 use either of the following::
 
-    from wxPython.wx.lib.masked import Ctrl, COMBO, TEXT, NUMBER, TIME
-    from wxPython.wx.lib.masked import Ctrl, controlTypes
+    from wx.lib.masked import Ctrl, COMBO, TEXT, NUMBER, TIME
+    from wx.lib.masked import Ctrl, controlTypes
 
 If not specified as a keyword argument, the default controlType is
 controlTypes.TEXT.

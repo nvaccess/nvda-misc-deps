@@ -1,11 +1,11 @@
 #----------------------------------------------------------------------------
-# Name:        wxPython.lib.mixins.listctrl
+# Name:        wx.lib.mixins.listctrl
 # Purpose:     Helpful mix-in classes for wxListCtrl
 #
 # Author:      Robin Dunn
 #
 # Created:     15-May-2001
-# RCS-ID:      $Id: listctrl.py 63322 2010-01-30 00:59:55Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2001 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------------
@@ -253,7 +253,7 @@ class ListCtrlAutoWidthMixin:
 
             We automatically resize the last column in the list.
         """
-        if 'gtk2' in wx.PlatformInfo:
+        if 'gtk2' in wx.PlatformInfo or 'gtk3' in wx.PlatformInfo:
             self._doResize()
         else:
             wx.CallAfter(self._doResize)
@@ -669,7 +669,7 @@ class TextEditMixin:
 FILENAME: CheckListCtrlMixin.py
 AUTHOR:   Bruce Who (bruce.who.hk at gmail.com)
 DATE:     2006-02-09
-$Revision: 63322 $
+$Revision$
 DESCRIPTION:
     This script provide a mixin for ListCtrl which add a checkbox in the first
     column of each row. It is inspired by limodou's CheckList.py(which can be
@@ -858,7 +858,7 @@ class ListRowHighlighter:
             self.SetItemBackgroundColour(row, color)
 
     def SetHighlightColor(self, color):
-        """Set the color used to highlight the rows. Call L{RefreshRows} after
+        """Set the color used to highlight the rows. Call :meth:`RefreshRows` after
         this if you wish to update all the rows highlight colors.
         @param color: wx.Color or None to set default
 
@@ -867,7 +867,7 @@ class ListRowHighlighter:
 
     def SetHighlightMode(self, mode):
         """Set the highlighting mode to either HIGHLIGHT_EVEN or to
-        HIGHLIGHT_ODD. Call L{RefreshRows} afterwards to update the list
+        HIGHLIGHT_ODD. Call :meth:`RefreshRows` afterwards to update the list
         state.
         @param mode: HIGHLIGHT_* mode value
 

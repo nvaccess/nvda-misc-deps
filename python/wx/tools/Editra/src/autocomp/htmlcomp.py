@@ -12,8 +12,8 @@ Simple autocompletion support for HTML and XML documents.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__cvsid__ = "$Id: htmlcomp.py 67123 2011-03-04 00:02:35Z CJP $"
-__revision__ = "$Revision: 67123 $"
+__cvsid__ = "$Id: htmlcomp.py 72389 2012-08-28 16:53:09Z CJP $"
+__revision__ = "$Revision: 72389 $"
 
 #--------------------------------------------------------------------------#
 # Imports
@@ -101,13 +101,11 @@ class Completer(completer.BaseCompleter):
 
     def GetAutoCompList(self, command):
         """Returns the list of possible completions for a
-        command string. If namespace is not specified the lookup
-        is based on the locals namespace
+        command string.
         @param command: command lookup is done on
-        @keyword namespace: namespace to do lookup in
 
         """
-        if command in [None, u'']:
+        if command in [None, u'', u'<']:
             return list()
 
         buff = self.GetBuffer()

@@ -2,7 +2,7 @@
 # Purpose:      XRC editor, main module
 # Author:       Roman Rolinsky <rolinsky@mema.ucl.ac.be>
 # Created:      20.08.2001
-# RCS-ID:       $Id: xrced.py 64107 2010-04-22 14:05:36Z ROL $
+# RCS-ID:       $Id: xrced.py 71858 2012-06-25 09:55:13Z ROL $
 
 """
 
@@ -119,12 +119,13 @@ Please upgrade wxWidgets to %d.%d.%d or higher.''' % MinWxVersion)
                 os.chdir(dir)
                 path = os.path.basename(path)
             if os.path.isfile(path):
-                Presenter.open(path)
+                # Populate after final creation
+                wx.CallAfter(Presenter.open, path)
             else:
                 # Future name
                 Presenter.path = path
-                # Force update title
-                Presenter.setModified(False)
+        # Reset modified flag
+        Presenter.setModified(False)
         view.frame.Show()
         if not g.useAUI:
             if not g.conf.embedPanel:

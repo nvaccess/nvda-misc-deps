@@ -1,13 +1,13 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
 # Name:         lines.py
 # Purpose:      LineShape class
 #
-# Author:       Pierre Hjälm (from C++ original by Julian Smart)
+# Author:       Pierre HjÃ¤lm (from C++ original by Julian Smart)
 #
 # Created:      2004-05-08
-# RCS-ID:       $Id: _lines.py 57919 2009-01-09 04:15:49Z RD $
-# Copyright:    (c) 2004 Pierre Hjälm - 1998 Julian Smart
+# RCS-ID:       $Id$
+# Copyright:    (c) 2004 Pierre HjÃ¤lm - 1998 Julian Smart
 # Licence:      wxWindows license
 #----------------------------------------------------------------------------
 
@@ -752,7 +752,7 @@ class LineShape(Shape):
                 elif x2 > x1 and y2 < y1:
                     theta = 2 * math.pi + math.atan((y2 - y1) / (x2 - x1))
                 else:
-                    raise "Unknown arrowhead rotation case"
+                    raise Exception, "Unknown arrowhead rotation case"
 
                 # Rotate about the centre of the object, then place
                 # the object on the line.

@@ -5,7 +5,7 @@
 # Author:      Chris Mellon
 #
 # Created:     17-May-2005
-# RCS-ID:      $Id: ticker_xrc.py 34119 2005-05-18 00:39:38Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2005 by Chris Mellon
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

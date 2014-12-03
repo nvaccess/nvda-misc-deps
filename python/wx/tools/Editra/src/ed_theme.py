@@ -16,8 +16,8 @@ can be installed as single file instead of dozens of individual image files.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_theme.py 66815 2011-01-29 20:46:20Z CJP $"
-__revision__ = "$Revision: 66815 $"
+__svnid__ = "$Id: ed_theme.py 72247 2012-07-28 22:32:37Z CJP $"
+__revision__ = "$Revision: 72247 $"
 
 #--------------------------------------------------------------------------#
 # Imports
@@ -207,6 +207,7 @@ ART = { ed_glob.ID_ABOUT  : u'about.png',
         ed_glob.ID_COMPUTER : u'computer.png',
         ed_glob.ID_CUT    : u'cut.png',
         ed_glob.ID_DELETE : u'delete.png',
+        ed_glob.ID_DELETE_ALL : u'delete_all.png',
         ed_glob.ID_DOCPROP : u'doc_props.png',
         ed_glob.ID_DOCUMENTATION : u'docs.png',
         ed_glob.ID_DOWN   : u'down.png',
@@ -225,6 +226,7 @@ ART = { ed_glob.ID_ABOUT  : u'about.png',
         ed_glob.ID_INDENT : u'indent.png',
         ed_glob.ID_LOGGER : u'log.png',
         ed_glob.ID_NEW    : u'new.png',
+        ed_glob.ID_NEW_FOLDER : u'newfolder.png',
         ed_glob.ID_NEW_WINDOW: u'newwin.png',
         ed_glob.ID_NEXT_MARK : u'bmark_next.png',
         ed_glob.ID_NEXT_POS : u'forward.png',
@@ -325,7 +327,7 @@ class TangoTheme(plugin.Plugin):
 
         if mime:
             path = os.path.join(ed_glob.CONFIG['THEME_DIR'],
-                                Profile_Get('ICONS'), u'mime')
+                                self.GetName(), u'mime')
         else:
             path = os.path.join(ed_glob.CONFIG['THEME_DIR'],
                                 self.GetName(),

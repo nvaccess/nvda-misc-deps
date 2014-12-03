@@ -15,8 +15,8 @@ automatic icon theming to whats already available in the base toolbar class.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_toolbar.py 66745 2011-01-24 20:42:39Z CJP $"
-__revision__ = "$Revision: 66745 $"
+__svnid__ = "$Id: ed_toolbar.py 68340 2011-07-23 14:33:07Z CJP $"
+__revision__ = "$Revision: 68340 $"
 
 #--------------------------------------------------------------------------#
 # Dependencies
@@ -59,8 +59,6 @@ class EdToolBar(wx.ToolBar):
 
         # Message Handlers
         ed_msg.Subscribe(self.OnThemeChange, ed_msg.EDMSG_THEME_CHANGED)
-
-        self.Realize()
 
     def OnDestroy(self, evt):
         if evt.GetId() == self.GetId():

@@ -15,8 +15,8 @@ AUTHOR: Igor Dejanovic
 """
 
 __author__ = "Igor Dejanovic <igor.dejanovic@gmail.com>"
-__svnid__ = "$Id: _xtext.py 64561 2010-06-12 01:49:05Z CJP $"
-__revision__ = "$Revision: 64561 $"
+__svnid__ = "$Id: _xtext.py 70229 2012-01-01 01:27:10Z CJP $"
+__revision__ = "$Revision: 70229 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -80,7 +80,7 @@ SYNTAX_ITEMS = [ (STC_XTEXT_DEFAULT, 'default_style'),
 class SyntaxData(syndata.SyntaxDataBase):
     """SyntaxData object for XText""" 
     def __init__(self, langid):
-        syndata.SyntaxDataBase.__init__(self, langid)
+        super(SyntaxData, self).__init__(langid)
 
         # Setup
         self.SetLexer(stc.STC_LEX_CONTAINER)
@@ -199,7 +199,7 @@ class XTextLexer(RegexLexer):
     def AltWords(words):
         """Makes lexer rule for alternative words from the given words list.
         @param words: string consisting of space separated words
-        @return: string in the form \bword1\b|\bword2\b|\bword3\b...
+        @return: string in the form \\bword1\\b|\\bword2\\b|\\bword3\b...
         """
         return "|".join([ "\\b%s\\b" % w for w in words.split()])
 

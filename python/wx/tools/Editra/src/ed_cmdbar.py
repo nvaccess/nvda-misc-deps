@@ -18,14 +18,13 @@ a gradient using system defined colors.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: ed_cmdbar.py 67402 2011-04-06 13:34:14Z CJP $"
-__revision__ = "$Revision: 67402 $"
+__svnid__ = "$Id: ed_cmdbar.py 70229 2012-01-01 01:27:10Z CJP $"
+__revision__ = "$Revision: 70229 $"
 
 #--------------------------------------------------------------------------#
 # Imports
 import os
 import sys
-import glob
 import re
 import wx
 
@@ -37,7 +36,8 @@ import ed_event
 import ed_msg
 import ebmlib
 import eclib
-from profiler import Profile_Get, Profile_Set
+import ed_basewin
+from profiler import Profile_Get
 
 _ = wx.GetTranslation
 #--------------------------------------------------------------------------#
@@ -69,7 +69,8 @@ ID_REGEX = wx.NewId()
 
 #-----------------------------------------------------------------------------#
 
-class CommandBarBase(eclib.ControlBar):
+class CommandBarBase(ed_basewin.EdBaseCtrlBar,
+                     ebmlib.FactoryMixin):
     """Base class for control bars"""
     def __init__(self, parent):
         super(CommandBarBase, self).__init__(parent,
@@ -96,14 +97,25 @@ class CommandBarBase(eclib.ControlBar):
         self.Bind(wx.EVT_BUTTON, self.OnClose, self.close_b)
         self.Bind(wx.EVT_CONTEXT_MENU, self.OnContext)
         self.Bind(wx.EVT_MENU, self.OnContextMenu)
+        self.Bind(wx.EVT_SHOW, self.OnShowBar)
+
+    @classmethod
+    def GetMetaDefaults(cls):
+        return dict(id=-1, config_key=None)
+
+    #---- Properties ----#
+
+    MainControl = property(lambda self: self.ctrl,
+                           lambda self, ctrl: self.SetControl(ctrl))
+
+    #---- Implementation ----#
 
     def OnClose(self, evt):
         """Handles events from the buttons on the bar
         @param evt: Event that called this handler
 
         """
-        e_id = evt.GetId()
-        if e_id == ID_CLOSE_BUTTON:
+        if evt.Id == ID_CLOSE_BUTTON:
             self.Hide()
         else:
             evt.Skip()
@@ -115,8 +127,9 @@ class CommandBarBase(eclib.ControlBar):
                 # Lazy init the menu
                 self._menu = wx.Menu(_("Customize"))
                 # Ensure the label is disabled (wxMSW Bug)
-                item = self._menu.GetMenuItems()[0]
-                self._menu.Enable(item.GetId(), False)
+                if len(self._menu.MenuItems):
+                    item = self._menu.MenuItems[0]
+                    self._menu.Enable(item.GetId(), False)
 
                 to_menu = list()
                 for child in self.GetChildren():
@@ -129,10 +142,10 @@ class CommandBarBase(eclib.ControlBar):
                         if not item.GetLabel():
                             continue
 
-                        self._menu.Append(item.GetId(),
+                        self._menu.Append(item.Id,
                                           item.GetLabel(),
                                           kind=wx.ITEM_CHECK)
-                        self._menu.Check(item.GetId(), item.IsShown())
+                        self._menu.Check(item.Id, item.IsShown())
 
             self.PopupMenu(self._menu)
         else:
@@ -140,8 +153,7 @@ class CommandBarBase(eclib.ControlBar):
 
     def OnContextMenu(self, evt):
         """Hide and Show controls"""
-        e_id = evt.GetId()
-        ctrl = self.FindWindowById(e_id)
+        ctrl = self.FindWindowById(evt.Id)
         if ctrl is not None:
             self.ShowControl(ctrl.GetName(), not ctrl.IsShown())
             self.Layout()
@@ -152,6 +164,20 @@ class CommandBarBase(eclib.ControlBar):
                 cfg = Profile_Get('CTRLBAR', default=dict())
                 state = self.GetControlStates()
                 cfg[key] = state
+
+    def OnShowBar(self, evt):
+        """Update the session list"""
+        if evt.IsShown():
+            if self and evt.EventObject is self:
+                self.OnBarShown()
+        evt.Skip()
+
+    def OnBarShown(self):
+        """virtual override for subclasses that wish to receive window show
+        event callbacks.
+
+        """
+        pass
 
     def EnableMenu(self, enable=True):
         """Enable the popup customization menu
@@ -164,12 +190,12 @@ class CommandBarBase(eclib.ControlBar):
             self._menu = None
 
     def GetConfigKey(self):
-        """Get the key to use for the layout config persistence.
+        """Get the key to use for the layout config persistence. This value
+        is set in the class definitions meta class.
         @return: string
-        @note: override in subclasses
 
         """
-        return None
+        return self.meta.config_key
 
     def GetControlStates(self):
         """Get the map of control name id's to their shown state True/False
@@ -193,7 +219,7 @@ class CommandBarBase(eclib.ControlBar):
 
     def Hide(self):
         """Hides the control and notifies the parent
-        @postcondition: commandbar is hidden
+        @postcondition: CommandBar is hidden
         @todo: don't reference nb directly here
 
         """
@@ -212,16 +238,16 @@ class CommandBarBase(eclib.ControlBar):
 
         """
         sizer = self.GetControlSizer()
-        next = False
+        gonext = False
         for item in sizer.GetChildren():
-            if next:
+            if gonext:
                 if item.IsSpacer():
                     item.Show(show)
                 break
 
             if item.Window and item.Window.GetName() == ctrl_name:
                 item.Show(show)
-                next = True
+                gonext = True
 
     def IsCustomizable(self, ctrl):
         """Is the control of a type that can be customized
@@ -244,20 +270,24 @@ class CommandBarBase(eclib.ControlBar):
     def SetFocus(self):
         """Set the focus to the bar and its main control"""
         super(CommandBarBase, self).SetFocus()
-        if self.ctrl is not None:
-            self.ctrl.SetFocus()
+        if self.MainControl:
+            self.MainControl.SetFocus()
 
 #-----------------------------------------------------------------------------#
 
 class SearchBar(CommandBarBase):
     """Commandbar for searching text in the current buffer."""
+    class meta:
+        id = ed_glob.ID_QUICK_FIND
+        config_key = 'SearchBar'
+
     def __init__(self, parent):
         super(SearchBar, self).__init__(parent)
 
         # Attributes
         self.SetControl(ed_search.EdSearchCtrl(self, wx.ID_ANY,
                                                menulen=5, size=(180, -1)))
-        self._sctrl = self.ctrl.GetSearchController()
+        self._sctrl = self.MainControl.GetSearchController()
 
         # Setup
         f_lbl = wx.StaticText(self, label=_("Find") + u": ")
@@ -318,6 +348,7 @@ class SearchBar(CommandBarBase):
         self.SetControlStates(cfg)
 
     def OnDestroy(self, evt):
+        """Cleanup message handlers on destroy"""
         if evt.GetId() == self.GetId():
             ed_msg.Unsubscribe(self.OnThemeChange)
             self._sctrl.RemoveClient(self)
@@ -374,33 +405,29 @@ class SearchBar(CommandBarBase):
         @param msg: Message Object
 
         """
-        next = self.FindWindowById(ID_SEARCH_NEXT)
-        if next:
+        next_btn = self.FindWindowById(ID_SEARCH_NEXT)
+        if next_btn:
             t_bmp = wx.ArtProvider.GetBitmap(str(ed_glob.ID_DOWN), wx.ART_MENU)
-            next.SetBitmapLabel(t_bmp)
-            next.SetBitmapHover(t_bmp)
-            next.Update()
-            next.Refresh()
+            next_btn.SetBitmapLabel(t_bmp)
+            next_btn.SetBitmapHover(t_bmp)
+            next_btn.Update()
+            next_btn.Refresh()
 
-        pre = self.FindWindowById(ID_SEARCH_PRE)
-        if pre:
+        pre_btn = self.FindWindowById(ID_SEARCH_PRE)
+        if pre_btn:
             t_bmp = wx.ArtProvider.GetBitmap(str(ed_glob.ID_UP), wx.ART_MENU)
-            pre.SetBitmapLabel(t_bmp)
-            pre.SetBitmapHover(t_bmp)
-            pre.Update()
-            pre.Refresh()
-
-    def GetConfigKey(self):
-        """Get the key to use for the layout config persistence.
-        @return: string
-
-        """
-        return 'SearchBar'
+            pre_btn.SetBitmapLabel(t_bmp)
+            pre_btn.SetBitmapHover(t_bmp)
+            pre_btn.Update()
+            pre_btn.Refresh()
 
 #-----------------------------------------------------------------------------#
 
 class CommandEntryBar(CommandBarBase):
     """Commandbar for editor command entry and execution."""
+    class meta:
+        id = ed_glob.ID_COMMAND
+
     def __init__(self, parent):
         super(CommandEntryBar, self).__init__(parent)
 
@@ -428,6 +455,9 @@ class CommandEntryBar(CommandBarBase):
 
 class GotoLineBar(CommandBarBase):
     """Commandbar for Goto Line function"""
+    class meta:
+        id = ed_glob.ID_GOTO_LINE
+
     def __init__(self, parent):
         super(GotoLineBar, self).__init__(parent)
 
@@ -488,6 +518,7 @@ class CommandExecuter(eclib.CommandEntryBase):
         ed_msg.Subscribe(self._UpdateCwd, ed_msg.EDMSG_FILE_SAVED)
 
     def OnDestroy(self, evt):
+        """Clean up message handlers on destroy"""
         if evt.GetId() == self.GetId():
             ed_msg.Unsubscribe(self._UpdateCwd)
         evt.Skip()
@@ -698,7 +729,7 @@ class CommandExecuter(eclib.CommandEntryBase):
 
         frame = self.GetTopLevelParent()
         numpage = frame.nb.GetPageCount()
-        for x in xrange(min(count, numpage)):
+        for x in range(min(count, numpage)):
             cpage = frame.nb.GetPageIndex(frame.nb.GetCurrentPage())
             if (cpage == 0 and cmd == 'N') or \
                (cpage + 1 == numpage and cmd == 'n'):
@@ -742,6 +773,7 @@ class CommandExecuter(eclib.CommandEntryBase):
     def GetPaths(self, path, files=False):
         """Get a list of paths that are part of the given path by
         default it will only return directories.
+        @param path: Path to enumerate
         @keyword files: Get list of files too
 
         """
@@ -886,7 +918,7 @@ class CommandExecuter(eclib.CommandEntryBase):
                 wx.CallAfter(self.UpdateAutoComp)
         else:
             if self._popup.HasSuggestions():
-                    self._AdjustValue(self._popup.GetSelection())
+                self._AdjustValue(self._popup.GetSelection())
             self.ListDir()
         self._AdjustSize()
         evt.Skip()
@@ -962,8 +994,11 @@ class LineCtrl(eclib.CommandEntryBase):
     """
     def __init__(self, parent, id_, get_doc, size=wx.DefaultSize):
         """Initializes the LineCtrl control and its attributes.
+        @param parent: Parent Window
+        @param id_: Control ID
         @param get_doc: callback method for retrieving a reference to the
                         current document.
+        @keyword size: Control Size (tuple)
 
         """
         super(LineCtrl, self).__init__(parent, id_, u"", size=size,
@@ -976,8 +1011,7 @@ class LineCtrl(eclib.CommandEntryBase):
 
     def OnEnter(self, evt):
         """Processes the entered line number
-        @param evt: Event that called this handler
-        @type evt: wx.EVT_TEXT_ENTER
+        @param evt: wx.EVT_TEXT_ENTER
 
         """
         val = self.GetValue()
@@ -1016,7 +1050,6 @@ class PopupListBase(object):
     def AdvanceSelection(self, next=True):
         """Advance the list selection
         @keyword next: goto the next or previous selection
-        @type next: bool
 
         """
         sel = self._list.GetSelection()

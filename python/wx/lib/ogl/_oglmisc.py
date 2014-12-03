@@ -1,13 +1,13 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
 # Name:         oglmisc.py
 # Purpose:      Miscellaneous OGL support functions
 #
-# Author:       Pierre Hj‰lm (from C++ original by Julian Smart)
+# Author:       Pierre Hj√§lm (from C++ original by Julian Smart)
 #
 # Created:      2004-05-08
-# RCS-ID:       $Id: _oglmisc.py 29265 2004-09-23 00:43:47Z RD $
-# Copyright:    (c) 2004 Pierre Hj‰lm - 1998 Julian Smart
+# RCS-ID:       $Id$
+# Copyright:    (c) 2004 Pierre Hj√§lm - 1998 Julian Smart
 # Licence:      wxWindows license
 #----------------------------------------------------------------------------
 

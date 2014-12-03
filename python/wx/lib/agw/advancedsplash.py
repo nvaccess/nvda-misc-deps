@@ -3,7 +3,7 @@
 # Python Code By:
 #
 # Andrea Gavana, @ 10 Oct 2005
-# Latest Revision: 27 Jan 2011, 15.00 GMT
+# Latest Revision: 17 Aug 2011, 15.00 GMT
 #
 #
 # TODO List/Caveats
@@ -25,7 +25,7 @@
 # Write To Me At:
 #
 # andrea.gavana@gmail.com
-# gavana@kpo.kz
+# andrea.gavana@maerskoil.com
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
@@ -35,21 +35,21 @@
 
 
 """
-AdvancedSplash tries to reproduce the behavior of `wx.SplashScreen`, with
+:class:`AdvancedSplash` tries to reproduce the behavior of :class:`SplashScreen`, with
 some enhancements.
 
 
 Description
 ===========
 
-AdvancedSplash tries to reproduce the behavior of `wx.SplashScreen`, but with
+:class:`AdvancedSplash` tries to reproduce the behavior of :class:`SplashScreen`, but with
 some enhancements (in my opinion).
 
-AdvancedSplash starts its construction from a simple frame. Then, depending on
-the options passed to AdvancedSplash, it sets the frame shape accordingly to
-the image passed as input. AdvancedSplash behaves somewhat like `wx.SplashScreen`,
-and almost all the methods available in `wx.SplashScreen` are available also In
-AdvancedSplash.
+:class:`AdvancedSplash` starts its construction from a simple frame. Then, depending on
+the options passed to it, it sets the frame shape accordingly to the image passed
+as input. :class:`AdvancedSplash` behaves somewhat like :class:`SplashScreen`, and almost
+all the methods available in :class:`SplashScreen` are available also in
+this module.
 
 
 Usage
@@ -57,23 +57,39 @@ Usage
 
 Sample usage::
 
-    SplashScreen = AS.AdvancedSplash(parent, bitmap, timeout, agwStyle,
-                                     shadowcolour)
+    import wx
+    import wx.lib.agw.advancedsplash as AS
 
+    app = wx.App(0)
+
+    frame = wx.Frame(None, -1, "AdvancedSplash Test")
+    
+    imagePath = "my_splash_image.png"
+    bitmap = wx.Bitmap(imagePath, wx.BITMAP_TYPE_PNG)
+    shadow = wx.WHITE
+    
+    splash = AS.AdvancedSplash(frame, bitmap=bitmap, timeout=5000,
+                               agwStyle=AS.AS_TIMEOUT |
+                               AS.AS_CENTER_ON_PARENT |
+                               AS.AS_SHADOW_BITMAP,
+                               shadowcolour=shadow)
+
+    app.MainLoop()
+    
 
 None of the options are strictly required (a part of the `bitmap` parameter).
-If you use the defaults you get a very simple AdvancedSplash.
+If you use the defaults you get a very simple :class:`AdvancedSplash`.
 
 
 Methods and Settings
 ====================
 
-AdvancedSplash is customizable, and in particular you can set:
+:class:`AdvancedSplash` is customizable, and in particular you can set:
 
 - Whether you want to mask a colour or not in your input bitmap;
 - Where to center the splash screen (on screen, on parent or nowhere);
 - Whether it is a "timeout" splashscreen or not;
-- The time after which AdvancedSplash is destroyed (if it is a timeout splashscreen);
+- The time after which :class:`AdvancedSplash` is destroyed (if it is a timeout splashscreen);
 - The (optional) text you wish to display;
 - The font, colour and position of the displayed text (optional).
 
@@ -86,12 +102,12 @@ This class supports the following window styles:
 ======================= =========== ==================================================
 Window Styles           Hex Value   Description
 ======================= =========== ==================================================
-``AS_TIMEOUT``                  0x1 `AdvancedSplash` will be destroyed after `timeout` milliseconds.
-``AS_NOTIMEOUT``                0x2 `AdvancedSplash` can be destroyed by clicking on it, pressing a key or by explicitly call the `Close()` method.
-``AS_CENTER_ON_SCREEN``         0x4 `AdvancedSplash` will be centered on screen.
-``AS_CENTER_ON_PARENT``         0x8 `AdvancedSplash` will be centered on parent.
-``AS_NO_CENTER``               0x10 `AdvancedSplash` will not be centered.
-``AS_SHADOW_BITMAP``           0x20 If the bitmap you pass as input has no transparency, you can choose one colour that will be masked in your bitmap. the final shape of `AdvancedSplash` will be defined only by non-transparent (non-masked) pixels.
+``AS_TIMEOUT``                  0x1 :class:`AdvancedSplash` will be destroyed after `timeout` milliseconds.
+``AS_NOTIMEOUT``                0x2 :class:`AdvancedSplash` can be destroyed by clicking on it, pressing a key or by explicitly call the `Close()` method.
+``AS_CENTER_ON_SCREEN``         0x4 :class:`AdvancedSplash` will be centered on screen.
+``AS_CENTER_ON_PARENT``         0x8 :class:`AdvancedSplash` will be centered on parent.
+``AS_NO_CENTER``               0x10 :class:`AdvancedSplash` will not be centered.
+``AS_SHADOW_BITMAP``           0x20 If the bitmap you pass as input has no transparency, you can choose one colour that will be masked in your bitmap. the final shape of :class:`AdvancedSplash` will be defined only by non-transparent (non-masked) pixels.
 ======================= =========== ==================================================
 
 
@@ -104,9 +120,9 @@ Events Processing
 License And Version
 ===================
 
-AdvancedSplash control is distributed under the wxPython license.
+:class:`AdvancedSplash` control is distributed under the wxPython license.
 
-Latest revision: Andrea Gavana @ 27 Jan 2011, 15.00 GMT
+Latest revision: Andrea Gavana @ 17 Aug 2011, 15.00 GMT
 
 Version 0.4
 
@@ -123,24 +139,21 @@ import wx
 # Timeout Or Not
                         
 AS_TIMEOUT = 1
-""" `AdvancedSplash` will be destroyed after `timeout` milliseconds. """
+""" :class:`AdvancedSplash` will be destroyed after `timeout` milliseconds. """
 AS_NOTIMEOUT = 2
-""" `AdvancedSplash` can be destroyed by clicking on it, pressing a key or by""" \
-""" explicitly call the Close() method. """
+""" :class:`AdvancedSplash` can be destroyed by clicking on it, pressing a key or by explicitly call the `Close()` method. """
 
 # These Flags Are Used To Position AdvancedSplash Correctly On Screen
 AS_CENTER_ON_SCREEN = 4
-""" `AdvancedSplash` will be centered on screen. """
+""" :class:`AdvancedSplash` will be centered on screen. """
 AS_CENTER_ON_PARENT = 8
-""" `AdvancedSplash` will be centered on parent. """
+""" :class:`AdvancedSplash` will be centered on parent. """
 AS_NO_CENTER = 16
-""" `AdvancedSplash` will not be centered. """
+""" :class:`AdvancedSplash` will not be centered. """
 
 # This Option Allow To Mask A Colour In The Input Bitmap
 AS_SHADOW_BITMAP = 32
-""" If the bitmap you pass as input has no transparency, you can choose one colour""" \
-""" that will be masked in your bitmap. the final shape of `AdvancedSplash` will be""" \
-""" defined only by non-transparent (non-masked) pixels. """
+""" If the bitmap you pass as input has no transparency, you can choose one colour that will be masked in your bitmap. the final shape of :class:`AdvancedSplash` will be defined only by non-transparent (non-masked) pixels. """
 
 #----------------------------------------------------------------------
 # ADVANCEDSPLASH Class
@@ -150,7 +163,7 @@ AS_SHADOW_BITMAP = 32
 
 class AdvancedSplash(wx.Frame):
     """
-    AdvancedSplash tries to reproduce the behavior of `wx.SplashScreen`, with
+    :class:`AdvancedSplash` tries to reproduce the behavior of :class:`SplashScreen`, with
     some enhancements.
 
     This is the main class implementation.    
@@ -163,35 +176,52 @@ class AdvancedSplash(wx.Frame):
         """
         Default class constructor.
 
-        :param `bitmap`: this must be a valid `wx.Bitmap`, that you may construct using
+        :param `parent`: parent window;
+        :param integer `id`: window identifier. A value of -1 indicates a default value;
+        :param `pos`: the control position. A value of (-1, -1) indicates a default position,
+         chosen by either the windowing system or wxPython, depending on platform;
+        :param `size`: the control size. A value of (-1, -1) indicates a default size,
+         chosen by either the windowing system or wxPython, depending on platform;
+        :param integer `style`: the underlying :class:`Frame` style;
+        :param `bitmap`: this must be a valid bitmap, that you may construct using
          whatever image file format supported by wxPython. If the file you load
          already supports mask/transparency (like png), the transparent areas
-         will not be drawn on screen, and the L{AdvancedSplash} frame will have
+         will not be drawn on screen, and the :class:`AdvancedSplash` frame will have
          the shape defined only by *non-transparent* pixels.
          If you use other file formats that does not supports transparency, you
          can obtain the same effect as above by masking a specific colour in
-         your `wx.Bitmap`.
-
-        :param `timeout`: if you construct L{AdvancedSplash} using the style ``AS_TIMEOUT``,
-         L{AdvancedSplash} will be destroyed after `timeout` milliseconds;
-
-        :param `agwStyle`: this value specifies the L{AdvancedSplash} styles:
+         your :class:`Bitmap`.
+        :param integer `timeout`: if you construct :class:`AdvancedSplash` using the style ``AS_TIMEOUT``,
+         :class:`AdvancedSplash` will be destroyed after `timeout` milliseconds;
+        :param integer `agwStyle`: this value specifies the :class:`AdvancedSplash` styles:
         
          ======================= =========== ==================================================
          Window Styles           Hex Value   Description
          ======================= =========== ==================================================
-         ``AS_TIMEOUT``                  0x1 L{AdvancedSplash} will be destroyed after `timeout` milliseconds.
-         ``AS_NOTIMEOUT``                0x2 L{AdvancedSplash} can be destroyed by clicking on it, pressing a key or by explicitly call the `Close()` method.
-         ``AS_CENTER_ON_SCREEN``         0x4 L{AdvancedSplash} will be centered on screen.
-         ``AS_CENTER_ON_PARENT``         0x8 L{AdvancedSplash} will be centered on parent.
-         ``AS_NO_CENTER``               0x10 L{AdvancedSplash} will not be centered.
-         ``AS_SHADOW_BITMAP``           0x20 If the bitmap you pass as input has no transparency, you can choose one colour that will be masked in your bitmap. the final shape of L{AdvancedSplash} will be defined only by non-transparent (non-masked) pixels.
+         ``AS_TIMEOUT``                  0x1 :class:`AdvancedSplash` will be destroyed after `timeout` milliseconds.
+         ``AS_NOTIMEOUT``                0x2 :class:`AdvancedSplash` can be destroyed by clicking on it, pressing a key or by explicitly call the `Close()` method.
+         ``AS_CENTER_ON_SCREEN``         0x4 :class:`AdvancedSplash` will be centered on screen.
+         ``AS_CENTER_ON_PARENT``         0x8 :class:`AdvancedSplash` will be centered on parent.
+         ``AS_NO_CENTER``               0x10 :class:`AdvancedSplash` will not be centered.
+         ``AS_SHADOW_BITMAP``           0x20 If the bitmap you pass as input has no transparency, you can choose one colour that will be masked in your bitmap. the final shape of :class:`AdvancedSplash` will be defined only by non-transparent (non-masked) pixels.
          ======================= =========== ==================================================
 
-        :param `shadowcolour`: if you construct L{AdvancedSplash} using the style
+        :param `shadowcolour`: if you construct :class:`AdvancedSplash` using the style
          ``AS_SHADOW_BITMAP``, here you can specify the colour that will be masked on
          your input bitmap. This has to be a valid wxPython colour.
 
+        :type parent: :class:`Window`
+        :type pos: tuple or :class:`Point`
+        :type size: tuple or :class:`Size`
+        :type bitmap: :class:`Bitmap`
+        :type shadowcolour: :class:`Colour`
+
+        :raise: `Exception` in the following cases:
+
+         - The ``AS_TIMEOUT`` style is set but `timeout` is not a positive integer;
+         - The ``AS_SHADOW_BITMAP`` style is set but `shadowcolour` is not a valid wxPython colour;
+         - The :class:`AdvancedSplash` bitmap is an invalid :class:`Bitmap`.
+         
         """
 
         wx.Frame.__init__(self, parent, id, "", pos, size, style)
@@ -232,11 +262,11 @@ class AdvancedSplash(wx.Frame):
         else:
             self.SetSplashShape()
 
-        w = self.bmp.GetWidth()
-        h = self.bmp.GetHeight()
+        w = self.bmp.GetWidth() + 1
+        h = self.bmp.GetHeight() + 1
 
         # Set The AdvancedSplash Size To The Bitmap Size
-        self.SetSize((w, h))
+        self.SetClientSize((w, h))
 
         if agwStyle & AS_CENTER_ON_SCREEN:
             self.CenterOnScreen()
@@ -255,13 +285,15 @@ class AdvancedSplash(wx.Frame):
         self.Bind(wx.EVT_CHAR, self.OnCharEvents)
 
         self.Show()
+        if wx.Platform == "__WXMAC__":
+            wx.SafeYield(self, True)
 
 
     def SetSplashShape(self, event=None):
         """
-        Sets L{AdvancedSplash} shape using the region created from the bitmap.
+        Sets :class:`AdvancedSplash` shape using the region created from the bitmap.
 
-        :param `event`: a `wx.WindowCreateEvent` event (GTK only, as GTK supports setting
+        :param `event`: a :class:`WindowCreateEvent` event (GTK only, as GTK supports setting
          the window shape only during window creation).
         """
 
@@ -277,6 +309,10 @@ class AdvancedSplash(wx.Frame):
 
         :param `bmp`: the bitmap to which we want to apply the mask colour `shadowcolour`;
         :param `shadowcolour`: the mask colour for our bitmap.
+        :type bmp: :class:`Bitmap`
+        :type shadowcolour: :class:`Colour`
+
+        :return: A masked version of the input bitmap, an instance of :class:`Bitmap`.        
         """
 
         mask = wx.Mask(bmp, shadowcolour)
@@ -287,9 +323,9 @@ class AdvancedSplash(wx.Frame):
 
     def OnPaint(self, event):
         """
-        Handles the ``wx.EVT_PAINT`` event for L{AdvancedSplash}.
+        Handles the ``wx.EVT_PAINT`` event for :class:`AdvancedSplash`.
 
-        :param `event`: a `wx.PaintEvent` to be processed.
+        :param `event`: a :class:`PaintEvent` to be processed.
         """
 
         dc = wx.PaintDC(self)
@@ -307,10 +343,6 @@ class AdvancedSplash(wx.Frame):
         dc.SetTextForeground(textcolour)
         dc.DrawText(text, textpos[0], textpos[1])
 
-        # Seems like this only helps on OS X.
-        if wx.Platform == "__WXMAC__":
-            wx.SafeYield(self, True)
-
 
     def OnNotify(self):
         """ Handles the timer expiration, and calls the `Close()` method. """
@@ -320,11 +352,11 @@ class AdvancedSplash(wx.Frame):
 
     def OnMouseEvents(self, event):
         """
-        Handles the ``wx.EVT_MOUSE_EVENTS`` events for L{AdvancedSplash}.
+        Handles the ``wx.EVT_MOUSE_EVENTS`` events for :class:`AdvancedSplash`.
 
-        :param `event`: a `wx.MouseEvent` to be processed.
+        :param `event`: a :class:`MouseEvent` to be processed.
         
-        :note: This reproduces the behavior of `wx.SplashScreen`.
+        :note: This reproduces the behavior of :class:`SplashScreen`.
         """
 
         if event.LeftDown() or event.RightDown():
@@ -335,11 +367,11 @@ class AdvancedSplash(wx.Frame):
 
     def OnCharEvents(self, event):
         """
-        Handles the ``wx.EVT_CHAR`` event for L{AdvancedSplash}.
+        Handles the ``wx.EVT_CHAR`` event for :class:`AdvancedSplash`.
 
-        :param `event`: a `wx.KeyEvent` to be processed.
+        :param `event`: a :class:`KeyEvent` to be processed.
         
-        :note: This reproduces the behavior of `wx.SplashScreen`.
+        :note: This reproduces the behavior of :class:`SplashScreen`.
         """
 
         self.Close()
@@ -347,11 +379,11 @@ class AdvancedSplash(wx.Frame):
 
     def OnCloseWindow(self, event):
         """
-        Handles the ``wx.EVT_CLOSE`` event for L{AdvancedSplash}.
+        Handles the ``wx.EVT_CLOSE`` event for :class:`AdvancedSplash`.
 
-        :param `event`: a `wx.CloseEvent` to be processed.
+        :param `event`: a :class:`CloseEvent` to be processed.
         
-        :note: This reproduces the behavior of `wx.SplashScreen`.
+        :note: This reproduces the behavior of :class:`SplashScreen`.
         """
 
         if hasattr(self, "_splashtimer"):
@@ -363,10 +395,11 @@ class AdvancedSplash(wx.Frame):
 
     def SetText(self, text=None):
         """
-        Sets the text to be displayed on L{AdvancedSplash}.
+        Sets the text to be displayed on :class:`AdvancedSplash`.
 
         :param `text`: the text we want to display on top of the bitmap. If `text` is
          set to ``None``, nothing will be drawn on top of the bitmap.
+        :type text: string or ``None``
         """
 
         if text is None:
@@ -379,17 +412,22 @@ class AdvancedSplash(wx.Frame):
 
 
     def GetText(self):
-        """ Returns the text displayed on L{AdvancedSplash}."""
+        """
+        Returns the text displayed on :class:`AdvancedSplash`.
+
+        :return: A string representing the text drawn on top of the :class:`AdvancedSplash` bitmap.
+        """
 
         return self._text
 
 
     def SetTextFont(self, font=None):
         """
-        Sets the font for the text in L{AdvancedSplash}.
+        Sets the font for the text in :class:`AdvancedSplash`.
 
         :param `font`: the font to use while drawing the text on top of our bitmap. If `font`
          is ``None``, a simple generic font is generated.
+        :type font: :class:`Font` or ``None``         
         """
 
         if font is None:
@@ -406,17 +444,23 @@ class AdvancedSplash(wx.Frame):
 
 
     def GetTextFont(self):
-        """ Gets the font for the text in L{AdvancedSplash}."""
+        """
+        Gets the font for the text in :class:`AdvancedSplash`.
+
+        :return: An instance of :class:`Font` to draw the text and a :class:`Size` object containing
+         the text width an height, in pixels.
+        """
 
         return self._textfont, self._textsize
 
 
     def SetTextColour(self, colour=None):
         """
-        Sets the colour for the text in L{AdvancedSplash}.
+        Sets the colour for the text in :class:`AdvancedSplash`.
 
         :param `colour`: the text colour to use while drawing the text on top of our
          bitmap. If `colour` is ``None``, then ``wx.BLACK`` is used.
+        :type colour: :class:`Colour` or ``None``
         """
 
         if colour is None:
@@ -428,21 +472,26 @@ class AdvancedSplash(wx.Frame):
 
 
     def GetTextColour(self):
-        """ Gets the colour for the text in L{AdvancedSplash}."""
+        """
+        Gets the colour for the text in :class:`AdvancedSplash`.
+
+        :return: An instance of :class:`Colour`.
+        """
 
         return self._textcolour
 
 
     def SetTextPosition(self, position=None):
         """
-        Sets the text position inside L{AdvancedSplash} frame.
+        Sets the text position inside :class:`AdvancedSplash` frame.
 
         :param `position`: the text position inside our bitmap. If `position` is ``None``,
          the text will be placed at the top-left corner.
+        :type position: tuple or ``None``
         """
 
         if position is None:
-            position = (0,0)
+            position = (0, 0)
 
         self._textpos = position
         self.Refresh()
@@ -450,13 +499,21 @@ class AdvancedSplash(wx.Frame):
 
 
     def GetTextPosition(self):
-        """ Returns the text position inside L{AdvancedSplash} frame."""
+        """
+        Returns the text position inside :class:`AdvancedSplash` frame.
+
+        :return: A tuple containing the text `x` and `y` position inside the :class:`AdvancedSplash` frame.
+        """
 
         return self._textpos
 
 
     def GetSplashStyle(self):
-        """ Returns a list of strings and a list of integers containing the styles. """
+        """
+        Returns a list of strings and a list of integers containing the styles.
+
+        :return: Two Python lists containing the style name and style values for :class:`AdvancedSplash`.
+        """
 
         stringstyle = []
         integerstyle = []
@@ -486,5 +543,4 @@ class AdvancedSplash(wx.Frame):
             integerstyle.append(AS_SHADOW_BITMAP)
 
         return stringstyle, integerstyle
-
 

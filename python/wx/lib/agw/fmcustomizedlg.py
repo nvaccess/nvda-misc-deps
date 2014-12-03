@@ -1,6 +1,6 @@
 """
 This module contains a custom dialog class used to personalize the appearance of a
-L{FlatMenu} on the fly, allowing also the user of your application to do the same.
+:class:`FlatMenu` on the fly, allowing also the user of your application to do the same.
 """
 
 import wx
@@ -85,7 +85,7 @@ class FMTitlePanel(wx.Panel):
         """
         Default class constructor.
 
-        :param `parent`: the L{FMTitlePanel} parent;
+        :param `parent`: the :class:`FMTitlePanel` parent;
         :param `title`: the string to use as a dialog title.
         """
 
@@ -112,9 +112,9 @@ class FMTitlePanel(wx.Panel):
 
     def OnEraseBackground(self, event):
         """
-        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for L{FMTitlePanel}.
+        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for :class:`FMTitlePanel`.
 
-        :param `event`: a `wx.EraseEvent` event to be processed.
+        :param `event`: a :class:`EraseEvent` event to be processed.
 
         :note: This method is intentionally empty to reduce flicker.        
         """
@@ -124,9 +124,9 @@ class FMTitlePanel(wx.Panel):
 
     def OnPaint(self, event):
         """
-        Handles the ``wx.EVT_PAINT`` event for L{FMTitlePanel}.
+        Handles the ``wx.EVT_PAINT`` event for :class:`FMTitlePanel`.
 
-        :param `event`: a `wx.PaintEvent` event to be processed.
+        :param `event`: a :class:`PaintEvent` event to be processed.
         """
         
         dc = wx.BufferedPaintDC(self)
@@ -150,14 +150,14 @@ class FMTitlePanel(wx.Panel):
 
 class FMCustomizeDlg(wx.Dialog):
     """
-    Class used to customize the appearance of L{FlatMenu} and L{FlatMenuBar}.
+    Class used to customize the appearance of :class:`FlatMenu` and :class:`FlatMenuBar`.
     """
 
     def __init__(self, parent=None):
         """
         Default class constructor.
 
-        :param `parent`: the L{FMCustomizeDlg} parent window.
+        :param `parent`: the :class:`FMCustomizeDlg` parent window.
         """
         
         self._book = None
@@ -207,7 +207,7 @@ class FMCustomizeDlg(wx.Dialog):
 
 
     def Initialise(self):
-        """ Initialzes the L{LabelBook} pages. """
+        """ Initialzes the :class:`LabelBook` pages. """
     
         self._book.DeleteAllPages()
         self._book.AddPage(self.CreateMenusPage(), _("Menus"), True)
@@ -227,7 +227,7 @@ class FMCustomizeDlg(wx.Dialog):
     
     
     def CreateMenusPage(self):
-        """ Creates the L{LabelBook} pages with L{FlatMenu} information. """
+        """ Creates the :class:`LabelBook` pages with :class:`FlatMenu` information. """
     
         menus = wx.Panel(self._book, wx.ID_ANY, wx.DefaultPosition, wx.Size(300, 300))
         sz = wx.BoxSizer(wx.VERTICAL)
@@ -289,14 +289,14 @@ class FMCustomizeDlg(wx.Dialog):
     
 
     def CreateShortcutsPage(self):
-        """ Creates the L{LabelBook} shorcuts page. """
+        """ Creates the :class:`LabelBook` shorcuts page. """
     
         shorcuts = wx.Panel(self._book, wx.ID_ANY, wx.DefaultPosition, wx.Size(300, 300))
         return shorcuts
     
 
     def CreateOptionsPage(self):
-        """ Creates the L{LabelBook} option page which holds the L{FlatMenu} styles. """
+        """ Creates the :class:`LabelBook` option page which holds the :class:`FlatMenu` styles. """
     
         options = wx.Panel(self._book, wx.ID_ANY, wx.DefaultPosition, wx.Size(300, 300))
 
@@ -399,11 +399,11 @@ class FMCustomizeDlg(wx.Dialog):
 
     def OnMenuChecked(self, event):
         """
-        Handles the ``wx.EVT_CHECKBOX`` event for L{FMCustomizeDlg}.
+        Handles the ``wx.EVT_CHECKBOX`` event for :class:`FMCustomizeDlg`.
 
-        :param `event`: a `wx.CommandEvent` event to be processed.
+        :param `event`: a :class:`CommandEvent` event to be processed.
 
-        :note: This method handles the L{FlatMenu} menus visibility.
+        :note: This method handles the :class:`FlatMenu` menus visibility.
         """
     
         id = event.GetInt()
@@ -459,11 +459,11 @@ class FMCustomizeDlg(wx.Dialog):
     
     def OnChangeStyle(self, event):
         """
-        Handles the ``wx.EVT_CHECKBOX`` event for L{FMCustomizeDlg}.
+        Handles the ``wx.EVT_CHECKBOX`` event for :class:`FMCustomizeDlg`.
 
-        :param `event`: a `wx.CommandEvent` event to be processed.
+        :param `event`: a :class:`CommandEvent` event to be processed.
 
-        :note: This method handles the L{FlatMenu} styles.        
+        :note: This method handles the :class:`FlatMenu` styles.        
         """
 
         mb = self.GetParent()

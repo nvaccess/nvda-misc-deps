@@ -12,8 +12,8 @@ Editra Business Model Library:
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__cvsid__ = "$Id: __init__.py 67506 2011-04-16 14:19:27Z CJP $"
-__revision__ = "$Revision: 67506 $"
+__cvsid__ = "$Id: __init__.py 69798 2011-11-23 02:59:40Z CJP $"
+__revision__ = "$Revision: 69798 $"
 
 #-----------------------------------------------------------------------------#
 
@@ -21,6 +21,7 @@ __revision__ = "$Revision: 67506 $"
 from searcheng import *
 from fchecker import *
 from fileutil import *
+from _dirmon import *
 from fileimpl import *
 from txtutil import *
 from logfile import *
@@ -37,6 +38,7 @@ from e_weblib import *
 
 # Misc
 from miscutil import *
+from _efactory import *
 from cmenumgr import *
 from efilehist import *
 from osutil import *

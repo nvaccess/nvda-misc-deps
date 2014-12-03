@@ -67,7 +67,11 @@ class CheckContentAttribute:
     def add(parentNode, attribute, value):
         contentElem = Model.dom.createElement(attribute)
         parentNode.appendChild(contentElem)
-        for checked,item in value:
+        for item in value:
+            try:
+                checked, item = item
+            except:
+                checked = False
             elem = Model.dom.createElement('item')
             if checked:
                 elem.setAttribute('checked', '1')
@@ -80,9 +84,43 @@ class CheckContentAttribute:
         value = []
         for n in node.childNodes:
             if n.nodeType == node.ELEMENT_NODE and n.tagName == 'item':
-                checked = bool(n.getAttribute('checked'))
-                value.append((checked, Attribute.get(n)))
+                try:
+                    checked = int(n.getAttribute('checked'))
+                except:
+                    checked = 0
+                value.append((checked, str(Attribute.get(n))))
         return value
+
+class HelpContentAttribute:
+    '''RadioBox content.  Value is a list of tuples (string, tooltip, help).'''
+    @staticmethod
+    def add(parentNode, attribute, value):
+        contentElem = Model.dom.createElement(attribute)
+        parentNode.appendChild(contentElem)
+        for item in value:
+            try:
+                item, tooltip, helptext = item
+            except:
+                tooltip = helptext = ''
+            elem = Model.dom.createElement('item')
+            if tooltip:
+                elem.setAttribute('tooltip', tooltip)
+            if helptext:
+                elem.setAttribute('helptext', helptext)
+            text = Model.dom.createTextNode(item)
+            elem.appendChild(text)
+            contentElem.appendChild(elem)
+    @staticmethod
+    def get(node):
+        if node is None: return []
+        value = []
+        for n in node.childNodes:
+            if n.nodeType == node.ELEMENT_NODE and n.tagName == 'item':
+                tooltip = n.getAttribute('tooltip')
+                helptext = n.getAttribute('helptext')
+                value.append((str(Attribute.get(n)), str(tooltip), str(helptext)))
+        return value
+    
 
 class DictAttribute:
     '''DictAttribute uses dictionary object for passing data.'''

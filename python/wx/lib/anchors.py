@@ -6,7 +6,7 @@
 # Author:      Riaan Booysen
 #
 # Created:     15-Dec-2000
-# RCS-ID:      $Id: anchors.py 34032 2005-05-12 22:46:53Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2000 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

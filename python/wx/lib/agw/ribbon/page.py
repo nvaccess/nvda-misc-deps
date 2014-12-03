@@ -8,7 +8,7 @@ Container for related ribbon panels, and a tab within a ribbon bar.
 See Also
 ========
 
-L{RibbonBar}, L{RibbonPanel}
+:class:`~lib.agw.ribbon.bar.RibbonBar`, :class:`~lib.agw.ribbon.panel.RibbonPanel`
 
 """
 
@@ -49,7 +49,6 @@ class RibbonPageScrollButton(RibbonControl):
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         self._sibling = sibling
         self._flags = (style & RIBBON_SCROLL_BTN_DIRECTION_MASK) | RIBBON_SCROLL_BTN_FOR_PAGE
-
 
         self.Bind(wx.EVT_ENTER_WINDOW, self.OnMouseEnter)
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
@@ -112,12 +111,13 @@ class RibbonPage(RibbonControl):
         """
         Default class constructor.
 
-        :param `parent`: Pointer to a parent window;
-        :param `id`: Window identifier. If ``wx.ID_ANY``, will automatically create an identifier;
-        :param `label`: Label of the new button;
-        :param `icon`: the icon used for the page in the ribbon bar tab area;
-        :param `style`: Window style.
-
+        :param `parent`: pointer to a parent window, an instance of :class:`~lib.agw.ribbon.bar.RibbonBar`;
+        :param `id`: window identifier. If ``wx.ID_ANY``, will automatically create an identifier;
+        :param `label`: label to be used in the :class:`~lib.agw.ribbon.bar.RibbonBar`'s tab list for this page (if the
+         ribbon bar is set to display labels);
+        :param `icon`: the icon used for the page in the ribbon bar tab area (if the ribbon bar is
+         set to display icons);
+        :param `style`: window style. Currently unused, should be zero.
         """
 
         RibbonControl.__init__(self, parent, id, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE)
@@ -138,6 +138,8 @@ class RibbonPage(RibbonControl):
         self._icon = icon
         self._scroll_left_btn = None
         self._scroll_right_btn = None
+        self._size_calc_array = None
+        self._size_calc_array_size = 0
         self._scroll_amount = 0
         self._scroll_buttons_visible = False
         self._collapse_stack = []
@@ -151,14 +153,13 @@ class RibbonPage(RibbonControl):
         """
         Set the art provider to be used.
 
-        Normally called automatically by L{RibbonBar} when the page is created, or the
+        Normally called automatically by :class:`~lib.agw.ribbon.bar.RibbonBar` when the page is created, or the
         art provider changed on the bar. The new art provider will be propagated to the
         children of the page.
 
-        Reimplemented from L{RibbonControl}.
+        :param `art`: an art provider.
 
-        :param `art`: MISSING DESCRIPTION.
-
+        :note: Reimplemented from :class:`~lib.agw.ribbon.control.RibbonControl`.
         """
 
         self._art = art
@@ -175,7 +176,6 @@ class RibbonPage(RibbonControl):
 
         :param `rect`: The rectangle to adjust. The width and height will not be
          reduced, and the x and y will not be increased.
-
         """
 
         if self._scroll_buttons_visible:        
@@ -199,12 +199,22 @@ class RibbonPage(RibbonControl):
     
 
     def OnEraseBackground(self, event):
+        """
+        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for :class:`RibbonPage`.
+
+        :param `event`: a :class:`EraseEvent` event to be processed.
+        """
 
         # All painting done in main paint handler to minimise flicker
         pass
 
 
     def OnPaint(self, event):
+        """
+        Handles the ``wx.EVT_PAINT`` event for :class:`RibbonPage`.
+
+        :param `event`: a :class:`PaintEvent` event to be processed.
+        """
 
         # No foreground painting done by the page itself, but a paint DC
         # must be created anyway.
@@ -218,7 +228,7 @@ class RibbonPage(RibbonControl):
         """
         Get the direction in which ribbon panels are stacked within the page.
 
-        This is controlled by the style of the containing L{RibbonBar}, meaning that all
+        This is controlled by the style of the containing :class:`~lib.agw.ribbon.bar.RibbonBar`, meaning that all
         pages within a bar will have the same major axis. As well as being the direction
         in which panels are stacked, it is also the axis in which scrolling will occur
         (when required).
@@ -242,14 +252,14 @@ class RibbonPage(RibbonControl):
         up or left (depending on the direction in which panels are stacked). A line is
         equivalent to a constant number of pixels.
 
-        Reimplemented from `wx.Window`.
-
-        :param `lines`: MISSING DESCRIPTION.
+        :param integer `lines`: number of lines to scroll the page.
 
         :returns: ``True`` if the page scrolled at least one pixel in the given direction,
          ``False`` if it did not scroll.
-         
-        :see: L{GetMajorAxis}, L{ScrollPixels}
+
+        :note: Reimplemented from :class:`Window`.
+
+        :see: :meth:`~RibbonPage.GetMajorAxis`, :meth:`~RibbonPage.ScrollPixels`
         """
 
         return self.ScrollPixels(lines * 8)
@@ -264,12 +274,12 @@ class RibbonPage(RibbonControl):
         Positive values of will scroll right or down, while negative values will scroll
         up or left (depending on the direction in which panels are stacked).
 
-        :param `pixels`: MISSING DESCRIPTION.
+        :param integer `pixels`: number of pixels to scroll the page.
 
         :returns: ``True`` if the page scrolled at least one pixel in the given direction,
          ``False`` if it did not scroll.
          
-        :see: L{GetMajorAxis}, L{ScrollLines}
+        :see: :meth:`~RibbonPage.GetMajorAxis`, :meth:`~RibbonPage.ScrollLines`
         """
 
         if pixels < 0:        
@@ -322,11 +332,10 @@ class RibbonPage(RibbonControl):
         of `SetSize`, as iteracting algorithms may not expect `SetSize` to also
         set the size of siblings.
 
-        :param `x`: MISSING DESCRIPTION;
-        :param `y`: MISSING DESCRIPTION;
-        :param `width`: MISSING DESCRIPTION;
-        :param `height`: MISSING DESCRIPTION.
-
+        :param `x`: the page `x` position, in pixels;
+        :param `y`: the page `y` position, in pixels;
+        :param `width`: the page width, in pixels;
+        :param `height`: the page height, in pixels.
         """
 
         if self._scroll_buttons_visible:        
@@ -354,11 +363,44 @@ class RibbonPage(RibbonControl):
                     height -= h
                     self._scroll_right_btn.SetPosition(wx.Point(x, y + height))
 
+        if width < 0:
+            width = 0
+        if height < 0:
+            height = 0
+            
         self.SetDimensions(x, y, width, height)
 
 
     def DoSetSize(self, x, y, width, height, sizeFlags=wx.SIZE_AUTO):
+        """
+        Sets the size of the window in pixels.
 
+        :param integer `x`: required `x` position in pixels, or ``wx.DefaultCoord`` to
+         indicate that the existing value should be used;
+        :param integer `y`: required `y` position in pixels, or ``wx.DefaultCoord`` to
+         indicate that the existing value should be used;
+        :param integer `width`: required width in pixels, or ``wx.DefaultCoord`` to
+         indicate that the existing value should be used;
+        :param integer `height`: required height in pixels, or ``wx.DefaultCoord`` to
+         indicate that the existing value should be used;
+        :param integer `sizeFlags`: indicates the interpretation of other parameters.
+         It is a bit list of the following:
+
+         * ``wx.SIZE_AUTO_WIDTH``: a ``wx.DefaultCoord`` width value is taken to indicate a
+           wxPython-supplied default width.
+         * ``wx.SIZE_AUTO_HEIGHT``: a ``wx.DefaultCoord`` height value is taken to indicate a
+           wxPython-supplied default height.
+         * ``wx.SIZE_AUTO``: ``wx.DefaultCoord`` size values are taken to indicate a wxPython-supplied
+           default size.
+         * ``wx.SIZE_USE_EXISTING``: existing dimensions should be used if ``wx.DefaultCoord`` values are supplied.
+         * ``wx.SIZE_ALLOW_MINUS_ONE``: allow negative dimensions (i.e. value of ``wx.DefaultCoord``)
+           to be interpreted as real dimensions, not default values.
+         * ``wx.SIZE_FORCE``: normally, if the position and the size of the window are already
+           the same as the parameters of this function, nothing is done. but with this flag a window
+           resize may be forced even in this case (supported in wx 2.6.2 and later and only implemented
+           for MSW and ignored elsewhere currently).
+        """
+        
         # When a resize triggers the scroll buttons to become visible, the page is resized.
         # This resize from within a resize event can cause (MSW) wxWidgets some confusion,
         # and report the 1st size to the 2nd size event. Hence the most recent size is
@@ -366,19 +408,38 @@ class RibbonPage(RibbonControl):
 
         if self.GetMajorAxis() == wx.HORIZONTAL:
             self._size_in_major_axis_for_children = width
+
+            if self._scroll_buttons_visible:
+                if self._scroll_left_btn:
+                    self._size_in_major_axis_for_children += self._scroll_left_btn.GetSize().GetWidth()
+                if self._scroll_right_btn:
+                    self._size_in_major_axis_for_children += self._scroll_right_btn.GetSize().GetWidth()
+                    
         else:
             self._size_in_major_axis_for_children = height
+
+            if self._scroll_buttons_visible:
+                if self._scroll_left_btn:
+                    self._size_in_major_axis_for_children += self._scroll_left_btn.GetSize().GetHeight()
+                if self._scroll_right_btn:
+                    self._size_in_major_axis_for_children += self._scroll_right_btn.GetSize().GetHeight()
 
         RibbonControl.DoSetSize(self, x, y, width, height, sizeFlags)
 
 
     def OnSize(self, event):
+        """
+        Handles the ``wx.EVT_SIZE`` event for :class:`RibbonPage`.
+
+        :param `event`: a :class:`SizeEvent` event to be processed.
+        """
 
         new_size = event.GetSize()
 
-        temp_dc = wx.MemoryDC()
-        invalid_rect = self._art.GetPageBackgroundRedrawArea(temp_dc, self, self._old_size, new_size)
-        self.Refresh(True, invalid_rect)
+        if self._art:
+            temp_dc = wx.MemoryDC()
+            invalid_rect = self._art.GetPageBackgroundRedrawArea(temp_dc, self, self._old_size, new_size)
+            self.Refresh(True, invalid_rect)
 
         self._old_size = wx.Size(*new_size)
         x, y = new_size
@@ -395,8 +456,7 @@ class RibbonPage(RibbonControl):
 
 
     def RemoveChild(self, child):
-
-        # Remove all references to the child from the collapse stack
+        """ Remove all references to the child from the collapse stack. """
 
         try:
             self._collapse_stack.remove(child)
@@ -413,11 +473,10 @@ class RibbonPage(RibbonControl):
 
         Should be called after panels are added to the page, or the sizing behaviour of
         a panel on the page changes (i.e. due to children being added to it). Usually
-        called automatically when L{RibbonBar.Realize} is called. Will invoke
-        L{RibbonPanel.Realize} for all child panels.
+        called automatically when :meth:`RibbonBar.Realize() <lib.agw.ribbon.bar.RibbonBar.Realize>` is called. Will invoke
+        :meth:`RibbonPanel.Realize() <lib.agw.ribbon.panel.RibbonPanel.Realize>` for all child panels.
 
-        Reimplemented from L{RibbonControl}.
-
+        :note: Reimplemented from :class:`~lib.agw.ribbon.control.RibbonControl`.
         """
 
         status = True
@@ -466,6 +525,9 @@ class RibbonPage(RibbonControl):
             gap = self._art.GetMetric(RIBBON_ART_PANEL_Y_SEPARATION_SIZE)
             minor_axis_size = self.GetSize().GetWidth() - origin.x - self._art.GetMetric(RIBBON_ART_PAGE_BORDER_RIGHT_SIZE)
 
+        if minor_axis_size < 0:
+            minor_axis_size = 0
+ 
         for iteration in xrange(1, 3):
         
             for child in self.GetChildren():
@@ -629,7 +691,7 @@ class RibbonPage(RibbonControl):
                 
                 if not isinstance(panel, RibbonPanel):
                     continue
-                
+
                 if panel.IsSizingContinuous():
                     size = GetSizeInOrientation(panel.GetSize(), direction)
                     if size < smallest_size:                    
@@ -781,6 +843,13 @@ class RibbonPage(RibbonControl):
 
 
     def GetMinSize(self):
+        """
+        Returns the minimum size of the window, an indication to the sizer layout mechanism
+        that this is the minimum required size.
+
+        This method normally just returns the value set by `SetMinSize`, but it can be overridden
+        to do the calculation on demand.
+        """
 
         minSize = wx.Size(-1, -1)
 
@@ -804,6 +873,15 @@ class RibbonPage(RibbonControl):
 
 
     def DoGetBestSize(self):
+        """
+        Gets the size which best suits the window: for a control, it would be the
+        minimal size which doesn't truncate the control, for a panel - the same size
+        as it would have after a call to `Fit()`.
+
+        :return: An instance of :class:`Size`.
+        
+        :note: Overridden from :class:`PyControl`.
+        """
 
         best = wx.Size(0, 0)
         count = 0
@@ -847,6 +925,7 @@ class RibbonPage(RibbonControl):
 
 
     def GetDefaultBorder(self):
+        """ Returns the default border style for :class:`RibbonPage`. """
 
         return wx.BORDER_NONE
 

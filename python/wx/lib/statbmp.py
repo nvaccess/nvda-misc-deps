@@ -5,7 +5,7 @@
 # Author:      Robin Dunn
 #
 # Created:     12-May-2004
-# RCS-ID:      $Id: statbmp.py 42816 2006-10-31 08:50:17Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2004 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

@@ -4,7 +4,7 @@
 #
 # Author:      Riaan Booysen
 #
-# RCS-ID:      $Id: img2pyartprov.py 51004 2008-01-03 08:17:39Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2006
 # Licence:     wxPython
 #-----------------------------------------------------------------------------

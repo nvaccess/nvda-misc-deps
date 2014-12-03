@@ -59,26 +59,19 @@
     <has-name>1</has-name>
     <styles>
       <item>wxTR_DEFAULT_STYLE</item>
-      <item>wxDEFAULT_COL_WIDTH</item>
-      <item>wxTL_MODE_NAV_FULLTREE</item>
-      <item>wxTL_MODE_NAV_EXPANDED</item>
-      <item>wxTL_MODE_NAV_VISIBLE</item>
-      <item>wxTL_MODE_NAV_LEVEL</item>
-      <item>wxTL_MODE_FIND_EXACT</item>
-      <item>wxTL_MODE_FIND_PARTIAL</item>
-      <item>wxTL_MODE_FIND_NOCASE</item>
-      <item>wxTREE_HITTEST_ONITEMCOLUMN</item>
-      <item>wxTR_COLUMN_LINES</item>
-      <item>wxTR_VIRTUAL</item>
-      <item>wxTL_ALIGN_LEFT</item>
-      <item>wxTL_ALIGN_RIGHT</item>
-      <item>wxTL_ALIGN_CENTER</item>
-      <item>wxTL_SEARCH_VISIBLE</item>
-      <item>wxTL_SEARCH_LEVEL</item>
-      <item>wxTL_SEARCH_FULL</item>
-      <item>wxTL_SEARCH_PARTIAL</item>
-      <item>wxTL_SEARCH_NOCASE</item>
-      <item>wxTR_DONT_ADJUST_MAC</item>
+      <item>wxTR_EDIT_LABELS</item>
+      <item>wxTR_NO_BUTTONS</item>
+      <item>wxTR_HAS_BUTTONS</item>
+      <item>wxTR_TWIST_BUTTONS</item>
+      <item>wxTR_NO_LINES</item>
+      <item>wxTR_FULL_ROW_HIGHLIGHT</item>
+      <item>wxTR_LINES_AT_ROOT</item>
+      <item>wxTR_HIDE_ROOT</item>
+      <item>wxTR_ROW_LINES</item>
+      <item>wxTR_HAS_VARIABLE_ROW_HEIGHT</item>
+      <item>wxTR_SINGLE</item>
+      <item>wxTR_MULTIPLE</item>
+      <item>wxTR_EXTENDED</item>
     </styles>
     <module>xh_gizmos</module>
     <handler>TreeListCtrlXmlHandler</handler>

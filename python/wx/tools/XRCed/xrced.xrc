@@ -84,6 +84,13 @@
                 <border>5</border>
               </object>
               <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_EDIT">
+                  <label>Edit...</label>
+                </object>
+                <flag>wxBOTTOM|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <object class="sizeritem">
                 <object class="wxButton" name="BUTTON_REMOVE">
                   <label>Remove</label>
                 </object>
@@ -164,6 +171,13 @@
               <object class="sizeritem">
                 <object class="wxButton" name="BUTTON_APPEND">
                   <label>Append...</label>
+                </object>
+                <flag>wxBOTTOM|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_EDIT">
+                  <label>Edit...</label>
                 </object>
                 <flag>wxBOTTOM|wxEXPAND</flag>
                 <border>5</border>
@@ -870,5 +884,181 @@
         <object class="wxNotebook" name="NOTEBOOK"/>
       </object>
     </object>
+  </object>
+  <object class="wxDialog" name="DIALOG_CONTENT_HELPLIST">
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <object class="wxListCtrl" name="LIST">
+              <size>250,-1</size>
+              <style>wxLC_REPORT</style>
+            </object>
+            <option>1</option>
+            <flag>wxTOP|wxBOTTOM|wxLEFT|wxEXPAND</flag>
+            <border>5</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_UP">
+                  <label>Move Up</label>
+                </object>
+                <flag>wxBOTTOM|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_DOWN">
+                  <label>Move Down</label>
+                </object>
+                <flag>wxEXPAND</flag>
+              </object>
+              <object class="spacer">
+                <size>10,20</size>
+                <option>1</option>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_APPEND">
+                  <label>Append...</label>
+                </object>
+                <flag>wxBOTTOM|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_EDIT">
+                  <label>Edit...</label>
+                </object>
+                <flag>wxBOTTOM|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="BUTTON_REMOVE">
+                  <label>Remove</label>
+                </object>
+                <flag>wxEXPAND</flag>
+              </object>
+            </object>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>5</border>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+      </object>
+      <object class="spacer">
+        <size>0,10</size>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStdDialogButtonSizer">
+          <object class="button">
+            <object class="wxButton" name="wxID_OK">
+            </object>
+          </object>
+          <object class="button">
+            <object class="wxButton" name="wxID_CANCEL">
+            </object>
+          </object>
+        </object>
+        <flag>wxALL|wxALIGN_CENTRE_HORIZONTAL</flag>
+        <border>10</border>
+      </object>
+    </object>
+    <size>350,300</size>
+    <title>Content</title>
+    <centered>1</centered>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+  </object>
+  <object class="wxDialog" name="DIALOG_HELPTEXT">
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Value</label>
+        </object>
+        <flag>wxALL</flag>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="TEXT">
+              <style>wxTE_MULTILINE</style>
+            </object>
+            <option>1</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>5</border>
+          </object>
+          <orient>wxHORIZONTAL</orient>
+        </object>
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Tooltip</label>
+        </object>
+        <flag>wxALL</flag>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="TOOLTIP">
+              <size>250,100</size>
+              <style>wxTE_MULTILINE</style>
+            </object>
+            <option>1</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>5</border>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Help Text</label>
+        </object>
+        <flag>wxALL</flag>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="HELPTEXT">
+              <size>250,100</size>
+              <style>wxTE_MULTILINE</style>
+            </object>
+            <option>1</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>5</border>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStdDialogButtonSizer">
+          <object class="button">
+            <object class="wxButton" name="wxID_OK">
+            </object>
+          </object>
+          <object class="button">
+            <object class="wxButton" name="wxID_CANCEL">
+            </object>
+          </object>
+        </object>
+        <flag>wxALL|wxALIGN_CENTRE_HORIZONTAL</flag>
+        <border>10</border>
+      </object>
+    </object>
+    <title>Edit item</title>
+    <centered>1</centered>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
   </object>
 </resource>

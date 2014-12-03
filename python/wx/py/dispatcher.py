@@ -1,8 +1,8 @@
 """Provides global signal dispatching services."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id: dispatcher.py 39667 2006-06-11 00:13:05Z RD $"
-__revision__ = "$Revision: 39667 $"[11:-2]
+__cvsid__ = "$Id$"
+__revision__ = "$Revision$"[11:-2]
 
 import exceptions
 import types

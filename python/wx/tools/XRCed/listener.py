@@ -2,7 +2,7 @@
 # Purpose:      Listener for dispatching events from view to presenter
 # Author:       Roman Rolinsky <rolinsky@femagsoft.com>
 # Created:      07.06.2007
-# RCS-ID:       $Id: listener.py 64627 2010-06-18 18:17:45Z ROL $
+# RCS-ID:       $Id: listener.py 71790 2012-06-17 15:43:08Z ROL $
 
 import wx
 import os,sys,shutil,tempfile
@@ -465,9 +465,6 @@ class _Listener:
         self.tree.UnselectAll()
         if not Presenter.applied: Presenter.update()
         Presenter.setData(self.tree.root)
-
-    def ItemsAreCompatible(self, parent, child):
-        raise NotImplementedError
 
     def OnMoveUp(self, evt):
         self.inIdle = True

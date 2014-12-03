@@ -15,12 +15,14 @@
 # Author:      Robin Dunn
 #
 # Created:     23-March-2004
-# RCS-ID:      $Id: config.py 67474 2011-04-13 18:22:14Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2004 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
 
 import sys, os, glob, fnmatch, tempfile
+import subprocess
+import re
 
 EGGing = 'bdist_egg' in sys.argv or 'egg_info' in sys.argv
 if not EGGing:
@@ -28,6 +30,8 @@ if not EGGing:
 else:
     # EXPERIMENTAL Egg support...
     try:
+        import ez_setup
+        ez_setup.use_setuptools()
         from setuptools import setup, Extension
     except ImportError:
         print "Setuptools must be installed to build an egg"
@@ -43,15 +47,11 @@ import distutils.command.install_data
 import distutils.command.install_headers
 import distutils.command.clean
 
+from cfg_version import *
+
 #----------------------------------------------------------------------
 # flags and values that affect this script
 #----------------------------------------------------------------------
-
-VER_MAJOR        = 2      # The first three must match wxWidgets
-VER_MINOR        = 8
-VER_RELEASE      = 12
-VER_SUBREL       = 1      # wxPython release num for x.y.z release of wxWidgets
-VER_FLAGS        = ""     # release flags, such as prerelease or RC num, etc.
 
 DESCRIPTION      = "Cross platform GUI toolkit for Python"
 AUTHOR           = "Robin Dunn"
@@ -90,14 +90,13 @@ Topic :: Software Development :: User Interfaces
 # Config values below this point can be reset on the setup.py command line.
 
 BUILD_GLCANVAS = 1 # If true, build the contrib/glcanvas extension module
-BUILD_OGL = 0      # If true, build the contrib/ogl extension module
 BUILD_STC = 1      # If true, build the contrib/stc extension module
 BUILD_GIZMOS = 1   # Build a module for the gizmos contrib library
 BUILD_DLLWIDGET = 0# Build a module that enables unknown wx widgets
                    # to be loaded from a DLL and to be used from Python.
 
                    # Internet Explorer wrapper (experimental)
-BUILD_ACTIVEX = (os.name == 'nt') # and os.environ.get('CPU',None) != 'AMD64') 
+BUILD_ACTIVEX = (os.name == 'nt')
 
 
 CORE_ONLY = 0      # if true, don't build any of the above
@@ -174,8 +173,8 @@ SYS_WX_CONFIG = None # When installing an in tree build, setup.py uses wx-config
 
 WXPORT = 'gtk2'    # On Linux/Unix there are several ports of wxWidgets available.
                    # Setting this value lets you select which will be used for
-                   # the wxPython build.  Possibilites are 'gtk', 'gtk2' and
-                   # 'x11'.  Currently only gtk and gtk2 works.
+                   # the wxPython build.  Possibilities are 'gtk', 'gtk2',
+                   # 'gtk3', and 'x11'.  Currently only gtk2, and gtk3 work.
 
 BUILD_BASE = "build" # Directory to use for temporary build files.
                      # This name will be appended to if the WXPORT or
@@ -194,16 +193,6 @@ MONOLITHIC = 0     # The core wxWidgets lib can be built as either a
                    # on Windows.  (For other platforms it is automatic
                    # via using wx-config.)
 
-FINAL = 0          # Will use the release version of the wxWidgets libs on MSW.
-
-HYBRID = 1         # Will use the "hybrid" version of the wxWidgets
-                   # libs on MSW.  A "hybrid" build is one that is
-                   # basically a release build, but that also defines
-                   # __WXDEBUG__ to activate the runtime checks and
-                   # assertions in the library.  When any of these is
-                   # triggered it is turned into a Python exception so
-                   # this is a very useful feature to have turned on.
-                   
                    # Version part of wxWidgets LIB/DLL names
 WXDLLVER = '%d%d' % (VER_MAJOR, VER_MINOR)
 
@@ -235,10 +224,8 @@ def opj(*args):
 
 
 def libFlag():
-    if FINAL:
+    if not debug:
         rv = ''
-    elif HYBRID:
-        rv = 'h'
     else:
         rv = 'd'
     if UNICODE:
@@ -262,7 +249,7 @@ cleaning = 'clean' in sys.argv
 
 # change the PORT default for wxMac
 if sys.platform[:6] == "darwin":
-    WXPORT = 'mac'
+    WXPORT = 'osx_carbon'
 
 # and do the same for wxMSW, just for consistency
 if os.name == 'nt':
@@ -276,12 +263,11 @@ WXPYTHON_TYPE_TABLE = '_wxPython_table'
 
 # Boolean (int) flags
 for flag in [ 'BUILD_ACTIVEX', 'BUILD_DLLWIDGET',
-              'BUILD_GIZMOS', 'BUILD_GLCANVAS', 
-              'BUILD_OGL', 'BUILD_STC',     
+              'BUILD_GIZMOS', 'BUILD_GLCANVAS', 'BUILD_STC',     
              'CORE_ONLY', 'PREP_ONLY', 'USE_SWIG', 'UNICODE',
              'UNDEF_NDEBUG', 'NO_SCRIPTS', 'NO_HEADERS', 'BUILD_RENAMERS',
              'FULL_DOCS', 'INSTALL_MULTIVERSION', 'EP_ADD_OPTS', 'EP_FULL_VER',
-             'MONOLITHIC', 'FINAL', 'HYBRID', ]:
+             'MONOLITHIC', ]:
     for x in range(len(sys.argv)):
         if sys.argv[x].find(flag) == 0:
             pos = sys.argv[x].find('=') + 1
@@ -340,7 +326,14 @@ def Verify_WX_CONFIG():
             # should we exit?
 
         # TODO:  execute WX_CONFIG --list and verify a matching config is found
-        
+    
+
+
+def getWxConfigValue(flag):
+    cmd = "%s --version=%s.%s  %s" % (WX_CONFIG, VER_MAJOR, VER_MINOR, flag)
+    value = os.popen(cmd, 'r').read()[:-1]
+    return value
+
 
 def run_swig(files, dir, gendir, package, USE_SWIG, force, swig_args,
              swig_deps=[], add_under=False):
@@ -413,13 +406,12 @@ def run_swig(files, dir, gendir, package, USE_SWIG, force, swig_args,
 
     return sources
 
-import subprocess as sp
 
 def swig_version():
     # It may come on either stdout or stderr, depending on the
     # version, so read both.
-    p = sp.Popen(SWIG + ' -version', shell=True, universal_newlines=True,
-                 stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
+    p = subprocess.Popen(SWIG + ' -version', shell=True, universal_newlines=True,
+                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stext = p.stdout.read() + p.stderr.read()
     import re
     match = re.search(r'[0-9]+\.[0-9]+\.[0-9]+$', stext, re.MULTILINE)
@@ -464,7 +456,7 @@ class wx_extra_clean(distutils.command.clean.clean):
                         os.rmdir(f)
                     log.info("removing '%s'", f)
                 except IOError:
-                    log.warning("unable to remove '%s'", f)
+                    log.warn("unable to remove '%s'", f)
 
             else:
                 try:
@@ -472,7 +464,7 @@ class wx_extra_clean(distutils.command.clean.clean):
                         os.remove(f)
                     log.info("removing '%s'", f)
                 except IOError:
-                    log.warning("unable to remove '%s'", f)
+                    log.warn("unable to remove '%s'", f)
 
 
 
@@ -605,7 +597,7 @@ def makeLibName(name):
 def findLib(name, libdirs):
     name = makeLibName(name)[0]
     if os.name == 'posix' or COMPILER == 'mingw32':
-        lflags = os.popen(WX_CONFIG + ' --libs', 'r').read()[:-1]
+        lflags = getWxConfigValue('--libs')
         lflags = lflags.split()
         
         # if wx-config --libs output does not start with -L, wx is
@@ -613,9 +605,9 @@ def findLib(name, libdirs):
         # output these libdirs because they are already searched by
         # default by the compiler and linker.
         if lflags[0][:2] != '-L':  
-           dirs = libdirs + ['/usr/lib', '/usr/local/lib']
+            dirs = libdirs + ['/usr/lib', '/usr/local/lib']
         else:
-           dirs = libdirs
+            dirs = libdirs
         name = 'lib'+name
     else:
         dirs = libdirs[:]
@@ -675,7 +667,7 @@ def adjustLFLAGS(lflags, libdirs, libs):
 
 
 
-def getExtraPath(shortVer=True, addOpts=False):
+def getExtraPath(shortVer=True, addOpts=False, addRelease=True):
     """Get the dirname that wxPython will be installed under."""
 
     if shortVer:
@@ -683,11 +675,9 @@ def getExtraPath(shortVer=True, addOpts=False):
         ep = "wx-%d.%d" % (VER_MAJOR, VER_MINOR)
          
         # plus release if minor is odd
-        if VER_MINOR % 2 == 1:
+        if addRelease and VER_MINOR % 2 == 1:
             ep += ".%d" % VER_RELEASE
             
-        ##ep = "wx-%d.%d.%d" % (VER_MAJOR, VER_MINOR, VER_RELEASE)
-        
     else:
         # long version, full version 
         ep = "wx-%d.%d.%d.%d" % (VER_MAJOR, VER_MINOR, VER_RELEASE, VER_SUBREL)
@@ -695,13 +685,40 @@ def getExtraPath(shortVer=True, addOpts=False):
     if addOpts:
         port = WXPORT
         if port == "msw": port = "win32"
-        ep += "-%s-%s" % (WXPORT, (UNICODE and 'unicode' or 'ansi'))
+        #ep += "-%s-%s" % (WXPORT, (UNICODE and 'unicode' or 'ansi'))
+        # no more ansi builds, so no need to include chartype in the path any more
+        ep += '-' + WXPORT
         
     if FLAVOUR:
         ep += "-" + FLAVOUR
 
     return ep
 
+
+def getoutput(cmd):
+    sp = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output = None
+    output = sp.stdout.read()
+    if sys.version_info > (3,):
+        output = output.decode('utf-8')  # TODO: is utf-8 okay here?
+    output = output.rstrip()
+    rval = sp.wait()
+    if rval:
+        # Failed!
+        print("Command '%s' failed with exit code %d." % (cmd, rval))
+        sys.exit(rval)
+    return output
+
+def getVisCVersion():
+    text = getoutput("cl.exe")
+    if 'Version 13' in text:
+        return '71'
+    if 'Version 15' in text:
+        return '90'
+    # TODO: Add more tests to get the other versions...
+    else:
+        return 'UNKNOWN'
+ 
 #----------------------------------------------------------------------
 # These functions and class are copied from distutils in Python 2.5
 # and then grafted back into the distutils modules so we can change
@@ -716,12 +733,21 @@ from distutils.errors import DistutilsExecError, CompileError
 def _darwin_compiler_fixup(compiler_so, cc_args):
     """
     This function will strip '-isysroot PATH' and '-arch ARCH' from the
-    compile flags if the user has specified one them in extra_compile_flags.
+    compile flags if the user has specified one of them in extra_compile_flags.
 
     This is needed because '-arch ARCH' adds another architecture to the
     build, without a way to remove an architecture. Furthermore GCC will
     barf if multiple '-isysroot' arguments are present.
+    
+    Robin: I've further modified our copy of this function to check if there
+    is a -isysroot flag in the CC/CXX values in the environment. If so then we
+    want to make sure that we keep that one and strip the others, instead of
+    stripping it and leaving Python's.
     """
+    
+    ccHasSysroot = '-isysroot' in os.environ.get('CC', '') \
+                 or '-isysroot' in os.environ.get('CXX', '')
+    
     stripArch = stripSysroot = 0
 
     compiler_so = list(compiler_so)
@@ -734,7 +760,7 @@ def _darwin_compiler_fixup(compiler_so, cc_args):
         stripArch = stripSysroot = True
     else:
         stripArch = '-arch' in cc_args
-        stripSysroot = '-isysroot' in cc_args or stripArch  # <== This line changed
+        stripSysroot = '-isysroot' in cc_args or stripArch or ccHasSysroot
 
     if stripArch:
         while 1:
@@ -747,7 +773,10 @@ def _darwin_compiler_fixup(compiler_so, cc_args):
 
     if stripSysroot:
         try:
-            index = compiler_so.index('-isysroot')
+            index = 0
+            if ccHasSysroot:
+                index = compiler_so.index('-isysroot') + 1
+            index = compiler_so.index('-isysroot', index)
             # Strip this argument and the next one:
             del compiler_so[index:index+2]
         except ValueError:
@@ -765,6 +794,7 @@ def _darwin_compiler_fixup(compiler_so, cc_args):
         sysroot = compiler_so[idx+1]
 
     if sysroot and not os.path.isdir(sysroot):
+        from distutils import log
         log.warn("Compiling with an SDK that doesn't seem to exist: %s",
                 sysroot)
         log.warn("Please check your Xcode installation")
@@ -780,8 +810,12 @@ def _darwin_compiler_fixup_24(compiler_so, cc_args):
 class MyUnixCCompiler(distutils.unixccompiler.UnixCCompiler):
     def _compile(self, obj, src, ext, cc_args, extra_postargs, pp_opts):
         compiler_so = self.compiler_so
-        if sys.platform == 'darwin':
+        if sys.platform == 'darwin':           
             compiler_so = _darwin_compiler_fixup(compiler_so, cc_args + extra_postargs)
+        # Mandriva / Mageia Hack ------------------------------------
+        #self.linker_so = [el for el in self.linker_so if el != '-Wl,--no-undefined']
+        #compiler_so = [el for el in compiler_so if el != '-Werror=format-security']
+        # Mandriva / Mageia Hack ------------------------------------
         try:
             self.spawn(compiler_so + cc_args + [src, '-o', obj] +
                        extra_postargs)
@@ -864,20 +898,13 @@ if os.name == 'nt' and  COMPILER == 'msvc' and sys.version_info >= (2,6):
 
 if CORE_ONLY:
     BUILD_GLCANVAS = 0
-    BUILD_OGL = 0
     BUILD_STC = 0
     BUILD_GIZMOS = 0
     BUILD_DLLWIDGET = 0
     BUILD_ACTIVEX = 0
 
-if debug:
-    FINAL  = 0
-    HYBRID = 0
 
-if FINAL:
-    HYBRID = 0
-
-if UNICODE and WXPORT not in ['msw', 'gtk2', 'mac']:
+if UNICODE and WXPORT not in ['msw', 'gtk2', 'gtk3', 'osx_carbon', 'osx_cocoa']:
     raise SystemExit, "UNICODE mode not currently supported on this WXPORT: "+WXPORT
 
 
@@ -890,6 +917,7 @@ if WXPORT != 'msw':
     # make sure we only use the compiler value on MSW builds
     COMPILER=None
 
+WXPLAT2 = None
 
 #----------------------------------------------------------------------
 # Setup some platform specific stuff
@@ -910,10 +938,10 @@ if os.name == 'nt' and  COMPILER == 'msvc':
     WXPLAT = '__WXMSW__'
     GENDIR = 'msw'
 
-    if os.environ.get('CPU', None) == 'AMD64':
-        VCDLL = 'vc_amd64_dll'
+    if os.environ.get('CPU', None) in ['AMD64', 'X64']:
+        VCDLL = 'vc%s_x64_dll' % getVisCVersion()
     else:
-        VCDLL = 'vc_dll'
+        VCDLL = 'vc%s_dll' % getVisCVersion()
         
     includes = ['include', 'src',
                 opj(WXDIR, 'lib', VCDLL, 'msw'  + libFlag()),
@@ -929,6 +957,7 @@ if os.name == 'nt' and  COMPILER == 'msvc':
 
                 ('SWIG_TYPE_TABLE', WXPYTHON_TYPE_TABLE),
                 ('SWIG_PYTHON_OUTPUT_TUPLE', None),
+                ('SWIG_PYTHON_SILENT_MEMLEAK', None),
                 ('WXP_USE_THREAD', '1'),
                 ('ISOLATION_AWARE_ENABLED', None),
                 ]
@@ -936,15 +965,8 @@ if os.name == 'nt' and  COMPILER == 'msvc':
     if UNDEF_NDEBUG:
         defines.append( ('NDEBUG',) )  # using a 1-tuple makes it do an undef
 
-    if HYBRID:
-        defines.append( ('__NO_VC_CRTDBG__', None) )
-
-    if not FINAL or HYBRID:
-        defines.append( ('__WXDEBUG__', None) )
-
     if UNICODE:
         defines.append( ('wxUSE_UNICODE', 1) )
-
 
     libs = []
     libdirs = [ opj(WXDIR, 'lib', VCDLL) ]
@@ -990,6 +1012,7 @@ elif os.name == 'posix' or COMPILER == 'mingw32':
     includes = ['include', 'src']
     defines = [('SWIG_TYPE_TABLE', WXPYTHON_TYPE_TABLE),
                ('SWIG_PYTHON_OUTPUT_TUPLE', None),
+               ('SWIG_PYTHON_SILENT_MEMLEAK', None),
                ('WXP_USE_THREAD', '1'),
                ]
     if UNDEF_NDEBUG:
@@ -1008,42 +1031,65 @@ elif os.name == 'posix' or COMPILER == 'mingw32':
     ##     libs.append('gcc')
     ##     libdirs.append(commands.getoutput("gcc -print-search-dirs | grep '^install' | awk '{print $2}'")[:-1])
 
-    cflags = os.popen(WX_CONFIG + ' --cxxflags', 'r').read()[:-1]
+    cflags = getWxConfigValue('--cxxflags')
     cflags = cflags.split()
     if debug:
-        cflags.append('-g')
+        cflags.append('-ggdb')
         cflags.append('-O0')
     else:
         cflags.append('-O3')
 
-    lflags = os.popen(WX_CONFIG + ' --libs', 'r').read()[:-1]
+    lflags = getWxConfigValue('--libs')
     MONOLITHIC = (lflags.find("_xrc") == -1)
     lflags = lflags.split()
 
-    WXBASENAME = os.popen(WX_CONFIG + ' --basename').read()[:-1]
-    WXRELEASE  = os.popen(WX_CONFIG + ' --release').read()[:-1]
-    WXPREFIX   = os.popen(WX_CONFIG + ' --prefix').read()[:-1]
+    WXBASENAME = getWxConfigValue('--basename')
+    WXRELEASE  = getWxConfigValue('--release')
+    WXPREFIX   = getWxConfigValue('--prefix')
 
 
-    if sys.platform[:6] == "darwin" and WXPORT == 'mac':
-        # Flags and such for a Darwin (Max OS X) build of Python
+    if sys.platform[:6] == "darwin":
         WXPLAT = '__WXMAC__'
-        GENDIR = 'mac'
+    
+        if WXPORT == 'osx_carbon':
+        # Flags and such for a Darwin (Max OS X) build of Python
+            GENDIR = 'osx_carbon'
+            WXPLAT2 = '__WXOSX_CARBON__'
+        else:
+            GENDIR = 'osx_cocoa'
+            WXPLAT2 = '__WXOSX_COCOA__'
+
         libs = ['stdc++']
         NO_SCRIPTS = 1
-        if not ARCH == "":
-            cflags.append("-arch")
-            cflags.append(ARCH)
-            lflags.append("-arch")
-            lflags.append(ARCH)
-            #if ARCH == "ppc":
-            #    cflags.append("-isysroot")
-            #    cflags.append("/Developer/SDKs/MacOSX10.3.9.sdk")
+        if ARCH != "":
+            splitArch = "-arch " + re.sub(","," -arch ",ARCH)
+            cflags.extend(splitArch.split(' '))
+            lflags.extend(splitArch.split(' '))
 
         if not os.environ.get('CC') or not os.environ.get('CXX'):
-            os.environ["CXX"] = "g++-4.0"
-            os.environ["CC"]  = "gcc-4.0"
-            os.environ["CPP"] = "cpp-4.0"
+            os.environ["CXX"] = getWxConfigValue('--cxx')
+            os.environ["CC"]  = getWxConfigValue('--cc')
+
+            # We want to use the linker command from wx to make sure
+            # we get the right sysroot, but we also need to ensure that
+            # the other linker flags that distutils wants to use are
+            # included as well.
+            LDSHARED = distutils.sysconfig.get_config_var('LDSHARED').split()
+            # remove the compiler command
+            del LDSHARED[0]
+            # remove any -sysroot flags and their arg
+            while 1:
+                try:
+                    index = LDSHARED.index('-isysroot')
+                    # Strip this argument and the next one:
+                    del LDSHARED[index:index+2]
+                except ValueError:
+                    break            
+            LDSHARED = ' '.join(LDSHARED)
+            # Combine with wx's ld command and stash it in the env
+            # where distutils will get it later.
+            LDSHARED = getWxConfigValue('--ld').replace(' -o', '') + ' ' + LDSHARED
+            os.environ["LDSHARED"]  = LDSHARED
 
     else:
         # Set flags for other Unix type platforms
@@ -1052,11 +1098,15 @@ elif os.name == 'posix' or COMPILER == 'mingw32':
         if WXPORT == 'gtk':
             WXPLAT = '__WXGTK__'
             portcfg = os.popen('gtk-config --cflags', 'r').read()[:-1]
+            BUILD_BASE = BUILD_BASE + '-' + WXPORT
         elif WXPORT == 'gtk2':
             WXPLAT = '__WXGTK__'
             GENDIR = 'gtk' # no code differences so use the same generated sources
             portcfg = os.popen('pkg-config gtk+-2.0 --cflags', 'r').read()[:-1]
-            BUILD_BASE = BUILD_BASE + '-' + WXPORT
+        elif WXPORT == 'gtk3':
+            WXPLAT = '__WXGTK__'
+            GENDIR = 'gtk' # no code differences so use the same generated sources
+            portcfg = os.popen('pkg-config gtk+-3.0 --cflags', 'r').read()[:-1]
         elif WXPORT == 'x11':
             WXPLAT = '__WXX11__'
             portcfg = ''
@@ -1119,10 +1169,8 @@ EP_FULL_VER=%d
 WX_CONFIG="%s"
 WXPORT="%s"
 MONOLITHIC=%d
-FINAL=%d
-HYBRID=%d
 """ % (UNICODE, UNDEF_NDEBUG, INSTALL_MULTIVERSION, FLAVOUR, EP_ADD_OPTS,
-       EP_FULL_VER, SYS_WX_CONFIG, WXPORT, MONOLITHIC, FINAL, HYBRID)
+       EP_FULL_VER, SYS_WX_CONFIG, WXPORT, MONOLITHIC)
 
 try: 
     from build_options import *
@@ -1141,11 +1189,8 @@ except:
 # post platform setup checks and tweaks, create the full version string
 #----------------------------------------------------------------------
 
-if UNICODE:
-    BUILD_BASE = BUILD_BASE + '.unicode'
-
 if os.path.exists('DAILY_BUILD'):
-    VER_FLAGS += '.pre' + open('DAILY_BUILD').read().strip()
+    VER_FLAGS += '.b' + open('DAILY_BUILD').read().strip()
 
 VERSION = "%s.%s.%s.%s%s" % (VER_MAJOR, VER_MINOR, VER_RELEASE,
                              VER_SUBREL, VER_FLAGS)
@@ -1160,7 +1205,7 @@ VERSION = "%s.%s.%s.%s%s" % (VER_MAJOR, VER_MINOR, VER_RELEASE,
 # dirs as includes so we don't have to guess which is correct.
  
 wxfilesdir = ""
-i_subdir = opj("include", getExtraPath(), "wx", "wxPython", "i_files")
+i_subdir = opj("include", getExtraPath(addRelease=False), "wx", "wxPython", "i_files")
 if os.name != "nt":
     wxfilesdir = opj(WXPREFIX, i_subdir)
 else:
@@ -1177,7 +1222,11 @@ swig_args = ['-c++',
              '-new_repr',
              '-modern',
              '-D'+WXPLAT,
-             ] + i_files_includes
+             ]
+if WXPLAT2:
+    swig_args.append('-D' + WXPLAT2)
+    
+swig_args += i_files_includes
 
 if USE_SWIG:
     SVER = swig_version()
@@ -1207,232 +1256,3 @@ depends = [ #'include/wx/wxPython/wxPython.h',
 
 #----------------------------------------------------------------------
 
-####################################
-# BuildRenamers
-####################################
-
-import pprint, shutil
-try:
-    import libxml2
-    FOUND_LIBXML2 = True
-except ImportError:
-    FOUND_LIBXML2 = False
-
-#---------------------------------------------------------------------------
-
-renamerTemplateStart = """\
-// A bunch of %rename directives generated by BuildRenamers in config.py
-// in order to remove the wx prefix from all global scope names.
-
-#ifndef BUILDING_RENAMERS
-
-"""
-
-renamerTemplateEnd = """
-#endif
-"""
-
-wxPythonTemplateStart = """\
-## This file reverse renames symbols in the wx package to give
-## them their wx prefix again, for backwards compatibility.
-##
-## Generated by BuildRenamers in config.py
-
-# This silly stuff here is so the wxPython.wx module doesn't conflict
-# with the wx package.  We need to import modules from the wx package
-# here, then we'll put the wxPython.wx entry back in sys.modules.
-import sys
-_wx = None
-if sys.modules.has_key('wxPython.wx'):
-    _wx = sys.modules['wxPython.wx']
-    del sys.modules['wxPython.wx']
-
-import wx.%s
-
-sys.modules['wxPython.wx'] = _wx
-del sys, _wx
-
-
-# Now assign all the reverse-renamed names:
-"""
-
-wxPythonTemplateEnd = """
-
-"""
-
-
-
-#---------------------------------------------------------------------------
-class BuildRenamers:
-    def run(self, destdir, modname, xmlfile, wxPythonDir="wxPython"):    
-
-        assert FOUND_LIBXML2, "The libxml2 module is required to use the BuildRenamers functionality."
-            
-        if not os.path.exists(wxPythonDir):
-            os.mkdir(wxPythonDir)
-
-        swigDest = os.path.join(destdir, "_"+modname+"_rename.i")
-        pyDest = os.path.join(wxPythonDir, modname + '.py')
-    
-        swigDestTemp = tempfile.mktemp('.tmp')
-        swigFile = open(swigDestTemp, "w")
-        swigFile.write(renamerTemplateStart)
-    
-        pyDestTemp = tempfile.mktemp('.tmp')
-        pyFile = open(pyDestTemp, "w")
-        pyFile.write(wxPythonTemplateStart % modname)
-    
-        print "Parsing XML and building renamers..."
-        self.processXML(xmlfile, modname, swigFile, pyFile)
-        
-        self.checkOtherNames(pyFile, modname,
-                        os.path.join(destdir, '_'+modname+'_reverse.txt'))
-        pyFile.write(wxPythonTemplateEnd)        
-        pyFile.close()
-
-        swigFile.write(renamerTemplateEnd)
-        swigFile.close()
-
-        # Compare the files just created with the existing one and
-        # blow away the old one if they are different.
-        for dest, temp in [(swigDest, swigDestTemp),
-                           (pyDest, pyDestTemp)]:
-            # NOTE: we don't use shutil.move() because it was introduced
-            # in Python 2.3. Eventually we can switch to it when people
-            # stop building using 2.2.
-            if not os.path.exists(dest):
-                shutil.copyfile(temp, dest)
-            elif open(dest).read() != open(temp).read():
-                os.unlink(dest)
-                shutil.copyfile(temp, dest)
-            else:
-                print dest + " not changed."
-                os.unlink(temp)
-    
-    #---------------------------------------------------------------------------
-    
-    
-    def GetAttr(self, node, name):
-        path = "./attributelist/attribute[@name='%s']/@value" % name
-        n = node.xpathEval2(path)
-        if len(n):
-            return n[0].content
-        else:
-            return None
-        
-    
-    def processXML(self, xmlfile, modname, swigFile, pyFile):
-   
-        topnode = libxml2.parseFile(xmlfile).children
-    
-        # remove any import nodes as we don't need to do renamers for symbols found therein
-        imports = topnode.xpathEval2("*/import")
-        for n in imports:
-            n.unlinkNode()
-            n.freeNode()
-    
-        # do a depth first iteration over what's left
-        for node in topnode:
-            doRename = False
-            addWX = False
-            revOnly = False
-    
-    
-            if node.name == "class":
-                lastClassName = name = self.GetAttr(node, "name")
-                lastClassSymName = sym_name = self.GetAttr(node, "sym_name")
-                doRename = True
-                if sym_name != name:
-                    name = sym_name
-                    addWX = True
-    
-            # renamed constructors
-            elif node.name == "constructor":
-                name     = self.GetAttr(node, "name")
-                sym_name = self.GetAttr(node, "sym_name")
-                if sym_name != name:
-                    name = sym_name
-                    addWX = True
-                    doRename = True
-    
-            # only enumitems at the top level
-            elif node.name == "enumitem" and node.parent.parent.name == "include":
-                name     = self.GetAttr(node, "name")
-                sym_name = self.GetAttr(node, "sym_name")
-                doRename = True
-    
-    
-            elif node.name in ["cdecl", "constant"]:
-                name      = self.GetAttr(node, "name")
-                sym_name  = self.GetAttr(node, "sym_name")
-                toplevel  = node.parent.name == "include"
-    
-                # top-level functions
-                if toplevel and self.GetAttr(node, "view") == "globalfunctionHandler":
-                    doRename = True
-    
-                # top-level global vars
-                elif toplevel and self.GetAttr(node, "feature_immutable") == "1":
-                    doRename = True
-    
-                # static methods
-                elif self.GetAttr(node, "view") == "staticmemberfunctionHandler":
-                    name     = lastClassName + '_' + name
-                    sym_name = lastClassSymName + '_' + sym_name
-                    # only output the reverse renamer in this case
-                    doRename = revOnly = True
-           
-                if doRename and name != sym_name:
-                    name = sym_name
-                    addWX = True
-                   
-    
-            if doRename and name:
-                old = new = name
-                if old.startswith('wx') and not old.startswith('wxEVT_'):
-                    # remove all wx prefixes except wxEVT_ and write a %rename directive for it
-                    new = old[2:]
-                    if not revOnly:
-                        swigFile.write("%%rename(%s)  %35s;\n" % (new, old))
-    
-                # Write assignments to import into the old wxPython namespace
-                if addWX and not old.startswith('wx'):
-                    old = 'wx'+old
-                pyFile.write("%s = wx.%s.%s\n" % (old, modname, new))
-                
-    
-    #---------------------------------------------------------------------------
-    
-    def checkOtherNames(self, pyFile, moduleName, filename):
-        if os.path.exists(filename):
-            prefixes = []
-            for line in file(filename):
-                if line.endswith('\n'):
-                    line = line[:-1]
-                if line and not line.startswith('#'):
-                    if line.endswith('*'):
-                        prefixes.append(line[:-1])
-                    elif line.find('=') != -1:
-                        pyFile.write("%s\n" % line)
-                    else:
-                        wxname = 'wx' + line
-                        if line.startswith('wx') or line.startswith('WX') or line.startswith('EVT'):
-                            wxname = line
-                        pyFile.write("%s = wx.%s.%s\n" % (wxname, moduleName, line))
-    
-            if prefixes:
-                pyFile.write(
-                    "\n\nd = globals()\nfor k, v in wx.%s.__dict__.iteritems():"
-                    % moduleName)
-                first = True
-                for p in prefixes:
-                    if first:
-                        pyFile.write("\n    if ")
-                        first = False
-                    else:
-                        pyFile.write("\n    elif ")
-                    pyFile.write("k.startswith('%s'):\n        d[k] = v" % p)
-                pyFile.write("\ndel d, k, v\n\n")
-
-                        
-#---------------------------------------------------------------------------

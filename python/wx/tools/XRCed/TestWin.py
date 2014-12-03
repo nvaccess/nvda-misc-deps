@@ -28,10 +28,14 @@ class TestWindow:
         self.item = None
         self.pos = wx.DefaultPosition
         self.size = wx.DefaultSize        
-        self.isDirty = False            # if refresh neeeded
+        self.isDirty = False            # if refresh needed
         self.trash = []                 # trash to be destroyed later
 
     def SetView(self, frame, object, item):
+        '''
+        Set current test objects: frame is testwin frame, object is top-level object,
+        item is top-level item.
+        '''
         TRACE('SetView %s %s', frame, object)
         restoreSize = False
         if self.object:
@@ -105,10 +109,11 @@ class TestWindow:
         # Remember dimensions
         self.pos = self.GetFrame().GetPosition()
         self.size = self.GetFrame().GetSize()
+        self.RemoveHighlight()
+        self.RemoveHighlightDT()
         self.GetFrame().Destroy()
         self.frame = self.object = self.item = None
-        self.hl = self.hlDT = None
-        self.trash = []
+        self.isDirty = False
 
     # Find the object for an item
     def FindObject(self, item):
@@ -160,8 +165,8 @@ class TestWindow:
         if item == self.item:   # top-level
             comp = Manager.getNodeComp(tree.GetPyData(item))
             rects = comp.getRect(self.object)
-            if rects:
-                # Make rects relative to the object
+            if not self.frame and rects:
+                # Make rects relative to the object (for top-level windows)
                 offset = wx.Point(-rects[0].GetLeft(),-rects[0].GetTop())
                 [r.Offset(offset) for r in rects]
             return rects
@@ -174,7 +179,11 @@ class TestWindow:
             else: items.append(item)
         # Now traverse back from parents to children
         obj = self.object
-        offset = wx.Point(0,0)
+        if self.frame:
+            # Maybe GetClientAreaOrigin should not return (0,0) for panels with borders 
+            offset = obj.ClientToScreen((0,0)) - self.frame.panel.ClientToScreen((0,0))
+        else:
+            offset = wx.Point(0,0)
         rects = None
         comp = Manager.getNodeComp(tree.GetPyData(self.item))
         while items and obj:
@@ -215,15 +224,20 @@ class TestWindow:
         [r.Offset(offset) for r in rects]
         return rects
 
+    # Return highlight parent window
+    def HLParent(self):
+        if self.frame: return self.frame.panel
+        else: return self.object
+
     def Highlight(self, rect):
         if not self.hl:
-            self.hl = Highlight(self.object, rect)
+            self.hl = Highlight(self.HLParent(), rect)
         else:
             self.hl.Move(rect)
             
     def HighlightDT(self, rect, item):
         if not self.hlDT:
-            self.hlDT = Highlight(self.object, rect, wx.BLUE, False)
+            self.hlDT = Highlight(self.HLParent(), rect, wx.BLUE, False)
             self.hlDT.origColour = view.tree.GetItemTextColour(item)
         else:
             self.hlDT.Move(rect)

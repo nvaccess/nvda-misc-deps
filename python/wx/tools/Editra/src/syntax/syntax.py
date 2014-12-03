@@ -34,8 +34,8 @@ objects such as the Extension Register.
 """
 
 __author__ = "Cody Precord <cprecord@editra.org>"
-__svnid__ = "$Id: syntax.py 63846 2010-04-03 22:57:21Z CJP $"
-__revision__ = "$Revision: 63846 $"
+__svnid__ = "$Id: syntax.py 71711 2012-06-09 18:59:03Z CJP $"
+__revision__ = "$Revision: 71711 $"
 
 #-----------------------------------------------------------------------------#
 # Dependencies
@@ -299,8 +299,7 @@ class SynExtensionDelegate(syndata.SyntaxDataBase):
 
 def GenLexerMenu():
     """Generates a menu of available syntax configurations
-    @return: alphabetically ordered menu of of all lexer settings
-    @rtype: wx.Menu
+    @return: wx.Menu
 
     """
     lex_menu = wx.Menu()
@@ -389,7 +388,6 @@ def GetExtFromId(ext_id):
     """Takes a language ID and fetches an appropriate file extension string
     @param ext_id: language id to get extension for
     @return: file extension
-    @rtype: string
 
     """
     extreg = ExtensionRegister()
@@ -406,11 +404,10 @@ def GetIdFromExt(ext):
 
     """
     ftype = ExtensionRegister().FileTypeFromExt(ext)
-    for val in dir(synglob):
-        if val.startswith('LANG_') and getattr(synglob, val) == ftype:
-            return getattr(synglob, 'ID_' + val, synglob.ID_LANG_TXT)
-
-    return synglob.ID_LANG_TXT
+    if ftype in synglob.LANG_MAP:
+        return synglob.LANG_MAP[ftype][LANG_ID]
+    else:
+        return synglob.ID_LANG_TXT
 
 def GetTypeFromExt(ext):
     """Get the filetype description string from the given extension.

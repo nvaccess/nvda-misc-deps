@@ -6,7 +6,7 @@
 # Author:      Robin Dunn
 #
 # Created:     13-Sept-1999
-# RCS-ID:      $Id: wxpTag.py 44433 2007-02-09 23:43:24Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 1999 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -16,7 +16,7 @@
 #
 
 '''
-wxPython.lib.wxpTag
+wx.lib.wxpTag
 
 This module contains a wxHtmlTagHandler that knows how to build
 and place wxPython widgets onto wxHtmlWindow web pages.
@@ -206,12 +206,12 @@ class wxpTagHandler(wx.html.HtmlWinTagHandler):
                 red   = int('0x'+value[1:3], 16)
                 green = int('0x'+value[3:5], 16)
                 blue  = int('0x'+value[5:], 16)
-                value = wx.Color(red, green, blue)
+                value = wx.Colour(red, green, blue)
             except:
                 pass
 
         if self.ctx:
-          self.ctx.kwargs[str(name)] = value
+            self.ctx.kwargs[str(name)] = value
         return False
 
 
@@ -269,5 +269,7 @@ def _param2dict(param):
 #----------------------------------------------------------------------
 
 
-
+# Add our handler class to the collection of tag handlers maintained
+# by wxWidgets.
 wx.html.HtmlWinParser_AddTagHandler(wxpTagHandler)
+

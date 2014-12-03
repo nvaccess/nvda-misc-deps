@@ -3,7 +3,7 @@
 # Author:       Will Sadkin
 # Created:      01/16/2003
 # Copyright:   (c) 2003 by Will Sadkin
-# RCS-ID:      $Id: intctrl.py 61387 2009-07-10 22:24:42Z RD $
+# RCS-ID:      $Id$
 # License:     wxWindows license
 #----------------------------------------------------------------------------
 # NOTE:
@@ -502,6 +502,13 @@ class IntCtrl(wx.TextCtrl):
         self._colorValue()
 
 
+    def ChangeValue(self, value):
+        "Change the value without sending an EVT_TEXT event."""
+        wx.TextCtrl.ChangeValue(self, self._toGUI(value))
+        self.__oldvalue = self.GetValue() # record for next event
+        self._colorValue()
+
+        
     def SetMin(self, min=None):
         """
         Sets the minimum value of the control.  If a value of None

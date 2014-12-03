@@ -5,7 +5,7 @@
 # Author:      Robin Dunn
 #
 # Created:     15-Sept-2008
-# RCS-ID:      $Id: graphics.py 63527 2010-02-19 22:40:57Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2008 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -40,7 +40,6 @@ import wx.lib.wxcairo
 
 # Other ideas:
 # 1. TextToPath (or maybe make this part of the Path class
-# 2. Be able to add additional color stops to gradients.  Or maybe a GraphicsGradient or GraphicsPattern class
 # 3. Relative moves, lines, curves, etc.
 # 5. maybe expose cairo_paint, cairo_paint_with_alpha, cairo_mask?
 
@@ -892,17 +891,109 @@ class GraphicsPath(GraphicsObject):
     
 #---------------------------------------------------------------------------
 
+class GraphicsGradientStop(object):
+    """
+    This class represents a single color-stop in a gradient brush. The
+    position is a floating poitn value between zero and 1.0 which represents
+    the distance between the gradient's starting point and ending point.
+    """
+    def __init__(self, colour=wx.TransparentColour, pos=0.0):
+        self.SetColour(colour)
+        self.SetPosition(pos)
+        
+    def GetColour(self):
+        return self._colour
+    def SetColour(self, value):
+        value = _makeColour(value)
+        assert isinstance(value, wx.Colour)
+        self._colour = value
+    Colour = property(GetColour, SetColour)
+    
+    
+    def GetPosition(self):
+        return self._pos
+    def SetPosition(self, value):
+        assert value >= 0.0 and value <= 1.0
+        self._pos = value
+    Position = property(GetPosition, SetPosition)
+    
+    
+    
+class GraphicsGradientStops(object):
+    """
+    An ordered collection of gradient color stops for a gradient brush. There
+    is always at least the starting stop and the ending stop in the collection.
+    """
+    def __init__(self, startColour=wx.TransparentColour,
+                 endColour=wx.TransparentColour):
+        self._stops = list()
+        self.Add(startColour, 0.0)
+        self.Add(endColour, 1.0)
+
+        
+    def Add(self, *args):
+        """
+        Add a new color to the collection. args may be either a gradient stop,
+        or a colour and position.
+        """
+        if len(args) == 2:
+            col, pos = args
+            stop = GraphicsGradientStop(col, pos)
+        elif len(args) == 1:
+            stop = args[0]
+        else:
+            raise ValueError, "Invalid parameters passed to Add"
+        assert isinstance(stop, GraphicsGradientStop)
+        
+        self._stops.append(stop)
+        self._stops.sort(key=lambda x: x.Position)
+
+        
+    def GetCount(self):
+        return len(self._stops)
+    Count = property(GetCount)
+    def __len__(self):
+        return self.GetCount()
+
+    
+    def Item(self, n):
+        return self._stops[n]
+    def __getitem__(self, n):
+        return self._stops[n]
+
+    
+    def GetStartColour(self):
+        return self._stops[0].Colour
+    def SetStartColour(self, col):
+        self._stops[0].Colour = col
+    StartColour = property(GetStartColour, SetStartColour)
+
+    
+    def GetEndColour(self):
+        return self._stops[-1].Colour
+    def SetEndColour(self, col):
+        self._stops[-1].Colour = col
+    EndColour = property(GetEndColour, SetEndColour)
+    
+    
+#---------------------------------------------------------------------------
+
 class GraphicsContext(GraphicsObject):
     """
     The GraphicsContext is the object which facilitates drawing to a surface.
     """
-    def __init__(self, context=None):
+    def __init__(self, context=None, size=None):
         self._context = context
         self._pen = None
         self._brush = None
         self._font = None
         self._fontColour = None
-        
+        self._layerOpacities = []
+        self._width = 10000.0
+        self._height = 10000.0
+        if size is not None:
+            self._width, self._height = size
+            
 
     def IsNull(self):
         return self._context is None
@@ -913,7 +1004,7 @@ class GraphicsContext(GraphicsObject):
         # TODO:  Support creating directly from a wx.Window too.
         assert isinstance(dc, wx.DC)
         ctx = wx.lib.wxcairo.ContextFromDC(dc)
-        return GraphicsContext(ctx)
+        return GraphicsContext(ctx, dc.GetSize())
 
     @staticmethod
     def CreateFromNative(cairoContext):
@@ -928,7 +1019,8 @@ class GraphicsContext(GraphicsObject):
         """
         surface = cairo.ImageSurface(FORMAT_ARGB32, 1, 1)
         ctx = cairo.Context(surface)
-        return GraphicsContext(ctx)
+        return GraphicsContext(ctx, 
+                               (surface.get_width(), surface.get_height()))
 
     @staticmethod
     def CreateFromSurface(surface):
@@ -937,7 +1029,8 @@ class GraphicsContext(GraphicsObject):
         GraphicsBitmap contains a cairo ImageSurface which is
         accessible via the Surface property.        
         """
-        return GraphicsContext(cairo.Context(surface))
+        return GraphicsContext(cairo.Context(surface),
+                               (surface.get_width(), surface.get_height()))
 
 
     @Property
@@ -963,29 +1056,51 @@ class GraphicsContext(GraphicsObject):
         return GraphicsFont.CreateFromFont(font, colour)
 
 
-    def CreateLinearGradientBrush(self, x1, y1, x2, y2, c1, c2):
+    def CreateLinearGradientBrush(self, x1, y1, x2, y2, *args):
         """
-        Create a gradient brush that morphs from colour c1 at (x1,y1)
-        to colour c2 at (x2,y2).
+        Creates a native brush having a linear gradient, starting at (x1,y1)
+        to (x2,y2) with the given boundary colors or the specified stops.
+
+        The `*args` can be either a GraphicsGradientStops or just two colours to
+        be used as the starting and ending gradient colours.
         """
-        c1 = _makeColour(c1)
-        c2 = _makeColour(c2)
+        if len(args) ==1:
+            stops = args[0]
+        elif len(args) == 2:
+            c1 = _makeColour(c1)
+            c2 = _makeColour(c2)
+            stops = GraphicsGradientStops(c1, c2)
+        else:
+            raise ValueError, "Invalid args passed to CreateLinearGradientBrush"
+        
         pattern = cairo.LinearGradient(x1, y1, x2, y2)
-        pattern.add_color_stop_rgba(0.0, *_colourToValues(c1))
-        pattern.add_color_stop_rgba(1.0, *_colourToValues(c2))
+        for stop in stops:
+            pattern.add_color_stop_rgba(stop.Position, *_colourToValues(stop.Colour))
         return GraphicsBrush.CreateFromPattern(pattern)
 
-    def CreateRadialGradientBrush(self, xo, yo, xc, yc, radius, oColour, cColour):
+    
+    def CreateRadialGradientBrush(self, xo, yo, xc, yc, radius, *args):
         """
-        Creates a brush with a radial gradient originating at (xo,yo)
-        with colour oColour and ends on a circle around (xc,yc) with
-        radius r and colour cColour.
+        Creates a native brush, having a radial gradient originating at point
+        (xo,yo) and ending on a circle around (xc,yc) with the given radius;
+        the colours may be specified by just the two extremes or the full
+        array of gradient stops.
+        
+        The `*args` can be either a GraphicsGradientStops or just two colours to
+        be used as the starting and ending gradient colours.
         """
-        oColour = _makeColour(oColour)
-        cColour = _makeColour(cColour)
+        if len(args) ==1:
+            stops = args[0]
+        elif len(args) == 2:
+            oColour = _makeColour(oColour)
+            cColour = _makeColour(cColour)
+            stops = GraphicsGradientStops(oColour, cColour)
+        else:
+            raise ValueError, "Invalid args passed to CreateLinearGradientBrush"
+        
         pattern = cairo.RadialGradient(xo, yo, 0.0, xc, yc, radius)
-        pattern.add_color_stop_rgba(0.0, *_colourToValues(oColour))
-        pattern.add_color_stop_rgba(1.0, *_colourToValues(cColour))
+        for stop in stops:
+            pattern.add_color_stop_rgba(stop.Position, *_colourToValues(stop.Colour))
         return GraphicsBrush.CreateFromPattern(pattern)
 
       
@@ -1014,11 +1129,13 @@ class GraphicsContext(GraphicsObject):
 
     def PushState(self):
         """
-        Makes a copy of the current state of the context and saves it
-        on an internal stack of saved states.  The saved state will be
-        restored when PopState is called.
+        Makes a copy of the current state of the context (ie the
+        transformation matrix) and saves it on an internal stack of
+        saved states.  The saved state will be restored when PopState
+        is called.
         """
         self._context.save()
+
 
     def PopState(self):
         """
@@ -1134,7 +1251,10 @@ class GraphicsContext(GraphicsObject):
             else:
                 pen = GraphicsPen.CreateFromPen(pen)
         self._pen = pen
-        
+
+    def GetPen(self): return self._pen
+    Pen = property(GetPen, SetPen)
+
 
     def SetBrush(self, brush):
         """
@@ -1149,6 +1269,9 @@ class GraphicsContext(GraphicsObject):
                 brush = GraphicsBrush.CreateFromBrush(brush)
         self._brush = brush
 
+    def GetBrush(self): return self._brush
+    Brush = property(GetBrush, SetBrush)
+    
 
     def SetFont(self, font, colour=None):
         """
@@ -1162,7 +1285,11 @@ class GraphicsContext(GraphicsObject):
             self._fontColour = _makeColour(colour)
         else:
             self._fontColour = font._colour
-        
+
+    def GetFont(self): return (self._font, self._fontColour)
+    def _SetFont(self, *both): self.SetFont(*both)
+    Font = property(GetFont, _SetFont)
+    
 
     def StrokePath(self, path):
         """
@@ -1327,8 +1454,8 @@ class GraphicsContext(GraphicsObject):
         scaleX = w / float(bw)
         scaleY = h / float(bh)
 
-        self._context.scale(scaleX, scaleY)
         self._context.translate(x, y)
+        self._context.scale(scaleX, scaleY)
         self._context.set_source(pattern)
 
         # use the original size here since the context is scaled already...
@@ -1426,7 +1553,60 @@ class GraphicsContext(GraphicsObject):
         
 
 
-    # Things not in wx.GraphicsContext
+    def GetCompositingOperator(self):
+        """
+        Returns the current compositing operator for the context.
+        """
+        return self._context.get_operator()
+
+    def SetCompositingOperator(self, op):
+        """
+        Sets the compositin operator to be used for all drawing
+        operations.  The default operator is OPERATOR_OVER.
+        """
+        return self._context.set_operator(op)
+
+
+    def GetAntialiasMode(self):
+        """
+        Returns the current antialias mode.
+        """
+        return self._context.get_antialias()
+
+    def SetAntialiasMode(self, mode=ANTIALIAS_DEFAULT):
+        """
+        Set the antialiasing mode of the rasterizer used for drawing
+        shapes. This value is a hint, and a particular backend may or
+        may not support a particular value.
+        """
+        self._context.set_antialias(mode)
+
+
+    def BeginLayer(self, opacity):
+        """
+        Redirects future rendering to a temorary context.  See `EndLayer`.
+        """
+        self._layerOpacities.append(opacity)
+        self._context.push_group()
+        
+
+    def EndLayer(self):
+        """
+        Composites the drawing done on the temporary context created
+        in `BeginLayer` back into the main context, using the opacity
+        specified for the layer.
+        """
+        opacity = self._layerOpacities.pop()
+        self._context.pop_group_to_source()
+        self._context.paint_with_alpha(opacity)
+
+        
+    def GetSize(self):
+        return (self._width, self._height)
+    Size = property(GetSize)
+    
+        
+    # Some things not in wx.GraphicsContext (yet)
 
     def DrawCircle(self, x, y, radius):
         """
@@ -1469,44 +1649,13 @@ class GraphicsContext(GraphicsObject):
         self.PopState()
 
 
-    def GetCompositingOperator(self):
-        """
-        Returns the current compositing operator for the context.
-        """
-        return self._context.get_operator()
-
-    def SetCompositingOperator(self, op):
-        """
-        Sets the compositin operator to be used for all drawing
-        operations.  The default operator is OPERATOR_OVER.
-        """
-        return self._context.set_operator(op)
-
-
-    def GetAntialiasMode(self):
-        """
-        Returns the current antialias mode.
-        """
-        return self._context.get_antialias()
-
-    def SetAntialiasMode(self, mode=ANTIALIAS_DEFAULT):
-        """
-        Set the antialiasing mode of the rasterizer used for drawing
-        shapes. This value is a hint, and a particular backend may or
-        may not support a particular value.
-        """
-        self._context.set_antialias(mode)
-
-        
 #---------------------------------------------------------------------------
 # Utility functions
 
 def _makeColour(colour):
-    # make a wx.Color from any of the allowed typemaps (string, tuple,
+    # make a wx.Colour from any of the allowed typemaps (string, tuple,
     # etc.)
-    if type(colour) == tuple:
-        return wx.Colour(*colour)
-    elif isinstance(colour, basestring):
+    if isinstance(colour, (basestring, tuple)):
         return wx.NamedColour(colour)
     else:
         return colour

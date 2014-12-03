@@ -132,7 +132,158 @@ def Panel_GetClassDefaultAttributes(*args, **kwargs):
 
 #---------------------------------------------------------------------------
 
-class ScrolledWindow(Panel):
+SHOW_SB_NEVER = _windows_.SHOW_SB_NEVER
+SHOW_SB_DEFAULT = _windows_.SHOW_SB_DEFAULT
+SHOW_SB_ALWAYS = _windows_.SHOW_SB_ALWAYS
+class ScrollHelper(object):
+    """Proxy of C++ ScrollHelper class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, Window winToScroll) -> ScrollHelper"""
+        _windows_.ScrollHelper_swiginit(self,_windows_.new_ScrollHelper(*args, **kwargs))
+    def SetScrollbars(*args, **kwargs):
+        """
+        SetScrollbars(self, int pixelsPerUnitX, int pixelsPerUnitY, int noUnitsX, 
+            int noUnitsY, int xPos=0, int yPos=0, bool noRefresh=False)
+        """
+        return _windows_.ScrollHelper_SetScrollbars(*args, **kwargs)
+
+    def Scroll(*args):
+        """
+        Scroll(self, int x, int y)
+        Scroll(self, Point pt)
+        """
+        return _windows_.ScrollHelper_Scroll(*args)
+
+    def GetScrollPageSize(*args, **kwargs):
+        """GetScrollPageSize(self, int orient) -> int"""
+        return _windows_.ScrollHelper_GetScrollPageSize(*args, **kwargs)
+
+    def SetScrollPageSize(*args, **kwargs):
+        """SetScrollPageSize(self, int orient, int pageSize)"""
+        return _windows_.ScrollHelper_SetScrollPageSize(*args, **kwargs)
+
+    def GetScrollLines(*args, **kwargs):
+        """GetScrollLines(self, int orient) -> int"""
+        return _windows_.ScrollHelper_GetScrollLines(*args, **kwargs)
+
+    def SetScrollRate(*args, **kwargs):
+        """SetScrollRate(self, int xstep, int ystep)"""
+        return _windows_.ScrollHelper_SetScrollRate(*args, **kwargs)
+
+    def GetScrollPixelsPerUnit(*args, **kwargs):
+        """
+        GetScrollPixelsPerUnit() -> (xUnit, yUnit)
+
+        Get the size of one logical unit in physical units.
+        """
+        return _windows_.ScrollHelper_GetScrollPixelsPerUnit(*args, **kwargs)
+
+    def ShowScrollbars(*args, **kwargs):
+        """ShowScrollbars(self, int horz, int vert)"""
+        return _windows_.ScrollHelper_ShowScrollbars(*args, **kwargs)
+
+    def EnableScrolling(*args, **kwargs):
+        """EnableScrolling(self, bool x_scrolling, bool y_scrolling)"""
+        return _windows_.ScrollHelper_EnableScrolling(*args, **kwargs)
+
+    def GetViewStart(*args, **kwargs):
+        """
+        GetViewStart(self) -> Point
+
+        Get the view start
+        """
+        return _windows_.ScrollHelper_GetViewStart(*args, **kwargs)
+
+    def DisableKeyboardScrolling(*args, **kwargs):
+        """DisableKeyboardScrolling(self)"""
+        return _windows_.ScrollHelper_DisableKeyboardScrolling(*args, **kwargs)
+
+    def SetScale(*args, **kwargs):
+        """SetScale(self, double xs, double ys)"""
+        return _windows_.ScrollHelper_SetScale(*args, **kwargs)
+
+    def GetScaleX(*args, **kwargs):
+        """GetScaleX(self) -> double"""
+        return _windows_.ScrollHelper_GetScaleX(*args, **kwargs)
+
+    def GetScaleY(*args, **kwargs):
+        """GetScaleY(self) -> double"""
+        return _windows_.ScrollHelper_GetScaleY(*args, **kwargs)
+
+    def CalcScrolledPosition(*args):
+        """
+        CalcScrolledPosition(self, Point pt) -> Point
+        CalcScrolledPosition(int x, int y) -> (sx, sy)
+
+        Translate between scrolled and unscrolled coordinates.
+        """
+        return _windows_.ScrollHelper_CalcScrolledPosition(*args)
+
+    def CalcUnscrolledPosition(*args):
+        """
+        CalcUnscrolledPosition(self, Point pt) -> Point
+        CalcUnscrolledPosition(int x, int y) -> (ux, uy)
+
+        Translate between scrolled and unscrolled coordinates.
+        """
+        return _windows_.ScrollHelper_CalcUnscrolledPosition(*args)
+
+    def AdjustScrollbars(*args, **kwargs):
+        """AdjustScrollbars(self)"""
+        return _windows_.ScrollHelper_AdjustScrollbars(*args, **kwargs)
+
+    def CalcScrollInc(*args, **kwargs):
+        """CalcScrollInc(self, ScrollWinEvent event) -> int"""
+        return _windows_.ScrollHelper_CalcScrollInc(*args, **kwargs)
+
+    def SetTargetWindow(*args, **kwargs):
+        """SetTargetWindow(self, Window target)"""
+        return _windows_.ScrollHelper_SetTargetWindow(*args, **kwargs)
+
+    def GetTargetWindow(*args, **kwargs):
+        """GetTargetWindow(self) -> Window"""
+        return _windows_.ScrollHelper_GetTargetWindow(*args, **kwargs)
+
+    def SetTargetRect(*args, **kwargs):
+        """SetTargetRect(self, Rect rect)"""
+        return _windows_.ScrollHelper_SetTargetRect(*args, **kwargs)
+
+    def GetTargetRect(*args, **kwargs):
+        """GetTargetRect(self) -> Rect"""
+        return _windows_.ScrollHelper_GetTargetRect(*args, **kwargs)
+
+    def IsAutoScrolling(*args, **kwargs):
+        """IsAutoScrolling(self) -> bool"""
+        return _windows_.ScrollHelper_IsAutoScrolling(*args, **kwargs)
+
+    def StopAutoScrolling(*args, **kwargs):
+        """StopAutoScrolling(self)"""
+        return _windows_.ScrollHelper_StopAutoScrolling(*args, **kwargs)
+
+    def SendAutoScrollEvents(*args, **kwargs):
+        """SendAutoScrollEvents(self, ScrollWinEvent event) -> bool"""
+        return _windows_.ScrollHelper_SendAutoScrollEvents(*args, **kwargs)
+
+    def DoPrepareDC(*args, **kwargs):
+        """
+        DoPrepareDC(self, DC dc)
+
+        Call this function to prepare the device context for drawing a
+        scrolled image. It sets the device origin according to the current
+        scroll position.
+        """
+        return _windows_.ScrollHelper_DoPrepareDC(*args, **kwargs)
+
+    PrepareDC = DoPrepareDC 
+    ScaleX = property(GetScaleX) 
+    ScaleY = property(GetScaleY) 
+    TargetWindow = property(GetTargetWindow,SetTargetWindow) 
+    ViewStart = property(GetViewStart) 
+_windows_.ScrollHelper_swigregister(ScrollHelper)
+
+class ScrolledWindow(Panel,ScrollHelper):
     """Proxy of C++ ScrolledWindow class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
@@ -155,111 +306,6 @@ class ScrolledWindow(Panel):
         """
         return _windows_.ScrolledWindow_Create(*args, **kwargs)
 
-    def SetScrollbars(*args, **kwargs):
-        """
-        SetScrollbars(self, int pixelsPerUnitX, int pixelsPerUnitY, int noUnitsX, 
-            int noUnitsY, int xPos=0, int yPos=0, bool noRefresh=False)
-        """
-        return _windows_.ScrolledWindow_SetScrollbars(*args, **kwargs)
-
-    def Scroll(*args, **kwargs):
-        """Scroll(self, int x, int y)"""
-        return _windows_.ScrolledWindow_Scroll(*args, **kwargs)
-
-    def GetScrollPageSize(*args, **kwargs):
-        """GetScrollPageSize(self, int orient) -> int"""
-        return _windows_.ScrolledWindow_GetScrollPageSize(*args, **kwargs)
-
-    def SetScrollPageSize(*args, **kwargs):
-        """SetScrollPageSize(self, int orient, int pageSize)"""
-        return _windows_.ScrolledWindow_SetScrollPageSize(*args, **kwargs)
-
-    def SetScrollRate(*args, **kwargs):
-        """SetScrollRate(self, int xstep, int ystep)"""
-        return _windows_.ScrolledWindow_SetScrollRate(*args, **kwargs)
-
-    def GetScrollPixelsPerUnit(*args, **kwargs):
-        """
-        GetScrollPixelsPerUnit() -> (xUnit, yUnit)
-
-        Get the size of one logical unit in physical units.
-        """
-        return _windows_.ScrolledWindow_GetScrollPixelsPerUnit(*args, **kwargs)
-
-    def EnableScrolling(*args, **kwargs):
-        """EnableScrolling(self, bool x_scrolling, bool y_scrolling)"""
-        return _windows_.ScrolledWindow_EnableScrolling(*args, **kwargs)
-
-    def GetViewStart(*args, **kwargs):
-        """
-        GetViewStart() -> (x,y)
-
-        Get the view start
-        """
-        return _windows_.ScrolledWindow_GetViewStart(*args, **kwargs)
-
-    def SetScale(*args, **kwargs):
-        """SetScale(self, double xs, double ys)"""
-        return _windows_.ScrolledWindow_SetScale(*args, **kwargs)
-
-    def GetScaleX(*args, **kwargs):
-        """GetScaleX(self) -> double"""
-        return _windows_.ScrolledWindow_GetScaleX(*args, **kwargs)
-
-    def GetScaleY(*args, **kwargs):
-        """GetScaleY(self) -> double"""
-        return _windows_.ScrolledWindow_GetScaleY(*args, **kwargs)
-
-    def CalcScrolledPosition(*args):
-        """
-        CalcScrolledPosition(self, Point pt) -> Point
-        CalcScrolledPosition(int x, int y) -> (sx, sy)
-
-        Translate between scrolled and unscrolled coordinates.
-        """
-        return _windows_.ScrolledWindow_CalcScrolledPosition(*args)
-
-    def CalcUnscrolledPosition(*args):
-        """
-        CalcUnscrolledPosition(self, Point pt) -> Point
-        CalcUnscrolledPosition(int x, int y) -> (ux, uy)
-
-        Translate between scrolled and unscrolled coordinates.
-        """
-        return _windows_.ScrolledWindow_CalcUnscrolledPosition(*args)
-
-    def AdjustScrollbars(*args, **kwargs):
-        """AdjustScrollbars(self)"""
-        return _windows_.ScrolledWindow_AdjustScrollbars(*args, **kwargs)
-
-    def CalcScrollInc(*args, **kwargs):
-        """CalcScrollInc(self, ScrollWinEvent event) -> int"""
-        return _windows_.ScrolledWindow_CalcScrollInc(*args, **kwargs)
-
-    def SetTargetWindow(*args, **kwargs):
-        """SetTargetWindow(self, Window target)"""
-        return _windows_.ScrolledWindow_SetTargetWindow(*args, **kwargs)
-
-    def GetTargetWindow(*args, **kwargs):
-        """GetTargetWindow(self) -> Window"""
-        return _windows_.ScrolledWindow_GetTargetWindow(*args, **kwargs)
-
-    def SetTargetRect(*args, **kwargs):
-        """SetTargetRect(self, Rect rect)"""
-        return _windows_.ScrolledWindow_SetTargetRect(*args, **kwargs)
-
-    def GetTargetRect(*args, **kwargs):
-        """GetTargetRect(self) -> Rect"""
-        return _windows_.ScrolledWindow_GetTargetRect(*args, **kwargs)
-
-    def DoPrepareDC(*args, **kwargs):
-        """
-        DoPrepareDC(self, DC dc)
-
-        Normally what is called by `PrepareDC`.
-        """
-        return _windows_.ScrolledWindow_DoPrepareDC(*args, **kwargs)
-
     def GetClassDefaultAttributes(*args, **kwargs):
         """
         GetClassDefaultAttributes(int variant=WINDOW_VARIANT_NORMAL) -> VisualAttributes
@@ -278,10 +324,6 @@ class ScrolledWindow(Panel):
         return _windows_.ScrolledWindow_GetClassDefaultAttributes(*args, **kwargs)
 
     GetClassDefaultAttributes = staticmethod(GetClassDefaultAttributes)
-    ScaleX = property(GetScaleX,doc="See `GetScaleX`") 
-    ScaleY = property(GetScaleY,doc="See `GetScaleY`") 
-    TargetWindow = property(GetTargetWindow,SetTargetWindow,doc="See `GetTargetWindow` and `SetTargetWindow`") 
-    ViewStart = property(GetViewStart,doc="See `GetViewStart`") 
 _windows_.ScrolledWindow_swigregister(ScrolledWindow)
 
 def PreScrolledWindow(*args, **kwargs):
@@ -313,13 +355,11 @@ ICONIZE = _windows_.ICONIZE
 MINIMIZE = _windows_.MINIMIZE
 MAXIMIZE = _windows_.MAXIMIZE
 CLOSE_BOX = _windows_.CLOSE_BOX
-THICK_FRAME = _windows_.THICK_FRAME
 SYSTEM_MENU = _windows_.SYSTEM_MENU
 MINIMIZE_BOX = _windows_.MINIMIZE_BOX
 MAXIMIZE_BOX = _windows_.MAXIMIZE_BOX
 TINY_CAPTION_HORIZ = _windows_.TINY_CAPTION_HORIZ
 TINY_CAPTION_VERT = _windows_.TINY_CAPTION_VERT
-RESIZE_BOX = _windows_.RESIZE_BOX
 RESIZE_BORDER = _windows_.RESIZE_BORDER
 DIALOG_NO_PARENT = _windows_.DIALOG_NO_PARENT
 DEFAULT_FRAME_STYLE = _windows_.DEFAULT_FRAME_STYLE
@@ -333,12 +373,18 @@ FRAME_DRAWER = _windows_.FRAME_DRAWER
 FRAME_EX_METAL = _windows_.FRAME_EX_METAL
 DIALOG_EX_METAL = _windows_.DIALOG_EX_METAL
 WS_EX_CONTEXTHELP = _windows_.WS_EX_CONTEXTHELP
-DIALOG_MODAL = _windows_.DIALOG_MODAL
-DIALOG_MODELESS = _windows_.DIALOG_MODELESS
-USER_COLOURS = _windows_.USER_COLOURS
-NO_3D = _windows_.NO_3D
 FRAME_EX_CONTEXTHELP = _windows_.FRAME_EX_CONTEXTHELP
 DIALOG_EX_CONTEXTHELP = _windows_.DIALOG_EX_CONTEXTHELP
+# deprecated
+RESIZE_BOX  = MAXIMIZE_BOX
+THICK_FRAME = RESIZE_BORDER
+
+# Obsolete
+wxDIALOG_MODAL = 0
+wxDIALOG_MODELESS = 0
+wxUSER_COLOURS = 0
+wxNO_3D = 0
+
 FULLSCREEN_NOMENUBAR = _windows_.FULLSCREEN_NOMENUBAR
 FULLSCREEN_NOTOOLBAR = _windows_.FULLSCREEN_NOTOOLBAR
 FULLSCREEN_NOSTATUSBAR = _windows_.FULLSCREEN_NOSTATUSBAR
@@ -348,6 +394,9 @@ FULLSCREEN_ALL = _windows_.FULLSCREEN_ALL
 TOPLEVEL_EX_DIALOG = _windows_.TOPLEVEL_EX_DIALOG
 USER_ATTENTION_INFO = _windows_.USER_ATTENTION_INFO
 USER_ATTENTION_ERROR = _windows_.USER_ATTENTION_ERROR
+DIALOG_MODALITY_NONE = _windows_.DIALOG_MODALITY_NONE
+DIALOG_MODALITY_WINDOW_MODAL = _windows_.DIALOG_MODALITY_WINDOW_MODAL
+DIALOG_MODALITY_APP_MODAL = _windows_.DIALOG_MODALITY_APP_MODAL
 class TopLevelWindow(_core.Window):
     """Proxy of C++ TopLevelWindow class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -392,6 +441,10 @@ class TopLevelWindow(_core.Window):
     def ShowFullScreen(*args, **kwargs):
         """ShowFullScreen(self, bool show, long style=FULLSCREEN_ALL) -> bool"""
         return _windows_.TopLevelWindow_ShowFullScreen(*args, **kwargs)
+
+    def ShowWithoutActivating(*args, **kwargs):
+        """ShowWithoutActivating(self)"""
+        return _windows_.TopLevelWindow_ShowWithoutActivating(*args, **kwargs)
 
     def IsFullScreen(*args, **kwargs):
         """IsFullScreen(self) -> bool"""
@@ -446,6 +499,11 @@ class TopLevelWindow(_core.Window):
         return _windows_.TopLevelWindow_CenterOnScreen(*args, **kwargs)
 
     CentreOnScreen = CenterOnScreen 
+    def GetDefaultSize(*args, **kwargs):
+        """GetDefaultSize() -> Size"""
+        return _windows_.TopLevelWindow_GetDefaultSize(*args, **kwargs)
+
+    GetDefaultSize = staticmethod(GetDefaultSize)
     def GetDefaultItem(*args, **kwargs):
         """
         GetDefaultItem(self) -> Window
@@ -479,16 +537,33 @@ class TopLevelWindow(_core.Window):
         """
         return _windows_.TopLevelWindow_GetTmpDefaultItem(*args, **kwargs)
 
+    def OSXIsModified(*args, **kwargs):
+        """OSXIsModified(self) -> bool"""
+        return _windows_.TopLevelWindow_OSXIsModified(*args, **kwargs)
+
+    def OSXSetModified(*args, **kwargs):
+        """OSXSetModified(self, bool modified)"""
+        return _windows_.TopLevelWindow_OSXSetModified(*args, **kwargs)
+
+    def SetRepresentedFilename(*args, **kwargs):
+        """SetRepresentedFilename(self, String filename)"""
+        return _windows_.TopLevelWindow_SetRepresentedFilename(*args, **kwargs)
+
     DefaultItem = property(GetDefaultItem,SetDefaultItem,doc="See `GetDefaultItem` and `SetDefaultItem`") 
     Icon = property(GetIcon,SetIcon,doc="See `GetIcon` and `SetIcon`") 
     Title = property(GetTitle,SetTitle,doc="See `GetTitle` and `SetTitle`") 
     TmpDefaultItem = property(GetTmpDefaultItem,SetTmpDefaultItem,doc="See `GetTmpDefaultItem` and `SetTmpDefaultItem`") 
+    OSXModified = property(OSXIsModified,OSXSetModified) 
 _windows_.TopLevelWindow_swigregister(TopLevelWindow)
 cvar = _windows_.cvar
 FrameNameStr = cvar.FrameNameStr
 DialogNameStr = cvar.DialogNameStr
 StatusLineNameStr = cvar.StatusLineNameStr
 ToolBarNameStr = cvar.ToolBarNameStr
+
+def TopLevelWindow_GetDefaultSize(*args):
+  """TopLevelWindow_GetDefaultSize() -> Size"""
+  return _windows_.TopLevelWindow_GetDefaultSize(*args)
 
 #---------------------------------------------------------------------------
 
@@ -513,10 +588,6 @@ class Frame(TopLevelWindow):
         """
         return _windows_.Frame_Create(*args, **kwargs)
 
-    def SendSizeEvent(*args, **kwargs):
-        """SendSizeEvent(self)"""
-        return _windows_.Frame_SendSizeEvent(*args, **kwargs)
-
     def SetMenuBar(*args, **kwargs):
         """SetMenuBar(self, MenuBar menubar)"""
         return _windows_.Frame_SetMenuBar(*args, **kwargs)
@@ -525,11 +596,17 @@ class Frame(TopLevelWindow):
         """GetMenuBar(self) -> MenuBar"""
         return _windows_.Frame_GetMenuBar(*args, **kwargs)
 
-    def ProcessCommand(*args, **kwargs):
-        """ProcessCommand(self, int winid) -> bool"""
-        return _windows_.Frame_ProcessCommand(*args, **kwargs)
+    def FindItemInMenuBar(*args, **kwargs):
+        """FindItemInMenuBar(self, int menuId) -> MenuItem"""
+        return _windows_.Frame_FindItemInMenuBar(*args, **kwargs)
 
-    Command = ProcessCommand 
+    def ProcessCommand(*args):
+        """
+        ProcessCommand(self, int winid) -> bool
+        ProcessCommand(self, MenuItem item) -> bool
+        """
+        return _windows_.Frame_ProcessCommand(*args)
+
     def CreateStatusBar(*args, **kwargs):
         """
         CreateStatusBar(self, int number=1, long style=DEFAULT_STATUSBAR_STYLE, int winid=0, 
@@ -637,11 +714,17 @@ def Frame_GetClassDefaultAttributes(*args, **kwargs):
 
 #---------------------------------------------------------------------------
 
+DIALOG_ADAPTATION_NONE = _windows_.DIALOG_ADAPTATION_NONE
+DIALOG_ADAPTATION_STANDARD_SIZER = _windows_.DIALOG_ADAPTATION_STANDARD_SIZER
+DIALOG_ADAPTATION_ANY_SIZER = _windows_.DIALOG_ADAPTATION_ANY_SIZER
+DIALOG_ADAPTATION_LOOSE_BUTTONS = _windows_.DIALOG_ADAPTATION_LOOSE_BUTTONS
+DIALOG_ADAPTATION_MODE_DEFAULT = _windows_.DIALOG_ADAPTATION_MODE_DEFAULT
+DIALOG_ADAPTATION_MODE_ENABLED = _windows_.DIALOG_ADAPTATION_MODE_ENABLED
+DIALOG_ADAPTATION_MODE_DISABLED = _windows_.DIALOG_ADAPTATION_MODE_DISABLED
 class Dialog(TopLevelWindow):
     """Proxy of C++ Dialog class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
-    ButtonSizerFlags = _windows_.Dialog_ButtonSizerFlags
     def __init__(self, *args, **kwargs): 
         """
         __init__(self, Window parent, int id=-1, String title=EmptyString, 
@@ -683,9 +766,20 @@ class Dialog(TopLevelWindow):
         """GetEscapeId(self) -> int"""
         return _windows_.Dialog_GetEscapeId(*args, **kwargs)
 
+    def GetParentForModalDialog(*args):
+        """
+        GetParentForModalDialog(self, Window parent, long style) -> Window
+        GetParentForModalDialog(self) -> Window
+        """
+        return _windows_.Dialog_GetParentForModalDialog(*args)
+
     def CreateTextSizer(*args, **kwargs):
         """CreateTextSizer(self, String message) -> Sizer"""
         return _windows_.Dialog_CreateTextSizer(*args, **kwargs)
+
+    def CreateSeparatedSizer(*args, **kwargs):
+        """CreateSeparatedSizer(self, Sizer sizer) -> Sizer"""
+        return _windows_.Dialog_CreateSeparatedSizer(*args, **kwargs)
 
     def _CreateButtonSizer(*args, **kwargs):
         """_CreateButtonSizer(self, long flags) -> Sizer"""
@@ -713,6 +807,86 @@ class Dialog(TopLevelWindow):
     def EndModal(*args, **kwargs):
         """EndModal(self, int retCode)"""
         return _windows_.Dialog_EndModal(*args, **kwargs)
+
+    def ShowWindowModal(*args, **kwargs):
+        """ShowWindowModal(self)"""
+        return _windows_.Dialog_ShowWindowModal(*args, **kwargs)
+
+    def SendWindowModalDialogEvent(*args, **kwargs):
+        """SendWindowModalDialogEvent(self, EventType type)"""
+        return _windows_.Dialog_SendWindowModalDialogEvent(*args, **kwargs)
+
+    def DoLayoutAdaptation(*args, **kwargs):
+        """DoLayoutAdaptation(self) -> bool"""
+        return _windows_.Dialog_DoLayoutAdaptation(*args, **kwargs)
+
+    def CanDoLayoutAdaptation(*args, **kwargs):
+        """CanDoLayoutAdaptation(self) -> bool"""
+        return _windows_.Dialog_CanDoLayoutAdaptation(*args, **kwargs)
+
+    def GetContentWindow(*args, **kwargs):
+        """GetContentWindow(self) -> Window"""
+        return _windows_.Dialog_GetContentWindow(*args, **kwargs)
+
+    def AddMainButtonId(*args, **kwargs):
+        """AddMainButtonId(self, int id)"""
+        return _windows_.Dialog_AddMainButtonId(*args, **kwargs)
+
+    def GetMainButtonIds(*args, **kwargs):
+        """GetMainButtonIds(self) -> wxArrayInt"""
+        return _windows_.Dialog_GetMainButtonIds(*args, **kwargs)
+
+    def IsMainButtonId(*args, **kwargs):
+        """IsMainButtonId(self, int id) -> bool"""
+        return _windows_.Dialog_IsMainButtonId(*args, **kwargs)
+
+    def SetLayoutAdaptationLevel(*args, **kwargs):
+        """SetLayoutAdaptationLevel(self, int level)"""
+        return _windows_.Dialog_SetLayoutAdaptationLevel(*args, **kwargs)
+
+    def GetLayoutAdaptationLevel(*args, **kwargs):
+        """GetLayoutAdaptationLevel(self) -> int"""
+        return _windows_.Dialog_GetLayoutAdaptationLevel(*args, **kwargs)
+
+    def SetLayoutAdaptationMode(*args, **kwargs):
+        """SetLayoutAdaptationMode(self, int mode)"""
+        return _windows_.Dialog_SetLayoutAdaptationMode(*args, **kwargs)
+
+    def GetLayoutAdaptationMode(*args, **kwargs):
+        """GetLayoutAdaptationMode(self) -> int"""
+        return _windows_.Dialog_GetLayoutAdaptationMode(*args, **kwargs)
+
+    def SetLayoutAdaptationDone(*args, **kwargs):
+        """SetLayoutAdaptationDone(self, bool adaptationDone)"""
+        return _windows_.Dialog_SetLayoutAdaptationDone(*args, **kwargs)
+
+    def GetLayoutAdaptationDone(*args, **kwargs):
+        """GetLayoutAdaptationDone(self) -> bool"""
+        return _windows_.Dialog_GetLayoutAdaptationDone(*args, **kwargs)
+
+    def SetLayoutAdapter(*args, **kwargs):
+        """SetLayoutAdapter(DialogLayoutAdapter adapter) -> DialogLayoutAdapter"""
+        return _windows_.Dialog_SetLayoutAdapter(*args, **kwargs)
+
+    SetLayoutAdapter = staticmethod(SetLayoutAdapter)
+    def GetLayoutAdapter(*args, **kwargs):
+        """GetLayoutAdapter() -> DialogLayoutAdapter"""
+        return _windows_.Dialog_GetLayoutAdapter(*args, **kwargs)
+
+    GetLayoutAdapter = staticmethod(GetLayoutAdapter)
+    def IsLayoutAdaptationEnabled(*args, **kwargs):
+        """IsLayoutAdaptationEnabled() -> bool"""
+        return _windows_.Dialog_IsLayoutAdaptationEnabled(*args, **kwargs)
+
+    IsLayoutAdaptationEnabled = staticmethod(IsLayoutAdaptationEnabled)
+    def EnableLayoutAdaptation(*args, **kwargs):
+        """EnableLayoutAdaptation(bool enable)"""
+        return _windows_.Dialog_EnableLayoutAdaptation(*args, **kwargs)
+
+    EnableLayoutAdaptation = staticmethod(EnableLayoutAdaptation)
+    def GetModality(*args, **kwargs):
+        """GetModality(self) -> int"""
+        return _windows_.Dialog_GetModality(*args, **kwargs)
 
     def GetClassDefaultAttributes(*args, **kwargs):
         """
@@ -747,6 +921,22 @@ def PreDialog(*args, **kwargs):
     val = _windows_.new_PreDialog(*args, **kwargs)
     return val
 
+def Dialog_SetLayoutAdapter(*args, **kwargs):
+  """Dialog_SetLayoutAdapter(DialogLayoutAdapter adapter) -> DialogLayoutAdapter"""
+  return _windows_.Dialog_SetLayoutAdapter(*args, **kwargs)
+
+def Dialog_GetLayoutAdapter(*args):
+  """Dialog_GetLayoutAdapter() -> DialogLayoutAdapter"""
+  return _windows_.Dialog_GetLayoutAdapter(*args)
+
+def Dialog_IsLayoutAdaptationEnabled(*args):
+  """Dialog_IsLayoutAdaptationEnabled() -> bool"""
+  return _windows_.Dialog_IsLayoutAdaptationEnabled(*args)
+
+def Dialog_EnableLayoutAdaptation(*args, **kwargs):
+  """Dialog_EnableLayoutAdaptation(bool enable)"""
+  return _windows_.Dialog_EnableLayoutAdaptation(*args, **kwargs)
+
 def Dialog_GetClassDefaultAttributes(*args, **kwargs):
   """
     Dialog_GetClassDefaultAttributes(int variant=WINDOW_VARIANT_NORMAL) -> VisualAttributes
@@ -763,6 +953,117 @@ def Dialog_GetClassDefaultAttributes(*args, **kwargs):
     this.
     """
   return _windows_.Dialog_GetClassDefaultAttributes(*args, **kwargs)
+
+class DialogLayoutAdapter(_core.Object):
+    """Proxy of C++ DialogLayoutAdapter class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    def CanDoLayoutAdaptation(*args, **kwargs):
+        """CanDoLayoutAdaptation(self, Dialog dialog) -> bool"""
+        return _windows_.DialogLayoutAdapter_CanDoLayoutAdaptation(*args, **kwargs)
+
+    def DoLayoutAdaptation(*args, **kwargs):
+        """DoLayoutAdaptation(self, Dialog dialog) -> bool"""
+        return _windows_.DialogLayoutAdapter_DoLayoutAdaptation(*args, **kwargs)
+
+_windows_.DialogLayoutAdapter_swigregister(DialogLayoutAdapter)
+
+class StandardDialogLayoutAdapter(DialogLayoutAdapter):
+    """Proxy of C++ StandardDialogLayoutAdapter class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self) -> StandardDialogLayoutAdapter"""
+        _windows_.StandardDialogLayoutAdapter_swiginit(self,_windows_.new_StandardDialogLayoutAdapter(*args, **kwargs))
+    def CreateScrolledWindow(*args, **kwargs):
+        """CreateScrolledWindow(self, Window parent) -> ScrolledWindow"""
+        return _windows_.StandardDialogLayoutAdapter_CreateScrolledWindow(*args, **kwargs)
+
+    def FindButtonSizer(*args, **kwargs):
+        """
+        FindButtonSizer(self, bool stdButtonSizer, Dialog dialog, Sizer sizer, int retBorder, 
+            int accumlatedBorder=0) -> Sizer
+        """
+        return _windows_.StandardDialogLayoutAdapter_FindButtonSizer(*args, **kwargs)
+
+    def IsOrdinaryButtonSizer(*args, **kwargs):
+        """IsOrdinaryButtonSizer(self, Dialog dialog, BoxSizer sizer) -> bool"""
+        return _windows_.StandardDialogLayoutAdapter_IsOrdinaryButtonSizer(*args, **kwargs)
+
+    def IsStandardButton(*args, **kwargs):
+        """IsStandardButton(self, Dialog dialog, wxButton button) -> bool"""
+        return _windows_.StandardDialogLayoutAdapter_IsStandardButton(*args, **kwargs)
+
+    def FindLooseButtons(*args, **kwargs):
+        """
+        FindLooseButtons(self, Dialog dialog, StdDialogButtonSizer buttonSizer, Sizer sizer, 
+            int count) -> bool
+        """
+        return _windows_.StandardDialogLayoutAdapter_FindLooseButtons(*args, **kwargs)
+
+    def ReparentControls(*args, **kwargs):
+        """ReparentControls(self, Window parent, Window reparentTo, Sizer buttonSizer=None)"""
+        return _windows_.StandardDialogLayoutAdapter_ReparentControls(*args, **kwargs)
+
+    def DoReparentControls(*args, **kwargs):
+        """DoReparentControls(Window parent, Window reparentTo, Sizer buttonSizer=None)"""
+        return _windows_.StandardDialogLayoutAdapter_DoReparentControls(*args, **kwargs)
+
+    DoReparentControls = staticmethod(DoReparentControls)
+    def FitWithScrolling(*args, **kwargs):
+        """FitWithScrolling(self, Dialog dialog, ScrolledWindow scrolledWindow) -> bool"""
+        return _windows_.StandardDialogLayoutAdapter_FitWithScrolling(*args, **kwargs)
+
+    def DoFitWithScrolling(*args, **kwargs):
+        """DoFitWithScrolling(Dialog dialog, ScrolledWindow scrolledWindow) -> bool"""
+        return _windows_.StandardDialogLayoutAdapter_DoFitWithScrolling(*args, **kwargs)
+
+    DoFitWithScrolling = staticmethod(DoFitWithScrolling)
+    def MustScroll(*args, **kwargs):
+        """MustScroll(self, Dialog dialog, Size windowSize, Size displaySize) -> int"""
+        return _windows_.StandardDialogLayoutAdapter_MustScroll(*args, **kwargs)
+
+    def DoMustScroll(*args, **kwargs):
+        """DoMustScroll(Dialog dialog, Size windowSize, Size displaySize) -> int"""
+        return _windows_.StandardDialogLayoutAdapter_DoMustScroll(*args, **kwargs)
+
+    DoMustScroll = staticmethod(DoMustScroll)
+_windows_.StandardDialogLayoutAdapter_swigregister(StandardDialogLayoutAdapter)
+
+def StandardDialogLayoutAdapter_DoReparentControls(*args, **kwargs):
+  """StandardDialogLayoutAdapter_DoReparentControls(Window parent, Window reparentTo, Sizer buttonSizer=None)"""
+  return _windows_.StandardDialogLayoutAdapter_DoReparentControls(*args, **kwargs)
+
+def StandardDialogLayoutAdapter_DoFitWithScrolling(*args, **kwargs):
+  """StandardDialogLayoutAdapter_DoFitWithScrolling(Dialog dialog, ScrolledWindow scrolledWindow) -> bool"""
+  return _windows_.StandardDialogLayoutAdapter_DoFitWithScrolling(*args, **kwargs)
+
+def StandardDialogLayoutAdapter_DoMustScroll(*args, **kwargs):
+  """StandardDialogLayoutAdapter_DoMustScroll(Dialog dialog, Size windowSize, Size displaySize) -> int"""
+  return _windows_.StandardDialogLayoutAdapter_DoMustScroll(*args, **kwargs)
+
+class WindowModalDialogEvent(_core.CommandEvent):
+    """Proxy of C++ WindowModalDialogEvent class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, EventType commandType=wxEVT_NULL, int id=0) -> WindowModalDialogEvent"""
+        _windows_.WindowModalDialogEvent_swiginit(self,_windows_.new_WindowModalDialogEvent(*args, **kwargs))
+    def GetDialog(*args, **kwargs):
+        """GetDialog(self) -> Dialog"""
+        return _windows_.WindowModalDialogEvent_GetDialog(*args, **kwargs)
+
+    def GetReturnCode(*args, **kwargs):
+        """GetReturnCode(self) -> int"""
+        return _windows_.WindowModalDialogEvent_GetReturnCode(*args, **kwargs)
+
+    Dialog = property(GetDialog) 
+    ReturnCode = property(GetReturnCode) 
+_windows_.WindowModalDialogEvent_swigregister(WindowModalDialogEvent)
+
+wxEVT_WINDOW_MODAL_DIALOG_CLOSED = _windows_.wxEVT_WINDOW_MODAL_DIALOG_CLOSED
+EVT_WINDOW_MODAL_DIALOG_CLOSED = wx.PyEventBinder(wxEVT_WINDOW_MODAL_DIALOG_CLOSED)
 
 #---------------------------------------------------------------------------
 
@@ -860,9 +1161,65 @@ _windows_.SplashScreen_swigregister(SplashScreen)
 
 #---------------------------------------------------------------------------
 
+STB_SIZEGRIP = _windows_.STB_SIZEGRIP
+STB_SHOW_TIPS = _windows_.STB_SHOW_TIPS
+STB_ELLIPSIZE_START = _windows_.STB_ELLIPSIZE_START
+STB_ELLIPSIZE_MIDDLE = _windows_.STB_ELLIPSIZE_MIDDLE
+STB_ELLIPSIZE_END = _windows_.STB_ELLIPSIZE_END
+STB_DEFAULT_STYLE = _windows_.STB_DEFAULT_STYLE
+ST_SIZEGRIP = _windows_.ST_SIZEGRIP
 SB_NORMAL = _windows_.SB_NORMAL
 SB_FLAT = _windows_.SB_FLAT
 SB_RAISED = _windows_.SB_RAISED
+class StatusBarPane(object):
+    """Proxy of C++ StatusBarPane class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """__init__(self, int style=SB_NORMAL, size_t width=0) -> StatusBarPane"""
+        _windows_.StatusBarPane_swiginit(self,_windows_.new_StatusBarPane(*args, **kwargs))
+    def GetWidth(*args, **kwargs):
+        """GetWidth(self) -> int"""
+        return _windows_.StatusBarPane_GetWidth(*args, **kwargs)
+
+    def GetStyle(*args, **kwargs):
+        """GetStyle(self) -> int"""
+        return _windows_.StatusBarPane_GetStyle(*args, **kwargs)
+
+    def GetText(*args, **kwargs):
+        """GetText(self) -> String"""
+        return _windows_.StatusBarPane_GetText(*args, **kwargs)
+
+    def IsEllipsized(*args, **kwargs):
+        """IsEllipsized(self) -> bool"""
+        return _windows_.StatusBarPane_IsEllipsized(*args, **kwargs)
+
+    def SetIsEllipsized(*args, **kwargs):
+        """SetIsEllipsized(self, bool isEllipsized)"""
+        return _windows_.StatusBarPane_SetIsEllipsized(*args, **kwargs)
+
+    def SetWidth(*args, **kwargs):
+        """SetWidth(self, int width)"""
+        return _windows_.StatusBarPane_SetWidth(*args, **kwargs)
+
+    def SetStyle(*args, **kwargs):
+        """SetStyle(self, int style)"""
+        return _windows_.StatusBarPane_SetStyle(*args, **kwargs)
+
+    def SetText(*args, **kwargs):
+        """SetText(self, String text) -> bool"""
+        return _windows_.StatusBarPane_SetText(*args, **kwargs)
+
+    def PushText(*args, **kwargs):
+        """PushText(self, String text) -> bool"""
+        return _windows_.StatusBarPane_PushText(*args, **kwargs)
+
+    def PopText(*args, **kwargs):
+        """PopText(self) -> bool"""
+        return _windows_.StatusBarPane_PopText(*args, **kwargs)
+
+_windows_.StatusBarPane_swigregister(StatusBarPane)
+
 class StatusBar(_core.Window):
     """Proxy of C++ StatusBar class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -907,9 +1264,17 @@ class StatusBar(_core.Window):
         """SetStatusWidths(self, int widths)"""
         return _windows_.StatusBar_SetStatusWidths(*args, **kwargs)
 
+    def GetStatusWidth(*args, **kwargs):
+        """GetStatusWidth(self, int n) -> int"""
+        return _windows_.StatusBar_GetStatusWidth(*args, **kwargs)
+
     def SetStatusStyles(*args, **kwargs):
         """SetStatusStyles(self, int styles)"""
         return _windows_.StatusBar_SetStatusStyles(*args, **kwargs)
+
+    def GetStatusStyle(*args, **kwargs):
+        """GetStatusStyle(self, int n) -> int"""
+        return _windows_.StatusBar_GetStatusStyle(*args, **kwargs)
 
     def GetFieldRect(*args, **kwargs):
         """GetFieldRect(self, int i) -> Rect"""
@@ -926,6 +1291,14 @@ class StatusBar(_core.Window):
     def GetBorderY(*args, **kwargs):
         """GetBorderY(self) -> int"""
         return _windows_.StatusBar_GetBorderY(*args, **kwargs)
+
+    def GetBorders(*args, **kwargs):
+        """GetBorders(self) -> Size"""
+        return _windows_.StatusBar_GetBorders(*args, **kwargs)
+
+    def GetField(*args, **kwargs):
+        """GetField(self, int n) -> StatusBarPane"""
+        return _windows_.StatusBar_GetField(*args, **kwargs)
 
     def GetClassDefaultAttributes(*args, **kwargs):
         """
@@ -988,6 +1361,7 @@ def StatusBar_GetClassDefaultAttributes(*args, **kwargs):
 #---------------------------------------------------------------------------
 
 SP_NOBORDER = _windows_.SP_NOBORDER
+SP_THIN_SASH = _windows_.SP_THIN_SASH
 SP_NOSASH = _windows_.SP_NOSASH
 SP_PERMIT_UNSPLIT = _windows_.SP_PERMIT_UNSPLIT
 SP_LIVE_UPDATE = _windows_.SP_LIVE_UPDATE
@@ -1244,7 +1618,7 @@ class SplitterWindow(_core.Window):
 
     def SashHitTest(*args, **kwargs):
         """
-        SashHitTest(self, int x, int y, int tolerance=5) -> bool
+        SashHitTest(self, int x, int y) -> bool
 
         Tests for x, y over the sash
         """
@@ -1258,13 +1632,13 @@ class SplitterWindow(_core.Window):
         """
         return _windows_.SplitterWindow_SizeWindows(*args, **kwargs)
 
-    def SetNeedUpdating(*args, **kwargs):
-        """SetNeedUpdating(self, bool needUpdating)"""
-        return _windows_.SplitterWindow_SetNeedUpdating(*args, **kwargs)
+    def SetSashInvisible(*args, **kwargs):
+        """SetSashInvisible(self, bool invisible=True)"""
+        return _windows_.SplitterWindow_SetSashInvisible(*args, **kwargs)
 
-    def GetNeedUpdating(*args, **kwargs):
-        """GetNeedUpdating(self) -> bool"""
-        return _windows_.SplitterWindow_GetNeedUpdating(*args, **kwargs)
+    def IsSashInvisible(*args, **kwargs):
+        """IsSashInvisible(self) -> bool"""
+        return _windows_.SplitterWindow_IsSashInvisible(*args, **kwargs)
 
     def GetClassDefaultAttributes(*args, **kwargs):
         """
@@ -1286,7 +1660,6 @@ class SplitterWindow(_core.Window):
     GetClassDefaultAttributes = staticmethod(GetClassDefaultAttributes)
     BorderSize = property(GetBorderSize,SetBorderSize,doc="See `GetBorderSize` and `SetBorderSize`") 
     MinimumPaneSize = property(GetMinimumPaneSize,SetMinimumPaneSize,doc="See `GetMinimumPaneSize` and `SetMinimumPaneSize`") 
-    NeedUpdating = property(GetNeedUpdating,SetNeedUpdating,doc="See `GetNeedUpdating` and `SetNeedUpdating`") 
     SashGravity = property(GetSashGravity,SetSashGravity,doc="See `GetSashGravity` and `SetSashGravity`") 
     SashPosition = property(GetSashPosition,SetSashPosition,doc="See `GetSashPosition` and `SetSashPosition`") 
     SashSize = property(GetSashSize,SetSashSize,doc="See `GetSashSize` and `SetSashSize`") 
@@ -1442,16 +1815,6 @@ class SashWindow(_core.Window):
         """GetSashVisible(self, int edge) -> bool"""
         return _windows_.SashWindow_GetSashVisible(*args, **kwargs)
 
-    def SetSashBorder(*args, **kwargs):
-        """SetSashBorder(self, int edge, bool border)"""
-        return _windows_.SashWindow_SetSashBorder(*args, **kwargs)
-
-    SetSashBorder = wx._deprecated(SetSashBorder) 
-    def HasBorder(*args, **kwargs):
-        """HasBorder(self, int edge) -> bool"""
-        return _windows_.SashWindow_HasBorder(*args, **kwargs)
-
-    HasBorder = wx._deprecated(HasBorder) 
     def GetEdgeMargin(*args, **kwargs):
         """GetEdgeMargin(self, int edge) -> int"""
         return _windows_.SashWindow_GetEdgeMargin(*args, **kwargs)
@@ -1790,6 +2153,14 @@ class PopupTransientWindow(PopupWindow):
         """Dismiss(self)"""
         return _windows_.PopupTransientWindow_Dismiss(*args, **kwargs)
 
+    def CanDismiss(*args, **kwargs):
+        """CanDismiss(self) -> bool"""
+        return _windows_.PopupTransientWindow_CanDismiss(*args, **kwargs)
+
+    def ProcessLeftDown(*args, **kwargs):
+        """ProcessLeftDown(self, MouseEvent event) -> bool"""
+        return _windows_.PopupTransientWindow_ProcessLeftDown(*args, **kwargs)
+
 _windows_.PopupTransientWindow_swigregister(PopupTransientWindow)
 
 def PrePopupTransientWindow(*args, **kwargs):
@@ -1827,7 +2198,219 @@ _windows_.TipWindow_swigregister(TipWindow)
 
 #---------------------------------------------------------------------------
 
-class VScrolledWindow(Panel):
+class VarScrollHelperBase(object):
+    """Proxy of C++ VarScrollHelperBase class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    def EnablePhysicalScrolling(*args, **kwargs):
+        """EnablePhysicalScrolling(self, bool scrolling=True)"""
+        return _windows_.VarScrollHelperBase_EnablePhysicalScrolling(*args, **kwargs)
+
+    def VirtualHitTest(*args, **kwargs):
+        """VirtualHitTest(self, int coord) -> int"""
+        return _windows_.VarScrollHelperBase_VirtualHitTest(*args, **kwargs)
+
+    def RefreshAll(*args, **kwargs):
+        """RefreshAll(self)"""
+        return _windows_.VarScrollHelperBase_RefreshAll(*args, **kwargs)
+
+    def GetVisibleBegin(*args, **kwargs):
+        """GetVisibleBegin(self) -> size_t"""
+        return _windows_.VarScrollHelperBase_GetVisibleBegin(*args, **kwargs)
+
+    def GetVisibleEnd(*args, **kwargs):
+        """GetVisibleEnd(self) -> size_t"""
+        return _windows_.VarScrollHelperBase_GetVisibleEnd(*args, **kwargs)
+
+    def IsVisible(*args, **kwargs):
+        """IsVisible(self, size_t unit) -> bool"""
+        return _windows_.VarScrollHelperBase_IsVisible(*args, **kwargs)
+
+    def CalcScrolledPosition(*args, **kwargs):
+        """CalcScrolledPosition(self, int coord) -> int"""
+        return _windows_.VarScrollHelperBase_CalcScrolledPosition(*args, **kwargs)
+
+    def CalcUnscrolledPosition(*args, **kwargs):
+        """CalcUnscrolledPosition(self, int coord) -> int"""
+        return _windows_.VarScrollHelperBase_CalcUnscrolledPosition(*args, **kwargs)
+
+    def UpdateScrollbar(*args, **kwargs):
+        """UpdateScrollbar(self)"""
+        return _windows_.VarScrollHelperBase_UpdateScrollbar(*args, **kwargs)
+
+    def RemoveScrollbar(*args, **kwargs):
+        """RemoveScrollbar(self)"""
+        return _windows_.VarScrollHelperBase_RemoveScrollbar(*args, **kwargs)
+
+    def SetTargetWindow(*args, **kwargs):
+        """SetTargetWindow(self, Window target)"""
+        return _windows_.VarScrollHelperBase_SetTargetWindow(*args, **kwargs)
+
+    def GetTargetWindow(*args, **kwargs):
+        """GetTargetWindow(self) -> Window"""
+        return _windows_.VarScrollHelperBase_GetTargetWindow(*args, **kwargs)
+
+    def GetOrientationTargetSize(*args, **kwargs):
+        """GetOrientationTargetSize(self) -> int"""
+        return _windows_.VarScrollHelperBase_GetOrientationTargetSize(*args, **kwargs)
+
+    def GetNonOrientationTargetSize(*args, **kwargs):
+        """GetNonOrientationTargetSize(self) -> int"""
+        return _windows_.VarScrollHelperBase_GetNonOrientationTargetSize(*args, **kwargs)
+
+    def GetOrientation(*args, **kwargs):
+        """GetOrientation(self) -> int"""
+        return _windows_.VarScrollHelperBase_GetOrientation(*args, **kwargs)
+
+_windows_.VarScrollHelperBase_swigregister(VarScrollHelperBase)
+
+class VarVScrollHelper(VarScrollHelperBase):
+    """Proxy of C++ VarVScrollHelper class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    def SetRowCount(*args, **kwargs):
+        """SetRowCount(self, size_t rowCount)"""
+        return _windows_.VarVScrollHelper_SetRowCount(*args, **kwargs)
+
+    def ScrollToRow(*args, **kwargs):
+        """ScrollToRow(self, size_t row) -> bool"""
+        return _windows_.VarVScrollHelper_ScrollToRow(*args, **kwargs)
+
+    def ScrollRows(*args, **kwargs):
+        """ScrollRows(self, int rows) -> bool"""
+        return _windows_.VarVScrollHelper_ScrollRows(*args, **kwargs)
+
+    def ScrollRowPages(*args, **kwargs):
+        """ScrollRowPages(self, int pages) -> bool"""
+        return _windows_.VarVScrollHelper_ScrollRowPages(*args, **kwargs)
+
+    def RefreshRow(*args, **kwargs):
+        """RefreshRow(self, size_t row)"""
+        return _windows_.VarVScrollHelper_RefreshRow(*args, **kwargs)
+
+    def RefreshRows(*args, **kwargs):
+        """RefreshRows(self, size_t from, size_t to)"""
+        return _windows_.VarVScrollHelper_RefreshRows(*args, **kwargs)
+
+    def GetRowCount(*args, **kwargs):
+        """GetRowCount(self) -> size_t"""
+        return _windows_.VarVScrollHelper_GetRowCount(*args, **kwargs)
+
+    def GetVisibleRowsBegin(*args, **kwargs):
+        """GetVisibleRowsBegin(self) -> size_t"""
+        return _windows_.VarVScrollHelper_GetVisibleRowsBegin(*args, **kwargs)
+
+    def GetVisibleRowsEnd(*args, **kwargs):
+        """GetVisibleRowsEnd(self) -> size_t"""
+        return _windows_.VarVScrollHelper_GetVisibleRowsEnd(*args, **kwargs)
+
+    def IsRowVisible(*args, **kwargs):
+        """IsRowVisible(self, size_t row) -> bool"""
+        return _windows_.VarVScrollHelper_IsRowVisible(*args, **kwargs)
+
+_windows_.VarVScrollHelper_swigregister(VarVScrollHelper)
+
+class VarHScrollHelper(VarScrollHelperBase):
+    """Proxy of C++ VarHScrollHelper class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    def SetColumnCount(*args, **kwargs):
+        """SetColumnCount(self, size_t columnCount)"""
+        return _windows_.VarHScrollHelper_SetColumnCount(*args, **kwargs)
+
+    def ScrollToColumn(*args, **kwargs):
+        """ScrollToColumn(self, size_t column) -> bool"""
+        return _windows_.VarHScrollHelper_ScrollToColumn(*args, **kwargs)
+
+    def ScrollColumns(*args, **kwargs):
+        """ScrollColumns(self, int columns) -> bool"""
+        return _windows_.VarHScrollHelper_ScrollColumns(*args, **kwargs)
+
+    def ScrollColumnPages(*args, **kwargs):
+        """ScrollColumnPages(self, int pages) -> bool"""
+        return _windows_.VarHScrollHelper_ScrollColumnPages(*args, **kwargs)
+
+    def RefreshColumn(*args, **kwargs):
+        """RefreshColumn(self, size_t column)"""
+        return _windows_.VarHScrollHelper_RefreshColumn(*args, **kwargs)
+
+    def RefreshColumns(*args, **kwargs):
+        """RefreshColumns(self, size_t from, size_t to)"""
+        return _windows_.VarHScrollHelper_RefreshColumns(*args, **kwargs)
+
+    def GetColumnCount(*args, **kwargs):
+        """GetColumnCount(self) -> size_t"""
+        return _windows_.VarHScrollHelper_GetColumnCount(*args, **kwargs)
+
+    def GetVisibleColumnsBegin(*args, **kwargs):
+        """GetVisibleColumnsBegin(self) -> size_t"""
+        return _windows_.VarHScrollHelper_GetVisibleColumnsBegin(*args, **kwargs)
+
+    def GetVisibleColumnsEnd(*args, **kwargs):
+        """GetVisibleColumnsEnd(self) -> size_t"""
+        return _windows_.VarHScrollHelper_GetVisibleColumnsEnd(*args, **kwargs)
+
+    def IsColumnVisible(*args, **kwargs):
+        """IsColumnVisible(self, size_t column) -> bool"""
+        return _windows_.VarHScrollHelper_IsColumnVisible(*args, **kwargs)
+
+_windows_.VarHScrollHelper_swigregister(VarHScrollHelper)
+
+class VarHVScrollHelper(VarVScrollHelper,VarHScrollHelper):
+    """Proxy of C++ VarHVScrollHelper class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    def __init__(self): raise AttributeError, "No constructor defined"
+    __repr__ = _swig_repr
+    def SetRowColumnCount(*args, **kwargs):
+        """SetRowColumnCount(self, size_t rowCount, size_t columnCount)"""
+        return _windows_.VarHVScrollHelper_SetRowColumnCount(*args, **kwargs)
+
+    def EnablePhysicalScrolling(*args, **kwargs):
+        """EnablePhysicalScrolling(self, bool vscrolling=True, bool hscrolling=True)"""
+        return _windows_.VarHVScrollHelper_EnablePhysicalScrolling(*args, **kwargs)
+
+    def ScrollToRowColumn(*args, **kwargs):
+        """ScrollToRowColumn(self, Position pos) -> bool"""
+        return _windows_.VarHVScrollHelper_ScrollToRowColumn(*args, **kwargs)
+
+    def RefreshRowColumn(*args, **kwargs):
+        """RefreshRowColumn(self, Position pos)"""
+        return _windows_.VarHVScrollHelper_RefreshRowColumn(*args, **kwargs)
+
+    def RefreshRowsColumns(*args, **kwargs):
+        """RefreshRowsColumns(self, Position from, Position to)"""
+        return _windows_.VarHVScrollHelper_RefreshRowsColumns(*args, **kwargs)
+
+    def VirtualHitTest(*args, **kwargs):
+        """VirtualHitTest(self, Point pos) -> Position"""
+        return _windows_.VarHVScrollHelper_VirtualHitTest(*args, **kwargs)
+
+    def ScrollLayout(*args, **kwargs):
+        """ScrollLayout(self) -> bool"""
+        return _windows_.VarHVScrollHelper_ScrollLayout(*args, **kwargs)
+
+    def GetRowColumnCount(*args, **kwargs):
+        """GetRowColumnCount(self) -> Size"""
+        return _windows_.VarHVScrollHelper_GetRowColumnCount(*args, **kwargs)
+
+    def GetVisibleBegin(*args, **kwargs):
+        """GetVisibleBegin(self) -> Position"""
+        return _windows_.VarHVScrollHelper_GetVisibleBegin(*args, **kwargs)
+
+    def GetVisibleEnd(*args, **kwargs):
+        """GetVisibleEnd(self) -> Position"""
+        return _windows_.VarHVScrollHelper_GetVisibleEnd(*args, **kwargs)
+
+    def IsVisible(*args, **kwargs):
+        """IsVisible(self, Position pos) -> bool"""
+        return _windows_.VarHVScrollHelper_IsVisible(*args, **kwargs)
+
+_windows_.VarHVScrollHelper_swigregister(VarHVScrollHelper)
+
+class VScrolledWindow(Panel,VarVScrollHelper):
     """Proxy of C++ VScrolledWindow class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
@@ -1850,29 +2433,15 @@ class VScrolledWindow(Panel):
         """
         return _windows_.VScrolledWindow_Create(*args, **kwargs)
 
-    def SetLineCount(*args, **kwargs):
-        """SetLineCount(self, size_t count)"""
-        return _windows_.VScrolledWindow_SetLineCount(*args, **kwargs)
+    def GetRowsHeight(*args, **kwargs):
+        """GetRowsHeight(self, size_t lineMin, size_t lineMax) -> int"""
+        return _windows_.VScrolledWindow_GetRowsHeight(*args, **kwargs)
 
-    def ScrollToLine(*args, **kwargs):
-        """ScrollToLine(self, size_t line) -> bool"""
-        return _windows_.VScrolledWindow_ScrollToLine(*args, **kwargs)
-
-    def RefreshLine(*args, **kwargs):
-        """RefreshLine(self, size_t line)"""
-        return _windows_.VScrolledWindow_RefreshLine(*args, **kwargs)
-
-    def RefreshLines(*args, **kwargs):
-        """RefreshLines(self, size_t from, size_t to)"""
-        return _windows_.VScrolledWindow_RefreshLines(*args, **kwargs)
-
-    def HitTestXY(*args, **kwargs):
-        """
-        HitTestXY(self, int x, int y) -> int
-
-        Test where the given (in client coords) point lies
-        """
-        return _windows_.VScrolledWindow_HitTestXY(*args, **kwargs)
+    GetLinesHeight = wx.deprecated(GetRowsHeight,
+                                                     "Use GetRowsHeight instead.") 
+    def EstimateTotalHeight(*args, **kwargs):
+        """EstimateTotalHeight(self) -> int"""
+        return _windows_.VScrolledWindow_EstimateTotalHeight(*args, **kwargs)
 
     def HitTest(*args, **kwargs):
         """
@@ -1882,52 +2451,131 @@ class VScrolledWindow(Panel):
         """
         return _windows_.VScrolledWindow_HitTest(*args, **kwargs)
 
-    def RefreshAll(*args, **kwargs):
-        """RefreshAll(self)"""
-        return _windows_.VScrolledWindow_RefreshAll(*args, **kwargs)
+    def GetFirstVisibleLine(self):
+        return self.GetVisibleRowsBegin()
+    GetFirstVisibleLine = wx.deprecated(GetFirstVisibleLine, "Use GetVisibleRowsBegin instead" )
 
-    def GetLineCount(*args, **kwargs):
-        """GetLineCount(self) -> size_t"""
-        return _windows_.VScrolledWindow_GetLineCount(*args, **kwargs)
+    def GetLastVisibleLine(self):
+        return self.GetVisibleRowsEnd() - 1
+    GetLastVisibleLine = wx.deprecated(GetLastVisibleLine, "Use GetVisibleRowsEnd instead")
 
-    def GetVisibleBegin(*args, **kwargs):
-        """GetVisibleBegin(self) -> size_t"""
-        return _windows_.VScrolledWindow_GetVisibleBegin(*args, **kwargs)
+    def GetLineCount(self):
+        return self.GetRowCount()
+    GetLineCount = wx.deprecated(GetLineCount, "Use GetRowCount instead")
 
-    def GetVisibleEnd(*args, **kwargs):
-        """GetVisibleEnd(self) -> size_t"""
-        return _windows_.VScrolledWindow_GetVisibleEnd(*args, **kwargs)
+    def SetLineCount(self, count):
+        self.SetRowCount(count)
+    SetLineCount = wx.deprecated(SetLineCount, "Use SetRowCount instead")
 
-    def IsVisible(*args, **kwargs):
-        """IsVisible(self, size_t line) -> bool"""
-        return _windows_.VScrolledWindow_IsVisible(*args, **kwargs)
+    def RefreshLine(self, line):
+        self.RefreshRow(line)
+    RefreshLine = wx.deprecated(RefreshLine, "Use RefreshRow instead")
 
-    def GetFirstVisibleLine(*args, **kwargs):
-        """GetFirstVisibleLine(self) -> size_t"""
-        return _windows_.VScrolledWindow_GetFirstVisibleLine(*args, **kwargs)
+    def RefreshLines(self, frm, to):
+        self.RefreshRows(frm, to)
+    RefreshLines = wx.deprecated(RefreshLines, "Use RefreshRows instead")
+        
+    def ScrollToLine(self, line):
+        return self.ScrollToRow(line)
+    ScrollToLine = wx.deprecated(ScrollToLine, "Use RefreshRow instead")
 
-    def GetLastVisibleLine(*args, **kwargs):
-        """GetLastVisibleLine(self) -> size_t"""
-        return _windows_.VScrolledWindow_GetLastVisibleLine(*args, **kwargs)
+    def ScrollLines(self, lines):
+        return self.ScrollRows(lines)
+    ScrollLines = wx.deprecated(ScrollLines, "Use ScrollRows instead")
 
-    def FindFirstFromBottom(*args, **kwargs):
-        """FindFirstFromBottom(self, size_t lineLast, bool fullyVisible=False) -> size_t"""
-        return _windows_.VScrolledWindow_FindFirstFromBottom(*args, **kwargs)
+    def ScrollPages(self, pages):
+        return self.ScrollRowPages(pages)
+    ScrollPages = wx.deprecated(ScrollPages, "Use ScrollRowPages instead")
 
-    def GetLinesHeight(*args, **kwargs):
-        """GetLinesHeight(self, size_t lineMin, size_t lineMax) -> int"""
-        return _windows_.VScrolledWindow_GetLinesHeight(*args, **kwargs)
-
-    FirstVisibleLine = property(GetFirstVisibleLine,doc="See `GetFirstVisibleLine`") 
-    LastVisibleLine = property(GetLastVisibleLine,doc="See `GetLastVisibleLine`") 
-    LineCount = property(GetLineCount,SetLineCount,doc="See `GetLineCount` and `SetLineCount`") 
-    VisibleBegin = property(GetVisibleBegin,doc="See `GetVisibleBegin`") 
-    VisibleEnd = property(GetVisibleEnd,doc="See `GetVisibleEnd`") 
 _windows_.VScrolledWindow_swigregister(VScrolledWindow)
 
 def PreVScrolledWindow(*args, **kwargs):
     """PreVScrolledWindow() -> VScrolledWindow"""
     val = _windows_.new_PreVScrolledWindow(*args, **kwargs)
+    return val
+
+class HScrolledWindow(Panel,VarHScrollHelper):
+    """Proxy of C++ HScrolledWindow class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """
+        __init__(self, Window parent, int id=ID_ANY, Point pos=DefaultPosition, 
+            Size size=DefaultSize, long style=0, String name=PanelNameStr) -> HScrolledWindow
+        """
+        _windows_.HScrolledWindow_swiginit(self,_windows_.new_HScrolledWindow(*args, **kwargs))
+        self._setOORInfo(self);HScrolledWindow._setCallbackInfo(self, self, HScrolledWindow)
+
+    def _setCallbackInfo(*args, **kwargs):
+        """_setCallbackInfo(self, PyObject self, PyObject _class)"""
+        return _windows_.HScrolledWindow__setCallbackInfo(*args, **kwargs)
+
+    def Create(*args, **kwargs):
+        """
+        Create(self, Window parent, int id=ID_ANY, Point pos=DefaultPosition, 
+            Size size=DefaultSize, long style=0, String name=PanelNameStr) -> bool
+        """
+        return _windows_.HScrolledWindow_Create(*args, **kwargs)
+
+    def GetColumnsWidth(*args, **kwargs):
+        """GetColumnsWidth(self, size_t columnMin, size_t columnMax) -> int"""
+        return _windows_.HScrolledWindow_GetColumnsWidth(*args, **kwargs)
+
+    def EstimateTotalWidth(*args, **kwargs):
+        """EstimateTotalWidth(self) -> int"""
+        return _windows_.HScrolledWindow_EstimateTotalWidth(*args, **kwargs)
+
+_windows_.HScrolledWindow_swigregister(HScrolledWindow)
+
+def PreHScrolledWindow(*args, **kwargs):
+    """PreHScrolledWindow() -> HScrolledWindow"""
+    val = _windows_.new_PreHScrolledWindow(*args, **kwargs)
+    return val
+
+class HVScrolledWindow(Panel,VarHVScrollHelper):
+    """Proxy of C++ HVScrolledWindow class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """
+        __init__(self, Window parent, int id=ID_ANY, Point pos=DefaultPosition, 
+            Size size=DefaultSize, long style=0, String name=PanelNameStr) -> HVScrolledWindow
+        """
+        _windows_.HVScrolledWindow_swiginit(self,_windows_.new_HVScrolledWindow(*args, **kwargs))
+        self._setOORInfo(self);HVScrolledWindow._setCallbackInfo(self, self, HVScrolledWindow)
+
+    def _setCallbackInfo(*args, **kwargs):
+        """_setCallbackInfo(self, PyObject self, PyObject _class)"""
+        return _windows_.HVScrolledWindow__setCallbackInfo(*args, **kwargs)
+
+    def Create(*args, **kwargs):
+        """
+        Create(self, Window parent, int id=ID_ANY, Point pos=DefaultPosition, 
+            Size size=DefaultSize, long style=0, String name=PanelNameStr) -> bool
+        """
+        return _windows_.HVScrolledWindow_Create(*args, **kwargs)
+
+    def GetRowsHeight(*args, **kwargs):
+        """GetRowsHeight(self, size_t lineMin, size_t lineMax) -> int"""
+        return _windows_.HVScrolledWindow_GetRowsHeight(*args, **kwargs)
+
+    def EstimateTotalHeight(*args, **kwargs):
+        """EstimateTotalHeight(self) -> int"""
+        return _windows_.HVScrolledWindow_EstimateTotalHeight(*args, **kwargs)
+
+    def GetColumnsWidth(*args, **kwargs):
+        """GetColumnsWidth(self, size_t columnMin, size_t columnMax) -> int"""
+        return _windows_.HVScrolledWindow_GetColumnsWidth(*args, **kwargs)
+
+    def EstimateTotalWidth(*args, **kwargs):
+        """EstimateTotalWidth(self) -> int"""
+        return _windows_.HVScrolledWindow_EstimateTotalWidth(*args, **kwargs)
+
+_windows_.HVScrolledWindow_swigregister(HVScrolledWindow)
+
+def PreHVScrolledWindow(*args, **kwargs):
+    """PreHVScrolledWindow() -> HVScrolledWindow"""
+    val = _windows_.new_PreHVScrolledWindow(*args, **kwargs)
     return val
 
 class VListBox(VScrolledWindow):
@@ -1993,6 +2641,10 @@ class VListBox(VScrolledWindow):
         """GetSelectionBackground(self) -> Colour"""
         return _windows_.VListBox_GetSelectionBackground(*args, **kwargs)
 
+    def GetItemRect(*args, **kwargs):
+        """GetItemRect(self, size_t n) -> Rect"""
+        return _windows_.VListBox_GetItemRect(*args, **kwargs)
+
     def SetItemCount(*args, **kwargs):
         """SetItemCount(self, size_t count)"""
         return _windows_.VListBox_SetItemCount(*args, **kwargs)
@@ -2036,6 +2688,10 @@ class VListBox(VScrolledWindow):
     def SetSelectionBackground(*args, **kwargs):
         """SetSelectionBackground(self, Colour col)"""
         return _windows_.VListBox_SetSelectionBackground(*args, **kwargs)
+
+    def RefreshSelected(*args, **kwargs):
+        """RefreshSelected(self)"""
+        return _windows_.VListBox_RefreshSelected(*args, **kwargs)
 
     def OnDrawSeparator(*args, **kwargs):
         """OnDrawSeparator(self, DC dc, Rect rect, size_t n)"""
@@ -2144,12 +2800,15 @@ def PreSimpleHtmlListBox(*args, **kwargs):
 
 #---------------------------------------------------------------------------
 
+TBI_DOCK = _windows_.TBI_DOCK
+TBI_CUSTOM_STATUSITEM = _windows_.TBI_CUSTOM_STATUSITEM
+TBI_DEFAULT_TYPE = _windows_.TBI_DEFAULT_TYPE
 class TaskBarIcon(_core.EvtHandler):
     """Proxy of C++ TaskBarIcon class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self) -> TaskBarIcon"""
+        """__init__(self, int iconType=TBI_DEFAULT_TYPE) -> TaskBarIcon"""
         _windows_.TaskBarIcon_swiginit(self,_windows_.new_TaskBarIcon(*args, **kwargs))
         self._setOORInfo(self);TaskBarIcon._setCallbackInfo(self, self, TaskBarIcon)
 
@@ -2189,7 +2848,35 @@ class TaskBarIcon(_core.EvtHandler):
         """PopupMenu(self, Menu menu) -> bool"""
         return _windows_.TaskBarIcon_PopupMenu(*args, **kwargs)
 
+    def ShowBalloon(*args, **kwargs):
+        """
+        ShowBalloon(self, String title, String text, unsigned int msec=0, int flags=0) -> bool
+
+        Show a balloon notification (the icon must have been already
+        initialized using SetIcon).  Only implemented for Windows.
+
+        title and text are limited to 63 and 255 characters respectively, msec
+        is the timeout, in milliseconds, before the balloon disappears (will
+        be clamped down to the allowed 10-30s range by Windows if it's outside
+        it) and flags can include wxICON_ERROR/INFO/WARNING to show a
+        corresponding icon
+
+        Returns True if balloon was shown, False on error (incorrect parameters
+        or function unsupported by OS)
+
+        """
+        return _windows_.TaskBarIcon_ShowBalloon(*args, **kwargs)
+
+    def IsAvailable(*args, **kwargs):
+        """IsAvailable() -> bool"""
+        return _windows_.TaskBarIcon_IsAvailable(*args, **kwargs)
+
+    IsAvailable = staticmethod(IsAvailable)
 _windows_.TaskBarIcon_swigregister(TaskBarIcon)
+
+def TaskBarIcon_IsAvailable(*args):
+  """TaskBarIcon_IsAvailable() -> bool"""
+  return _windows_.TaskBarIcon_IsAvailable(*args)
 
 class TaskBarIconEvent(_core.Event):
     """Proxy of C++ TaskBarIconEvent class"""
@@ -2208,6 +2895,8 @@ wxEVT_TASKBAR_RIGHT_UP = _windows_.wxEVT_TASKBAR_RIGHT_UP
 wxEVT_TASKBAR_LEFT_DCLICK = _windows_.wxEVT_TASKBAR_LEFT_DCLICK
 wxEVT_TASKBAR_RIGHT_DCLICK = _windows_.wxEVT_TASKBAR_RIGHT_DCLICK
 wxEVT_TASKBAR_CLICK = _windows_.wxEVT_TASKBAR_CLICK
+wxEVT_TASKBAR_BALLOON_TIMEOUT = _windows_.wxEVT_TASKBAR_BALLOON_TIMEOUT
+wxEVT_TASKBAR_BALLOON_CLICK = _windows_.wxEVT_TASKBAR_BALLOON_CLICK
 EVT_TASKBAR_MOVE = wx.PyEventBinder (         wxEVT_TASKBAR_MOVE )
 EVT_TASKBAR_LEFT_DOWN = wx.PyEventBinder (    wxEVT_TASKBAR_LEFT_DOWN )
 EVT_TASKBAR_LEFT_UP = wx.PyEventBinder (      wxEVT_TASKBAR_LEFT_UP )
@@ -2216,6 +2905,8 @@ EVT_TASKBAR_RIGHT_UP = wx.PyEventBinder (     wxEVT_TASKBAR_RIGHT_UP )
 EVT_TASKBAR_LEFT_DCLICK = wx.PyEventBinder (  wxEVT_TASKBAR_LEFT_DCLICK )
 EVT_TASKBAR_RIGHT_DCLICK = wx.PyEventBinder ( wxEVT_TASKBAR_RIGHT_DCLICK )
 EVT_TASKBAR_CLICK =  wx.PyEventBinder (       wxEVT_TASKBAR_CLICK )
+EVT_TASKBAR_BALLOON_TIMEOUT = wx.PyEventBinder ( wxEVT_TASKBAR_BALLOON_TIMEOUT )
+EVT_TASKBAR_BALLOON_CLICK = wx.PyEventBinder ( wxEVT_TASKBAR_BALLOON_CLICK )
 
 #---------------------------------------------------------------------------
 
@@ -2227,6 +2918,7 @@ class ColourData(_core.Object):
     """
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
+    NUM_CUSTOM = _windows_.ColourData_NUM_CUSTOM
     def __init__(self, *args, **kwargs): 
         """
         __init__(self) -> ColourData
@@ -2292,6 +2984,22 @@ class ColourData(_core.Object):
         """
         return _windows_.ColourData_SetCustomColour(*args, **kwargs)
 
+    def ToString(*args, **kwargs):
+        """
+        ToString(self) -> String
+
+        Serialize to a string.
+        """
+        return _windows_.ColourData_ToString(*args, **kwargs)
+
+    def FromString(*args, **kwargs):
+        """
+        FromString(self, String str) -> bool
+
+        Restore from a serialized string.
+        """
+        return _windows_.ColourData_FromString(*args, **kwargs)
+
     ChooseFull = property(GetChooseFull,SetChooseFull,doc="See `GetChooseFull` and `SetChooseFull`") 
     Colour = property(GetColour,SetColour,doc="See `GetColour` and `SetColour`") 
     CustomColour = property(GetCustomColour,SetCustomColour,doc="See `GetCustomColour` and `SetCustomColour`") 
@@ -2333,7 +3041,7 @@ _windows_.ColourDialog_swigregister(ColourDialog)
 def GetColourFromUser(*args, **kwargs):
   """
     GetColourFromUser(Window parent=(wxWindow *) NULL, Colour colInit=wxNullColour, 
-        String caption=EmptyString) -> Colour
+        String caption=EmptyString, ColourData data=None) -> Colour
     """
   return _windows_.GetColourFromUser(*args, **kwargs)
 DD_CHANGE_DIR = _windows_.DD_CHANGE_DIR
@@ -2395,13 +3103,6 @@ class DirDialog(Dialog):
     Path = property(GetPath,SetPath,doc="See `GetPath` and `SetPath`") 
 _windows_.DirDialog_swigregister(DirDialog)
 
-OPEN = _windows_.OPEN
-SAVE = _windows_.SAVE
-OVERWRITE_PROMPT = _windows_.OVERWRITE_PROMPT
-FILE_MUST_EXIST = _windows_.FILE_MUST_EXIST
-MULTIPLE = _windows_.MULTIPLE
-CHANGE_DIR = _windows_.CHANGE_DIR
-HIDE_READONLY = _windows_.HIDE_READONLY
 FD_OPEN = _windows_.FD_OPEN
 FD_SAVE = _windows_.FD_SAVE
 FD_OVERWRITE_PROMPT = _windows_.FD_OVERWRITE_PROMPT
@@ -2410,6 +3111,14 @@ FD_MULTIPLE = _windows_.FD_MULTIPLE
 FD_CHANGE_DIR = _windows_.FD_CHANGE_DIR
 FD_PREVIEW = _windows_.FD_PREVIEW
 FD_DEFAULT_STYLE = _windows_.FD_DEFAULT_STYLE
+# deprecated names
+OPEN              = FD_OPEN
+SAVE              = FD_SAVE
+OVERWRITE_PROMPT  = FD_OVERWRITE_PROMPT
+FILE_MUST_EXIST   = FD_FILE_MUST_EXIST
+MULTIPLE          = FD_MULTIPLE
+CHANGE_DIR        = FD_CHANGE_DIR
+
 class FileDialog(Dialog):
     """
     wx.FileDialog allows the user to select one or more files from the
@@ -2423,7 +3132,7 @@ class FileDialog(Dialog):
             String defaultDir=EmptyString, String defaultFile=EmptyString, 
             String wildcard=FileSelectorDefaultWildcardStr, 
             long style=FD_DEFAULT_STYLE, 
-            Point pos=DefaultPosition) -> FileDialog
+            Point pos=DefaultPosition, Size size=DefaultSize) -> FileDialog
 
         Constructor.  Use ShowModal method to show the dialog.
         """
@@ -2922,17 +3631,49 @@ class MessageDialog(Dialog):
         _windows_.MessageDialog_swiginit(self,_windows_.new_MessageDialog(*args, **kwargs))
         self._setOORInfo(self)
 
+    def SetYesNoLabels(*args, **kwargs):
+        """SetYesNoLabels(self, String yes, String no) -> bool"""
+        return _windows_.MessageDialog_SetYesNoLabels(*args, **kwargs)
+
+    def SetYesNoCancelLabels(*args, **kwargs):
+        """SetYesNoCancelLabels(self, String yes, String no, String cancel) -> bool"""
+        return _windows_.MessageDialog_SetYesNoCancelLabels(*args, **kwargs)
+
+    def SetOKLabel(*args, **kwargs):
+        """SetOKLabel(self, String ok) -> bool"""
+        return _windows_.MessageDialog_SetOKLabel(*args, **kwargs)
+
+    def SetOKCancelLabels(*args, **kwargs):
+        """SetOKCancelLabels(self, String ok, String cancel) -> bool"""
+        return _windows_.MessageDialog_SetOKCancelLabels(*args, **kwargs)
+
+    def SetHelpLabel(*args, **kwargs):
+        """SetHelpLabel(self, String help) -> bool"""
+        return _windows_.MessageDialog_SetHelpLabel(*args, **kwargs)
+
+    def GetHelpLabel(*args, **kwargs):
+        """GetHelpLabel(self) -> String"""
+        return _windows_.MessageDialog_GetHelpLabel(*args, **kwargs)
+
+    def SetMessage(*args, **kwargs):
+        """SetMessage(self, String message)"""
+        return _windows_.MessageDialog_SetMessage(*args, **kwargs)
+
+    def SetExtendedMessage(*args, **kwargs):
+        """SetExtendedMessage(self, String extendedMessage)"""
+        return _windows_.MessageDialog_SetExtendedMessage(*args, **kwargs)
+
 _windows_.MessageDialog_swigregister(MessageDialog)
 
-PD_AUTO_HIDE = _windows_.PD_AUTO_HIDE
-PD_APP_MODAL = _windows_.PD_APP_MODAL
 PD_CAN_ABORT = _windows_.PD_CAN_ABORT
+PD_APP_MODAL = _windows_.PD_APP_MODAL
+PD_AUTO_HIDE = _windows_.PD_AUTO_HIDE
 PD_ELAPSED_TIME = _windows_.PD_ELAPSED_TIME
 PD_ESTIMATED_TIME = _windows_.PD_ESTIMATED_TIME
-PD_REMAINING_TIME = _windows_.PD_REMAINING_TIME
 PD_SMOOTH = _windows_.PD_SMOOTH
+PD_REMAINING_TIME = _windows_.PD_REMAINING_TIME
 PD_CAN_SKIP = _windows_.PD_CAN_SKIP
-class ProgressDialog(Dialog):
+class GenericProgressDialog(Dialog):
     """
     A dialog that shows a short message and a progress bar. Optionally, it
     can display an ABORT button.
@@ -2942,13 +3683,13 @@ class ProgressDialog(Dialog):
     def __init__(self, *args, **kwargs): 
         """
         __init__(self, String title, String message, int maximum=100, Window parent=None, 
-            int style=wxPD_AUTO_HIDE|wxPD_APP_MODAL) -> ProgressDialog
+            int style=wxPD_AUTO_HIDE|wxPD_APP_MODAL) -> GenericProgressDialog
 
         Constructor. Creates the dialog, displays it and disables user input
         for other windows, or, if wx.PD_APP_MODAL flag is not given, for its
         parent window only.
         """
-        _windows_.ProgressDialog_swiginit(self,_windows_.new_ProgressDialog(*args, **kwargs))
+        _windows_.GenericProgressDialog_swiginit(self,_windows_.new_GenericProgressDialog(*args, **kwargs))
         self._setOORInfo(self)
 
     def Update(*args, **kwargs):
@@ -2968,7 +3709,7 @@ class ProgressDialog(Dialog):
         abort is not confirmed the dialog may be resumed with `Resume` function.
 
         """
-        return _windows_.ProgressDialog_Update(*args, **kwargs)
+        return _windows_.GenericProgressDialog_Update(*args, **kwargs)
 
     def Pulse(*args, **kwargs):
         """
@@ -2978,7 +3719,7 @@ class ProgressDialog(Dialog):
         indeterminate mode and calls `wx.Gauge.Pulse` to show the user a bit of
         progress.
         """
-        return _windows_.ProgressDialog_Pulse(*args, **kwargs)
+        return _windows_.GenericProgressDialog_Pulse(*args, **kwargs)
 
     UpdatePulse =  Pulse 
     def Resume(*args, **kwargs):
@@ -2988,7 +3729,48 @@ class ProgressDialog(Dialog):
         Can be used to continue with the dialog, after the user had chosen to
         abort.
         """
-        return _windows_.ProgressDialog_Resume(*args, **kwargs)
+        return _windows_.GenericProgressDialog_Resume(*args, **kwargs)
+
+    def GetValue(*args, **kwargs):
+        """GetValue(self) -> int"""
+        return _windows_.GenericProgressDialog_GetValue(*args, **kwargs)
+
+    def GetRange(*args, **kwargs):
+        """GetRange(self) -> int"""
+        return _windows_.GenericProgressDialog_GetRange(*args, **kwargs)
+
+    def SetRange(*args, **kwargs):
+        """SetRange(self, int maximum)"""
+        return _windows_.GenericProgressDialog_SetRange(*args, **kwargs)
+
+    def GetMessage(*args, **kwargs):
+        """GetMessage(self) -> String"""
+        return _windows_.GenericProgressDialog_GetMessage(*args, **kwargs)
+
+    def WasCancelled(*args, **kwargs):
+        """WasCancelled(self) -> bool"""
+        return _windows_.GenericProgressDialog_WasCancelled(*args, **kwargs)
+
+    def WasSkipped(*args, **kwargs):
+        """WasSkipped(self) -> bool"""
+        return _windows_.GenericProgressDialog_WasSkipped(*args, **kwargs)
+
+    Value = property(GetValue) 
+    Range = property(GetRange,SetRange) 
+    Message = property(GetMessage) 
+_windows_.GenericProgressDialog_swigregister(GenericProgressDialog)
+
+class ProgressDialog(GenericProgressDialog):
+    """Proxy of C++ ProgressDialog class"""
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def __init__(self, *args, **kwargs): 
+        """
+        __init__(self, String title, String message, int maximum=100, Window parent=None, 
+            int style=wxPD_APP_MODAL|wxPD_AUTO_HIDE) -> ProgressDialog
+        """
+        _windows_.ProgressDialog_swiginit(self,_windows_.new_ProgressDialog(*args, **kwargs))
+        self._setOORInfo(self)
 
 _windows_.ProgressDialog_swigregister(ProgressDialog)
 
@@ -3333,13 +4115,11 @@ class MDIClientWindow(_core.Window):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args, **kwargs): 
-        """__init__(self, MDIParentFrame parent, long style=0) -> MDIClientWindow"""
+        """__init__(self) -> MDIClientWindow"""
         _windows_.MDIClientWindow_swiginit(self,_windows_.new_MDIClientWindow(*args, **kwargs))
-        self._setOORInfo(self)
-
-    def Create(*args, **kwargs):
-        """Create(self, MDIParentFrame parent, long style=0) -> bool"""
-        return _windows_.MDIClientWindow_Create(*args, **kwargs)
+    def CreateClient(*args, **kwargs):
+        """CreateClient(self, MDIParentFrame parent, long style=wxVSCROLL|wxHSCROLL) -> bool"""
+        return _windows_.MDIClientWindow_CreateClient(*args, **kwargs)
 
 _windows_.MDIClientWindow_swigregister(MDIClientWindow)
 
@@ -3417,112 +4197,112 @@ class PyWindow(_core.Window):
 
     def base_DoMoveWindow(*args, **kw):
         return PyWindow.DoMoveWindow(*args, **kw)
-    base_DoMoveWindow = wx._deprecated(base_DoMoveWindow,
+    base_DoMoveWindow = wx.deprecated(base_DoMoveWindow,
                                    "Please use PyWindow.DoMoveWindow instead.")
 
     def base_DoSetSize(*args, **kw):
         return PyWindow.DoSetSize(*args, **kw)
-    base_DoSetSize = wx._deprecated(base_DoSetSize,
+    base_DoSetSize = wx.deprecated(base_DoSetSize,
                                    "Please use PyWindow.DoSetSize instead.")
 
     def base_DoSetClientSize(*args, **kw):
         return PyWindow.DoSetClientSize(*args, **kw)
-    base_DoSetClientSize = wx._deprecated(base_DoSetClientSize,
+    base_DoSetClientSize = wx.deprecated(base_DoSetClientSize,
                                    "Please use PyWindow.DoSetClientSize instead.")
 
     def base_DoSetVirtualSize(*args, **kw):
         return PyWindow.DoSetVirtualSize(*args, **kw)
-    base_DoSetVirtualSize = wx._deprecated(base_DoSetVirtualSize,
+    base_DoSetVirtualSize = wx.deprecated(base_DoSetVirtualSize,
                                    "Please use PyWindow.DoSetVirtualSize instead.")
 
     def base_DoGetSize(*args, **kw):
         return PyWindow.DoGetSize(*args, **kw)
-    base_DoGetSize = wx._deprecated(base_DoGetSize,
+    base_DoGetSize = wx.deprecated(base_DoGetSize,
                                    "Please use PyWindow.DoGetSize instead.")
 
     def base_DoGetClientSize(*args, **kw):
         return PyWindow.DoGetClientSize(*args, **kw)
-    base_DoGetClientSize = wx._deprecated(base_DoGetClientSize,
+    base_DoGetClientSize = wx.deprecated(base_DoGetClientSize,
                                    "Please use PyWindow.DoGetClientSize instead.")
 
     def base_DoGetPosition(*args, **kw):
         return PyWindow.DoGetPosition(*args, **kw)
-    base_DoGetPosition = wx._deprecated(base_DoGetPosition,
+    base_DoGetPosition = wx.deprecated(base_DoGetPosition,
                                    "Please use PyWindow.DoGetPosition instead.")
 
     def base_DoGetVirtualSize(*args, **kw):
         return PyWindow.DoGetVirtualSize(*args, **kw)
-    base_DoGetVirtualSize = wx._deprecated(base_DoGetVirtualSize,
+    base_DoGetVirtualSize = wx.deprecated(base_DoGetVirtualSize,
                                    "Please use PyWindow.DoGetVirtualSize instead.")
 
     def base_DoGetBestSize(*args, **kw):
         return PyWindow.DoGetBestSize(*args, **kw)
-    base_DoGetBestSize = wx._deprecated(base_DoGetBestSize,
+    base_DoGetBestSize = wx.deprecated(base_DoGetBestSize,
                                    "Please use PyWindow.DoGetBestSize instead.")
 
     def base_InitDialog(*args, **kw):
         return PyWindow.InitDialog(*args, **kw)
-    base_InitDialog = wx._deprecated(base_InitDialog,
+    base_InitDialog = wx.deprecated(base_InitDialog,
                                    "Please use PyWindow.InitDialog instead.")
 
     def base_TransferDataToWindow(*args, **kw):
         return PyWindow.TransferDataToWindow(*args, **kw)
-    base_TransferDataToWindow = wx._deprecated(base_TransferDataToWindow,
+    base_TransferDataToWindow = wx.deprecated(base_TransferDataToWindow,
                                    "Please use PyWindow.TransferDataToWindow instead.")
 
     def base_TransferDataFromWindow(*args, **kw):
         return PyWindow.TransferDataFromWindow(*args, **kw)
-    base_TransferDataFromWindow = wx._deprecated(base_TransferDataFromWindow,
+    base_TransferDataFromWindow = wx.deprecated(base_TransferDataFromWindow,
                                    "Please use PyWindow.TransferDataFromWindow instead.")
 
     def base_Validate(*args, **kw):
         return PyWindow.Validate(*args, **kw)
-    base_Validate = wx._deprecated(base_Validate,
+    base_Validate = wx.deprecated(base_Validate,
                                    "Please use PyWindow.Validate instead.")
 
     def base_AcceptsFocus(*args, **kw):
         return PyWindow.AcceptsFocus(*args, **kw)
-    base_AcceptsFocus = wx._deprecated(base_AcceptsFocus,
+    base_AcceptsFocus = wx.deprecated(base_AcceptsFocus,
                                    "Please use PyWindow.AcceptsFocus instead.")
 
     def base_AcceptsFocusFromKeyboard(*args, **kw):
         return PyWindow.AcceptsFocusFromKeyboard(*args, **kw)
-    base_AcceptsFocusFromKeyboard = wx._deprecated(base_AcceptsFocusFromKeyboard,
+    base_AcceptsFocusFromKeyboard = wx.deprecated(base_AcceptsFocusFromKeyboard,
                                    "Please use PyWindow.AcceptsFocusFromKeyboard instead.")
 
     def base_GetMaxSize(*args, **kw):
         return PyWindow.GetMaxSize(*args, **kw)
-    base_GetMaxSize = wx._deprecated(base_GetMaxSize,
+    base_GetMaxSize = wx.deprecated(base_GetMaxSize,
                                    "Please use PyWindow.GetMaxSize instead.")
 
     def base_Enable(*args, **kw):
         return PyWindow.Enable(*args, **kw)
-    base_Enable = wx._deprecated(base_Enable,
+    base_Enable = wx.deprecated(base_Enable,
                                    "Please use PyWindow.Enable instead.")
 
     def base_AddChild(*args, **kw):
         return PyWindow.AddChild(*args, **kw)
-    base_AddChild = wx._deprecated(base_AddChild,
+    base_AddChild = wx.deprecated(base_AddChild,
                                    "Please use PyWindow.AddChild instead.")
 
     def base_RemoveChild(*args, **kw):
         return PyWindow.RemoveChild(*args, **kw)
-    base_RemoveChild = wx._deprecated(base_RemoveChild,
+    base_RemoveChild = wx.deprecated(base_RemoveChild,
                                    "Please use PyWindow.RemoveChild instead.")
 
     def base_ShouldInheritColours(*args, **kw):
         return PyWindow.ShouldInheritColours(*args, **kw)
-    base_ShouldInheritColours = wx._deprecated(base_ShouldInheritColours,
+    base_ShouldInheritColours = wx.deprecated(base_ShouldInheritColours,
                                    "Please use PyWindow.ShouldInheritColours instead.")
 
     def base_GetDefaultAttributes(*args, **kw):
         return PyWindow.GetDefaultAttributes(*args, **kw)
-    base_GetDefaultAttributes = wx._deprecated(base_GetDefaultAttributes,
+    base_GetDefaultAttributes = wx.deprecated(base_GetDefaultAttributes,
                                    "Please use PyWindow.GetDefaultAttributes instead.")
 
     def base_OnInternalIdle(*args, **kw):
         return PyWindow.OnInternalIdle(*args, **kw)
-    base_OnInternalIdle = wx._deprecated(base_OnInternalIdle,
+    base_OnInternalIdle = wx.deprecated(base_OnInternalIdle,
                                    "Please use PyWindow.OnInternalIdle instead.")
 
 _windows_.PyWindow_swigregister(PyWindow)
@@ -3600,112 +4380,112 @@ class PyPanel(Panel):
 
     def base_DoMoveWindow(*args, **kw):
         return PyPanel.DoMoveWindow(*args, **kw)
-    base_DoMoveWindow = wx._deprecated(base_DoMoveWindow,
+    base_DoMoveWindow = wx.deprecated(base_DoMoveWindow,
                                    "Please use PyPanel.DoMoveWindow instead.")
 
     def base_DoSetSize(*args, **kw):
         return PyPanel.DoSetSize(*args, **kw)
-    base_DoSetSize = wx._deprecated(base_DoSetSize,
+    base_DoSetSize = wx.deprecated(base_DoSetSize,
                                    "Please use PyPanel.DoSetSize instead.")
 
     def base_DoSetClientSize(*args, **kw):
         return PyPanel.DoSetClientSize(*args, **kw)
-    base_DoSetClientSize = wx._deprecated(base_DoSetClientSize,
+    base_DoSetClientSize = wx.deprecated(base_DoSetClientSize,
                                    "Please use PyPanel.DoSetClientSize instead.")
 
     def base_DoSetVirtualSize(*args, **kw):
         return PyPanel.DoSetVirtualSize(*args, **kw)
-    base_DoSetVirtualSize = wx._deprecated(base_DoSetVirtualSize,
+    base_DoSetVirtualSize = wx.deprecated(base_DoSetVirtualSize,
                                    "Please use PyPanel.DoSetVirtualSize instead.")
 
     def base_DoGetSize(*args, **kw):
         return PyPanel.DoGetSize(*args, **kw)
-    base_DoGetSize = wx._deprecated(base_DoGetSize,
+    base_DoGetSize = wx.deprecated(base_DoGetSize,
                                    "Please use PyPanel.DoGetSize instead.")
 
     def base_DoGetClientSize(*args, **kw):
         return PyPanel.DoGetClientSize(*args, **kw)
-    base_DoGetClientSize = wx._deprecated(base_DoGetClientSize,
+    base_DoGetClientSize = wx.deprecated(base_DoGetClientSize,
                                    "Please use PyPanel.DoGetClientSize instead.")
 
     def base_DoGetPosition(*args, **kw):
         return PyPanel.DoGetPosition(*args, **kw)
-    base_DoGetPosition = wx._deprecated(base_DoGetPosition,
+    base_DoGetPosition = wx.deprecated(base_DoGetPosition,
                                    "Please use PyPanel.DoGetPosition instead.")
 
     def base_DoGetVirtualSize(*args, **kw):
         return PyPanel.DoGetVirtualSize(*args, **kw)
-    base_DoGetVirtualSize = wx._deprecated(base_DoGetVirtualSize,
+    base_DoGetVirtualSize = wx.deprecated(base_DoGetVirtualSize,
                                    "Please use PyPanel.DoGetVirtualSize instead.")
 
     def base_DoGetBestSize(*args, **kw):
         return PyPanel.DoGetBestSize(*args, **kw)
-    base_DoGetBestSize = wx._deprecated(base_DoGetBestSize,
+    base_DoGetBestSize = wx.deprecated(base_DoGetBestSize,
                                    "Please use PyPanel.DoGetBestSize instead.")
 
     def base_InitDialog(*args, **kw):
         return PyPanel.InitDialog(*args, **kw)
-    base_InitDialog = wx._deprecated(base_InitDialog,
+    base_InitDialog = wx.deprecated(base_InitDialog,
                                    "Please use PyPanel.InitDialog instead.")
 
     def base_TransferDataToWindow(*args, **kw):
         return PyPanel.TransferDataToWindow(*args, **kw)
-    base_TransferDataToWindow = wx._deprecated(base_TransferDataToWindow,
+    base_TransferDataToWindow = wx.deprecated(base_TransferDataToWindow,
                                    "Please use PyPanel.TransferDataToWindow instead.")
 
     def base_TransferDataFromWindow(*args, **kw):
         return PyPanel.TransferDataFromWindow(*args, **kw)
-    base_TransferDataFromWindow = wx._deprecated(base_TransferDataFromWindow,
+    base_TransferDataFromWindow = wx.deprecated(base_TransferDataFromWindow,
                                    "Please use PyPanel.TransferDataFromWindow instead.")
 
     def base_Validate(*args, **kw):
         return PyPanel.Validate(*args, **kw)
-    base_Validate = wx._deprecated(base_Validate,
+    base_Validate = wx.deprecated(base_Validate,
                                    "Please use PyPanel.Validate instead.")
 
     def base_AcceptsFocus(*args, **kw):
         return PyPanel.AcceptsFocus(*args, **kw)
-    base_AcceptsFocus = wx._deprecated(base_AcceptsFocus,
+    base_AcceptsFocus = wx.deprecated(base_AcceptsFocus,
                                    "Please use PyPanel.AcceptsFocus instead.")
 
     def base_AcceptsFocusFromKeyboard(*args, **kw):
         return PyPanel.AcceptsFocusFromKeyboard(*args, **kw)
-    base_AcceptsFocusFromKeyboard = wx._deprecated(base_AcceptsFocusFromKeyboard,
+    base_AcceptsFocusFromKeyboard = wx.deprecated(base_AcceptsFocusFromKeyboard,
                                    "Please use PyPanel.AcceptsFocusFromKeyboard instead.")
 
     def base_GetMaxSize(*args, **kw):
         return PyPanel.GetMaxSize(*args, **kw)
-    base_GetMaxSize = wx._deprecated(base_GetMaxSize,
+    base_GetMaxSize = wx.deprecated(base_GetMaxSize,
                                    "Please use PyPanel.GetMaxSize instead.")
 
     def base_Enable(*args, **kw):
         return PyPanel.Enable(*args, **kw)
-    base_Enable = wx._deprecated(base_Enable,
+    base_Enable = wx.deprecated(base_Enable,
                                    "Please use PyPanel.Enable instead.")
 
     def base_AddChild(*args, **kw):
         return PyPanel.AddChild(*args, **kw)
-    base_AddChild = wx._deprecated(base_AddChild,
+    base_AddChild = wx.deprecated(base_AddChild,
                                    "Please use PyPanel.AddChild instead.")
 
     def base_RemoveChild(*args, **kw):
         return PyPanel.RemoveChild(*args, **kw)
-    base_RemoveChild = wx._deprecated(base_RemoveChild,
+    base_RemoveChild = wx.deprecated(base_RemoveChild,
                                    "Please use PyPanel.RemoveChild instead.")
 
     def base_ShouldInheritColours(*args, **kw):
         return PyPanel.ShouldInheritColours(*args, **kw)
-    base_ShouldInheritColours = wx._deprecated(base_ShouldInheritColours,
+    base_ShouldInheritColours = wx.deprecated(base_ShouldInheritColours,
                                    "Please use PyPanel.ShouldInheritColours instead.")
 
     def base_GetDefaultAttributes(*args, **kw):
         return PyPanel.GetDefaultAttributes(*args, **kw)
-    base_GetDefaultAttributes = wx._deprecated(base_GetDefaultAttributes,
+    base_GetDefaultAttributes = wx.deprecated(base_GetDefaultAttributes,
                                    "Please use PyPanel.GetDefaultAttributes instead.")
 
     def base_OnInternalIdle(*args, **kw):
         return PyPanel.OnInternalIdle(*args, **kw)
-    base_OnInternalIdle = wx._deprecated(base_OnInternalIdle,
+    base_OnInternalIdle = wx.deprecated(base_OnInternalIdle,
                                    "Please use PyPanel.OnInternalIdle instead.")
 
 _windows_.PyPanel_swigregister(PyPanel)
@@ -3783,112 +4563,112 @@ class PyScrolledWindow(ScrolledWindow):
 
     def base_DoMoveWindow(*args, **kw):
         return PyScrolledWindow.DoMoveWindow(*args, **kw)
-    base_DoMoveWindow = wx._deprecated(base_DoMoveWindow,
+    base_DoMoveWindow = wx.deprecated(base_DoMoveWindow,
                                    "Please use PyScrolledWindow.DoMoveWindow instead.")
 
     def base_DoSetSize(*args, **kw):
         return PyScrolledWindow.DoSetSize(*args, **kw)
-    base_DoSetSize = wx._deprecated(base_DoSetSize,
+    base_DoSetSize = wx.deprecated(base_DoSetSize,
                                    "Please use PyScrolledWindow.DoSetSize instead.")
 
     def base_DoSetClientSize(*args, **kw):
         return PyScrolledWindow.DoSetClientSize(*args, **kw)
-    base_DoSetClientSize = wx._deprecated(base_DoSetClientSize,
+    base_DoSetClientSize = wx.deprecated(base_DoSetClientSize,
                                    "Please use PyScrolledWindow.DoSetClientSize instead.")
 
     def base_DoSetVirtualSize(*args, **kw):
         return PyScrolledWindow.DoSetVirtualSize(*args, **kw)
-    base_DoSetVirtualSize = wx._deprecated(base_DoSetVirtualSize,
+    base_DoSetVirtualSize = wx.deprecated(base_DoSetVirtualSize,
                                    "Please use PyScrolledWindow.DoSetVirtualSize instead.")
 
     def base_DoGetSize(*args, **kw):
         return PyScrolledWindow.DoGetSize(*args, **kw)
-    base_DoGetSize = wx._deprecated(base_DoGetSize,
+    base_DoGetSize = wx.deprecated(base_DoGetSize,
                                    "Please use PyScrolledWindow.DoGetSize instead.")
 
     def base_DoGetClientSize(*args, **kw):
         return PyScrolledWindow.DoGetClientSize(*args, **kw)
-    base_DoGetClientSize = wx._deprecated(base_DoGetClientSize,
+    base_DoGetClientSize = wx.deprecated(base_DoGetClientSize,
                                    "Please use PyScrolledWindow.DoGetClientSize instead.")
 
     def base_DoGetPosition(*args, **kw):
         return PyScrolledWindow.DoGetPosition(*args, **kw)
-    base_DoGetPosition = wx._deprecated(base_DoGetPosition,
+    base_DoGetPosition = wx.deprecated(base_DoGetPosition,
                                    "Please use PyScrolledWindow.DoGetPosition instead.")
 
     def base_DoGetVirtualSize(*args, **kw):
         return PyScrolledWindow.DoGetVirtualSize(*args, **kw)
-    base_DoGetVirtualSize = wx._deprecated(base_DoGetVirtualSize,
+    base_DoGetVirtualSize = wx.deprecated(base_DoGetVirtualSize,
                                    "Please use PyScrolledWindow.DoGetVirtualSize instead.")
 
     def base_DoGetBestSize(*args, **kw):
         return PyScrolledWindow.DoGetBestSize(*args, **kw)
-    base_DoGetBestSize = wx._deprecated(base_DoGetBestSize,
+    base_DoGetBestSize = wx.deprecated(base_DoGetBestSize,
                                    "Please use PyScrolledWindow.DoGetBestSize instead.")
 
     def base_InitDialog(*args, **kw):
         return PyScrolledWindow.InitDialog(*args, **kw)
-    base_InitDialog = wx._deprecated(base_InitDialog,
+    base_InitDialog = wx.deprecated(base_InitDialog,
                                    "Please use PyScrolledWindow.InitDialog instead.")
 
     def base_TransferDataToWindow(*args, **kw):
         return PyScrolledWindow.TransferDataToWindow(*args, **kw)
-    base_TransferDataToWindow = wx._deprecated(base_TransferDataToWindow,
+    base_TransferDataToWindow = wx.deprecated(base_TransferDataToWindow,
                                    "Please use PyScrolledWindow.TransferDataToWindow instead.")
 
     def base_TransferDataFromWindow(*args, **kw):
         return PyScrolledWindow.TransferDataFromWindow(*args, **kw)
-    base_TransferDataFromWindow = wx._deprecated(base_TransferDataFromWindow,
+    base_TransferDataFromWindow = wx.deprecated(base_TransferDataFromWindow,
                                    "Please use PyScrolledWindow.TransferDataFromWindow instead.")
 
     def base_Validate(*args, **kw):
         return PyScrolledWindow.Validate(*args, **kw)
-    base_Validate = wx._deprecated(base_Validate,
+    base_Validate = wx.deprecated(base_Validate,
                                    "Please use PyScrolledWindow.Validate instead.")
 
     def base_AcceptsFocus(*args, **kw):
         return PyScrolledWindow.AcceptsFocus(*args, **kw)
-    base_AcceptsFocus = wx._deprecated(base_AcceptsFocus,
+    base_AcceptsFocus = wx.deprecated(base_AcceptsFocus,
                                    "Please use PyScrolledWindow.AcceptsFocus instead.")
 
     def base_AcceptsFocusFromKeyboard(*args, **kw):
         return PyScrolledWindow.AcceptsFocusFromKeyboard(*args, **kw)
-    base_AcceptsFocusFromKeyboard = wx._deprecated(base_AcceptsFocusFromKeyboard,
+    base_AcceptsFocusFromKeyboard = wx.deprecated(base_AcceptsFocusFromKeyboard,
                                    "Please use PyScrolledWindow.AcceptsFocusFromKeyboard instead.")
 
     def base_GetMaxSize(*args, **kw):
         return PyScrolledWindow.GetMaxSize(*args, **kw)
-    base_GetMaxSize = wx._deprecated(base_GetMaxSize,
+    base_GetMaxSize = wx.deprecated(base_GetMaxSize,
                                    "Please use PyScrolledWindow.GetMaxSize instead.")
 
     def base_Enable(*args, **kw):
         return PyScrolledWindow.Enable(*args, **kw)
-    base_Enable = wx._deprecated(base_Enable,
+    base_Enable = wx.deprecated(base_Enable,
                                    "Please use PyScrolledWindow.Enable instead.")
 
     def base_AddChild(*args, **kw):
         return PyScrolledWindow.AddChild(*args, **kw)
-    base_AddChild = wx._deprecated(base_AddChild,
+    base_AddChild = wx.deprecated(base_AddChild,
                                    "Please use PyScrolledWindow.AddChild instead.")
 
     def base_RemoveChild(*args, **kw):
         return PyScrolledWindow.RemoveChild(*args, **kw)
-    base_RemoveChild = wx._deprecated(base_RemoveChild,
+    base_RemoveChild = wx.deprecated(base_RemoveChild,
                                    "Please use PyScrolledWindow.RemoveChild instead.")
 
     def base_ShouldInheritColours(*args, **kw):
         return PyScrolledWindow.ShouldInheritColours(*args, **kw)
-    base_ShouldInheritColours = wx._deprecated(base_ShouldInheritColours,
+    base_ShouldInheritColours = wx.deprecated(base_ShouldInheritColours,
                                    "Please use PyScrolledWindow.ShouldInheritColours instead.")
 
     def base_GetDefaultAttributes(*args, **kw):
         return PyScrolledWindow.GetDefaultAttributes(*args, **kw)
-    base_GetDefaultAttributes = wx._deprecated(base_GetDefaultAttributes,
+    base_GetDefaultAttributes = wx.deprecated(base_GetDefaultAttributes,
                                    "Please use PyScrolledWindow.GetDefaultAttributes instead.")
 
     def base_OnInternalIdle(*args, **kw):
         return PyScrolledWindow.OnInternalIdle(*args, **kw)
-    base_OnInternalIdle = wx._deprecated(base_OnInternalIdle,
+    base_OnInternalIdle = wx.deprecated(base_OnInternalIdle,
                                    "Please use PyScrolledWindow.OnInternalIdle instead.")
 
 _windows_.PyScrolledWindow_swigregister(PyScrolledWindow)
@@ -3920,6 +4700,9 @@ PRINTBIN_LARGECAPACITY = _windows_.PRINTBIN_LARGECAPACITY
 PRINTBIN_CASSETTE = _windows_.PRINTBIN_CASSETTE
 PRINTBIN_FORMSOURCE = _windows_.PRINTBIN_FORMSOURCE
 PRINTBIN_USER = _windows_.PRINTBIN_USER
+PreviewFrame_AppModal = _windows_.PreviewFrame_AppModal
+PreviewFrame_WindowModal = _windows_.PreviewFrame_WindowModal
+PreviewFrame_NonModal = _windows_.PreviewFrame_NonModal
 class PrintData(_core.Object):
     """Proxy of C++ PrintData class"""
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
@@ -4593,13 +5376,17 @@ class Printout(_core.Object):
         """GetPaperRectPixels(self) -> Rect"""
         return _windows_.Printout_GetPaperRectPixels(*args, **kwargs)
 
+    def SetPreview(*args, **kwargs):
+        """SetPreview(self, PrintPreview preview)"""
+        return _windows_.Printout_SetPreview(*args, **kwargs)
+
+    def GetPreview(*args, **kwargs):
+        """GetPreview(self) -> PrintPreview"""
+        return _windows_.Printout_GetPreview(*args, **kwargs)
+
     def IsPreview(*args, **kwargs):
         """IsPreview(self) -> bool"""
         return _windows_.Printout_IsPreview(*args, **kwargs)
-
-    def SetIsPreview(*args, **kwargs):
-        """SetIsPreview(self, bool p)"""
-        return _windows_.Printout_SetIsPreview(*args, **kwargs)
 
     def OnBeginDocument(*args, **kwargs):
         """OnBeginDocument(self, int startPage, int endPage) -> bool"""
@@ -4631,32 +5418,32 @@ class Printout(_core.Object):
 
     def base_OnBeginDocument(*args, **kw):
         return Printout.OnBeginDocument(*args, **kw)
-    base_OnBeginDocument = wx._deprecated(base_OnBeginDocument,
+    base_OnBeginDocument = wx.deprecated(base_OnBeginDocument,
                                    "Please use Printout.OnBeginDocument instead.")
 
     def base_OnEndDocument(*args, **kw):
         return Printout.OnEndDocument(*args, **kw)
-    base_OnEndDocument = wx._deprecated(base_OnEndDocument,
+    base_OnEndDocument = wx.deprecated(base_OnEndDocument,
                                    "Please use Printout.OnEndDocument instead.")
 
     def base_OnBeginPrinting(*args, **kw):
         return Printout.OnBeginPrinting(*args, **kw)
-    base_OnBeginPrinting = wx._deprecated(base_OnBeginPrinting,
+    base_OnBeginPrinting = wx.deprecated(base_OnBeginPrinting,
                                    "Please use Printout.OnBeginPrinting instead.")
 
     def base_OnEndPrinting(*args, **kw):
         return Printout.OnEndPrinting(*args, **kw)
-    base_OnEndPrinting = wx._deprecated(base_OnEndPrinting,
+    base_OnEndPrinting = wx.deprecated(base_OnEndPrinting,
                                    "Please use Printout.OnEndPrinting instead.")
 
     def base_OnPreparePrinting(*args, **kw):
         return Printout.OnPreparePrinting(*args, **kw)
-    base_OnPreparePrinting = wx._deprecated(base_OnPreparePrinting,
+    base_OnPreparePrinting = wx.deprecated(base_OnPreparePrinting,
                                    "Please use Printout.OnPreparePrinting instead.")
 
     def base_GetPageInfo(*args, **kw):
         return Printout.GetPageInfo(*args, **kw)
-    base_GetPageInfo = wx._deprecated(base_GetPageInfo,
+    base_GetPageInfo = wx.deprecated(base_GetPageInfo,
                                    "Please use Printout.GetPageInfo instead.")
 
     DC = property(GetDC,SetDC,doc="See `GetDC` and `SetDC`") 
@@ -4680,6 +5467,10 @@ class PreviewCanvas(ScrolledWindow):
         _windows_.PreviewCanvas_swiginit(self,_windows_.new_PreviewCanvas(*args, **kwargs))
         self._setOORInfo(self)
 
+    def SetPreview(*args, **kwargs):
+        """SetPreview(self, wxPrintPreviewBase preview)"""
+        return _windows_.PreviewCanvas_SetPreview(*args, **kwargs)
+
 _windows_.PreviewCanvas_swigregister(PreviewCanvas)
 
 class PreviewFrame(Frame):
@@ -4698,6 +5489,10 @@ class PreviewFrame(Frame):
     def Initialize(*args, **kwargs):
         """Initialize(self)"""
         return _windows_.PreviewFrame_Initialize(*args, **kwargs)
+
+    def InitializeWithModality(*args, **kwargs):
+        """InitializeWithModality(self, int kind)"""
+        return _windows_.PreviewFrame_InitializeWithModality(*args, **kwargs)
 
     def CreateControlBar(*args, **kwargs):
         """CreateControlBar(self)"""
@@ -4743,6 +5538,10 @@ class PreviewControlBar(Panel):
         _windows_.PreviewControlBar_swiginit(self,_windows_.new_PreviewControlBar(*args, **kwargs))
         self._setOORInfo(self)
 
+    def SetPageInfo(*args, **kwargs):
+        """SetPageInfo(self, int minPage, int maxPage)"""
+        return _windows_.PreviewControlBar_SetPageInfo(*args, **kwargs)
+
     def GetZoomControl(*args, **kwargs):
         """GetZoomControl(self) -> int"""
         return _windows_.PreviewControlBar_GetZoomControl(*args, **kwargs)
@@ -4754,26 +5553,6 @@ class PreviewControlBar(Panel):
     def GetPrintPreview(*args, **kwargs):
         """GetPrintPreview(self) -> PrintPreview"""
         return _windows_.PreviewControlBar_GetPrintPreview(*args, **kwargs)
-
-    def OnNext(*args, **kwargs):
-        """OnNext(self)"""
-        return _windows_.PreviewControlBar_OnNext(*args, **kwargs)
-
-    def OnPrevious(*args, **kwargs):
-        """OnPrevious(self)"""
-        return _windows_.PreviewControlBar_OnPrevious(*args, **kwargs)
-
-    def OnFirst(*args, **kwargs):
-        """OnFirst(self)"""
-        return _windows_.PreviewControlBar_OnFirst(*args, **kwargs)
-
-    def OnLast(*args, **kwargs):
-        """OnLast(self)"""
-        return _windows_.PreviewControlBar_OnLast(*args, **kwargs)
-
-    def OnGoto(*args, **kwargs):
-        """OnGoto(self)"""
-        return _windows_.PreviewControlBar_OnGoto(*args, **kwargs)
 
     PrintPreview = property(GetPrintPreview,doc="See `GetPrintPreview`") 
     ZoomControl = property(GetZoomControl,SetZoomControl,doc="See `GetZoomControl` and `SetZoomControl`") 
@@ -4830,6 +5609,10 @@ class PrintPreview(_core.Object):
     def PaintPage(*args, **kwargs):
         """PaintPage(self, PreviewCanvas canvas, DC dc) -> bool"""
         return _windows_.PrintPreview_PaintPage(*args, **kwargs)
+
+    def UpdatePageRendering(*args, **kwargs):
+        """UpdatePageRendering(self) -> bool"""
+        return _windows_.PrintPreview_UpdatePageRendering(*args, **kwargs)
 
     def DrawBlankPage(*args, **kwargs):
         """DrawBlankPage(self, PreviewCanvas canvas, DC dc) -> bool"""
@@ -4910,37 +5693,37 @@ class PyPrintPreview(PrintPreview):
 
     def base_SetCurrentPage(*args, **kw):
         return PyPrintPreview.SetCurrentPage(*args, **kw)
-    base_SetCurrentPage = wx._deprecated(base_SetCurrentPage,
+    base_SetCurrentPage = wx.deprecated(base_SetCurrentPage,
                                    "Please use PyPrintPreview.SetCurrentPage instead.")
 
     def base_PaintPage(*args, **kw):
         return PyPrintPreview.PaintPage(*args, **kw)
-    base_PaintPage = wx._deprecated(base_PaintPage,
+    base_PaintPage = wx.deprecated(base_PaintPage,
                                    "Please use PyPrintPreview.PaintPage instead.")
 
     def base_DrawBlankPage(*args, **kw):
         return PyPrintPreview.DrawBlankPage(*args, **kw)
-    base_DrawBlankPage = wx._deprecated(base_DrawBlankPage,
+    base_DrawBlankPage = wx.deprecated(base_DrawBlankPage,
                                    "Please use PyPrintPreview.DrawBlankPage instead.")
 
     def base_RenderPage(*args, **kw):
         return PyPrintPreview.RenderPage(*args, **kw)
-    base_RenderPage = wx._deprecated(base_RenderPage,
+    base_RenderPage = wx.deprecated(base_RenderPage,
                                    "Please use PyPrintPreview.RenderPage instead.")
 
     def base_SetZoom(*args, **kw):
         return PyPrintPreview.SetZoom(*args, **kw)
-    base_SetZoom = wx._deprecated(base_SetZoom,
+    base_SetZoom = wx.deprecated(base_SetZoom,
                                    "Please use PyPrintPreview.SetZoom instead.")
 
     def base_Print(*args, **kw):
         return PyPrintPreview.Print(*args, **kw)
-    base_Print = wx._deprecated(base_Print,
+    base_Print = wx.deprecated(base_Print,
                                    "Please use PyPrintPreview.Print instead.")
 
     def base_DetermineScaling(*args, **kw):
         return PyPrintPreview.DetermineScaling(*args, **kw)
-    base_DetermineScaling = wx._deprecated(base_DetermineScaling,
+    base_DetermineScaling = wx.deprecated(base_DetermineScaling,
                                    "Please use PyPrintPreview.DetermineScaling instead.")
 
 _windows_.PyPrintPreview_swigregister(PyPrintPreview)
@@ -4974,6 +5757,10 @@ class PyPreviewFrame(PreviewFrame):
         """Initialize(self)"""
         return _windows_.PyPreviewFrame_Initialize(*args, **kwargs)
 
+    def InitializeWithModality(*args, **kwargs):
+        """InitializeWithModality(self, int kind)"""
+        return _windows_.PyPreviewFrame_InitializeWithModality(*args, **kwargs)
+
     def CreateCanvas(*args, **kwargs):
         """CreateCanvas(self)"""
         return _windows_.PyPreviewFrame_CreateCanvas(*args, **kwargs)
@@ -4984,17 +5771,17 @@ class PyPreviewFrame(PreviewFrame):
 
     def base_Initialize(*args, **kw):
         return PyPreviewFrame.Initialize(*args, **kw)
-    base_Initialize = wx._deprecated(base_Initialize,
+    base_Initialize = wx.deprecated(base_Initialize,
                                    "Please use PyPreviewFrame.Initialize instead.")
 
     def base_CreateCanvas(*args, **kw):
         return PyPreviewFrame.CreateCanvas(*args, **kw)
-    base_CreateCanvas = wx._deprecated(base_CreateCanvas,
+    base_CreateCanvas = wx.deprecated(base_CreateCanvas,
                                    "Please use PyPreviewFrame.CreateCanvas instead.")
 
     def base_CreateControlBar(*args, **kw):
         return PyPreviewFrame.CreateControlBar(*args, **kw)
-    base_CreateControlBar = wx._deprecated(base_CreateControlBar,
+    base_CreateControlBar = wx.deprecated(base_CreateControlBar,
                                    "Please use PyPreviewFrame.CreateControlBar instead.")
 
 _windows_.PyPreviewFrame_swigregister(PyPreviewFrame)
@@ -5030,12 +5817,12 @@ class PyPreviewControlBar(PreviewControlBar):
 
     def base_CreateButtons(*args, **kw):
         return PreviewControlBar.CreateButtons(*args, **kw)
-    base_CreateButtons = wx._deprecated(base_CreateButtons,
+    base_CreateButtons = wx.deprecated(base_CreateButtons,
                                    "Please use PreviewControlBar.CreateButtons instead.")
 
     def base_SetZoomControl(*args, **kw):
         return PreviewControlBar.SetZoomControl(*args, **kw)
-    base_SetZoomControl = wx._deprecated(base_SetZoomControl,
+    base_SetZoomControl = wx.deprecated(base_SetZoomControl,
                                    "Please use PreviewControlBar.SetZoomControl instead.")
 
 _windows_.PyPreviewControlBar_swigregister(PyPreviewControlBar)

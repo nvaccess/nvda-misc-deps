@@ -677,6 +677,17 @@ TreeCheckBox = PyEmbeddedImage(
     "BuVMOQHFqw9/AAnUP+Hao6QqAAAAAElFTkSuQmCC")
 
 #----------------------------------------------------------------------
+TreeCheckListBox = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAABQAAAAWCAIAAABPIytRAAAAAXNSR0IArs4c6QAAAAlwSFlz"
+    "AAANEgAADToB6N2Z3gAAAAd0SU1FB9sLHg8RIv7ecjgAAAAddEVYdENvbW1lbnQAQ3JlYXRl"
+    "ZCB3aXRoIFRoZSBHSU1Q72QlbgAAAO5JREFUOMtj3P54hyi3CAPp4PXXNyyi3CJyAnIMZAEm"
+    "BgaGX39/IQudvnn69os7WFXP3DUbmcvCwMDw7/+/zRe3SPNJGykaMjAwXLh/8cOXT6KiIjde"
+    "3ZDllP31/5eKnDJEVoxXFN1mBgYGV22Xl29eQdji/OIcnOxCvEKu2q6SghIKIvJw2Yu3L124"
+    "dxGumfHMuzPk+fnRh0dMDBSAgdVMfFTturL77ONzZEaVtZrVvuv7jWWNyImqplWtKmIqo1FF"
+    "dFQdvnnk2J3jZEYVDyvP/U/3yclVf/79eff9PQsj6yCIKpbXX9+Qp/P11zcAPRSkxqrj4tsA"
+    "AAAASUVORK5CYII=")
+
+#----------------------------------------------------------------------
 TreeChoice = PyEmbeddedImage(
     "iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAYAAAAS7Y8mAAAACXBIWXMAAA0SAAANOgHo3Zne"
     "AAAAB3RJTUUH1wsXDhc2uVbkBQAAAB10RVh0Q29tbWVudABDcmVhdGVkIHdpdGggVGhlIEdJ"
@@ -1030,17 +1041,12 @@ TreeStaticBitmap = PyEmbeddedImage(
 
 #----------------------------------------------------------------------
 TreeStaticBox = PyEmbeddedImage(
-    "iVBORw0KGgoAAAANSUhEUgAAABAAAAALCAYAAAB24g05AAAACXBIWXMAAA0SAAANOgHo3Zne"
-    "AAAAB3RJTUUH1wsXDgoZ7eu1QAAAAB10RVh0Q29tbWVudABDcmVhdGVkIHdpdGggVGhlIEdJ"
-    "TVDvZCVuAAABtElEQVQoz4WQz2sTQRiGn5lsQhvUNkmLERvRQ38c9FQvVtGb/hXiXf9OBT2p"
-    "VFBiUgxIye5mm81md2Z3Zmc8RKNUwef2vfA+vHxirMeePwiLkPffP1DVFUWlUEahK8VGa5MX"
-    "x8+5jLwcDOMh9wfH7G3fpH/tOjtXemy1t5hlM86X538JgsuBtiXaalK9IFUpqUqZZQlpnmKc"
-    "+b9A/ZydqpQwiwjnIa2gxcnBA6ZZSFIkOO9w3tHZ7BBERcQ4OcM6g6ktw+lXOu1tvsUTkuUF"
-    "pdE8PDzh2f5TcpOvy847PkdfCE6nn7jXv0uUxyhTIBCMojFxNkOXGmN/z659jfce6yzWWZx3"
-    "BKUpcd6RV0vyqmDQ2+Pj5BRdKm7tDqi9oymbeDzOO0xt0FbjWYkCbTXaarJyybyYk+QJO1d7"
-    "mLbh1aOXALyevKGsS5RRWGfxeASCQDYI4ixmoTOmiykX+ZzKVhhrcN6tpwshKG2JdXZ1I5BC"
-    "0my0CPKyIFyGxNlsVa4NdV3TDJprwdHuIaNkhBQSgUAISUM2uNO5TXDQ3+ft6B2/fuGcQ0rJ"
-    "k6PHa0F3o0v3Rpd/8QPZ/Bl4qenM9gAAAABJRU5ErkJggg==")
+    "iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAIAAABL1vtsAAAAAXNSR0IArs4c6QAAAAlwSFlz"
+    "AAANEgAADToB6N2Z3gAAAAd0SU1FB9sLHg8XC+o2TdIAAACnSURBVDjLY7z34x4DZYCJgWJA"
+    "VSOqN9XCGXA2sjgBI6o31bb6NcNVw9kQcfxGsBy4cdBBwx7NNkybb7y4iVX/g7cPWOSF5dFs"
+    "RgMQh2hIqGM14t//v4x7H+9TFFUgOyyvPb822CJ11Ijhb8Tvf38YGZngCF82wyXBysTy//8/"
+    "YlyBYgQjAyMy9z/DfzTVcAXIUiz49aABrApYHr57+OPPd7LD8vG7JwCKb0Uo5BCtBwAAAABJ"
+    "RU5ErkJggg==")
 
 #----------------------------------------------------------------------
 TreeStaticBoxSizerH = PyEmbeddedImage(

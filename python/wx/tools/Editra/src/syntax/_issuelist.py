@@ -1,9 +1,9 @@
 ###############################################################################
 # Name: issuelist.py                                                          #
 # Purpose: Define IssueList syntax for highlighting and other features        #
-# Author: Torsten Mohr <none_yet>                                             #
-# Copyright: (c) 2008 Cody Precord <staff>                                    #
-#            (c) 2008 Torsten Mohr <none_yet>                                 #
+# Author: Torsten Mohr                                                        #
+# Copyright: (c) 2008 Cody Precord                                            #
+#            (c) 2008 Torsten Mohr                                            #
 # License: wxWindows License                                                  #
 ###############################################################################
 
@@ -15,8 +15,8 @@ AUTHOR: Cody Precord, Torsten Mohr
 """
 
 __author__ = "Cody Precord <cprecord>, Torsten Mohr <none_yet>"
-__svnid__ = "$Id: _issuelist.py 62364 2009-10-11 01:02:12Z CJP $"
-__revision__ = "$Revision: 62364 $"
+__svnid__ = "$Id: _issuelist.py 70229 2012-01-01 01:27:10Z CJP $"
+__revision__ = "$Revision: 70229 $"
 
 #-----------------------------------------------------------------------------#
 # Imports
@@ -65,7 +65,7 @@ class SyntaxData(syndata.SyntaxDataBase):
 
     """ 
     def __init__(self, langid):
-        syndata.SyntaxDataBase.__init__(self, langid)
+        super(SyntaxData, self).__init__(langid)
 
         # Setup
         self.SetLexer(stc.STC_LEX_CONTAINER)

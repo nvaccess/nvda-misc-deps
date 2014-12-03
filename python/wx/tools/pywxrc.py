@@ -11,7 +11,7 @@
 #
 #              Editable blocks by Roman Rolinsky
 #
-# RCS-ID:      $Id: pywxrc.py 51157 2008-01-11 00:19:46Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2004 by Total Control Software, 2000 Vaclav Slavik
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

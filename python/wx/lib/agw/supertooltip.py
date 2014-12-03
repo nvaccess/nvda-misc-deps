@@ -2,7 +2,7 @@
 # SUPERTOOLTIP wxPython IMPLEMENTATION
 #
 # Andrea Gavana, @ 07 October 2008
-# Latest Revision: 02 Aug 2010, 09.00 GMT
+# Latest Revision: 04 Feb 2013, 21.00 GMT
 #
 #
 # TODO List
@@ -11,13 +11,16 @@
 #    in the header and footer;
 # 2) Check whether it's possible to use rounded corners and
 #    shadows on the Mac
-#
+# 3) Split OnPaint() into smaller pieces to improve readability and 
+#    ability to redefine behaviour in subclasses
+# 4) Extend text formatting capabilities
+# 5) Make better use of links (right now it's difficult to click them without hiding tooltip)
 #
 # For all kind of problems, requests of enhancements and bug reports, please
 # write to me at:
 #
 # andrea.gavana@gmail.com
-# gavana@kpo.kz
+# andrea.gavana@maerskoil.com
 #
 # Or, obviously, to the wxPython mailing list!!!
 #
@@ -26,14 +29,14 @@
 # --------------------------------------------------------------------------------- #
 
 """
-SuperToolTip is a class that mimics the behaviour of `wx.TipWindow` and generic tooltip
-windows, although it is a custom-drawn widget. 
+:class:`SuperToolTip` is a class that mimics the behaviour of :class:`TipWindow` and generic tooltip
+windows, although it is a custom-drawn widget.
 
 
 Description
 ===========
 
-SuperToolTip is a class that mimics the behaviour of `wx.TipWindow` and generic tooltip
+:class:`SuperToolTip` is a class that mimics the behaviour of :class:`TipWindow` and generic tooltip
 windows, although it is a custom-drawn widget.
 
 This class supports:
@@ -53,10 +56,50 @@ This class supports:
 And a lot more. Check the demo for an almost complete review of the functionalities.
 
 
+Usage
+=====
+
+Usage example::
+
+    import wx
+    import wx.lib.agw.supertooltip as STT
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+        
+            wx.Frame.__init__(self, parent, -1, "SuperToolTip Demo")
+
+            panel = wx.Panel(self)
+            button = wx.Button(panel, -1, "I am the SuperToolTip target", pos=(100, 50))
+            
+            tip = STT.SuperToolTip("A nice tooltip message")
+
+            tip.SetHeader("Hello World")
+            tip.SetTarget(button)
+            tip.SetDrawHeaderLine(True)
+
+            tip.ApplyStyle("Office 2007 Blue")
+            
+            tip.SetDropShadow(True)
+        
+        
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
+
+
+
 Supported Platforms
 ===================
 
-SuperToolTip has been tested on the following platforms:
+:class:`SuperToolTip` has been tested on the following platforms:
   * Windows (Windows XP).
 
 
@@ -75,13 +118,16 @@ Events Processing
 License And Version
 ===================
 
-SuperToolTip is distributed under the wxPython license.
+:class:`SuperToolTip` is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 02 Aug 2010, 09.00 GMT
+Latest Revision: Andrea Gavana @ 04 Feb 2013, 21.00 GMT
 
-Version 0.4
+Version 0.5
 
 """
+
+# Version Info
+__version__ = "0.5"
 
 import wx
 import webbrowser
@@ -92,7 +138,7 @@ _libimported = None
 if wx.Platform == "__WXMSW__":
     osVersion = wx.GetOsVersion()
     # Shadows behind menus are supported only in XP
-    if osVersion[1] == 5 and osVersion[2] == 1:
+    if osVersion[1] > 5 or (osVersion[1] == 5 and osVersion[2] >= 1):
         try:
             # Try Mark Hammond's win32all extensions
             import win32api
@@ -186,8 +232,8 @@ def ExtractLink(line):
     hl = line[indxStart+1:indxEnd].strip()
     line = line[0:indxStart].strip()
 
-    return line, hl    
-    
+    return line, hl
+
 
 class ToolTipWindowBase(object):
     """ Base class for the different Windows and Mac implementation. """
@@ -196,40 +242,46 @@ class ToolTipWindowBase(object):
         """
         Default class constructor.
 
-        :param `parent`: the L{SuperToolTip} parent widget;
-        :param `classParent`: the L{SuperToolTip} class object.
+        :param `parent`: the :class:`SuperToolTip` parent widget;
+        :param `classParent`: the :class:`SuperToolTip` class object.
         """
 
         self._spacing = 6
         self._wasOnLink = False
         self._hyperlinkRect, self._hyperlinkWeb = [], []
-        
+
         self._classParent = classParent
         self._alphaTimer = wx.Timer(self, wx.ID_ANY)
 
-        # Bind the events        
+        # Bind the events
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_TIMER, self.AlphaCycle)
-        self.Bind(wx.EVT_KILL_FOCUS, self.OnDestroy)
+        parent.Bind(wx.EVT_KILL_FOCUS, self.OnDestroy)
         self.Bind(wx.EVT_LEFT_DOWN, self.OnDestroy)
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnDestroy)
-                
+
 
     def OnPaint(self, event):
         """
-        Handles the ``wx.EVT_PAINT`` event for L{SuperToolTip}.
+        Handles the ``wx.EVT_PAINT`` event for :class:`SuperToolTip`.
+        
+        If the `event` parameter is ``None``, calculates best size and returns it. 
 
-        :param `event`: a `wx.PaintEvent` event to be processed.
+        :param `event`: a :class:`PaintEvent` event to be processed or ``None``.
         """
 
-        # Go with double buffering...
-        dc = wx.BufferedPaintDC(self)
-        
+        maxWidth = 0
+        if event is None:
+            dc = wx.ClientDC(self)
+        else:
+            # Go with double buffering...
+            dc = wx.BufferedPaintDC(self)
+
         frameRect = self.GetClientRect()
-        x, y, width, height = frameRect
+        x, y, width, _height = frameRect
         # Store the rects for the hyperlink lines
         self._hyperlinkRect, self._hyperlinkWeb = [], []
         classParent = self._classParent
@@ -239,7 +291,7 @@ class ToolTipWindowBase(object):
                                                 classParent.GetMiddleGradientColour(), \
                                                 classParent.GetBottomGradientColour()
 
-        # Get the user options for header, bitmaps etc...        
+        # Get the user options for header, bitmaps etc...
         drawHeader, drawFooter = classParent.GetDrawHeaderLine(), classParent.GetDrawFooterLine()
         topRect = wx.Rect(frameRect.x, frameRect.y, frameRect.width, frameRect.height/2)
         bottomRect = wx.Rect(frameRect.x, frameRect.y+frameRect.height/2, frameRect.width, frameRect.height/2+1)
@@ -250,21 +302,21 @@ class ToolTipWindowBase(object):
         header, headerBmp = classParent.GetHeader(), classParent.GetHeaderBitmap()
         headerFont, messageFont, footerFont, hyperlinkFont = classParent.GetHeaderFont(), classParent.GetMessageFont(), \
                                                              classParent.GetFooterFont(), classParent.GetHyperlinkFont()
-        
-        xPos, yPos = self._spacing, 0
-        bmpXPos = bmpYPos = 0
+
+        yPos = 0
+        bmpXPos = 0
         bmpHeight = textHeight = bmpWidth = 0
 
         if headerBmp and headerBmp.IsOk():
             # We got the header bitmap
             bmpHeight, bmpWidth = headerBmp.GetHeight(), headerBmp.GetWidth()
             bmpXPos = self._spacing
-            
+
         if header:
             # We got the header text
             dc.SetFont(headerFont)
             textWidth, textHeight = dc.GetTextExtent(header)
-
+        maxWidth = max(bmpWidth+(textWidth+self._spacing*3), maxWidth)
         # Calculate the header height
         height = max(textHeight, bmpHeight)
         if header:
@@ -278,77 +330,76 @@ class ToolTipWindowBase(object):
                 # Draw the separator line after the header
                 dc.SetPen(wx.GREY_PEN)
                 dc.DrawLine(self._spacing, yPos+self._spacing, width-self._spacing, yPos+self._spacing)
-
+                yPos += self._spacing
+                
+        maxWidth = max(bmpXPos + bmpWidth + self._spacing, maxWidth)
         # Get the big body image (if any)
-        embeddedImage = classParent.GetBodyImage()    
+        embeddedImage = classParent.GetBodyImage()
         bmpWidth = bmpHeight = -1
         if embeddedImage and embeddedImage.IsOk():
             bmpWidth, bmpHeight = embeddedImage.GetWidth(), embeddedImage.GetHeight()
-
+        
         # A bunch of calculations to draw the main body message
         messageHeight = 0
-        textSpacing = (bmpWidth > 0 and [3*self._spacing] or [2*self._spacing])[0]
         lines = classParent.GetMessage().split("\n")
         yText = yPos
+        embImgPos = yPos
         normalText = wx.SystemSettings_GetColour(wx.SYS_COLOUR_MENUTEXT)
         hyperLinkText = wx.BLUE
-        
-        for indx, line in enumerate(lines):
+        messagePos = self._getTextExtent(dc, lines[0] if lines else "")[1] / 2 + self._spacing
+        for line in lines:
             # Loop over all the lines in the message
-            isLink = False
-            dc.SetTextForeground(normalText)
-            if line.startswith("</b>"):      # is a bold line
-                line = line[4:]
-                font = MakeBold(messageFont)
-                dc.SetFont(font)
-            elif line.startswith("</l>"):    # is a link
-                dc.SetFont(hyperlinkFont)
-                isLink = True
-                line, hl = ExtractLink(line)
-                dc.SetTextForeground(hyperLinkText)
+            if line.startswith("<hr>"):     # draw a line
+                yText += self._spacing * 2
+                dc.DrawLine(self._spacing, yText+self._spacing, width-self._spacing, yText+self._spacing)
             else:
-                # Is a normal line
-                dc.SetFont(messageFont)
-
-            textWidth, textHeight = dc.GetTextExtent(line)
-            if textHeight == 0:
-                textWidth, textHeight = dc.GetTextExtent("a")
-
-            messageHeight += textHeight
-
-            xText = (bmpWidth > 0 and [bmpWidth+2*self._spacing] or [self._spacing])[0]
-            yText += textHeight/2+self._spacing
-            
-            dc.DrawText(line, xText, yText)
-            if isLink:
-                # Store the hyperlink rectangle and link
-                self._hyperlinkRect.append(wx.Rect(xText, yText, textWidth, textHeight))
-                self._hyperlinkWeb.append(hl)
-
-            if indx == 0:
-                messagePos = yText
+                isLink = False
+                dc.SetTextForeground(normalText)
+                if line.startswith("</b>"):      # is a bold line
+                    line = line[4:]
+                    font = MakeBold(messageFont)
+                    dc.SetFont(font)
+                elif line.startswith("</l>"):    # is a link
+                    dc.SetFont(hyperlinkFont)
+                    isLink = True
+                    line, hl = ExtractLink(line)
+                    dc.SetTextForeground(hyperLinkText)
+                else:
+                    # Is a normal line
+                    dc.SetFont(messageFont)
+    
+                textWidth, textHeight = self._getTextExtent(dc, line)
+    
+                messageHeight += textHeight
+                
+                xText = (bmpWidth + 2 * self._spacing) if bmpWidth > 0 else self._spacing
+                yText += textHeight / 2 + self._spacing
+                maxWidth = max(xText + textWidth + self._spacing, maxWidth)
+                dc.DrawText(line, xText, yText)
+                if isLink:
+                    self._storeHyperLinkInfo(xText, yText, textWidth, textHeight, hl)
 
         toAdd = 0
-        if bmpHeight > textHeight:
+        if bmpHeight > messageHeight:
             yPos += 2*self._spacing + bmpHeight
             toAdd = self._spacing
         else:
             yPos += messageHeight + 2*self._spacing
-            
+
         yText = max(messageHeight, bmpHeight+2*self._spacing)
         if embeddedImage and embeddedImage.IsOk():
             # Draw the main body image
-            dc.DrawBitmap(embeddedImage, self._spacing, messagePos, True)
-        
+            dc.DrawBitmap(embeddedImage, self._spacing, embImgPos + (self._spacing * 2), True)
+
         footer, footerBmp = classParent.GetFooter(), classParent.GetFooterBitmap()
         bmpHeight = bmpWidth = textHeight = textWidth = 0
-        bmpXPos = bmpYPos = 0
-        
+        bmpXPos = 0
+
         if footerBmp and footerBmp.IsOk():
             # Got the footer bitmap
             bmpHeight, bmpWidth = footerBmp.GetHeight(), footerBmp.GetWidth()
             bmpXPos = self._spacing
-            
+
         if footer:
             # Got the footer text
             dc.SetFont(footerFont)
@@ -358,36 +409,57 @@ class ToolTipWindowBase(object):
             if drawFooter:
                 # Draw the separator line before the footer
                 dc.SetPen(wx.GREY_PEN)
-                dc.DrawLine(self._spacing, yPos-self._spacing/2+toAdd, width-self._spacing, yPos-self._spacing/2+toAdd)
-
+                dc.DrawLine(self._spacing, yPos-self._spacing/2+toAdd, 
+                            width-self._spacing, yPos-self._spacing/2+toAdd)
         # Draw the footer and footer bitmap (if any)
         dc.SetTextForeground(normalText)
         height = max(textHeight, bmpHeight)
         yPos += toAdd
         if footer:
-            dc.DrawText(footer, bmpXPos+bmpWidth+self._spacing, yPos + (height-textHeight+self._spacing)/2)
+            toAdd = (height - textHeight + self._spacing) / 2
+            dc.DrawText(footer, bmpXPos + bmpWidth + self._spacing, yPos + toAdd)
+            maxWidth = max(bmpXPos + bmpWidth + (self._spacing*2) + textWidth, maxWidth)
         if footerBmp and footerBmp.IsOk():
-            dc.DrawBitmap(footerBmp, bmpXPos, yPos + (height-bmpHeight+self._spacing)/2, True)
+            toAdd = (height - bmpHeight + self._spacing) / 2
+            dc.DrawBitmap(footerBmp, bmpXPos, yPos + toAdd, True)
+            maxWidth = max(footerBmp.GetSize().GetWidth() + bmpXPos, maxWidth)
+        
+        maxHeight = yPos + height + toAdd
+        if event is None:
+            return maxWidth, maxHeight
+
+
+    @staticmethod
+    def _getTextExtent(dc, line):
+        textWidth, textHeight = dc.GetTextExtent(line)
+        if textHeight == 0:
+            _, textHeight = dc.GetTextExtent("a")
+        return textWidth, textHeight
+    
+    def _storeHyperLinkInfo(self, hTextPos, vTextPos, textWidth, textHeight, linkTarget):
+        # Store the hyperlink rectangle and link
+        self._hyperlinkRect.append(wx.Rect(hTextPos, vTextPos, textWidth, textHeight))
+        self._hyperlinkWeb.append(linkTarget)    
 
 
     def OnEraseBackground(self, event):
         """
-        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for L{SuperToolTip}.
+        Handles the ``wx.EVT_ERASE_BACKGROUND`` event for :class:`SuperToolTip`.
 
-        :param `event`: a `wx.EraseEvent` event to be processed.
+        :param `event`: a :class:`EraseEvent` event to be processed.
 
-        :note: This method is intentionally empty to reduce flicker.        
+        :note: This method is intentionally empty to reduce flicker.
         """
 
-        # This is intentionally empty to reduce flicker        
+        # This is intentionally empty to reduce flicker
         pass
 
 
     def OnSize(self, event):
         """
-        Handles the ``wx.EVT_SIZE`` event for L{SuperToolTip}.
+        Handles the ``wx.EVT_SIZE`` event for :class:`SuperToolTip`.
 
-        :param `event`: a `wx.SizeEvent` event to be processed.
+        :param `event`: a :class:`SizeEvent` event to be processed.
         """
 
         self.Refresh()
@@ -396,9 +468,9 @@ class ToolTipWindowBase(object):
 
     def OnMouseMotion(self, event):
         """
-        Handles the ``wx.EVT_MOTION`` event for L{SuperToolTip}.
+        Handles the ``wx.EVT_MOTION`` event for :class:`SuperToolTip`.
 
-        :param `event`: a `wx.MouseEvent` event to be processed.
+        :param `event`: a :class:`MouseEvent` event to be processed.
         """
 
         x, y = event.GetPosition()
@@ -418,17 +490,18 @@ class ToolTipWindowBase(object):
     def OnDestroy(self, event):
         """
         Handles the ``wx.EVT_LEFT_DOWN``, ``wx.EVT_LEFT_DCLICK`` and ``wx.EVT_KILL_FOCUS``
-        events for L{SuperToolTip}. All these events destroy the L{SuperToolTip},
+        events for :class:`SuperToolTip`. All these events destroy the :class:`SuperToolTip`,
         unless the user clicked on one hyperlink.
 
-        :param `event`: a `wx.MouseEvent` or a `wx.FocusEvent` event to be processed.
+        :param `event`: a :class:`MouseEvent` or a :class:`FocusEvent` event to be processed.
         """
 
         if not isinstance(event, wx.MouseEvent):
             # We haven't clicked a link
-            self.Destroy()
+            if self:  # Check if window still exists, Destroy might have been called manually (more than once)
+                self.Destroy()
             return
-        
+
         x, y = event.GetPosition()
         for indx, rect in enumerate(self._hyperlinkRect):
             if rect.Contains((x, y)):
@@ -445,9 +518,9 @@ class ToolTipWindowBase(object):
 
     def StartAlpha(self, isShow):
         """
-        Start the timer which set the alpha channel for L{SuperToolTip}.
+        Start the timer which set the alpha channel for :class:`SuperToolTip`.
 
-        :param `isShow`: whether L{SuperToolTip} is being shown or deleted.
+        :param `isShow`: whether :class:`SuperToolTip` is being shown or deleted.
 
         :note: This method is available only on Windows and requires Mark Hammond's
          pywin32 package.
@@ -456,16 +529,16 @@ class ToolTipWindowBase(object):
         if self._alphaTimer.IsRunning():
             return
 
-        # Calculate starting alpha value and its step        
+        # Calculate starting alpha value and its step
         self.amount = (isShow and [0] or [255])[0]
         self.delta = (isShow and [5] or [-5])[0]
         # Start the timer
         self._alphaTimer.Start(30)
-        
+
 
     def SetFont(self, font):
         """
-        Sets the L{SuperToolTip} font globally.
+        Sets the :class:`SuperToolTip` font globally.
 
         :param `font`: the font to set.
         """
@@ -474,14 +547,14 @@ class ToolTipWindowBase(object):
         self._classParent.InitFont()
         self.Invalidate()
 
-    
+
     def Invalidate(self):
-        """ Invalidate L{SuperToolTip} size and repaint it. """
+        """ Invalidate :class:`SuperToolTip` size and repaint it. """
 
         if not self._classParent.GetMessage():
             # No message yet...
             return
-        
+
         self.CalculateBestSize()
         self.Refresh()
 
@@ -499,7 +572,7 @@ class ToolTipWindowBase(object):
         if not _libimported:
             # No Mark Hammond's win32all extension
             return
-        
+
         if wx.Platform != "__WXMSW__":
             # This works only on Windows XP
             return
@@ -512,12 +585,12 @@ class ToolTipWindowBase(object):
             if hasattr(win32gui, "CreateRoundRectRgn"):
                 rgn = win32gui.CreateRoundRectRgn(0, 0, size.x, size.y, 9, 9)
                 win32gui.SetWindowRgn(hwnd, rgn, True)
-        
+
         CS_DROPSHADOW = 0x00020000
         # Load the user32 library
         if not hasattr(self, "_winlib"):
             self._winlib = win32api.LoadLibrary("user32")
-        
+
         csstyle = win32api.GetWindowLong(hwnd, win32con.GCL_STYLE)
         if drop:
             if csstyle & CS_DROPSHADOW:
@@ -527,7 +600,7 @@ class ToolTipWindowBase(object):
         else:
             csstyle &= ~CS_DROPSHADOW
 
-        # Drop the shadow underneath the window                
+        # Drop the shadow underneath the window
         GCL_STYLE= -26
         cstyle= win32gui.GetClassLong(hwnd, GCL_STYLE)
         if drop:
@@ -539,14 +612,14 @@ class ToolTipWindowBase(object):
 
     def AlphaCycle(self, event):
         """
-        Handles the ``wx.EVT_TIMER`` event for L{SuperToolTip}.
+        Handles the ``wx.EVT_TIMER`` event for :class:`SuperToolTip`.
 
-        :param `event`: a `wx.TimerEvent` event to be processed.
+        :param `event`: a :class:`TimerEvent` event to be processed.
         """
 
         # Increase (or decrease) the alpha channel
         self.amount += self.delta
-        
+
         if self.amount > 255 or self.amount < 0:
             # We're done, stop the timer
             self._alphaTimer.Stop()
@@ -555,7 +628,7 @@ class ToolTipWindowBase(object):
                 self.Destroy()
             return
 
-        # Make the SuperToolTip more or less transparent        
+        # Make the SuperToolTip more or less transparent
         self.MakeWindowTransparent(self.amount)
         if not self.IsShown():
             self.Show()
@@ -563,7 +636,7 @@ class ToolTipWindowBase(object):
 
     def MakeWindowTransparent(self, amount):
         """
-        Makes the L{SuperToolTip} window transparent.
+        Makes the :class:`SuperToolTip` window transparent.
 
         :param `amount`: the alpha channel value.
 
@@ -574,123 +647,57 @@ class ToolTipWindowBase(object):
         if not _libimported:
             # No way, only Windows XP with Mark Hammond's win32all
             return
-        
+
         # this API call is not in all SDKs, only the newer ones, so
         # we will runtime bind this
         if wx.Platform != "__WXMSW__":
             return
-        
+
         hwnd = self.GetHandle()
 
-        if not hasattr(self, "_winlib"):                
+        if not hasattr(self, "_winlib"):
             self._winlib = win32api.LoadLibrary("user32")
-                
+
         pSetLayeredWindowAttributes = win32api.GetProcAddress(self._winlib,
                                                               "SetLayeredWindowAttributes")
-        
+
         if pSetLayeredWindowAttributes == None:
             return
-            
+
         exstyle = win32api.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
         if 0 == (exstyle & 0x80000):
-            win32api.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, exstyle | 0x80000)  
-                 
+            win32api.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, exstyle | 0x80000)
+
         winxpgui.SetLayeredWindowAttributes(hwnd, 0, amount, 2)
-    
-        
+
+
     def CalculateBestSize(self):
-        """ Calculates the L{SuperToolTip} window best size. """
+        """ Calculates the :class:`SuperToolTip` window best size. """
 
-        # See the OnPaint method for explanations...
-        maxWidth = maxHeight = 0
-        dc = wx.ClientDC(self)
-
-        classParent = self._classParent
-        header, headerBmp = classParent.GetHeader(), classParent.GetHeaderBitmap()
-
-        textHeight, bmpHeight = 0, 0
-        headerFont, messageFont, footerFont, hyperlinkFont = classParent.GetHeaderFont(), classParent.GetMessageFont(), \
-                                                             classParent.GetFooterFont(), classParent.GetHyperlinkFont()
-        if header:
-            dc.SetFont(headerFont)
-            textWidth, textHeight = dc.GetTextExtent(header)
-            maxWidth = max(maxWidth, textWidth + 2*self._spacing)
-            maxHeight += self._spacing/2
-        if headerBmp and headerBmp.IsOk():
-            maxWidth += headerBmp.GetWidth() + 2*self._spacing
-            bmpHeight = headerBmp.GetHeight()
-            if not header:
-                maxHeight += self._spacing/2
-
-        maxHeight += max(textHeight, bmpHeight)
-        if textHeight or bmpHeight:
-            maxHeight += self._spacing/2
-
-        # See the OnPaint method for explanations...
-        bmpWidth = bmpHeight = -1
-        embeddedImage = classParent.GetBodyImage()
-        if embeddedImage and embeddedImage.IsOk():
-            bmpWidth, bmpHeight = embeddedImage.GetWidth(), embeddedImage.GetHeight()
-
-        messageHeight = 0
-        textSpacing = (bmpWidth and [3*self._spacing] or [2*self._spacing])[0]
-        lines = classParent.GetMessage().split("\n")
-        
-        for line in lines:
-            if line.startswith("</b>"):      # is a bold line
-                font = MakeBold(messageFont)
-                dc.SetFont(font)
-                line = line[4:]
-            elif line.startswith("</l>"):    # is a link
-                dc.SetFont(hyperlinkFont)
-                line, hl = ExtractLink(line)
-            else:
-                dc.SetFont(messageFont)
-
-            textWidth, textHeight = dc.GetTextExtent(line)
-            if textHeight == 0:
-                textWidth, textHeight = dc.GetTextExtent("a")
-
-            maxWidth = max(maxWidth, textWidth + textSpacing + bmpWidth)
-            messageHeight += textHeight
-
-        # See the OnPaint method for explanations...
-        messageHeight = max(messageHeight, bmpHeight)
-        maxHeight += messageHeight
-        toAdd = 0
-        if bmpHeight > textHeight:
-            maxHeight += 2*self._spacing
-            toAdd = self._spacing
-        else:
-            maxHeight += 2*self._spacing
-
-        footer, footerBmp = classParent.GetFooter(), classParent.GetFooterBitmap()
-        textHeight, bmpHeight = 0, 0
-
-        # See the OnPaint method for explanations...        
-        if footer:
-            dc.SetFont(footerFont)
-            textWidth, textHeight = dc.GetTextExtent(footer)
-            maxWidth = max(maxWidth, textWidth + 2*self._spacing)
-            maxHeight += self._spacing/2
-
-        if footerBmp and footerBmp.IsOk():
-            bmpWidth, bmpHeight = footerBmp.GetWidth(), footerBmp.GetHeight()
-            maxWidth = max(maxWidth, textWidth + 3*self._spacing + bmpWidth)
-            if not footer:
-                maxHeight += self._spacing/2
-
-        if textHeight or bmpHeight:
-            maxHeight += self._spacing/2 + max(textHeight, bmpHeight)
-
-        maxHeight += toAdd
+        maxWidth, maxHeight = self.OnPaint(None)
         self.SetSize((maxWidth, maxHeight))
+
+
+    def CalculateBestPosition(self, widget):
+        screen = wx.ClientDisplayRect()[2:]
+        left,top = widget.ClientToScreenXY(0,0)
+        right,bottom = widget.ClientToScreenXY(*widget.GetClientRect()[2:])
+        size = self.GetSize()
+        if right+size[0]>screen[0]:
+            xpos = left-size[0]
+        else:
+            xpos = right
+        if bottom+size[1]>screen[1]:
+            ypos = top-size[1]
+        else:
+            ypos = bottom
+        self.SetPosition((xpos,ypos))
 
 
 # Handle Mac and Windows/GTK differences...
 
 if wx.Platform == "__WXMAC__":
-    
+
     class ToolTipWindow(wx.Frame, ToolTipWindowBase):
         """ Popup window that works on wxMac. """
 
@@ -698,10 +705,10 @@ if wx.Platform == "__WXMAC__":
             """
             Default class constructor.
 
-            :param `parent`: the L{SuperToolTip} parent widget;
-            :param `classParent`: the L{SuperToolTip} class object.
+            :param `parent`: the :class:`SuperToolTip` parent widget;
+            :param `classParent`: the :class:`SuperToolTip` class object.
             """
-            
+
             wx.Frame.__init__(self, parent, style=wx.NO_BORDER|wx.FRAME_FLOAT_ON_PARENT|wx.FRAME_NO_TASKBAR|wx.POPUP_WINDOW)
             # Call the base class
             ToolTipWindowBase.__init__(self, parent, classParent)
@@ -710,26 +717,26 @@ else:
 
     class ToolTipWindow(ToolTipWindowBase, wx.PopupWindow):
         """
-        A simple `wx.PopupWindow` that holds fancy tooltips.
-        Not available on Mac as `wx.PopupWindow` is not implemented there.
+        A simple :class:`PopupWindow` that holds fancy tooltips.
+        Not available on Mac as :class:`PopupWindow` is not implemented there.
         """
-        
+
         def __init__(self, parent, classParent):
             """
             Default class constructor.
 
-            :param `parent`: the L{SuperToolTip} parent widget;
-            :param `classParent`: the L{SuperToolTip} class object.
+            :param `parent`: the :class:`SuperToolTip` parent widget;
+            :param `classParent`: the :class:`SuperToolTip` class object.
             """
 
             wx.PopupWindow.__init__(self, parent)
             # Call the base class
             ToolTipWindowBase.__init__(self, parent, classParent)
 
-            
+
 class SuperToolTip(object):
     """
-    The main class for L{SuperToolTip}, which holds all the methods
+    The main class for :class:`SuperToolTip`, which holds all the methods
     and setters/getters available to the user.
     """
 
@@ -738,17 +745,17 @@ class SuperToolTip(object):
         """
         Default class constructor.
 
-        :param `message`: the main message in L{SuperToolTip} body;
-        :param `bodyImage`: the image in the L{SuperToolTip} body;
+        :param `message`: the main message in :class:`SuperToolTip` body;
+        :param `bodyImage`: the image in the :class:`SuperToolTip` body;
         :param `header`: the header text;
         :param `headerBmp`: the header bitmap;
         :param `footer`: the footer text;
         :param `footerBmp`: the footer bitmap.
         """
-        
+
         self._superToolTip = None
 
-        # Set all the initial options        
+        # Set all the initial options
         self.SetMessage(message)
         self.SetBodyImage(bodyImage)
         self.SetHeader(header)
@@ -762,15 +769,15 @@ class SuperToolTip(object):
         self._bottomLine = False
 
         self.InitFont()
-        
-        # Get the running applications        
+
+        # Get the running applications
         self._runningApp = wx.GetApp()
         self._runningApp.__superToolTip = True
 
         # Build a couple of timers...
         self._startTimer = wx.PyTimer(self.OnStartTimer)
         self._endTimer = wx.PyTimer(self.OnEndTimer)
-        
+
         self.SetStartDelay()
         self.SetEndDelay()
         self.ApplyStyle("XP Blue")
@@ -778,65 +785,65 @@ class SuperToolTip(object):
 
     def SetTarget(self, widget):
         """
-        Sets the target window for L{SuperToolTip}.
+        Sets the target window for :class:`SuperToolTip`.
 
-        :param `widget`: the widget to which L{SuperToolTip} is associated. 
+        :param `widget`: the widget to which :class:`SuperToolTip` is associated.
         """
 
         self._widget = widget
-        
+
         self._widget.Bind(wx.EVT_ENTER_WINDOW, self.OnWidgetEnter)
         self._widget.Bind(wx.EVT_LEAVE_WINDOW, self.OnWidgetLeave)
-        
+
 
     def GetTarget(self):
-        """ Returns the target window for L{SuperToolTip}. """
-        
+        """ Returns the target window for :class:`SuperToolTip`. """
+
         if not hasattr(self, "_widget"):
             raise Exception("\nError: the widget target for L{SuperToolTip} has not been set.")
 
         return self._widget
-    
+
 
     def SetStartDelay(self, delay=1):
         """
-        Sets the time delay (in seconds) after which the L{SuperToolTip} is created.
+        Sets the time delay (in seconds) after which the :class:`SuperToolTip` is created.
 
         :param `delay`: the delay in seconds.
         """
-                
-        self._startDelayTime = float(delay)        
-        
+
+        self._startDelayTime = float(delay)
+
 
     def GetStartDelay(self):
-        """ Returns the tim delay (in seconds) after which the L{SuperToolTip} is created."""
+        """ Returns the tim delay (in seconds) after which the :class:`SuperToolTip` is created."""
 
         return self._startDelayTime
-    
+
 
     def SetEndDelay(self, delay=1e6):
         """
-        Sets the delay time (in seconds) after which the L{SuperToolTip} is destroyed.
+        Sets the delay time (in seconds) after which the :class:`SuperToolTip` is destroyed.
 
         :param `delay`: the delay in seconds.
         """
-        
+
         self._endDelayTime = float(delay)
-        
+
 
     def GetEndDelay(self):
-        """ Returns the delay time (in seconds) after which the L{SuperToolTip} is destroyed."""
-        
+        """ Returns the delay time (in seconds) after which the :class:`SuperToolTip` is destroyed."""
+
         return self._endDelayTime
-    
+
 
     def OnWidgetEnter(self, event):
         """
-        Starts the L{SuperToolTip} timer for creation, handles the ``wx.EVT_ENTER_WINDOW`` event.
+        Starts the :class:`SuperToolTip` timer for creation, handles the ``wx.EVT_ENTER_WINDOW`` event.
 
-        :param `event`: a `wx.MouseEvent` event to be processed.
+        :param `event`: a :class:`MouseEvent` event to be processed.
         """
-        
+
         if self._superToolTip:
             # Not yet created
             return
@@ -845,30 +852,24 @@ class SuperToolTip(object):
             # The running app doesn't want tooltips...
             return
 
+        if not self._widget.GetTopLevelParent().IsActive():
+            self._startTimer.Stop()
+            return
+
         if self._startTimer.IsRunning():
             # We are already running
             event.Skip()
             return
-
         self._startTimer.Start(self._startDelayTime*1000)
         event.Skip()
 
-        
+
     def OnWidgetLeave(self, event):
         """
         Handles the ``wx.EVT_LEAVE_WINDOW`` event for the target widgets.
 
-        :param `event`: a `wx.MouseEvent` event to be processed.
+        :param `event`: a :class:`MouseEvent` event to be processed.
         """
-
-        pos = wx.GetMousePosition()
-        realPos = self._widget.ScreenToClient(pos)
-        rect = self._widget.GetClientRect()
-        
-        if rect.Contains(realPos):
-            # We get fake leave events...
-            event.Skip()
-            return
 
         if self._superToolTip:
             if self.GetUseFade():
@@ -879,88 +880,159 @@ class SuperToolTip(object):
 
         self._startTimer.Stop()
         self._endTimer.Stop()
-        
+
         event.Skip()
 
     def GetTipWindow(self):
         """ Return the TipWindow, will return None if not yet created """
- 
+
         return self._superToolTip
-        
+
 
     def OnStartTimer(self):
-        """ The creation time has expired, create the L{SuperToolTip}. """
+        """ The creation time has expired, create the :class:`SuperToolTip`. """
+
+        # target widget might already be destroyed
+        if not self._widget:
+            self._startTimer.Stop()
+            return
 
         tip = ToolTipWindow(self._widget, self)
         self._superToolTip = tip
         self._superToolTip.CalculateBestSize()
-        self._superToolTip.SetPosition(wx.GetMousePosition())
+        self._superToolTip.CalculateBestPosition(self._widget)
         self._superToolTip.DropShadow(self.GetDropShadow())
 
         if self.GetUseFade():
             self._superToolTip.StartAlpha(True)
         else:
             self._superToolTip.Show()
-        
+
         self._startTimer.Stop()
         self._endTimer.Start(self._endDelayTime*1000)
-        
+
 
     def OnEndTimer(self):
-        """ The show time for L{SuperToolTip} has expired, destroy the L{SuperToolTip}. """
+        """ The show time for :class:`SuperToolTip` has expired, destroy the :class:`SuperToolTip`. """
 
         if self._superToolTip:
             if self.GetUseFade():
                 self._superToolTip.StartAlpha(False)
             else:
                 self._superToolTip.Destroy()
-        
+
         self._endTimer.Stop()
-        
+
 
     def DoShowNow(self):
-        """ Create the L{SuperToolTip} immediately. """
+        """ Create the :class:`SuperToolTip` immediately. """
 
         if self._superToolTip:
-            # need to destroy it if already exists, 
+            # need to destroy it if already exists,
             # otherwise we might end up with many of them
             self._superToolTip.Destroy()
 
         tip = ToolTipWindow(self._widget, self)
         self._superToolTip = tip
         self._superToolTip.CalculateBestSize()
-        self._superToolTip.SetPosition(wx.GetMousePosition())
+        self._superToolTip.CalculateBestPosition(self._widget)
         self._superToolTip.DropShadow(self.GetDropShadow())
-        
+
         # need to stop this, otherwise we get into trouble when leaving the window
         self._startTimer.Stop()
-        
+
         if self.GetUseFade():
             self._superToolTip.StartAlpha(True)
         else:
             self._superToolTip.Show()
-        
+
         self._endTimer.Start(self._endDelayTime*1000)
 
 
+    def DoHideNow(self):
+        """
+        Dismiss the :class:`SuperToolTip` window immediately.
+
+        .. versionadded:: 0.9.6
+        """
+
+        if self._superToolTip:
+            if self.GetUseFade():
+                # Fade out...
+                self._superToolTip.StartAlpha(False)
+            else:
+                self._superToolTip.Destroy()
+
+        self._startTimer.Stop()
+        self._endTimer.Stop()
+
+
+    def Show(self, show=True):
+        """
+        Shows or hides the window.
+
+        You may need to call `Raise` for a top level window if you want to bring it to
+        top, although this is not needed if :meth:`~SuperToolTip.Show` is called immediately after the frame creation.
+
+        :param bool `show`: ``True`` to show the :class:`SuperToolTip` window, ``False`` to hide it.
+        
+        :return: ``True`` if the window has been shown or hidden or ``False`` if nothing was done
+         because it already was in the requested state.
+
+        .. note::
+
+           Notice that the default state of newly created top level windows is hidden (to allow
+           you to create their contents without flicker) unlike for all the other, not derived from
+           :class:`TopLevelWindow`, windows that are by default created in the shown state.
+
+
+        .. versionadded:: 0.9.5
+        """
+
+        if show and self._superToolTip is None:
+            self.DoShowNow()
+            return True
+        elif not show and self._superToolTip is not None:
+            self.DoHideNow()
+            return True
+        return False
+        
+
+    def Update(self):
+        """
+        Calling this method immediately repaints the invalidated area of the window and all of its
+        children recursively (this normally only happens when the flow of control returns to the
+        event loop).
+
+        :note: Notice that this function doesn't invalidate any area of the window so nothing happens
+         if nothing has been invalidated (i.e. marked as requiring a redraw). Use `Refresh` first if
+         you want to immediately redraw the window unconditionally.
+
+        .. versionadded:: 0.9.5
+        """
+
+        if self._superToolTip:
+            self._superToolTip.Update()
+
+
     def OnDestroy(self, event):
-        """ Handles the L{SuperToolTip} target destruction. """
+        """ Handles the :class:`SuperToolTip` target destruction. """
 
         if self._superToolTip:
             # Unbind the events!
             self._widget.Unbind(wx.EVT_LEAVE_WINDOW)
             self._widget.Unbind(wx.EVT_ENTER_WINDOW)
-                        
+
             self._superToolTip.Destroy()
             del self._superToolTip
             self._superToolTip = None
-            
+
 
     def SetHeaderBitmap(self, bmp):
         """
-        Sets the header bitmap for L{SuperToolTip}.
+        Sets the header bitmap for :class:`SuperToolTip`.
 
-        :param `bmp`: the header bitmap, a valid `wx.Bitmap` object.
+        :param `bmp`: the header bitmap, a valid :class:`Bitmap` object.
         """
 
         self._headerBmp = bmp
@@ -972,7 +1044,7 @@ class SuperToolTip(object):
         """ Returns the header bitmap. """
 
         return self._headerBmp
-    
+
 
     def SetHeader(self, header):
         """
@@ -981,7 +1053,7 @@ class SuperToolTip(object):
         :param `header`: the header text to display.
         """
 
-        self._header = header        
+        self._header = header
         if self._superToolTip:
             self._superToolTip.Invalidate()
 
@@ -990,7 +1062,7 @@ class SuperToolTip(object):
         """ Returns the header text. """
 
         return self._header
-    
+
 
     def SetDrawHeaderLine(self, draw):
         """
@@ -1009,24 +1081,24 @@ class SuperToolTip(object):
         """ Returns whether the separator line after the header is drawn or not. """
 
         return self._topLine
-    
+
 
     def SetBodyImage(self, bmp):
         """
-        Sets the main body bitmap for L{SuperToolTip}.
+        Sets the main body bitmap for :class:`SuperToolTip`.
 
-        :param `bmp`: the body bitmap, a valid `wx.Bitmap` object.
+        :param `bmp`: the body bitmap, a valid :class:`Bitmap` object.
         """
 
         self._embeddedImage = bmp
         if self._superToolTip:
             self._superToolTip.Invalidate()
 
-        
-    def GetBodyImage(self):
-        """ Returns the main body bitmap used in L{SuperToolTip}. """
 
-        return self._embeddedImage        
+    def GetBodyImage(self):
+        """ Returns the main body bitmap used in :class:`SuperToolTip`. """
+
+        return self._embeddedImage
 
 
     def SetDrawFooterLine(self, draw):
@@ -1046,13 +1118,13 @@ class SuperToolTip(object):
         """ Returns whether the separator line before the footer is drawn or not. """
 
         return self._bottomLine
-    
+
 
     def SetFooterBitmap(self, bmp):
         """
-        Sets the footer bitmap for L{SuperToolTip}.
+        Sets the footer bitmap for :class:`SuperToolTip`.
 
-        :param `bmp`: the footer bitmap, a valid `wx.Bitmap` object.
+        :param `bmp`: the footer bitmap, a valid :class:`Bitmap` object.
         """
 
         self._footerBmp = bmp
@@ -1063,7 +1135,7 @@ class SuperToolTip(object):
     def GetFooterBitmap(self):
         """ Returns the footer bitmap. """
 
-        return self._footerBmp        
+        return self._footerBmp
 
 
     def SetFooter(self, footer):
@@ -1073,20 +1145,20 @@ class SuperToolTip(object):
         :param `footer`: the footer text to display.
         """
 
-        self._footer = footer       
+        self._footer = footer
         if self._superToolTip:
             self._superToolTip.Invalidate()
 
-            
+
     def GetFooter(self):
         """ Returns the footer text. """
 
         return self._footer
 
-    
+
     def SetMessage(self, message):
         """
-        Sets the main body message for L{SuperToolTip}.
+        Sets the main body message for :class:`SuperToolTip`.
 
         :param `message`: the message to display in the body.
         """
@@ -1097,16 +1169,16 @@ class SuperToolTip(object):
 
 
     def GetMessage(self):
-        """ Returns the main body message in L{SuperToolTip}. """
+        """ Returns the main body message in :class:`SuperToolTip`. """
 
         return self._message
 
 
     def SetTopGradientColour(self, colour):
         """
-        Sets the top gradient colour for L{SuperToolTip}.
+        Sets the top gradient colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as top colour, a valid `wx.Colour` object.
+        :param `colour`: the colour to use as top colour, a valid :class:`Colour` object.
         """
 
         self._topColour = colour
@@ -1116,21 +1188,21 @@ class SuperToolTip(object):
 
     def SetMiddleGradientColour(self, colour):
         """
-        Sets the middle gradient colour for L{SuperToolTip}.
+        Sets the middle gradient colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as middle colour, a valid `wx.Colour` object.
+        :param `colour`: the colour to use as middle colour, a valid :class:`Colour` object.
         """
 
         self._middleColour = colour
         if self._superToolTip:
             self._superToolTip.Refresh()
 
-            
+
     def SetBottomGradientColour(self, colour):
         """
-        Sets the bottom gradient colour for L{SuperToolTip}.
+        Sets the bottom gradient colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as bottom colour, a valid `wx.Colour` object.
+        :param `colour`: the colour to use as bottom colour, a valid :class:`Colour` object.
         """
 
         self._bottomColour = colour
@@ -1140,15 +1212,15 @@ class SuperToolTip(object):
 
     def SetTextColour(self, colour):
         """
-        Sets the text colour for L{SuperToolTip}.
+        Sets the text colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as text colour, a valid `wx.Colour` object.
+        :param `colour`: the colour to use as text colour, a valid :class:`Colour` object.
         """
 
         self._textColour = colour
         if self._superToolTip:
             self._superToolTip.Refresh()
-        
+
 
     def GetTopGradientColour(self):
         """ Returns the top gradient colour. """
@@ -1161,18 +1233,18 @@ class SuperToolTip(object):
 
         return self._middleColour
 
-    
+
     def GetBottomGradientColour(self):
         """ Returns the bottom gradient colour. """
 
         return self._bottomColour
-            
+
 
     def GetTextColour(self):
         """ Returns the text colour. """
 
         return self._textColour
-    
+
 
     SetTopGradientColor = SetTopGradientColour
     SetMiddleGradientColor = SetMiddleGradientColour
@@ -1182,10 +1254,10 @@ class SuperToolTip(object):
     GetBottomGradientColor = GetBottomGradientColour
     SetTextColor = SetTextColour
     GetTextColor = GetTextColour
-    
+
 
     def InitFont(self):
-        """ Initalizes the fonts for L{SuperToolTip}. """
+        """ Initalizes the fonts for :class:`SuperToolTip`. """
 
         self._messageFont = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._headerFont = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
@@ -1201,7 +1273,7 @@ class SuperToolTip(object):
         """
         Sets the font for the main body message.
 
-        :param `font`: the font to use for the main body message, a valid `wx.Font`
+        :param `font`: the font to use for the main body message, a valid :class:`Font`
          object.
         """
 
@@ -1214,7 +1286,7 @@ class SuperToolTip(object):
         """
         Sets the font for the header text.
 
-        :param `font`: the font to use for the header text, a valid `wx.Font`
+        :param `font`: the font to use for the header text, a valid :class:`Font`
          object.
         """
 
@@ -1227,27 +1299,27 @@ class SuperToolTip(object):
         """
         Sets the font for the footer text.
 
-        :param `font`: the font to use for the footer text, a valid `wx.Font`
+        :param `font`: the font to use for the footer text, a valid :class:`Font`
          object.
         """
 
         self._footerFont = font
         if self._superToolTip:
             self._superToolTip.Invalidate()
-            
+
 
     def SetHyperlinkFont(self, font):
         """
         Sets the font for the hyperlink text.
 
-        :param `font`: the font to use for the hyperlink text, a valid `wx.Font`
+        :param `font`: the font to use for the hyperlink text, a valid :class:`Font`
          object.
         """
 
         self._hyperlinkFont = font
         if self._superToolTip:
             self._superToolTip.Invalidate()
-            
+
 
     def GetMessageFont(self):
         """ Returns the font used in the main body message. """
@@ -1264,21 +1336,21 @@ class SuperToolTip(object):
     def GetFooterFont(self):
         """ Returns the font used for the footer text. """
 
-        return self._footerFont        
+        return self._footerFont
 
 
     def GetHyperlinkFont(self):
         """ Returns the font used for the hyperlink text. """
 
-        return self._hyperlinkFont        
-        
+        return self._hyperlinkFont
+
 
     def SetDropShadow(self, drop):
         """
-        Whether to draw a shadow below L{SuperToolTip} or not.
+        Whether to draw a shadow below :class:`SuperToolTip` or not.
 
         :param `drop`: ``True`` to drop a shadow below the control, ``False`` otherwise.
-        
+
         :note: This method is available only on Windows and requires Mark Hammond's
          pywin32 package.
         """
@@ -1290,27 +1362,27 @@ class SuperToolTip(object):
 
     def GetDropShadow(self):
         """
-        Returns whether a shadow below L{SuperToolTip} is drawn or not.
+        Returns whether a shadow below :class:`SuperToolTip` is drawn or not.
 
         :note: This method is available only on Windows and requires Mark Hammond's
          pywin32 package.
         """
 
         return self._dropShadow
-    
+
 
     def SetUseFade(self, fade):
         """
         Whether to use a fade in/fade out effect or not.
 
         :param `fade`: ``True`` to use a fade in/fade out effect, ``False`` otherwise.
-        
+
         :note: This method is available only on Windows and requires Mark Hammond's
          pywin32 package.
         """
-        
+
         self._useFade = fade
-        
+
 
     def GetUseFade(self):
         """
@@ -1322,7 +1394,7 @@ class SuperToolTip(object):
 
         return self._useFade
 
-    
+
     def ApplyStyle(self, style):
         """
         Applies none of the predefined styles.
@@ -1343,17 +1415,26 @@ class SuperToolTip(object):
         if self._superToolTip:
             self._superToolTip.Refresh()
 
-        
+
     def EnableTip(self, enable=True):
         """
-        Globally (application-wide) enables/disables L{SuperToolTip}.
+        Globally (application-wide) enables/disables :class:`SuperToolTip`.
 
-        :param `enable`: ``True`` to enable L{SuperToolTip} globally, ``False`` otherwise.
+        :param `enable`: ``True`` to enable :class:`SuperToolTip` globally, ``False`` otherwise.
         """
 
         wx.GetApp().__superToolTip = enable
         if not enable and self._superToolTip:
-            self._superToolTip.Destroy()
-            self._superToolTip = None
+            self.DoHideNow()
             del self._superToolTip
+            self._superToolTip = None
 
+
+    def IsEnabled(self):
+        """
+        Returns ``True`` when :class:`SuperToolTip` is globally enabled, ``False`` otherwise.
+
+        .. versionadded:: 0.9.6
+        """
+
+        return wx.GetApp().__superToolTip 

@@ -1,10 +1,10 @@
 #----------------------------------------------------------------------
-# Name:        wxPython.tools.img2img
+# Name:        wx.tools.img2img
 # Purpose:     Common routines for the image converter utilities.
 #
 # Author:      Robin Dunn
 #
-# RCS-ID:      $Id: img2img.py 27567 2004-06-01 21:45:17Z RD $
+# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------

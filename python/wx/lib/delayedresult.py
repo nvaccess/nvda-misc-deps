@@ -45,6 +45,7 @@ __all__ = ('Sender', 'SenderNoWx', 'SenderWxEvent', 'SenderCallAfter',
 
 import wx
 import threading
+import traceback
 
 
 class Struct:
@@ -61,7 +62,7 @@ class Struct:
 class Handler:
     """
     Bind some of the arguments and keyword arguments of a callable ('listener'). 
-    Then when the Handler instance is called (e.g. handler(result, **kwargs))
+    Then when the Handler instance is called (e.g. `handler(result, **kwargs)`)
     the result is passed as first argument to callable, the kwargs is 
     combined with those given at construction, and the args are those
     given at construction. Its return value is returned.
@@ -73,7 +74,7 @@ class Handler:
         self.__kwargs = kwargs
         
     def __call__(self, result, **moreKwargs):
-        """Listener is assumed to take result as first arg, then *args, 
+        """Listener is assumed to take result as first `arg`, then `*args`, 
         then the combination of moreKwargs and the kwargs given at construction."""
         if moreKwargs:
             moreKwargs.update(self.__kwargs)
@@ -111,7 +112,7 @@ class Sender:
         delayedResult = DelayedResult(result, jobID=self.__jobID)
         self._sendImpl(delayedResult)
 
-    def sendException(self, exception, extraInfo = None):
+    def sendException(self, exception, extraInfo = None, originalTb = None):
         """Use this when the worker function raised an exception.
         The *exception* is the instance of Exception caught. The extraInfo
         could be anything you want (e.g. locals or traceback etc), 
@@ -119,7 +120,7 @@ class Sender:
         exception will be raised when DelayedResult.get() is called."""
         assert exception is not None
         delayedResult = DelayedResult(extraInfo, 
-            exception=exception, jobID=self.__jobID)
+            exception=exception, jobID=self.__jobID, originalTb=originalTb)
         self._sendImpl(delayedResult)
 
     def _sendImpl(self, delayedResult):
@@ -135,7 +136,7 @@ class SenderNoWx( Sender ):
     """
     def __init__(self, consumer, jobID=None, args=(), kwargs={}):
         """The consumer can be any callable of the form 
-        callable(result, *args, **kwargs)"""
+        `callable(result, *args, **kwargs)`"""
         Sender.__init__(self, jobID)
         if args or kwargs:
             self.__consumer = Handler(consumer, *args, **kwargs)
@@ -204,11 +205,12 @@ class DelayedResult:
     called. 
     """
     
-    def __init__(self, result, jobID=None, exception = None):
+    def __init__(self, result, jobID=None, exception = None, originalTb = None):
         """You should never have to call this yourself. A DelayedResult 
         is created by a concrete Sender for you."""
         self.__result = result
         self.__exception = exception
+        self.__original_traceback = originalTb
         self.__jobID = jobID
 
     def getJobID(self):
@@ -218,10 +220,15 @@ class DelayedResult:
     
     def get(self):
         """Get the result. If an exception was sent instead of a result, 
-        (via Sender's sendExcept()), that **exception is raised**.
-        Otherwise the result is simply returned. """
+        (via Sender's sendExcept()), that **exception is raised**, and
+        the original traceback is available as the 'originalTraceback'
+        variable in the exception object.
+
+        Otherwise, the result is simply returned. 
+        """
         if self.__exception: # exception was raised!
             self.__exception.extraInfo = self.__result
+            self.__exception.originalTraceback = self.__original_traceback
             raise self.__exception
         
         return self.__result
@@ -247,7 +254,7 @@ class Producer(threading.Thread):
                  name=None, group=None, daemon=False, 
                  sendReturn=True, senderArg=None):
         """The sender will send the return value of 
-        workerFn(*args, **kwargs) to the main thread. The name and group 
+        `workerFn(*args, **kwargs)` to the main thread. The name and group 
         are same as threading.Thread constructor parameters. Daemon causes 
         setDaemon() to be called. If sendReturn is False, then the return 
         value of workerFn() will not be sent. If senderArg is given, it 
@@ -261,8 +268,9 @@ class Producer(threading.Thread):
             except AbortedException:
                 pass
             except Exception, exc:
+                originalTb = traceback.format_exc()
                 extraInfo = self._extraInfo(exc)
-                sender.sendException(exc, extraInfo)
+                sender.sendException(exc, extraInfo, originalTb)
             else:
                 if sendReturn:
                     sender.sendResult(result)
@@ -312,8 +320,8 @@ def startWorker(
     jobID=None, group=None, daemon=False, 
     sendReturn=True, senderArg=None):
     """
-    Convenience function to send data produced by workerFn(*wargs, **wkwargs) 
-    running in separate thread, to a consumer(*cargs, **ckwargs) running in
+    Convenience function to send data produced by `workerFn(*wargs, **wkwargs)`
+    running in separate thread, to a `consumer(*cargs, **ckwargs)` running in
     the main thread. This function merely creates a SenderCallAfter (or a
     SenderWxEvent, if consumer derives from wx.EvtHandler), and a Producer,
     and returns immediately after starting the Producer thread. The jobID
@@ -345,7 +353,7 @@ class PreProcessChain:
     anything about the lower-level objects. 
     """
     def __init__(self, handler, *args, **kwargs):
-        """Wrap handler(result, *args, **kwargs) so that the result 
+        """Wrap `handler(result, *args, **kwargs)` so that the result 
         it receives has been transformed by us. """
         if handler is None:# assume rhs is a chain
             self.__chain = args[0]
@@ -355,7 +363,7 @@ class PreProcessChain:
             self.__chain = [handler]
 
     def addSub(self, callable, *args, **kwargs):
-        """Add a sub-callable, ie a callable(result, *args, **kwargs)
+        """Add a sub-callable, ie a `callable(result, *args, **kwargs)`
         that returns a transformed result to the previously added
         sub-callable (or the handler given at construction, if this is 
         the first call to addSub). """
