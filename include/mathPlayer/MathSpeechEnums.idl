@@ -1,0 +1,186 @@
+// MathSpeechEnums.idl --- Copyright (c) 2013 by Design Science, Inc.
+// purpose: Interface enum definitions for the IMathSpeak, IMathSynchronization, IMathNavigation
+// $Header: $
+
+// This file includes definitions/types that are implemented by both
+//   MathPlayer and EqnLib.
+// This file should be imported into MathPlayer and EqnLib .idl files.
+
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// MathSpeech.h")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// (C) Copyright (c) 2004-2103 by Design Science, Inc. All rights reserved.")
+cpp_quote("//")
+cpp_quote("// THIS CODE AND INFORMATION IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF")
+cpp_quote("// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO")
+cpp_quote("// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A")
+cpp_quote("// PARTICULAR PURPOSE.")
+cpp_quote("//=--------------------------------------------------------------------------=")
+
+import "oaidl.idl";
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Flags to determine what level of verbosity/highlighting should happen")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("")
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Flags to determine what level of verbosity/highlighting should happen")
+cpp_quote("// These end up as '#define MS_XXX ...' in a header file")
+cpp_quote("//=--------------------------------------------------------------------------=")
+const long MS_NONE			=   0;
+const long MS_WORD			=   1;	// identifiers, numbers, operators, ...
+const long MS_FRACTION		=   2;
+const long MS_SCRIPT			=   4;
+const long MS_LIMIT			=   8;
+const long MS_RADICAL		=  16;
+const long MS_TABLE			=  32;
+const long MS_EXPRESSION	=  64;	// Entire expression (useful for context highlighting)
+const long MS_ALL				= MS_WORD | MS_FRACTION | MS_SCRIPT | MS_LIMIT | MS_RADICAL | MS_TABLE;
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Enum to specify what type, if any, of speech tags should be used for prosidy")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("")
+// Type of speech tags to use to control prosidy
+typedef
+[
+	helpstring("Speech tag control enum for IMathSpeech"),
+	v1_enum
+]
+enum {
+	msSpeechTagsNone		= 0,
+	msSpeechTagsSAPI4		= 1,
+	msSpeechTagsSAPI5		= 2,
+	msSpeechTagsMac		= 3,
+	msSpeechTagsSSML		= 4,
+	msSpeechTagsHTML		= 5,
+	msSpeechTagsEloquence= 6,
+	msSpeechTagsCount
+} SpeechTagsEnum; 
+
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Enum to specify the amount of verbosity to use when speaking")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("")
+// Verbosity values
+// other values are reserved for future use
+typedef
+[
+	helpstring("Deprecated:  Verbosity control enum for IMathSpeech"),
+	v1_enum
+]
+enum {
+	msVerbosityLow		= 0,
+	msVerbosityMedium	= 3,
+	msVerbosityHigh	= 5
+} VerbosityEnum;
+
+
+
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Enum to specify the type of highlighting to use")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("")
+// Word/Context and Forground/Background values
+typedef
+[
+	helpstring("Highlight type enum for IMathSynchronization"),
+	v1_enum
+]
+enum {
+	msWordForeground		= 0,
+	msWordBackground		= 1,
+	msContextForeground	= 2,
+	msContextBackground	= 3,
+	msHighlightCount
+} HighlightTypeEnum; 
+
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Word/Context and Forground/Background values")
+cpp_quote("// Style of highlighting is done")
+cpp_quote("//=--------------------------------------------------------------------------=")
+typedef
+[
+	helpstring("Highlight style enum for IMathSynchronization"),
+	v1_enum
+]enum {
+    hsHighlight	= 0,		// highlighting
+    hsOutline	= 1,		// outline (not yet implemented)
+    hsUnderline	= 2,		// underline (not yet implemented)
+    hsCount
+} HighlightStyleEnum; 
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Supported speech navigation commands")
+cpp_quote("// These commands can be sent directly, or key presses can be sent")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("")
+// Supported speech navigation commands
+// Most commands have a potential left and right meaning
+typedef
+[
+	helpstring("Navigation command type enum for IMathNavigation methods"),
+	v1_enum
+]
+enum {
+	ncMoveChunk = 0,			// move chunk cursor (previous/next/start/end)
+	ncZoom = 1,					// change zoom level (in/out)
+	ncMoveLastLocation = 2,	// go back to previous location
+	ncRead = 3,					// read (previous/current/next) chunk location
+	ncDescribe = 4,			// describe (previous/current/next) chunk location
+	ncReadTo = 5,				// read from/to chunk cursor to(start/end)
+	ncLocate = 6,				// read/describe chunk wrt parent/enclosing chunk
+	ncChangeNavMode = 7,		// change to (previous/next) read cursor (currently character/placeholder)
+	ncToggleSpeakMode = 8,	// toggle between read and describe as default after moving
+	ncSetPlacemarker = 9,	// set placemarker number (-1, 0-9) -- -1 set next unset placemarker
+	ncUnsetPlacemarker = 10,// unset placemarker number (-1, 0-9) -- -1 unset placemarker at current location
+	ncExit = 11,				// exit math
+	ncMax							// number of commands
+} NavigationCommand;
+
+cpp_quote("")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("// Supported speech navigation command parameters")
+cpp_quote("// These parameters are used with the commands above")
+cpp_quote("//=--------------------------------------------------------------------------=")
+cpp_quote("")
+typedef
+[
+	helpstring("Navigation parameters type enum for IMathNavigation methods"),
+	v1_enum
+]
+enum {
+	// the following enums allow all paramaters, including ones to name placemarkers to be this enum
+	npPlacemarkerUnnamed=-1,// for setting/unsetting next/current placemaker
+	npPlacemarker0 = 0,
+	npPlacemarker1 = 1,
+	npPlacemarker2 = 2,
+	npPlacemarker3 = 3,
+	npPlacemarker4 = 4,
+	npPlacemarker5 = 5,
+	npPlacemarker6 = 6,
+	npPlacemarker7 = 7,
+	nplacemarker8 = 8,
+	npPlacemarker9 = 9,
+
+	// parameters for other commands
+	npPrevious = 10,		// used with ncZoom to mean up/out a level
+	npCurrent = 11,
+	npNext = 12,			// used with ncZoom to mean down/in a level
+	npStart = 13,			// used with ncZoom to mean zoom all the way to root
+	npEnd = 14,				// used with ncZoom to mean zoom to the leftmost leaf
+	npLineStart = 15,
+	npLineEnd = 16,
+	npMax
+} NavigationParam;

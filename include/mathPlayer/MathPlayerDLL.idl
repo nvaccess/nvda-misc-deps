@@ -1,0 +1,243 @@
+// MathPlayer.idl --- Copyright (c) 1987-2004 by Design Science, Inc.
+// purpose: IDL source for MathPlayer.dll
+// $Header: $
+
+// This file will be processed by the MIDL tool to
+// produce the type library (MathPlayer.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+#include "MathSpeechEnums.idl"	// just want the enums since we define different interfaces
+
+// ==================================================================================================
+// Main interface for speech
+[
+	object,
+	uuid(32F66A95-7614-11D4-BD11-00104BD3F987),
+	helpstring("IMathSpeech Interface"),
+	pointer_default(unique)
+]
+interface IMathSpeech : IDispatch {
+	// Get the MathPlayer Version Number
+	HRESULT GetVersion([out] BSTR *version);
+
+	// Set MathML to be used
+	HRESULT SetMathML([in] BSTR mathML);
+
+	// Call after setting up
+	HRESULT GetSpokenText([out] BSTR *spokenText);
+
+	// Resets all options such as Volume, Sync highlight colors, and braille language
+	HRESULT ResetState();
+};
+
+
+// ==================================================================================================
+// Set/Get interfaces for options
+
+[
+	object,
+	uuid(32F66A94-7614-11D4-BD11-00104BD3F987),
+	helpstring("IMathSpeechSettings Interface"),
+	pointer_default(unique)
+]
+interface IMathSpeechSettings : IMathSpeech {
+	// Set/Get what speech engine standard to use.
+	// This should be done before other values as those values are only meaning full given a standard
+	// Note:  this clears any previous settings for volume, as they are not meaningful.
+	// Currently legal values are: None, SAPI4, SAPI5, Mac, SSML, HTML, Eloquence (case insensitive)
+	// E_INVALIDARG is returned if the specified speech engine isn't supported.
+	HRESULT SetSpeechTags([in] BSTR speechTags); 
+	HRESULT GetSpeechTags([out] BSTR *speechTags); 
+
+
+	//Set/Get Pitch (default 140hz)
+	//SAPI4: Relative pitch
+	//  Number is relative to the default/current pitch
+	//  50 is 1/2 of the default/current pitch, 200 is 2 times the default/current pitch
+	//  No range is specified by the spec
+	//SAPI5: Relative pitch
+	//  Number is in range -24 to 24
+	//  -24 is one octave below the default/current pitch, +24 is one octave above
+	//  changes are logarithmetic -- a change of +/-1 corresponds to multiplying/dividing by 24th root of 2
+	//SSML: Relative pitch
+	//  pitch in hertz (default/current man's voice is about 100hz, woman's 180hz)
+	//  Note:  other legal values for SSML are not supported, and all numbers are interpreted as relative changes
+	//ECI: Absolute pitch (relative pitch not supported by ECI)
+	//  Range is 0 - 100    Guess is that 0 ~= 42hz, 100 ~= 422hz based on supported \"sapi\" values
+	HRESULT SetPitch([in] double pitch);
+	HRESULT GetPitch([out, retval] double* pitch);
+
+
+	//Set/Get Rate (default: 180 wpm)
+	//SAPI4: Relative rate
+	//  Number is relative to the default/current rate
+	//  50 is 1/2 of the default/current rate, 200 is 2 times the default/current rate
+	//  No range is specified by the spec
+	//SAPI5: Relative rate
+	//  Number is in range -10 to 10
+	//  -10 is 1/3 of the default/current speed; 10 3 times the default/current speech
+	//  changes are logarithmetic -- a change of +/-1 corresponds to multiplying/dividing by 10th root of 3
+	//SSML: Relative rate
+	//  0.5 is 1/2 of the default/current rate, 2.0 is 2 times the default/current rate
+	//  Note:  other legal values for SSML are not supported, and all numbers are interpreted as relative changes
+	//ECI: Absolute rate (relative rate not supported by ECI)
+	//  Range is 0 - 250    Guess is that 0 ~= 72words/min, 250 ~= 1297 words/min based on supported \"sapi\" values
+	HRESULT SetRate([in] double rate);
+	HRESULT GetRate([out, retval] double* rate);
+
+
+	//Set/Get Volume (default: full)
+	//SAPI4: Relative volume
+	//  Number is relative to the default/current rate
+	//  Range is 0 - 065535
+	//SAPI5: Relative volume
+	//  Number is in range 0 to 100
+	//SSML: Relative volume
+	//  Number is in range 0 to 100
+	//  Note:  other legal values for SSML are not supported, and all numbers are interpreted as relative changes
+	//ECI: Absolute volume (relative volume not supported by ECI)
+	//  Range is 0 - 100
+	HRESULT SetVolume([in] double volume); 
+	HRESULT GetVolume([out, retval] double* volume); 
+
+	// Specific name of voice to use (currently not used)
+	HRESULT SetVoice([in] BSTR voice);
+	HRESULT GetVoice([out, retval] BSTR* voice);
+
+	// Target disability group for speech
+	HRESULT SetTargetGroup([in] BSTR target);
+	HRESULT GetTargetGroup([out, retval] BSTR* target);
+
+
+	// Set/Get the amount of verbosity that is used for speech
+	HRESULT SetVerbosity([in] long verbosity); 
+	HRESULT GetVerbosity([out] long *verbosity); 
+
+   // Language strings follow what is used in HTML: typically 'en' or 'en-gb'. Case doesn't matter.
+   // For the main language, see http://www.loc.gov/standards/iso639-2/php/code_list.php
+   // For the subregion, see http://www.iso.org/iso/english_country_names_and_code_elements
+	// If 'lang' is an empty string, then the language defined in the document is used.
+	// If the language or speech style is not supported, E_INVALIDARG is returned
+	HRESULT SetLanguage([in] BSTR lang);
+	HRESULT GetLanguage([out, retval] BSTR* lang);
+
+	// Name of speech style
+	HRESULT SetSpeechStyle([in] BSTR style);
+	HRESULT GetSpeechStyle([out, retval] BSTR* style);
+
+	// Currently supported subjects are:  "Geometry", "ProbabilityAndStatistics", "Calculus"
+	// The bool flag says whether only the given value should be used or added to the subject list
+	// An empty string with only=VARIANT_TRUE will clear all the subjects
+	HRESULT SetSubjectArea([in] BSTR subject, VARIANT_BOOL only);
+	HRESULT GetSubjectArea([out, retval] BSTR* subject);
+ 
+    // Set the amount of sync highlighting to be done. It has one of three string values:
+    // "None" -- no sync highlighting (default)
+    // "Word" -- only highlight identifiers, numbers, operators, ...
+    // 2DNotations" -- highlight Words and 2D notations such as Fractions, Square roots, etc.
+    HRESULT SetHighlightAmount([in] BSTR highlightAmount);
+    HRESULT GetHighlightAmount([out] BSTR *highlightAmount);
+};
+
+
+// ==================================================================================================
+// Synchronized highlighting
+[
+	object,
+	uuid(32F66A97-7614-11D4-BD11-00104BD3F987),
+	helpstring("IMathSynchronization Interface"),
+	pointer_default(unique)
+]
+interface IMathSynchronization : IMathSpeech {
+// FIX:  need to get this working -- HandleBookmark probably belongs in app and SetExpressionID probably doesn't make sense anymore
+//	HRESULT SetExpressionID([in] IUnknown *exprID, [in] DomType domID);
+	HRESULT SetSyncStyle([in] HighlightStyleEnum style);
+	HRESULT SetSyncAmount([in] HighlightTypeEnum highlight, [in] long syncFlags); 
+	HRESULT SetSyncColor([in] HighlightTypeEnum highlight, [in] long red, [in] long green, [in] long blue);
+//	HRESULT HandleBookmark([in] BSTR bookmark);
+};
+
+
+
+// ==================================================================================================
+// Navigation
+[
+	object,
+	uuid(32F66A98-7614-11D4-BD11-00104BD3F987),
+	helpstring("IMathNavigation Interface"),
+	pointer_default(unique)
+]
+interface IMathNavigation : IMathSpeech {
+	// These calls return S_OK if the command was handled. Other return values are:
+	//  S_FALSE -- handled, but moved past start/end (i.e., we are done navigating the expr)
+	//  E_INVALIDARG -- unknown/unhandled command/param combination or unknown/unhandled key
+	//  what if exiting navigation
+	//  E_FAIL -- some unspecified problem happened
+	// If S_OK or S_FALSE is returned (i.e., a success code), the resulting string should be spoken.
+	//  The string may contain bookmarks, so those should be handled if they are handled for GetSpokenText()
+	HRESULT DoNavigateCommand([in] NavigationCommand command, [in] NavigationParam param, [out] BSTR *spokenText); 
+
+	// Values for 'key' are the virtual key codes documented at
+	//   http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+	//   These are the same codes used by JavaScript events (same for all browsers in Windows).
+	//   A useful page that will tell you a code for a key press is:
+	//   http://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+	// Important key values (defined in WinUser.h) are:
+	//   VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN (0x25, 0x27, 0x26, 0x28)
+	//   VK_HOME, VK_END, VK_SPACE, VK_BACK, VK_RETURN, VK_ESCAPE
+	//   Also the keys 0 - 9
+	HRESULT DoNavigateKeyPress([in] int key,
+										[in] VARIANT_BOOL shiftKey, [in] VARIANT_BOOL controlKey, [in] VARIANT_BOOL altKey, [in] VARIANT_BOOL metaKey,
+										[out] BSTR *spokenText);
+
+	// Get the MathML at the current focus (i.e., the MathML used to generate the speech)
+	HRESULT GetNavigationMathML([out] BSTR *mathml);
+};
+
+// ==================================================================================================
+// Braille
+[
+	object,
+	uuid(32F66A99-7614-11D4-BD11-00104BD3F987),
+	helpstring("IMathBraille Interface"),
+	pointer_default(unique)
+]
+interface IMathBraille : IDispatch {
+	HRESULT GetBraille([out] BSTR *braille); 
+	HRESULT GetSupportedMathCodes([out] IEnumString **codeEnumerator);
+	HRESULT GetMathCode([out] BSTR *codeName);
+	HRESULT SetMathCode([in] BSTR codeName);
+	HRESULT GetBrailleWidth([out] long *width);
+	HRESULT SetBrailleWidth([in] long width);
+
+	HRESULT GetMathOptions([out] BSTR *options);
+	HRESULT SetMathOptions([in] BSTR options);
+	HRESULT GetTranslatorsThatSupportMathCode([in] BSTR codeName, [out] IEnumString **translatorNames);
+	HRESULT GetTranslatorInfo([in] BSTR name, [out] BSTR *version, [out] BSTR *description);
+	HRESULT GetTranslatorForMathCode([in] BSTR codeName, [out] BSTR *translatorName);
+	HRESULT SetTranslatorForMathCode([in] BSTR codeName, [in] BSTR translatorName);
+};
+
+[
+	uuid(32F66A90-7614-11D4-BD11-00104BD3F987),
+	version(1.0),
+	helpstring("MathPlayerDLL 1.0 Type Library")
+]
+library MathPlayer {
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(32F66A91-7614-11D4-BD11-00104BD3F987),
+		helpstring("MathPlayerDLL Class")
+	]
+	coclass MPInterface {
+		[default] interface IMathSpeech;
+		interface IMathSpeechSettings;
+		// interface IMathDocument;
+		interface IMathSynchronization;
+		interface IMathNavigation;
+		interface IMathBraille;
+	};
+};
