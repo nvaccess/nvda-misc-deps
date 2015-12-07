@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -20,7 +20,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Scanner/Dir.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Scanner/Dir.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.Node.FS
 import SCons.Scanner
@@ -77,7 +77,7 @@ def scan_on_disk(node, env, path=()):
     that and then call the in-memory scanning function.
     """
     try:
-        flist = node.fs.listdir(node.abspath)
+        flist = node.fs.listdir(node.get_abspath())
     except (IOError, OSError):
         return []
     e = node.Entry

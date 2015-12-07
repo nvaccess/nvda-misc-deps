@@ -76,7 +76,7 @@ way for wrapping up the functions.
 
 """
 
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -97,9 +97,7 @@ way for wrapping up the functions.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Action.py  2014/07/05 09:42:21 garyo"
-
-import SCons.compat
+__revision__ = "src/engine/SCons/Action.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import dis
 import os
@@ -112,7 +110,6 @@ import subprocess
 import SCons.Debug
 from SCons.Debug import logInstanceCreation
 import SCons.Errors
-import SCons.Executor
 import SCons.Util
 import SCons.Subst
 
@@ -357,21 +354,6 @@ def _do_create_action(act, kw):
     if isinstance(act, ActionBase):
         return act
 
-    if is_List(act):
-        return CommandAction(act, **kw)
-
-    if callable(act):
-        try:
-            gen = kw['generator']
-            del kw['generator']
-        except KeyError:
-            gen = 0
-        if gen:
-            action_type = CommandGeneratorAction
-        else:
-            action_type = FunctionAction
-        return action_type(act, kw)
-
     if is_String(act):
         var=SCons.Util.get_environment_var(act)
         if var:
@@ -388,6 +370,22 @@ def _do_create_action(act, kw):
         # The list of string commands may include a LazyAction, so we
         # reprocess them via _do_create_list_action.
         return _do_create_list_action(commands, kw)
+    
+    if is_List(act):
+        return CommandAction(act, **kw)
+
+    if callable(act):
+        try:
+            gen = kw['generator']
+            del kw['generator']
+        except KeyError:
+            gen = 0
+        if gen:
+            action_type = CommandGeneratorAction
+        else:
+            action_type = FunctionAction
+        return action_type(act, kw)
+
     # Catch a common error case with a nice message:
     if isinstance(act, int) or isinstance(act, float):
         raise TypeError("Don't know how to create an Action from a number (%s)"%act)
@@ -542,7 +540,7 @@ class _ActionAction(ActionBase):
         if chdir:
             save_cwd = os.getcwd()
             try:
-                chdir = str(chdir.abspath)
+                chdir = str(chdir.get_abspath())
             except AttributeError:
                 if not is_String(chdir):
                     if executor:

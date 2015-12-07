@@ -2,7 +2,7 @@
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 # 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Tool/packaging/ipk.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/packaging/ipk.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.Builder
 import SCons.Node.FS
@@ -120,7 +120,7 @@ def build_specfiles(source, target, env):
             return opened_files[needle]
         except KeyError:
             file=filter(lambda x: x.get_path().rfind(needle)!=-1, haystack)[0]
-            opened_files[needle]=open(file.abspath, 'w')
+            opened_files[needle]=open(file.get_abspath(), 'w')
             return opened_files[needle]
 
     control_file=open_file('control', target)

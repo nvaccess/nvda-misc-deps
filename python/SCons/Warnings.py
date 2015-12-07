@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,7 +27,7 @@ This file implements the warnings framework for SCons.
 
 """
 
-__revision__ = "src/engine/SCons/Warnings.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Warnings.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import sys
 
@@ -52,6 +52,9 @@ class CorruptSConsignWarning(WarningOnByDefault):
     pass
 
 class DependencyWarning(Warning):
+    pass
+
+class DevelopmentVersionWarning(WarningOnByDefault):
     pass
 
 class DuplicateEnvironmentWarning(WarningOnByDefault):

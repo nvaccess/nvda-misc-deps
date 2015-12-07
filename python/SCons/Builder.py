@@ -76,7 +76,7 @@ There are the following methods for internal use within this module:
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -97,7 +97,7 @@ There are the following methods for internal use within this module:
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Builder.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Builder.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import collections
 
@@ -107,8 +107,6 @@ from SCons.Debug import logInstanceCreation
 from SCons.Errors import InternalError, UserError
 import SCons.Executor
 import SCons.Memoize
-import SCons.Node
-import SCons.Node.FS
 import SCons.Util
 import SCons.Warnings
 
@@ -294,8 +292,8 @@ def _node_errors(builder, env, tlist, slist):
         if t.has_explicit_builder():
             if not t.env is None and not t.env is env:
                 action = t.builder.action
-                t_contents = action.get_contents(tlist, slist, t.env)
-                contents = action.get_contents(tlist, slist, env)
+                t_contents = t.builder.action.get_contents(tlist, slist, t.env)
+                contents = builder.action.get_contents(tlist, slist, env)
 
                 if t_contents == contents:
                     msg = "Two different environments were specified for target %s,\n\tbut they appear to have the same action: %s" % (t, action.genstring(tlist, slist, t.env))
@@ -353,11 +351,6 @@ class BuilderBase(object):
     """Base class for Builders, objects that create output
     nodes (files) from input nodes (files).
     """
-
-    if SCons.Memoize.use_memoizer:
-        __metaclass__ = SCons.Memoize.Memoized_Metaclass
-
-    memoizer_counters = []
 
     def __init__(self,  action = None,
                         prefix = '',
@@ -760,8 +753,7 @@ class BuilderBase(object):
     def _get_src_builders_key(self, env):
         return id(env)
 
-    memoizer_counters.append(SCons.Memoize.CountDict('get_src_builders', _get_src_builders_key))
-
+    @SCons.Memoize.CountDictCall(_get_src_builders_key)
     def get_src_builders(self, env):
         """
         Returns the list of source Builders for this Builder.
@@ -797,8 +789,7 @@ class BuilderBase(object):
     def _subst_src_suffixes_key(self, env):
         return id(env)
 
-    memoizer_counters.append(SCons.Memoize.CountDict('subst_src_suffixes', _subst_src_suffixes_key))
-
+    @SCons.Memoize.CountDictCall(_subst_src_suffixes_key)
     def subst_src_suffixes(self, env):
         """
         The suffix list may contain construction variable expansions,
@@ -862,7 +853,7 @@ class CompositeBuilder(SCons.Util.Proxy):
         self.set_src_suffix(self.cmdgen.src_suffixes())
 
 def is_a_Builder(obj):
-    """"Returns True iff the specified obj is one of our Builder classes.
+    """"Returns True if the specified obj is one of our Builder classes.
 
     The test is complicated a bit by the fact that CompositeBuilder
     is a proxy, not a subclass of BuilderBase.

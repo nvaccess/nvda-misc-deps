@@ -4,7 +4,7 @@ SCons Packaging Tool.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@ SCons Packaging Tool.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Tool/packaging/__init__.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/packaging/__init__.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.Environment
 from SCons.Variables import *
@@ -80,7 +80,7 @@ def Tag(env, target, source, *more_tags, **kw_tags):
             #if not k.startswith('PACKAGING_'):
             if k[:10] != 'PACKAGING_':
                 k='PACKAGING_'+k
-            setattr(t, k, v)
+            t.Tag(k, v)
 
 def Package(env, target=None, source=None, **kw):
     """ Entry point for the package tool.
@@ -235,9 +235,11 @@ def copy_attr(f1, f2):
     #pattrs = [x for x in dir(f1) if not hasattr(f2, x) and\
     #                                x.startswith('PACKAGING_')]
     copyit = lambda x: not hasattr(f2, x) and x[:10] == 'PACKAGING_'
-    pattrs = list(filter(copyit, dir(f1)))
-    for attr in pattrs:
-        setattr(f2, attr, getattr(f1, attr))
+    if f1._tags:
+        pattrs = list(filter(copyit, f1._tags))
+        for attr in pattrs:
+            f2.Tag(attr, f1.GetTag(attr))
+
 def putintopackageroot(target, source, env, pkgroot, honor_install_location=1):
     """ Uses the CopyAs builder to copy all source files to the directory given
     in pkgroot.
@@ -262,9 +264,9 @@ def putintopackageroot(target, source, env, pkgroot, honor_install_location=1):
         if file.is_under(pkgroot):
             new_source.append(file)
         else:
-            if hasattr(file, 'PACKAGING_INSTALL_LOCATION') and\
+            if file.GetTag('PACKAGING_INSTALL_LOCATION') and\
                        honor_install_location:
-                new_name=make_path_relative(file.PACKAGING_INSTALL_LOCATION)
+                new_name=make_path_relative(file.GetTag('PACKAGING_INSTALL_LOCATION'))
             else:
                 new_name=make_path_relative(file.get_path())
 
@@ -301,7 +303,7 @@ def stripinstallbuilder(target, source, env):
             for ss in s.sources:
                 n_source.append(ss)
                 copy_attr(s, ss)
-                setattr(ss, 'PACKAGING_INSTALL_LOCATION', s.get_path())
+                ss.Tag('PACKAGING_INSTALL_LOCATION', s.get_path())
 
     return (target, n_source)
 

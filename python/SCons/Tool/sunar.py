@@ -10,7 +10,7 @@ selection method.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -32,7 +32,7 @@ selection method.
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Tool/sunar.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/sunar.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.Defaults
 import SCons.Tool
@@ -51,9 +51,6 @@ def generate(env):
         env['ARFLAGS']     = SCons.Util.CLVar('r')
         env['ARCOM']       = '$AR $ARFLAGS $TARGET $SOURCES'
 
-    env['SHLINK']      = '$LINK'
-    env['SHLINKFLAGS'] = SCons.Util.CLVar('$LINKFLAGS -G')
-    env['SHLINKCOM']   = '$SHLINK $SHLINKFLAGS -o $TARGET $SOURCES $_LIBDIRFLAGS $_LIBFLAGS'
     env['LIBPREFIX']   = 'lib'
     env['LIBSUFFIX']   = '.a'
 

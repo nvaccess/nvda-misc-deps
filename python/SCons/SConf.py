@@ -2,18 +2,17 @@
 
 Autoconf-like configuration support.
 
-In other words, this package allows to run series of tests to detect
-capabilities of current system and generate config files (header files
-in C/C++) that turn on system-specific options and optimizations.
+In other words, SConf allows to run tests on the build machine to detect
+capabilities of system and do some things based on result: generate config
+files, header files for C/C++, update variables in environment.
 
-For example, it is possible to detect if optional libraries are present
-on current system and generate config that makes compiler include them.
-C compilers do not have ability to catch ImportError if some library is
-not found, so these checks should be done externally.
+Tests on the build system can detect if compiler sees header files, if
+libraries are installed, if some command line options are supported etc.
+
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -35,7 +34,7 @@ not found, so these checks should be done externally.
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/SConf.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/SConf.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.compat
 
@@ -176,8 +175,11 @@ class SConfBuildInfo(SCons.Node.FS.FileBuildInfo):
     are result (did the builder succeed last time?) and string, which
     contains messages of the original build phase.
     """
-    result = None # -> 0/None -> no error, != 0 error
-    string = None # the stdout / stderr output when building the target
+    __slots__ = ('result', 'string')
+    
+    def __init__(self):
+        self.result = None # -> 0/None -> no error, != 0 error
+        self.string = None # the stdout / stderr output when building the target
 
     def set_build_result(self, result, string):
         self.result = result
@@ -198,10 +200,8 @@ class Streamer(object):
         try:
             self.s.write(str)
         except TypeError as e:
-            if e.message.startswith('unicode argument expected'):
-                self.s.write(str.decode())
-            else:
-                raise
+            # "unicode argument expected" bug in IOStream (python 2.x)
+            self.s.write(str.decode())
 
     def writelines(self, lines):
         for l in lines:
@@ -355,8 +355,10 @@ class SConfBuildTask(SCons.Taskmaster.AlwaysTask):
                 raise SCons.Errors.ExplicitExit(self.targets[0],exc_value.code)
             except Exception, e:
                 for t in self.targets:
-                    binfo = t.get_binfo()
-                    binfo.__class__ = SConfBuildInfo
+                    #binfo = t.get_binfo()
+                    #binfo.__class__ = SConfBuildInfo
+                    binfo = SConfBuildInfo()
+                    binfo.merge(t.get_binfo())
                     binfo.set_build_result(1, s.getvalue())
                     sconsign_entry = SCons.SConsign.SConsignEntry()
                     sconsign_entry.binfo = binfo
@@ -373,8 +375,10 @@ class SConfBuildTask(SCons.Taskmaster.AlwaysTask):
                 raise e
             else:
                 for t in self.targets:
-                    binfo = t.get_binfo()
-                    binfo.__class__ = SConfBuildInfo
+                    #binfo = t.get_binfo()
+                    #binfo.__class__ = SConfBuildInfo
+                    binfo = SConfBuildInfo()
+                    binfo.merge(t.get_binfo())
                     binfo.set_build_result(0, s.getvalue())
                     sconsign_entry = SCons.SConsign.SConsignEntry()
                     sconsign_entry.binfo = binfo
@@ -440,6 +444,7 @@ class SConfBase(object):
                  'CheckCXXHeader'     : CheckCXXHeader,
                  'CheckLib'           : CheckLib,
                  'CheckLibWithHeader' : CheckLibWithHeader,
+                 'CheckProg'          : CheckProg,
                }
         self.AddTests(default_tests)
         self.AddTests(custom_tests)
@@ -503,7 +508,7 @@ class SConfBase(object):
         # we override the store_info() method with a null place-holder
         # so we really control how it gets written.
         for n in nodes:
-            n.store_info = n.do_not_store_info
+            n.store_info = 0
             if not hasattr(n, 'attributes'):
                 n.attributes = SCons.Node.Node.Attrs()
             n.attributes.keep_targetinfo = 1
@@ -643,7 +648,7 @@ class SConfBase(object):
         ok = self.TryLink(text, extension)
         if( ok ):
             prog = self.lastTarget
-            pname = prog.path
+            pname = prog.get_internal_path()
             output = self.confdir.File(os.path.basename(pname)+'.out')
             node = self.env.Command(output, prog, [ [ pname, ">", "${TARGET}"] ])
             ok = self.BuildNodes(node)
@@ -687,7 +692,6 @@ class SConfBase(object):
         else:
             if not os.path.isdir( dirName ):
                 os.makedirs( dirName )
-                node._exists = 1
 
     def _startup(self):
         """Private method. Set up logstream, and set the environment
@@ -1043,6 +1047,14 @@ def CheckLibWithHeader(context, libs, header, language,
             call = call, language = language, autoadd = autoadd)
     context.did_show_result = 1
     return not res
+
+def CheckProg(context, prog_name):
+    """Simple check if a program exists in the path.  Returns the path
+    for the application, or None if not found.
+    """
+    res = SCons.Conftest.CheckProg(context, prog_name)
+    context.did_show_result = 1
+    return res
 
 # Local Variables:
 # tab-width:4

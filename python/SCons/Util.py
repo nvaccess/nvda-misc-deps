@@ -3,7 +3,7 @@
 Various utility functions go here.
 """
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@ Various utility functions go here.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Util.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Util.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import os
 import sys
@@ -992,7 +992,7 @@ class Selector(OrderedDict):
     def __call__(self, env, source, ext=None):
         if ext is None:
             try:
-                ext = source[0].suffix
+                ext = source[0].get_suffix()
             except IndexError:
                 ext = ""
         try:

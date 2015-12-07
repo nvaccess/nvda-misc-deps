@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -21,7 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/CacheDir.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/CacheDir.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 __doc__ = """
 CacheDir support
@@ -50,11 +50,11 @@ def CacheRetrieveFunc(target, source, env):
     cd.CacheDebug('CacheRetrieve(%s):  retrieving from %s\n', t, cachefile)
     if SCons.Action.execute_actions:
         if fs.islink(cachefile):
-            fs.symlink(fs.readlink(cachefile), t.path)
+            fs.symlink(fs.readlink(cachefile), t.get_internal_path())
         else:
-            env.copy_from_cache(cachefile, t.path)
+            env.copy_from_cache(cachefile, t.get_internal_path())
         st = fs.stat(cachefile)
-        fs.chmod(t.path, stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
+        fs.chmod(t.get_internal_path(), stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
     return 0
 
 def CacheRetrieveString(target, source, env):
@@ -63,7 +63,7 @@ def CacheRetrieveString(target, source, env):
     cd = env.get_CacheDir()
     cachedir, cachefile = cd.cachepath(t)
     if t.fs.exists(cachefile):
-        return "Retrieved `%s' from cache" % t.path
+        return "Retrieved `%s' from cache" % t.get_internal_path()
     return None
 
 CacheRetrieve = SCons.Action.Action(CacheRetrieveFunc, CacheRetrieveString)
@@ -106,12 +106,12 @@ def CachePushFunc(target, source, env):
                 raise SCons.Errors.EnvironmentError(msg)
 
     try:
-        if fs.islink(t.path):
-            fs.symlink(fs.readlink(t.path), tempfile)
+        if fs.islink(t.get_internal_path()):
+            fs.symlink(fs.readlink(t.get_internal_path()), tempfile)
         else:
-            fs.copy2(t.path, tempfile)
+            fs.copy2(t.get_internal_path(), tempfile)
         fs.rename(tempfile, cachefile)
-        st = fs.stat(t.path)
+        st = fs.stat(t.get_internal_path())
         fs.chmod(cachefile, stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
     except EnvironmentError:
         # It's possible someone else tried writing the file at the

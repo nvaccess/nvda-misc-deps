@@ -6,7 +6,7 @@ Coded by Russel Winder (russel@winder.org.uk)
 2012-09-06
 """
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -28,7 +28,7 @@ Coded by Russel Winder (russel@winder.org.uk)
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Tool/DCommon.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/DCommon.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import os.path
 

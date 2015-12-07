@@ -8,7 +8,7 @@ selection method.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -30,7 +30,7 @@ selection method.
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Tool/sunlink.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/sunlink.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import os
 import os.path
@@ -65,6 +65,10 @@ def generate(env):
     env['RPATHPREFIX'] = '-R'
     env['RPATHSUFFIX'] = ''
     env['_RPATH'] = '${_concat(RPATHPREFIX, RPATH, RPATHSUFFIX, __env__)}'
+
+    # Support for versioned libraries
+    link._setup_versioned_lib_variables(env, tool = 'sunlink', use_soname = True) 
+    env['LINKCALLBACKS'] = link._versioned_lib_callbacks()
 
 def exists(env):
     return ccLinker

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -21,7 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Tool/MSCommon/arch.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/MSCommon/arch.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 __doc__ = """Module to define supported Windows chip architectures.
 """
@@ -51,6 +51,12 @@ SupportedArchitectureList = [
         'ia64',
         ['IA64'],
     ),
+    
+    ArchitectureDefinition(
+        'arm',
+        ['ARM'],
+    ),
+
 ]
 
 SupportedArchitectureMap = {}

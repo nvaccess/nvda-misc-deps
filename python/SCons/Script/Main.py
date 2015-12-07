@@ -13,7 +13,7 @@ it goes here.
 unsupported_python_version = (2, 3, 0)
 deprecated_python_version = (2, 7, 0)
 
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ deprecated_python_version = (2, 7, 0)
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Script/Main.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Script/Main.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.compat
 
@@ -214,7 +214,7 @@ class BuildTask(SCons.Taskmaster.OutOfDateTask):
         if self.top and not t.has_builder() and not t.side_effect:
             if not t.exists():
                 if t.__class__.__name__ in ('File', 'Dir', 'Entry'):
-                    errstr="Do not know how to make %s target `%s' (%s)." % (t.__class__.__name__, t, t.abspath)
+                    errstr="Do not know how to make %s target `%s' (%s)." % (t.__class__.__name__, t, t.get_abspath())
                 else: # Alias or Python or ...
                     errstr="Do not know how to make %s target `%s'." % (t.__class__.__name__, t)
                 sys.stderr.write("scons: *** " + errstr)
@@ -351,7 +351,7 @@ class CleanTask(SCons.Taskmaster.AlwaysTask):
         if target in SCons.Environment.CleanTargets:
             files = SCons.Environment.CleanTargets[target]
             for f in files:
-                self.fs_delete(f.abspath, str(f), remove)
+                self.fs_delete(f.get_abspath(), str(f), remove)
 
     def show(self):
         for t in self._get_files_to_clean():
@@ -483,6 +483,9 @@ def GetOption(name):
 
 def SetOption(name, value):
     return OptionsParser.values.set_option(name, value)
+
+def PrintHelp(file=None):
+    OptionsParser.print_help(file=file)
 
 #
 class Stats(object):
@@ -672,7 +675,7 @@ def _set_debug_values(options):
     if "prepare" in debug_values:
         SCons.Taskmaster.print_prepare = 1
     if "duplicate" in debug_values:
-        SCons.Node.FS.print_duplicate = 1
+        SCons.Node.print_duplicate = 1
 
 def _create_path(plist):
     path = '.'
@@ -946,12 +949,20 @@ def _main(parser):
         progress_display.set_mode(0)
 
     if options.site_dir:
-        _load_site_scons_dir(d.path, options.site_dir)
+        _load_site_scons_dir(d.get_internal_path(), options.site_dir)
     elif not options.no_site_dir:
-        _load_all_site_scons_dirs(d.path)
+        _load_all_site_scons_dirs(d.get_internal_path())
 
     if options.include_dir:
         sys.path = options.include_dir + sys.path
+
+    # If we're about to start SCons in the interactive mode,
+    # inform the FS about this right here. Else, the release_target_info
+    # method could get called on some nodes, like the used "gcc" compiler,
+    # when using the Configure methods within the SConscripts.
+    # This would then cause subtle bugs, as already happened in #2971.
+    if options.interactive:
+        SCons.Node.interactive = True
 
     # That should cover (most of) the options.  Next, set up the variables
     # that hold command-line arguments, so the SConscript files that we
@@ -1082,7 +1093,6 @@ def _main(parser):
     platform = SCons.Platform.platform_module()
 
     if options.interactive:
-        SCons.Node.interactive = True
         SCons.Script.Interactive.interact(fs, OptionsParser, options,
                                           targets, target_top)
 
@@ -1104,7 +1114,6 @@ def _build_targets(fs, options, targets, target_top):
     display.set_mode(not options.silent)
     SCons.Action.print_actions          = not options.silent
     SCons.Action.execute_actions        = not options.no_exec
-    SCons.Node.FS.do_store_info         = not options.no_exec
     SCons.Node.do_store_info            = not options.no_exec
     SCons.SConf.dryrun                  = options.no_exec
 
@@ -1351,7 +1360,7 @@ def main():
         pass
     parts.append(version_string("engine", SCons))
     parts.append(path_string("engine", SCons))
-    parts.append("Copyright (c) 2001 - 2014 The SCons Foundation")
+    parts.append("Copyright (c) 2001 - 2015 The SCons Foundation")
     version = ''.join(parts)
 
     import SConsOptions

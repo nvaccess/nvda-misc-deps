@@ -5,7 +5,7 @@ The main package for the SCons software construction utility.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,17 +27,17 @@ The main package for the SCons software construction utility.
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/__init__.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/__init__.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
-__version__ = "2.3.2"
+__version__ = "2.4.1"
 
-__build__ = ""
+__build__ = "rel_2.4.1:3453:73fefd3ea0b0"
 
-__buildsys__ = "lubuntu"
+__buildsys__ = "ubuntu1404-32bit"
 
-__date__ = "2014/07/05 09:42:21"
+__date__ = "2015/11/09 03:25:05"
 
-__developer__ = "garyo"
+__developer__ = "bdbaddog"
 
 # make sure compatibility is always in place
 import SCons.compat

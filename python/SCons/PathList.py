@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -21,7 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/PathList.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/PathList.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 __doc__ = """SCons.PathList
 
@@ -171,11 +171,6 @@ class PathListCache(object):
     cheaply avoid re-parsing both values of CPPPATH by using the
     common value from this cache.
     """
-    if SCons.Memoize.use_memoizer:
-        __metaclass__ = SCons.Memoize.Memoized_Metaclass
-
-    memoizer_counters = []
-
     def __init__(self):
         self._memo = {}
 
@@ -196,8 +191,7 @@ class PathListCache(object):
             pathlist = tuple(SCons.Util.flatten(pathlist))
         return pathlist
 
-    memoizer_counters.append(SCons.Memoize.CountDict('PathList', _PathList_key))
-
+    @SCons.Memoize.CountDictCall(_PathList_key)
     def PathList(self, pathlist):
         """
         Returns the cached _PathList object for the specified pathlist,

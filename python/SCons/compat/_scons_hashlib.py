@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -31,7 +31,7 @@ purposes, anyway).  In fact, this module will raise an ImportError if
 the underlying md5 module isn't available.
 """
 
-__revision__ = "src/engine/SCons/compat/_scons_hashlib.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/compat/_scons_hashlib.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import md5
 from string import hexdigits

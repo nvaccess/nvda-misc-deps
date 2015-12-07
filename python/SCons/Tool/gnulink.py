@@ -9,7 +9,7 @@ selection method.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -31,11 +31,16 @@ selection method.
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Tool/gnulink.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/gnulink.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.Util
+import SCons.Tool
+import os
+import sys
+import re
 
 import link
+
 
 def generate(env):
     """Add Builders and construction variables for gnulink to an Environment."""
@@ -49,6 +54,14 @@ def generate(env):
     env['RPATHPREFIX'] = '-Wl,-rpath='
     env['RPATHSUFFIX'] = ''
     env['_RPATH'] = '${_concat(RPATHPREFIX, RPATH, RPATHSUFFIX, __env__)}'
+
+    # OpenBSD doesn't usually use SONAME for libraries
+    use_soname = not sys.platform.startswith('openbsd')
+    link._setup_versioned_lib_variables(env, tool = 'gnulink', use_soname = use_soname)
+    env['LINKCALLBACKS'] = link._versioned_lib_callbacks()
+
+    # For backward-compatiblity with older SCons versions
+    env['SHLIBVERSIONFLAGS'] = SCons.Util.CLVar('-Wl,-Bsymbolic')
     
 def exists(env):
     # TODO: sync with link.smart_link() to choose a linker

@@ -4,7 +4,7 @@ The rpm packager.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@ The rpm packager.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Tool/packaging/rpm.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/packaging/rpm.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import os
 
@@ -130,8 +130,7 @@ def build_specfile(target, source, env):
     """ Builds a RPM specfile from a dictionary with string metadata and
     by analyzing a tree of nodes.
     """
-    file = open(target[0].abspath, 'w')
-    str  = ""
+    file = open(target[0].get_abspath(), 'w')
 
     try:
         file.write( build_specfile_header(env) )
@@ -169,7 +168,7 @@ def build_specfile_sections(spec):
         'X_RPM_POSTUNINSTALL' : '%%postun\n%s\n\n',
         'X_RPM_VERIFY'        : '%%verify\n%s\n\n',
 
-        # These are for internal use but could possibly be overriden
+        # These are for internal use but could possibly be overridden
         'X_RPM_PREP'          : '%%prep\n%s\n\n',
         'X_RPM_BUILD'         : '%%build\n%s\n\n',
         'X_RPM_INSTALL'       : '%%install\n%s\n\n',
@@ -182,7 +181,7 @@ def build_specfile_sections(spec):
         spec['X_RPM_PREP'] = '[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"' + '\n%setup -q'
 
     if 'X_RPM_BUILD' not in spec:
-        spec['X_RPM_BUILD'] = 'mkdir "$RPM_BUILD_ROOT"'
+        spec['X_RPM_BUILD'] = '[ ! -e "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && mkdir "$RPM_BUILD_ROOT"'
 
     if 'X_RPM_INSTALL' not in spec:
         spec['X_RPM_INSTALL'] = 'scons --install-sandbox="$RPM_BUILD_ROOT" "$RPM_BUILD_ROOT"'
@@ -279,7 +278,9 @@ def build_specfile_filesection(spec, files):
         tags = {}
         for k in supported_tags.keys():
             try:
-                tags[k]=getattr(file, k)
+                v = file.GetTag(k)
+                if v:
+                    tags[k] = v
             except AttributeError:
                 pass
 
@@ -287,7 +288,7 @@ def build_specfile_filesection(spec, files):
         str = str + SimpleTagCompiler(supported_tags, mandatory=0).compile( tags )
 
         str = str + ' '
-        str = str + file.PACKAGING_INSTALL_LOCATION
+        str = str + file.GetTag('PACKAGING_INSTALL_LOCATION')
         str = str + '\n\n'
 
     return str

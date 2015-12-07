@@ -3,7 +3,7 @@
 Used by several tools of `gettext` toolset.
 """
 
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 # 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@ Used by several tools of `gettext` toolset.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-__revision__ = "src/engine/SCons/Tool/GettextCommon.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Tool/GettextCommon.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import SCons.Warnings
 import re
@@ -306,23 +306,6 @@ class RPaths(object):
        - Tuple of strings, which represent paths relative to current working
          directory (for given environment).
     """
-    # os.path.relpath is available only on python >= 2.6. We use our own
-    # implementation. It's taken from BareNecessities package:
-    #   http://jimmyg.org/work/code/barenecessities/index.html
-    from posixpath import curdir
-    def relpath(path, start=curdir):
-        import posixpath
-        """Return a relative version of a path"""
-        if not path:
-           raise ValueError("no path specified")
-        start_list = posixpath.abspath(start).split(posixpath.sep)
-        path_list = posixpath.abspath(path).split(posixpath.sep)
-        # Work out how much of the filepath is shared by start and path.
-        i = len(posixpath.commonprefix([start_list, path_list]))
-        rel_list = [posixpath.pardir] * (len(start_list)-i) + path_list[i:]
-        if not rel_list:
-           return posixpath.curdir
-        return posixpath.join(*rel_list)
     import os 
     import SCons.Node.FS
     rpaths = ()
@@ -330,7 +313,7 @@ class RPaths(object):
     for node in nodes:
       rpath = None
       if isinstance(node, SCons.Node.FS.Base):
-        rpath = relpath(node.get_abspath(), cwd)
+        rpath = os.path.relpath(node.get_abspath(), cwd)
       # FIXME: Other types possible here?
       if rpath is not None:
         rpaths += (rpath,)

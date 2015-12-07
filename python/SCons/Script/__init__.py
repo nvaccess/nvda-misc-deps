@@ -12,7 +12,7 @@ it goes here.
 """
 
 #
-# Copyright (c) 2001 - 2014 The SCons Foundation
+# Copyright (c) 2001 - 2015 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -34,13 +34,14 @@ it goes here.
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/engine/SCons/Script/__init__.py  2014/07/05 09:42:21 garyo"
+__revision__ = "src/engine/SCons/Script/__init__.py rel_2.4.1:3453:73fefd3ea0b0 2015/11/09 03:25:05 bdbaddog"
 
 import time
 start_time = time.time()
 
 import collections
 import os
+import StringIO
 import sys
 
 # Special chicken-and-egg handling of the "--debug=memoizer" flag:
@@ -107,6 +108,7 @@ QuestionTask            = Main.QuestionTask
 #SConscriptSettableOptions = Main.SConscriptSettableOptions
 
 AddOption               = Main.AddOption
+PrintHelp               = Main.PrintHelp
 GetOption               = Main.GetOption
 SetOption               = Main.SetOption
 Progress                = Main.Progress
@@ -258,12 +260,25 @@ def _Set_Default_Targets(env, tlist):
 #
 help_text = None
 
-def HelpFunction(text):
+def HelpFunction(text, append=False):
     global help_text
-    if SCons.Script.help_text is None:
-        SCons.Script.help_text = text
-    else:
-        help_text = help_text + text
+    if help_text is None:
+        if append:
+            s = StringIO.StringIO()
+            PrintHelp(s)  
+            help_text = s.getvalue()
+            s.close()
+        else:
+            help_text = ""
+#            
+# Was in original patch but this text is arbitrary and breaks tests
+# so I removed it (Deegan)
+#        help_text = help_text + "\nLocal Build Variables:\n" + text
+#    else:
+#        help_text = help_text + text
+
+    help_text= help_text + text
+
 
 #
 # Will be non-zero if we are reading an SConscript file.
@@ -318,6 +333,7 @@ GlobalDefaultEnvironmentFunctions = [
     'Ignore',
     'Install',
     'InstallAs',
+    'InstallVersionedLib',
     'Literal',
     'Local',
     'ParseDepends',
