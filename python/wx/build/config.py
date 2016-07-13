@@ -993,9 +993,10 @@ if os.name == 'nt' and  COMPILER == 'msvc':
     lflags = None
 
     # Other MSVC flags...
-    # Uncomment these to have debug info for all kinds of builds
-    #cflags += ['/Od', '/Z7']
-    #lflags = ['/DEBUG', ]
+    # perhaps consider /opt:icf linking options
+    # http://www.wintellect.com/devcenter/jrobbins/correctly-creating-native-c-release-build-pdbs
+    cflags += ['/Zi']
+    lflags = ['/DEBUG', '/opt:ref']
 
 
 #----------------------------------------------------------------------
