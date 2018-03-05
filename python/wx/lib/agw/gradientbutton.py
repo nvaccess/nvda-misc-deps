@@ -2,7 +2,7 @@
 # GRADIENTBUTTON wxPython IMPLEMENTATION
 #
 # Andrea Gavana, @ 07 October 2008
-# Latest Revision: 14 Mar 2012, 21.00 GMT
+# Latest Revision: 27 Dec 2012, 21.00 GMT
 #
 #
 # TODO List
@@ -18,12 +18,13 @@
 #
 # Or, obviously, to the wxPython mailing list!!!
 #
+# Tags:        phoenix-port, unittest, documented, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------------- #
 
 """
-:class:`GradientButton` is another custom-drawn button class which mimics Windows CE mobile
+:class:`~wx.lib.agw.gradientbutton.GradientButton` is another custom-drawn button class which mimics Windows CE mobile
 gradient buttons.
 
 
@@ -53,12 +54,12 @@ Usage example::
     class MyFrame(wx.Frame):
 
         def __init__(self, parent):
-        
+
             wx.Frame.__init__(self, parent, -1, "GradientButton Demo")
 
             panel = wx.Panel(self, -1)
 
-            # One button without bitmap            
+            # One button without bitmap
             button_1 = GB.GradientButton(panel, -1, None, "Hello World", (100, 50))
 
             # One button with bitmap
@@ -99,7 +100,7 @@ This class processes the following events:
 ================= ==================================================
 Event Name        Description
 ================= ==================================================
-``wx.EVT_BUTTON`` Process a `wxEVT_COMMAND_BUTTON_CLICKED` event, when the button is clicked. 
+``wx.EVT_BUTTON`` Process a `wxEVT_COMMAND_BUTTON_CLICKED` event, when the button is clicked.
 ================= ==================================================
 
 
@@ -108,7 +109,7 @@ License And Version
 
 :class:`GradientButton` is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 14 Mar 2012, 21.00 GMT
+Latest Revision: Andrea Gavana @ 27 Dec 2012, 21.00 GMT
 
 Version 0.3
 
@@ -125,7 +126,7 @@ CLICK = 2
 
 class GradientButtonEvent(wx.PyCommandEvent):
     """ Event sent from :class:`GradientButton` when the button is activated. """
-    
+
     def __init__(self, eventType, eventId):
         """
         Default class constructor.
@@ -133,7 +134,7 @@ class GradientButtonEvent(wx.PyCommandEvent):
         :param `eventType`: the event type;
         :param `eventId`: the event identifier.
         """
-        
+
         wx.PyCommandEvent.__init__(self, eventType, eventId)
         self.isDown = False
         self.theButton = None
@@ -145,21 +146,21 @@ class GradientButtonEvent(wx.PyCommandEvent):
 
         :param `btn`: the button object, an instance of :class:`GradientButton`.
         """
-        
+
         self.theButton = btn
 
 
     def GetButtonObj(self):
         """ Returns the object associated with this event. """
-        
+
         return self.theButton
 
-    
-class GradientButton(wx.PyControl):
+
+class GradientButton(wx.Control):
     """ This is the main class implementation of :class:`GradientButton`. """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, bitmap=None, label="", pos=wx.DefaultPosition,
-                 size=wx.DefaultSize, style=wx.NO_BORDER, validator=wx.DefaultValidator,
+                 size=wx.DefaultSize, style=wx.NO_BORDER, align=wx.CENTER, validator=wx.DefaultValidator,
                  name="gradientbutton"):
         """
         Default class constructor.
@@ -173,11 +174,12 @@ class GradientButton(wx.PyControl):
         :param `size`: the control size. A value of (-1, -1) indicates a default size,
          chosen by either the windowing system or wxPython, depending on platform;
         :param `style`: the button style (unused);
+        :param `align`: text/bitmap alignment. wx.CENTER or wx.LEFT;
         :param `validator`: the validator associated to the button;
         :param `name`: the button name.
         """
-        
-        wx.PyControl.__init__(self, parent, id, pos, size, style, validator, name)
+
+        wx.Control.__init__(self, parent, id, pos, size, style, validator, name)
 
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_ERASE_BACKGROUND, lambda event: None)
@@ -194,9 +196,11 @@ class GradientButton(wx.PyControl):
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDown)
 
         self._mouseAction = None
-        self._bitmap = bitmap
+        self.SetBitmapLabel(bitmap)
         self._hasFocus = False
-        
+
+        self._alignment = align
+
         self.SetLabel(label)
         self.InheritAttributes()
         self.SetInitialSize(size)
@@ -204,12 +208,23 @@ class GradientButton(wx.PyControl):
         self.SetBaseColours()
 
 
+    def SetBitmapLabel(self, bitmap):
+        """
+        Sets the bitmap label for the button.
+
+        :param `bitmap`: the bitmap label to set, an instance of :class:`wx.Bitmap`.
+        """
+
+        self._bitmap = bitmap
+        self.Refresh()
+
+
     def SetBaseColours(self, startcolour=wx.BLACK, foregroundcolour=wx.WHITE):
         """Sets the bottom, top, pressed and foreground colour
-        
+
         :param startcolour: based colour to be used for bottom, top and pressed
         :param foregroundcolour: colour used for the text
-        
+
         """
         self._bottomStartColour = startcolour
         rgba = self._bottomStartColour.Red(), self._bottomStartColour.Green(), \
@@ -243,17 +258,18 @@ class GradientButton(wx.PyControl):
         r = colour.Red() + ((i*rd*100)/high)/100
         g = colour.Green() + ((i*gd*100)/high)/100
         b = colour.Blue() + ((i*bd*100)/high)/100
+        a = colour.Alpha()
 
-        return wx.Colour(r, g, b)
+        return wx.Colour(int(r), int(g), int(b), int(a))
 
 
     def OnSize(self, event):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`GradientButton`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
-        
+
         event.Skip()
         self.Refresh()
 
@@ -267,7 +283,7 @@ class GradientButton(wx.PyControl):
 
         if not self.IsEnabled():
             return
-        
+
         self._mouseAction = CLICK
         self.CaptureMouse()
         self.Refresh()
@@ -283,13 +299,13 @@ class GradientButton(wx.PyControl):
 
         if not self.IsEnabled() or not self.HasCapture():
             return
-        
+
         pos = event.GetPosition()
         rect = self.GetClientRect()
 
         if self.HasCapture():
             self.ReleaseMouse()
-            
+
         if rect.Contains(pos):
             self._mouseAction = HOVER
             self.Notify()
@@ -309,7 +325,7 @@ class GradientButton(wx.PyControl):
 
         if not self.IsEnabled():
             return
-        
+
         self._mouseAction = HOVER
         self.Refresh()
         event.Skip()
@@ -333,7 +349,7 @@ class GradientButton(wx.PyControl):
 
         :param `event`: a :class:`FocusEvent` event to be processed.
         """
-        
+
         self._hasFocus = True
         self.Refresh()
         self.Update()
@@ -357,7 +373,7 @@ class GradientButton(wx.PyControl):
 
         :param `event`: a :class:`KeyEvent` event to be processed.
         """
-        
+
         if self._hasFocus and event.GetKeyCode() == ord(" "):
             self._mouseAction = HOVER
             self.Refresh()
@@ -370,7 +386,7 @@ class GradientButton(wx.PyControl):
 
         :param `event`: a :class:`KeyEvent` event to be processed.
         """
-        
+
         if self._hasFocus and event.GetKeyCode() == ord(" "):
             self._mouseAction = HOVER
             self.Notify()
@@ -387,15 +403,15 @@ class GradientButton(wx.PyControl):
 
         dc = wx.BufferedPaintDC(self)
         gc = wx.GraphicsContext.Create(dc)
-        dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))        
+        dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
         dc.Clear()
-        
+
         clientRect = self.GetClientRect()
         gradientRect = wx.Rect(*clientRect)
         capture = wx.Window.GetCapture()
 
-        x, y, width, height = clientRect        
-        
+        x, y, width, height = clientRect
+
         gradientRect.SetHeight(gradientRect.GetHeight()/2 + ((capture==self and [1] or [0])[0]))
         if capture != self:
             if self._mouseAction == HOVER:
@@ -413,16 +429,16 @@ class GradientButton(wx.PyControl):
             path4.AddRectangle(x, y+height/2-8, width, 8)
             path4.CloseSubpath()
             gc.SetBrush(br1)
-            gc.FillPath(path4)            
-        
+            gc.FillPath(path4)
+
         else:
-            
+
             rc1 = wx.Rect(x, y, width, height)
             path1 = self.GetPath(gc, rc1, 8)
             gc.SetPen(wx.Pen(self._pressedTopColour))
             gc.SetBrush(wx.Brush(self._pressedTopColour))
             gc.FillPath(path1)
-        
+
         gradientRect.Offset((0, gradientRect.GetHeight()))
 
         if capture != self:
@@ -443,10 +459,10 @@ class GradientButton(wx.PyControl):
             path4.CloseSubpath()
             gc.SetBrush(br3)
             gc.FillPath(path4)
-            
+
             shadowOffset = 0
         else:
-        
+
             rc2 = wx.Rect(x+1, gradientRect.height/2, gradientRect.width, gradientRect.height)
             path2 = self.GetPath(gc, rc2, 8)
             gc.SetPen(wx.Pen(self._pressedBottomColour))
@@ -463,16 +479,23 @@ class GradientButton(wx.PyControl):
             bw, bh = self._bitmap.GetWidth(), self._bitmap.GetHeight()
         else:
             bw = bh = 0
-            
-        pos_x = (width-bw-tw)/2+shadowOffset      # adjust for bitmap and text to centre        
-        if self._bitmap:
-            pos_y =  (height-bh)/2+shadowOffset
-            gc.DrawBitmap(self._bitmap, pos_x, pos_y, bw, bh) # draw bitmap if available
-            pos_x = pos_x + 2   # extra spacing from bitmap
 
-        gc.DrawText(label, pos_x + bw + shadowOffset, (height-th)/2+shadowOffset) 
+        if self._alignment == wx.CENTER:
+            pos_x = (width-bw-tw)/2+shadowOffset # adjust for bitmap and text to centre
+            if self._bitmap:
+                pos_y =  (height-bh)/2+shadowOffset
+                gc.DrawBitmap(self._bitmap, pos_x, pos_y, bw, bh) # draw bitmap if available
+                pos_x = pos_x + 2 # extra spacing from bitmap
+        elif self._alignment == wx.LEFT:
+            pos_x = 3 # adjust for bitmap and text to left
+            if self._bitmap:
+                pos_y =  (height-bh)/2+shadowOffset
+                gc.DrawBitmap(self._bitmap, pos_x, pos_y, bw, bh) # draw bitmap if available
+                pos_x = pos_x + 3 # extra spacing from bitmap
 
-        
+        gc.DrawText(label, pos_x + bw + shadowOffset, (height-th)/2+shadowOffset)
+
+
     def GetPath(self, gc, rc, r):
         """
         Returns a rounded :class:`GraphicsPath` rectangle.
@@ -481,36 +504,36 @@ class GradientButton(wx.PyControl):
         :param `rc`: a client rectangle;
         :param `r`: the radious of the rounded part of the rectangle.
         """
-    
+
         x, y, w, h = rc
         path = gc.CreatePath()
         path.AddRoundedRectangle(x, y, w, h, r)
         path.CloseSubpath()
         return path
 
-    
+
     def SetInitialSize(self, size=None):
         """
         Given the current font and bezel width settings, calculate
         and set a good size.
 
-        :param `size`: an instance of :class:`Size`.        
+        :param `size`: an instance of :class:`wx.Size`.
         """
-        
+
         if size is None:
-            size = wx.DefaultSize            
-        wx.PyControl.SetInitialSize(self, size)
+            size = wx.DefaultSize
+        wx.Control.SetInitialSize(self, size)
 
     SetBestSize = SetInitialSize
-    
+
 
     def AcceptsFocus(self):
         """
         Can this window be given focus by mouse click?
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
-        
+
         return self.IsShown() and self.IsEnabled()
 
 
@@ -519,7 +542,7 @@ class GradientButton(wx.PyControl):
         Overridden base class virtual. By default we should use
         the same font/colour attributes as the native :class:`Button`.
         """
-        
+
         return wx.Button.GetClassDefaultAttributes()
 
 
@@ -528,22 +551,22 @@ class GradientButton(wx.PyControl):
         Overridden base class virtual. Buttons usually don't inherit
         the parent's colours.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
-        
+
         return False
-    
+
 
     def Enable(self, enable=True):
         """
         Enables/disables the button.
 
         :param `enable`: ``True`` to enable the button, ``False`` to disable it.
-        
-        :note: Overridden from :class:`PyControl`.
+
+        :note: Overridden from :class:`wx.Control`.
         """
-        
-        wx.PyControl.Enable(self, enable)
+
+        wx.Control.Enable(self, enable)
         self.Refresh()
 
 
@@ -551,7 +574,7 @@ class GradientButton(wx.PyControl):
         """
         Sets the top start colour for the gradient shading.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._topStartColour = colour
@@ -562,13 +585,13 @@ class GradientButton(wx.PyControl):
         """ Returns the top start colour for the gradient shading. """
 
         return self._topStartColour
-    
+
 
     def SetTopEndColour(self, colour):
         """
         Sets the top end colour for the gradient shading.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._topEndColour = colour
@@ -579,13 +602,13 @@ class GradientButton(wx.PyControl):
         """ Returns the top end colour for the gradient shading. """
 
         return self._topEndColour
-        
+
 
     def SetBottomStartColour(self, colour):
         """
         Sets the top bottom colour for the gradient shading.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._bottomStartColour = colour
@@ -596,13 +619,13 @@ class GradientButton(wx.PyControl):
         """ Returns the bottom start colour for the gradient shading. """
 
         return self._bottomStartColour
-    
-        
+
+
     def SetBottomEndColour(self, colour):
         """
         Sets the bottom end colour for the gradient shading.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._bottomEndColour = colour
@@ -613,13 +636,13 @@ class GradientButton(wx.PyControl):
         """ Returns the bottom end colour for the gradient shading. """
 
         return self._bottomEndColour
-    
+
 
     def SetPressedTopColour(self, colour):
         """
         Sets the pressed top start colour for the gradient shading.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._pressedTopColour = colour
@@ -630,13 +653,13 @@ class GradientButton(wx.PyControl):
         """ Returns the pressed top start colour for the gradient shading. """
 
         return self._pressedTopColour
-    
-        
+
+
     def SetPressedBottomColour(self, colour):
         """
         Sets the pressed bottom start colour for the gradient shading.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._pressedBottomColour = colour
@@ -647,37 +670,37 @@ class GradientButton(wx.PyControl):
         """ Returns the pressed bottom start colour for the gradient shading. """
 
         return self._pressedBottomColour
-    
+
 
     def SetForegroundColour(self, colour):
         """
         Sets the :class:`GradientButton` foreground (text) colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
 
-        :note: Overridden from :class:`PyControl`.        
+        :note: Overridden from :class:`wx.Control`.
         """
 
-        wx.PyControl.SetForegroundColour(self, colour)
+        wx.Control.SetForegroundColour(self, colour)
         self.Refresh()
-        
-        
+
+
     def DoGetBestSize(self):
         """
         Overridden base class virtual. Determines the best size of the
         button based on the label and bezel size.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
         label = self.GetLabel()
         if not label:
             return wx.Size(112, 48)
-        
+
         dc = wx.ClientDC(self)
         dc.SetFont(self.GetFont())
         retWidth, retHeight = dc.GetTextExtent(label)
-        
+
         bmpWidth = bmpHeight = 0
         constant = 15
         if self._bitmap:
@@ -686,20 +709,20 @@ class GradientButton(wx.PyControl):
             retHeight = max(bmpHeight, retHeight)
             constant = 15
 
-        return wx.Size(retWidth+constant, retHeight+constant) 
+        return wx.Size(retWidth+constant, retHeight+constant)
 
 
     def SetDefault(self):
         """ Sets the default button. """
-        
+
         tlw = wx.GetTopLevelParent(self)
         if hasattr(tlw, 'SetDefaultItem'):
             tlw.SetDefaultItem(self)
-        
+
 
     def Notify(self):
         """ Actually sends a ``wx.EVT_BUTTON`` event to the listener (if any). """
-        
+
         evt = GradientButtonEvent(wx.wxEVT_COMMAND_BUTTON_CLICKED, self.GetId())
         evt.SetButtonObj(self)
         evt.SetEventObject(self)

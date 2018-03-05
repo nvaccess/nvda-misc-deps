@@ -5,7 +5,6 @@
 # Author:      Chris Mellon
 #
 # Created:     17-May-2005
-# RCS-ID:      $Id$
 # Copyright:   (c) 2005 by Chris Mellon
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
@@ -18,10 +17,10 @@ class wxTickerXmlHandler(xrc.XmlResourceHandler):
     def __init__(self):
         xrc.XmlResourceHandler.__init__(self)
         self.AddWindowStyles()
-        
+
     def CanHandle(self, node):
         return self.IsOfClass(node, "wxTicker")
-    
+
     def DoCreateResource(self):
         t = Ticker(
             self.GetParentAsWindow(),
@@ -43,7 +42,7 @@ class wxTickerXmlHandler(xrc.XmlResourceHandler):
             t.SetFPS(self.GetLong("fps"))
         if self.HasParam("direction"):
             t.SetDirection(self.GetText("direction"))
-        
+
         self.SetupWindow(t)     # handles font, bg/fg color
         return t
 

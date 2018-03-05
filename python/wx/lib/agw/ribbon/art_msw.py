@@ -1,3 +1,16 @@
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Name:         art_msw.py
+# Purpose:
+#
+# Author:       Andrea Gavana <andrea.gavana@gmail.com>
+#
+# Created:
+# Version:
+# Date:
+# Licence:      wxWindows license
+# Tags:         phoenix-port, unittest, documented, py3-port
+#----------------------------------------------------------------------------
 """
 `art_msw` is responsible for drawing all the components of the ribbon
 interface using a Windows appearance.
@@ -10,11 +23,11 @@ This allows a ribbon bar to have a pluggable look-and-feel, while retaining the 
 underlying behaviour. As a single art provider is used for all ribbon components, a
 ribbon bar usually has a consistent (though unique) appearance.
 
-By default, a :class:`~lib.agw.ribbon.bar.RibbonBar` uses an instance of a class called
-:class:`~lib.agw.ribbon.art_default.RibbonDefaultArtProvider`,
-which resolves to :class:`~lib.agw.ribbon.art_aui.RibbonAUIArtProvider`,
-:class:`~lib.agw.ribbon.art_msw.RibbonMSWArtProvider`, or
-:class:`~lib.agw.ribbon.art_osx.RibbonOSXArtProvider` - whichever is most appropriate
+By default, a :class:`~wx.lib.agw.ribbon.bar.RibbonBar` uses an instance of a class called
+:class:`~wx.lib.agw.ribbon.art_default.RibbonDefaultArtProvider`,
+which resolves to :class:`~wx.lib.agw.ribbon.art_aui.RibbonAUIArtProvider`,
+:class:`~wx.lib.agw.ribbon.art_msw.RibbonMSWArtProvider`, or
+:class:`~wx.lib.agw.ribbon.art_osx.RibbonOSXArtProvider` - whichever is most appropriate
 to the current platform. These art providers are all
 slightly configurable with regard to colours and fonts, but for larger modifications,
 you can derive from one of these classes, or write a completely new art provider class.
@@ -25,32 +38,31 @@ Call :meth:`RibbonBar.SetArtProvider() <lib.agw.ribbon.bar.RibbonBar.SetArtProvi
 See Also
 ========
 
-:class:`~lib.agw.ribbon.bar.RibbonBar`
+:class:`~wx.lib.agw.ribbon.bar.RibbonBar`
 """
 
 import wx
-import types
 
 from math import cos
 from math import pi as M_PI
 
-import panel as PANEL
-import page as PAGE
+from . import panel as PANEL
+from . import page as PAGE
 
-from art_internal import RibbonLoadPixmap, RibbonInterpolateColour, RibbonDrawParallelGradientLines
-from art_internal import RibbonCanLabelBreakAtPosition
-from art_internal import RibbonHSLColour
+from .art_internal import RibbonLoadPixmap, RibbonInterpolateColour, RibbonDrawParallelGradientLines
+from .art_internal import RibbonCanLabelBreakAtPosition
+from .art_internal import RibbonHSLColour
 
-from art import *
+from .art import *
 
 
-gallery_up_xpm = ["5 5 2 1", "  c None", "x c #FF00FF", "     ", "  x  ", " xxx ", "xxxxx", "     "]
-gallery_down_xpm = ["5 5 2 1", "  c None", "x c #FF00FF", "     ", "xxxxx", " xxx ", "  x  ", "     "]
-gallery_left_xpm = ["5 5 2 1", "  c None", "x c #FF00FF", "   x ", "  xx ", " xxx ", "  xx ", "   x "]
-gallery_right_xpm = ["5 5 2 1", "  c None", "x c #FF00FF", " x   ", " xx  ", " xxx ", " xx  ", " x   "]
-gallery_extension_xpm = ["5 5 2 1", "  c None", "x c #FF00FF", "xxxxx", "     ", "xxxxx", " xxx ", "  x  "]
-panel_extension_xpm = ["7 7 2 1", "  c None", "x c #FF00FF", "xxxxxx ", "x      ", "x      ",
-                       "x  x  x", "x   xxx", "x   xxx", "   xxxx"]
+gallery_up_xpm = [b"5 5 2 1", b"  c None", b"x c #FF00FF", b"     ", b"  x  ", b" xxx ", b"xxxxx", b"     "]
+gallery_down_xpm = [b"5 5 2 1", b"  c None", b"x c #FF00FF", b"     ", b"xxxxx", b" xxx ", b"  x  ", b"     "]
+gallery_left_xpm = [b"5 5 2 1", b"  c None", b"x c #FF00FF", b"   x ", b"  xx ", b" xxx ", b"  xx ", b"   x "]
+gallery_right_xpm = [b"5 5 2 1", b"  c None", b"x c #FF00FF", b" x   ", b" xx  ", b" xxx ", b" xx  ", b" x   "]
+gallery_extension_xpm = [b"5 5 2 1", b"  c None", b"x c #FF00FF", b"xxxxx", b"     ", b"xxxxx", b" xxx ", b"  x  "]
+panel_extension_xpm = [b"7 7 2 1", b"  c None", b"x c #FF00FF", b"xxxxxx ", b"x      ", b"x      ",
+                       b"x  x  x", b"x   xxx", b"x   xxx", b"   xxxx"]
 
 
 def LikePrimary(primary_hsl, is_gray, h, s, l):
@@ -59,7 +71,7 @@ def LikePrimary(primary_hsl, is_gray, h, s, l):
 
 
 def LikeSecondary(secondary_hsl, is_gray, h, s, l):
-    
+
     return secondary_hsl.ShiftHue(h).Saturated((is_gray and [0] or [s])[0]).Lighter(l).ToRGB()
 
 
@@ -67,7 +79,7 @@ def SingleLine(dc, rect, start, finish):
 
     dc.DrawLine(start.x + rect.x, start.y + rect.y, finish.x + rect.x, finish.y + rect.y)
 
-                               
+
 class RibbonMSWArtProvider(object):
 
     def __init__(self, set_colour_scheme=True):
@@ -77,14 +89,14 @@ class RibbonMSWArtProvider(object):
         self._button_bar_label_font = wx.NORMAL_FONT
         self._panel_label_font = wx.NORMAL_FONT
 
-        self._gallery_up_bitmap = [wx.NullBitmap for i in xrange(4)]
-        self._gallery_down_bitmap = [wx.NullBitmap for i in xrange(4)]
-        self._gallery_extension_bitmap = [wx.NullBitmap for i in xrange(4)]
-        self._panel_extension_bitmap = [wx.NullBitmap for i in xrange(2)]
+        self._gallery_up_bitmap = [wx.NullBitmap for i in range(4)]
+        self._gallery_down_bitmap = [wx.NullBitmap for i in range(4)]
+        self._gallery_extension_bitmap = [wx.NullBitmap for i in range(4)]
+        self._panel_extension_bitmap = [wx.NullBitmap for i in range(2)]
 
         if set_colour_scheme:
             self.SetColourScheme(wx.Colour(194, 216, 241), wx.Colour(255, 223, 114), wx.Colour(0, 0, 0))
-        
+
         self._cached_tab_separator_visibility = -10.0 # valid visibilities are in range [0, 1]
         self._tab_separation_size = 3
         self._page_border_left = 2
@@ -100,7 +112,7 @@ class RibbonMSWArtProvider(object):
         self._gallery_bitmap_padding_bottom__size = 4
         self._cached_tab_separator = wx.NullBitmap
 
-            
+
     def GetColourScheme(self, primary, secondary, tertiary):
         """
         Get the current colour scheme.
@@ -134,7 +146,7 @@ class RibbonMSWArtProvider(object):
             tertiary = self._tertiary_scheme_colour
 
         return primary, secondary, tertiary
-    
+
 
     def SetColourScheme(self, primary, secondary, tertiary):
         """
@@ -166,7 +178,7 @@ class RibbonMSWArtProvider(object):
 
         if primary_hsl.saturation <= gray_saturation_threshold:
             primary_is_gray = True
-        else:    
+        else:
             primary_hsl.saturation = cos(primary_hsl.saturation * M_PI) * -0.25 + 0.5
 
         # Map primary luminance from [0, 1] to [.23, .83]
@@ -174,7 +186,7 @@ class RibbonMSWArtProvider(object):
 
         # Map secondary saturation from [0, 1] to [0.16, 0.84]
         secondary_is_gray = False
-        
+
         if secondary_hsl.saturation <= gray_saturation_threshold:
             secondary_is_gray = True
         else:
@@ -201,7 +213,7 @@ class RibbonMSWArtProvider(object):
         self._tab_hover_background_top_colour = LikePrimary(primary_hsl, primary_is_gray, 1.4, 0.36, 0.08)
         self._tab_border_pen = wx.Pen(LikePrimary(primary_hsl, primary_is_gray, 1.4, 0.03, -0.05)  )
         self._tab_separator_gradient_colour = LikePrimary(primary_hsl, primary_is_gray, 1.7, -0.15, -0.18)
-        self._tab_hover_background_top_gradient_colour = LikePrimary(primary_hsl, primary_is_gray, 1.8, 0.34, 0.13)   
+        self._tab_hover_background_top_gradient_colour = LikePrimary(primary_hsl, primary_is_gray, 1.8, 0.34, 0.13)
         self._tab_label_colour = LikePrimary(primary_hsl, primary_is_gray, 4.3, 0.13, -0.49)
         self._tab_hover_background_gradient_colour = LikeSecondary(primary_hsl, secondary_is_gray, -1.5, -0.34, 0.01)
 
@@ -223,7 +235,7 @@ class RibbonMSWArtProvider(object):
         self._panel_hover_button_border_pen = wx.Pen(LikeSecondary(secondary_hsl, secondary_is_gray, -3.9, -0.16, -0.14))
         self.SetColour(RIBBON_ART_PANEL_BUTTON_FACE_COLOUR, LikePrimary(primary_hsl, primary_is_gray, 1.4, -0.21, -0.23))
         self.SetColour(RIBBON_ART_PANEL_BUTTON_HOVER_FACE_COLOUR, LikePrimary(primary_hsl, primary_is_gray, 1.5, -0.24, -0.29))
-    
+
         self._gallery_button_disabled_background_colour = LikePrimary(primary_hsl, primary_is_gray, -2.8, -0.46, 0.09)
         self._gallery_button_disabled_background_top_brush = wx.Brush(LikePrimary(primary_hsl, primary_is_gray, -2.8, -0.36, 0.15))
         self._gallery_hover_background_brush = wx.Brush(LikePrimary(primary_hsl, primary_is_gray, -0.8, 0.05, 0.15))
@@ -246,7 +258,7 @@ class RibbonMSWArtProvider(object):
         self._gallery_button_active_background_colour = LikeSecondary(secondary_hsl, secondary_is_gray, -9.9, 0.03, -0.22)
         self._gallery_button_active_background_gradient_colour = LikeSecondary(secondary_hsl, secondary_is_gray, -9.5, 0.14, -0.11)
         self._gallery_button_active_background_top_brush = wx.Brush(LikeSecondary(secondary_hsl, secondary_is_gray, -9.0, 0.15, -0.08))
-        
+
         self._button_bar_label_colour = self._tab_label_colour
         self._button_bar_hover_border_pen = wx.Pen(LikeSecondary(secondary_hsl, secondary_is_gray, -6.2, -0.47, -0.14))
         self._button_bar_hover_background_gradient_colour = LikeSecondary(secondary_hsl, secondary_is_gray, -0.6, 0.16, 0.04)
@@ -290,14 +302,14 @@ class RibbonMSWArtProvider(object):
 
     def CloneTo(self, copy):
 
-        for i in xrange(4):    
+        for i in range(4):
             copy._gallery_up_bitmap[i] = self._gallery_up_bitmap[i]
             copy._gallery_down_bitmap[i] = self._gallery_down_bitmap[i]
             copy._gallery_extension_bitmap[i] = self._gallery_extension_bitmap[i]
 
-        for i in xrange(2):
+        for i in range(2):
             copy._panel_extension_bitmap[i] = self._panel_extension_bitmap[i]
-    
+
         copy._toolbar_drop_bitmap = self._toolbar_drop_bitmap
 
         copy._primary_scheme_colour = self._primary_scheme_colour
@@ -340,7 +352,7 @@ class RibbonMSWArtProvider(object):
         copy._button_bar_active_background_top_colour = self._button_bar_active_background_top_colour
         copy._button_bar_active_background_top_gradient_colour = self._button_bar_active_background_top_gradient_colour
         copy._gallery_button_background_colour = self._gallery_button_background_colour
-        copy._gallery_button_background_gradient_colour = self._gallery_button_background_gradient_colour    
+        copy._gallery_button_background_gradient_colour = self._gallery_button_background_gradient_colour
         copy._gallery_button_hover_background_colour = self._gallery_button_hover_background_colour
         copy._gallery_button_hover_background_gradient_colour = self._gallery_button_hover_background_gradient_colour
         copy._gallery_button_active_background_colour = self._gallery_button_active_background_colour
@@ -405,7 +417,7 @@ class RibbonMSWArtProvider(object):
         """
         Set the style flags.
 
-        Normally called automatically by :meth:`RibbonBar.SetArtProvider() <RibbonBar.SetArtProvider>` with the ribbon
+        Normally called automatically by :meth:`RibbonBar.SetArtProvider() <lib.agw.ribbon.bar.RibbonBar.SetArtProvider>` with the ribbon
         bar's style flags, so that the art provider has the same flags as the bar which
         it is serving.
 
@@ -413,18 +425,18 @@ class RibbonMSWArtProvider(object):
 
         """
 
-        if (flags ^ self._flags) & RIBBON_BAR_FLOW_VERTICAL:        
-            if flags & RIBBON_BAR_FLOW_VERTICAL:            
+        if (flags ^ self._flags) & RIBBON_BAR_FLOW_VERTICAL:
+            if flags & RIBBON_BAR_FLOW_VERTICAL:
                 self._page_border_left += 1
                 self._page_border_right += 1
                 self._page_border_top -= 1
                 self._page_border_bottom -= 1
-            else:            
+            else:
                 self._page_border_left -= 1
                 self._page_border_right -= 1
                 self._page_border_top += 1
                 self._page_border_bottom += 1
-            
+
         self._flags = flags
 
         # Need to reload some bitmaps when flags change
@@ -434,7 +446,7 @@ class RibbonMSWArtProvider(object):
         self.Reload(RIBBON_ART_GALLERY_BUTTON_DISABLED_FACE_COLOUR)
         self.Reload(RIBBON_ART_PANEL_BUTTON_FACE_COLOUR)
         self.Reload(RIBBON_ART_PANEL_BUTTON_HOVER_FACE_COLOUR)
-        
+
 
     def Reload(self, setting):
 
@@ -516,7 +528,7 @@ class RibbonMSWArtProvider(object):
             self._gallery_bitmap_padding_bottom__size = new_val
         else:
             raise Exception("Invalid Metric Ordinal")
-    
+
 
     def SetFont(self, id, font):
         """
@@ -528,7 +540,7 @@ class RibbonMSWArtProvider(object):
         :param `font`: the new font.
 
         """
-        
+
         if id == RIBBON_ART_TAB_LABEL_FONT:
             self._tab_label_font = font
         elif id == RIBBON_ART_BUTTON_BAR_LABEL_FONT:
@@ -721,7 +733,7 @@ class RibbonMSWArtProvider(object):
 
         :see: :meth:`~RibbonMSWArtProvider.SetColourScheme`
         """
-    
+
         if id == RIBBON_ART_BUTTON_BAR_LABEL_COLOUR:
             self._button_bar_label_colour = colour
         elif id == RIBBON_ART_BUTTON_BAR_HOVER_BORDER_COLOUR:
@@ -756,16 +768,16 @@ class RibbonMSWArtProvider(object):
             self._gallery_button_background_top_brush.SetColour(colour)
         elif id == RIBBON_ART_GALLERY_BUTTON_FACE_COLOUR:
             self._gallery_button_face_colour = colour
-            
-            if self._flags & RIBBON_BAR_FLOW_VERTICAL:            
+
+            if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 self._gallery_up_bitmap[0] = RibbonLoadPixmap(gallery_left_xpm, colour)
                 self._gallery_down_bitmap[0] = RibbonLoadPixmap(gallery_right_xpm, colour)
-            else:            
+            else:
                 self._gallery_up_bitmap[0] = RibbonLoadPixmap(gallery_up_xpm, colour)
                 self._gallery_down_bitmap[0] = RibbonLoadPixmap(gallery_down_xpm, colour)
-            
+
             self._gallery_extension_bitmap[0] = RibbonLoadPixmap(gallery_extension_xpm, colour)
-            
+
         elif id == RIBBON_ART_GALLERY_BUTTON_HOVER_BACKGROUND_COLOUR:
             self._gallery_button_hover_background_colour = colour
         elif id == RIBBON_ART_GALLERY_BUTTON_HOVER_BACKGROUND_GRADIENT_COLOUR:
@@ -774,16 +786,16 @@ class RibbonMSWArtProvider(object):
             self._gallery_button_hover_background_top_brush.SetColour(colour)
         elif id == RIBBON_ART_GALLERY_BUTTON_HOVER_FACE_COLOUR:
             self._gallery_button_hover_face_colour = colour
-            
+
             if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 self._gallery_up_bitmap[1] = RibbonLoadPixmap(gallery_left_xpm, colour)
                 self._gallery_down_bitmap[1] = RibbonLoadPixmap(gallery_right_xpm, colour)
-            else:            
+            else:
                 self._gallery_up_bitmap[1] = RibbonLoadPixmap(gallery_up_xpm, colour)
                 self._gallery_down_bitmap[1] = RibbonLoadPixmap(gallery_down_xpm, colour)
-            
+
             self._gallery_extension_bitmap[1] = RibbonLoadPixmap(gallery_extension_xpm, colour)
-            
+
         elif id == RIBBON_ART_GALLERY_BUTTON_ACTIVE_BACKGROUND_COLOUR:
             self._gallery_button_active_background_colour = colour
         elif id == RIBBON_ART_GALLERY_BUTTON_ACTIVE_BACKGROUND_GRADIENT_COLOUR:
@@ -796,10 +808,10 @@ class RibbonMSWArtProvider(object):
             if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 self._gallery_up_bitmap[2] = RibbonLoadPixmap(gallery_left_xpm, colour)
                 self._gallery_down_bitmap[2] = RibbonLoadPixmap(gallery_right_xpm, colour)
-            else:            
+            else:
                 self._gallery_up_bitmap[2] = RibbonLoadPixmap(gallery_up_xpm, colour)
                 self._gallery_down_bitmap[2] = RibbonLoadPixmap(gallery_down_xpm, colour)
-            
+
             self._gallery_extension_bitmap[2] = RibbonLoadPixmap(gallery_extension_xpm, colour)
 
         elif id == RIBBON_ART_GALLERY_BUTTON_DISABLED_BACKGROUND_COLOUR:
@@ -810,14 +822,14 @@ class RibbonMSWArtProvider(object):
             self._gallery_button_disabled_background_top_brush.SetColour(colour)
         elif id == RIBBON_ART_GALLERY_BUTTON_DISABLED_FACE_COLOUR:
             self._gallery_button_disabled_face_colour = colour
-            
+
             if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 self._gallery_up_bitmap[3] = RibbonLoadPixmap(gallery_left_xpm, colour)
-                self._gallery_down_bitmap[3] = RibbonLoadPixmap(gallery_right_xpm, colour)            
-            else:            
+                self._gallery_down_bitmap[3] = RibbonLoadPixmap(gallery_right_xpm, colour)
+            else:
                 self._gallery_up_bitmap[3] = RibbonLoadPixmap(gallery_up_xpm, colour)
                 self._gallery_down_bitmap[3] = RibbonLoadPixmap(gallery_down_xpm, colour)
-            
+
             self._gallery_extension_bitmap[3] = RibbonLoadPixmap(gallery_extension_xpm, colour)
 
         elif id == RIBBON_ART_GALLERY_ITEM_BORDER_COLOUR:
@@ -907,7 +919,7 @@ class RibbonMSWArtProvider(object):
             self._toolbar_drop_bitmap = RibbonLoadPixmap(gallery_down_xpm, colour)
         else:
             raise Exception("Invalid Colour Ordinal")
-    
+
 
     def DrawTabCtrlBackground(self, dc, wnd, rect):
         """
@@ -925,19 +937,19 @@ class RibbonMSWArtProvider(object):
         dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height)
 
         dc.SetPen(self._page_border_pen)
-        
-        if rect.width > 6:        
-            dc.DrawLine(rect.x + 3, rect.y + rect.height - 1, rect.x + rect.width - 3, rect.y + rect.height - 1)        
-        else:        
+
+        if rect.width > 6:
+            dc.DrawLine(rect.x + 3, rect.y + rect.height - 1, rect.x + rect.width - 3, rect.y + rect.height - 1)
+        else:
             dc.DrawLine(rect.x, rect.y + rect.height - 1, rect.x + rect.width, rect.y + rect.height - 1)
-    
+
 
     def DrawTab(self, dc, wnd, tab):
         """
         Draw a single tab in the tab region of a ribbon bar.
 
         :param `dc`: The device context to draw onto;
-        :param `wnd`: The window which is being drawn onto (not the :class:`~lib.agw.ribbon.page.RibbonPage` associated
+        :param `wnd`: The window which is being drawn onto (not the :class:`~wx.lib.agw.ribbon.page.RibbonPage` associated
          with the tab being drawn);
         :param `tab`: The rectangle within which to draw, and also the tab label, icon, and
          state (active and/or hovered). The drawing rectangle will be entirely within a
@@ -950,8 +962,8 @@ class RibbonMSWArtProvider(object):
         if tab.rect.height <= 2:
             return
 
-        if tab.active or tab.hovered:        
-            if tab.active:            
+        if tab.active or tab.hovered:
+            if tab.active:
                 background = wx.Rect(*tab.rect)
                 background.x += 2
                 background.y += 2
@@ -962,8 +974,8 @@ class RibbonMSWArtProvider(object):
                                       self._tab_active_background_gradient_colour, wx.SOUTH)
 
                 # TODO: active and hovered
-            
-            elif tab.hovered:            
+
+            elif tab.hovered:
                 background = wx.Rect(*tab.rect)
                 background.x += 2
                 background.y += 2
@@ -978,8 +990,8 @@ class RibbonMSWArtProvider(object):
                 background.height = h - background.height
                 dc.GradientFillLinear(background, self._tab_hover_background_colour,
                                       self._tab_hover_background_gradient_colour, wx.SOUTH)
-           
-            border_points = [wx.Point() for i in xrange(6)]
+
+            border_points = [wx.Point() for i in range(6)]
             border_points[0] = wx.Point(1, tab.rect.height - 2)
             border_points[1] = wx.Point(1, 3)
             border_points[2] = wx.Point(3, 1)
@@ -990,7 +1002,7 @@ class RibbonMSWArtProvider(object):
             dc.SetPen(self._tab_border_pen)
             dc.DrawLines(border_points, tab.rect.x, tab.rect.y)
 
-            if tab.active:            
+            if tab.active:
                 # Give the tab a curved outward border at the bottom
                 dc.DrawPoint(tab.rect.x, tab.rect.y + tab.rect.height - 2)
                 dc.DrawPoint(tab.rect.x + tab.rect.width - 1, tab.rect.y + tab.rect.height - 2)
@@ -1005,7 +1017,7 @@ class RibbonMSWArtProvider(object):
                 dc.DrawPoint(tab.rect.x, tab.rect.y + tab.rect.height - 1)
                 dc.DrawPoint(tab.rect.x + tab.rect.width - 2, tab.rect.y + tab.rect.height - 1)
                 dc.DrawPoint(tab.rect.x + tab.rect.width - 1, tab.rect.y + tab.rect.height - 1)
-            
+
         if self._flags & RIBBON_BAR_SHOW_PAGE_ICONS:
             icon = tab.page.GetIcon()
 
@@ -1013,12 +1025,12 @@ class RibbonMSWArtProvider(object):
                 x = tab.rect.x + 4
                 if self._flags & RIBBON_BAR_SHOW_PAGE_LABELS == 0:
                     x = tab.rect.x + (tab.rect.width - icon.GetWidth()) / 2
-                    
+
                 dc.DrawBitmap(icon, x, tab.rect.y + 1 + (tab.rect.height - 1 - icon.GetHeight()) / 2, True)
-        
+
         if self._flags & RIBBON_BAR_SHOW_PAGE_LABELS:
             label = tab.page.GetLabel()
-            if label.strip():            
+            if label.strip():
                 dc.SetFont(self._tab_label_font)
                 dc.SetTextForeground(self._tab_label_colour)
                 dc.SetBackgroundMode(wx.TRANSPARENT)
@@ -1026,20 +1038,20 @@ class RibbonMSWArtProvider(object):
                 text_width, text_height = dc.GetTextExtent(label)
                 width = tab.rect.width - 5
                 x = tab.rect.x + 3
-                
-                if self._flags & RIBBON_BAR_SHOW_PAGE_ICONS:                
+
+                if self._flags & RIBBON_BAR_SHOW_PAGE_ICONS:
                     x += 3 + tab.page.GetIcon().GetWidth()
                     width -= 3 + tab.page.GetIcon().GetWidth()
-                
+
                 y = tab.rect.y + (tab.rect.height - text_height) / 2
 
-                if width <= text_width:                
+                if width <= text_width:
                     dc.SetClippingRegion(x, tab.rect.y, width, tab.rect.height)
                     dc.DrawText(label, x, y)
-                else:                
+                else:
                     dc.DrawText(label, x + (width - text_width) / 2 + 1, y)
 
-                
+
     def DrawTabSeparator(self, dc, wnd, rect, visibility):
         """
         Draw a separator between two tabs in a ribbon bar.
@@ -1055,29 +1067,29 @@ class RibbonMSWArtProvider(object):
 
         """
 
-        if visibility <= 0.0:        
+        if visibility <= 0.0:
             return
-        
-        if visibility > 1.0:        
+
+        if visibility > 1.0:
             visibility = 1.0
-        
+
         # The tab separator is relatively expensive to draw (for its size), and is
         # usually drawn multiple times sequentially (in different positions), so it
         # makes sense to draw it once and cache it.
         if not self._cached_tab_separator.IsOk() or self._cached_tab_separator.GetSize() != rect.GetSize() or \
            visibility != self._cached_tab_separator_visibility:
-        
+
             size = wx.Rect(0, 0, *rect.GetSize())
             self.ReallyDrawTabSeparator(wnd, size, visibility)
-        
+
         dc.DrawBitmap(self._cached_tab_separator, rect.x, rect.y, False)
 
 
     def ReallyDrawTabSeparator(self, wnd, rect, visibility):
 
         if not self._cached_tab_separator.IsOk() or self._cached_tab_separator.GetSize() != rect.GetSize():
-            self._cached_tab_separator = wx.EmptyBitmap(*rect.GetSize())
-    
+            self._cached_tab_separator = wx.Bitmap(*rect.GetSize())
+
         dc = wx.MemoryDC(self._cached_tab_separator)
         self.DrawTabCtrlBackground(dc, wnd, rect)
 
@@ -1094,35 +1106,35 @@ class RibbonMSWArtProvider(object):
         g3 = self._tab_separator_gradient_colour.Green()
         b3 = self._tab_separator_gradient_colour.Blue()
 
-        for i in xrange(rect.height-1):
-        
+        for i in range(rect.height-1):
+
             p = float(i)/h
 
-            r = (p * r3 + (1.0 - p) * r2) * visibility + r1
-            g = (p * g3 + (1.0 - p) * g2) * visibility + g1
-            b = (p * b3 + (1.0 - p) * b2) * visibility + b1
+            r = int((p * r3 + (1.0 - p) * r2) * visibility + r1)
+            g = int((p * g3 + (1.0 - p) * g2) * visibility + g1)
+            b = int((p * b3 + (1.0 - p) * b2) * visibility + b1)
 
             P = wx.Pen(wx.Colour(r, g, b))
             dc.SetPen(P)
             dc.DrawPoint(x, rect.y + i)
-        
+
         self._cached_tab_separator_visibility = visibility
 
 
     def DrawPartialPageBackground(self, dc, wnd, rect, allow_hovered_or_page=True, offset=None, hovered=False):
 
-        if isinstance(allow_hovered_or_page, types.BooleanType):
+        if isinstance(allow_hovered_or_page, bool):
             self.DrawPartialPageBackground2(dc, wnd, rect, allow_hovered_or_page)
         else:
             self.DrawPartialPageBackground1(dc, wnd, rect, allow_hovered_or_page, offset, hovered)
-            
+
 
     def DrawPartialPageBackground1(self, dc, wnd, rect, page, offset, hovered=False):
 
         background = wx.Rect(0, 0, *page.GetSize())
         background = page.AdjustRectToIncludeScrollButtons(background)
         background.height -= 2
-        
+
         # Page background isn't dependant upon the width of the page
         # (at least not the part of it intended to be painted by this
         # function). Set to wider than the page itself for when externally
@@ -1144,18 +1156,18 @@ class RibbonMSWArtProvider(object):
         paint_rect.x += offset.x
         paint_rect.y += offset.y
 
-        if hovered:        
+        if hovered:
             bg_top = self._page_hover_background_top_colour
             bg_top_grad = self._page_hover_background_top_gradient_colour
             bg_btm = self._page_hover_background_colour
-            bg_btm_grad = self._page_hover_background_gradient_colour        
-        else:        
+            bg_btm_grad = self._page_hover_background_gradient_colour
+        else:
             bg_top = self._page_background_top_colour
             bg_top_grad = self._page_background_top_gradient_colour
             bg_btm = self._page_background_colour
             bg_btm_grad = self._page_background_gradient_colour
-        
-        if paint_rect.Intersects(upper_rect):        
+
+        if paint_rect.Intersects(upper_rect):
             rect = wx.Rect(*upper_rect)
             rect.Intersect(paint_rect)
             rect.x -= offset.x
@@ -1167,9 +1179,9 @@ class RibbonMSWArtProvider(object):
                                                     paint_rect.y + paint_rect.height, upper_rect.y,
                                                     upper_rect.y + upper_rect.height)
             dc.GradientFillLinear(rect, starting_colour, ending_colour, wx.SOUTH)
-        
 
-        if paint_rect.Intersects(lower_rect):        
+
+        if paint_rect.Intersects(lower_rect):
             rect = wx.Rect(*lower_rect)
             rect.Intersect(paint_rect)
             rect.x -= offset.x
@@ -1180,17 +1192,17 @@ class RibbonMSWArtProvider(object):
             ending_colour = RibbonInterpolateColour(bg_btm, bg_btm_grad,
                                                     paint_rect.y + paint_rect.height,
                                                     lower_rect.y, lower_rect.y + lower_rect.height)
-            
+
             dc.GradientFillLinear(rect, starting_colour, ending_colour, wx.SOUTH)
 
-        
+
     def DrawPageBackground(self, dc, wnd, rect):
         """
         Draw the background of a ribbon page.
 
         :param `dc`: The device context to draw onto;
         :param `wnd`: The window which is being drawn onto (which is commonly the
-         :class:`~lib.agw.ribbon.page.RibbonPage` whose background is being drawn, but doesn't have to be);
+         :class:`~wx.lib.agw.ribbon.page.RibbonPage` whose background is being drawn, but doesn't have to be);
         :param `rect`: The rectangle within which to draw.
 
         :see: :meth:`~RibbonMSWArtProvider.GetPageBackgroundRedrawArea`
@@ -1198,7 +1210,7 @@ class RibbonMSWArtProvider(object):
 
         dc.SetPen(wx.TRANSPARENT_PEN)
         dc.SetBrush(self._tab_ctrl_background_brush)
-        
+
         edge = wx.Rect(*rect)
 
         edge.width = 2
@@ -1211,7 +1223,7 @@ class RibbonMSWArtProvider(object):
         edge.height = 2
         edge.y += (rect.height - edge.height)
         dc.DrawRectangle(edge.x, edge.y, edge.width, edge.height)
-    
+
         background = wx.Rect(*rect)
         background.x += 2
         background.width -= 4
@@ -1225,8 +1237,8 @@ class RibbonMSWArtProvider(object):
         background.height = rect.height - 2 - background.height
         dc.GradientFillLinear(background, self._page_background_colour,
                               self._page_background_gradient_colour, wx.SOUTH)
-    
-        border_points = [wx.Point() for i in xrange(8)]
+
+        border_points = [wx.Point() for i in range(8)]
         border_points[0] = wx.Point(2, 0)
         border_points[1] = wx.Point(1, 1)
         border_points[2] = wx.Point(1, rect.height - 4)
@@ -1238,7 +1250,7 @@ class RibbonMSWArtProvider(object):
 
         dc.SetPen(self._page_border_pen)
         dc.DrawLines(border_points, rect.x, rect.y)
-        
+
 
     def DrawScrollButton(self, dc, wnd, rect_, style):
         """
@@ -1267,11 +1279,11 @@ class RibbonMSWArtProvider(object):
             # and size adjustment.
             dc.SetPen(wx.TRANSPARENT_PEN)
             dc.SetBrush(self._tab_ctrl_background_brush)
-            dc.DrawRectangleRect(rect)
-            dc.SetClippingRect(rect)
-            
+            dc.DrawRectangle(rect)
+            dc.SetClippingRegion(rect)
+
             result = style & RIBBON_SCROLL_BTN_DIRECTION_MASK
-            
+
             if result == RIBBON_SCROLL_BTN_LEFT:
                 rect.x += 1
             elif result == RIBBON_SCROLL_BTN_RIGHT:
@@ -1285,8 +1297,8 @@ class RibbonMSWArtProvider(object):
             elif result == RIBBON_SCROLL_BTN_DOWN:
                 rect.x += 1
                 rect.width -= 2
-                rect.height -= 1            
-        
+                rect.height -= 1
+
         background = wx.Rect(*rect)
         background.x += 1
         background.y += 1
@@ -1297,7 +1309,7 @@ class RibbonMSWArtProvider(object):
             background.height /= 2
         else:
             background.height /= 5
-            
+
         dc.GradientFillLinear(background, self._page_background_top_colour,
                               self._page_background_top_gradient_colour, wx.SOUTH)
 
@@ -1305,10 +1317,10 @@ class RibbonMSWArtProvider(object):
         background.height = rect.height - 2 - background.height
         dc.GradientFillLinear(background, self._page_background_colour,
                               self._page_background_gradient_colour, wx.SOUTH)
-    
-        border_points = [wx.Point() for i in xrange(7)]
+
+        border_points = [wx.Point() for i in range(7)]
         result = style & RIBBON_SCROLL_BTN_DIRECTION_MASK
-        
+
         if result == RIBBON_SCROLL_BTN_LEFT:
             border_points[0] = wx.Point(2, 0)
             border_points[1] = wx.Point(rect.width - 1, 0)
@@ -1340,16 +1352,16 @@ class RibbonMSWArtProvider(object):
             border_points[3] = wx.Point(rect.width - 3, rect.height - 1)
             border_points[4] = wx.Point(2, rect.height - 1)
             border_points[5] = wx.Point(0, rect.height - 3)
-        
+
         border_points[6] = border_points[0]
 
         dc.SetPen(self._page_border_pen)
         dc.DrawLines(border_points, rect.x, rect.y)
-    
+
         # NB: Code for handling hovered/active state is temporary
-        arrow_points = [wx.Point() for i in xrange(3)]
+        arrow_points = [wx.Point() for i in range(3)]
         result = style & RIBBON_SCROLL_BTN_DIRECTION_MASK
-        
+
         if result == RIBBON_SCROLL_BTN_LEFT:
             arrow_points[0] = wx.Point(rect.width / 2 - 2, rect.height / 2)
             if style & RIBBON_SCROLL_BTN_ACTIVE:
@@ -1377,16 +1389,16 @@ class RibbonMSWArtProvider(object):
                 arrow_points[0].y += 1
             arrow_points[1] = arrow_points[0] - wx.Point( 3, 3)
             arrow_points[2] = arrow_points[0] - wx.Point(-3, 3)
-        
+
         dc.SetPen(wx.TRANSPARENT_PEN)
         B = wx.Brush((style & RIBBON_SCROLL_BTN_HOVERED and [self._tab_active_background_colour] or [self._tab_label_colour])[0])
         dc.SetBrush(B)
         dc.DrawPolygon(arrow_points, rect.x, rect.y)
-    
+
 
     def DrawDropdownArrow(self, dc, x, y, colour):
 
-        arrow_points = [wx.Point() for i in xrange(3)]
+        arrow_points = [wx.Point() for i in range(3)]
         brush = wx.Brush(colour)
         arrow_points[0] = wx.Point(1, 2)
         arrow_points[1] = arrow_points[0] + wx.Point(-3, -3)
@@ -1398,13 +1410,13 @@ class RibbonMSWArtProvider(object):
 
     def RemovePanelPadding(self, rect):
 
-        if self._flags & RIBBON_BAR_FLOW_VERTICAL:        
+        if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             rect.y += 1
-            rect.height -= 2        
-        else:        
+            rect.height -= 2
+        else:
             rect.x += 1
             rect.width -= 2
-        
+
         return rect
 
 
@@ -1434,14 +1446,14 @@ class RibbonMSWArtProvider(object):
         dc.SetPen(wx.TRANSPARENT_PEN)
 
         has_ext_button = wnd.HasExtButton()
-        
+
         if wnd.IsHovered():
             dc.SetBrush(self._panel_hover_label_background_brush)
-            dc.SetTextForeground(self._panel_hover_label_colour)        
-        else:        
+            dc.SetTextForeground(self._panel_hover_label_colour)
+        else:
             dc.SetBrush(self._panel_label_background_brush)
             dc.SetTextForeground(self._panel_label_colour)
-        
+
         label_rect = wx.Rect(*true_rect)
         label = wnd.GetLabel().strip()
         clip_label = False
@@ -1457,32 +1469,32 @@ class RibbonMSWArtProvider(object):
 
         if has_ext_button:
             label_rect.SetWidth(label_rect.GetWidth() - 13)
-            
-        if label_size.GetWidth() > label_rect.GetWidth():        
+
+        if label_size.GetWidth() > label_rect.GetWidth():
             # Test if there is enough length for 3 letters and ...
             new_label = label[0:3] + "..."
             label_size = wx.Size(*dc.GetTextExtent(new_label))
-            
-            if label_size.GetWidth() > label_rect.GetWidth():            
+
+            if label_size.GetWidth() > label_rect.GetWidth():
                 # Not enough room for three characters and ...
                 # Display the entire label and just crop it
                 clip_label = True
-            else:            
+            else:
                 # Room for some characters and ...
                 # Display as many characters as possible and append ...
-                for l in xrange(len(label)-1, 3, -1):                
+                for l in range(len(label)-1, 3, -1):
                     new_label = label[0:l] + "..."
                     label_size = wx.Size(*dc.GetTextExtent(new_label))
-                    if label_size.GetWidth() <= label_rect.GetWidth():                    
+                    if label_size.GetWidth() <= label_rect.GetWidth():
                         label = new_label
                         break
-                    
-        dc.DrawRectangleRect(label_rect)
-        
-        if clip_label:        
+
+        dc.DrawRectangle(label_rect)
+
+        if clip_label:
             clip = wx.DCClipper(dc, label_rect)
-            dc.DrawText(label, label_rect.x, label_rect.y + (label_rect.GetHeight() - label_size.GetHeight()) / 2)        
-        else:        
+            dc.DrawText(label, label_rect.x, label_rect.y + (label_rect.GetHeight() - label_size.GetHeight()) / 2)
+        else:
             dc.DrawText(label, label_rect.x + (label_rect.GetWidth() - label_size.GetWidth()) / 2,
                         label_rect.y + (label_rect.GetHeight() - label_size.GetHeight()) / 2)
 
@@ -1494,15 +1506,15 @@ class RibbonMSWArtProvider(object):
                 dc.DrawBitmap(self._panel_extension_bitmap[1], label_rect.GetRight() + 3, label_rect.GetBottom() - 10, True)
             else:
                 dc.DrawBitmap(self._panel_extension_bitmap[0], label_rect.GetRight() + 3, label_rect.GetBottom() - 10, True)
-        
-        if wnd.IsHovered():        
+
+        if wnd.IsHovered():
             client_rect = wx.Rect(*true_rect)
             client_rect.x += 1
             client_rect.width -= 2
             client_rect.y += 1
             client_rect.height -= 2 + label_height
             self.DrawPartialPageBackground(dc, wnd, client_rect, True)
-        
+
         self.DrawPanelBorder(dc, true_rect, self._panel_border_pen, self._panel_border_gradient_pen)
 
 
@@ -1515,14 +1527,14 @@ class RibbonMSWArtProvider(object):
         :param `rect`: The panel client rectangle.
         """
 
-        true_rect = wx.Rect(*self.RemovePanelPadding(rect))
+        true_rect = wx.Rect(self.RemovePanelPadding(rect))
         true_rect = wx.Rect(true_rect.GetRight()-13, true_rect.GetBottom()-13, 13, 13)
         return true_rect
 
 
     def DrawGalleryBackground(self, dc, wnd, rect):
         """
-        Draw the background and chrome for a :class:`~lib.agw.ribbon.gallery.RibbonGallery` control.
+        Draw the background and chrome for a :class:`~wx.lib.agw.ribbon.gallery.RibbonGallery` control.
 
         This should draw the border, brackground, scroll buttons, extension button, and
         any other UI elements which are not attached to a specific gallery item.
@@ -1531,23 +1543,24 @@ class RibbonMSWArtProvider(object):
         :param `wnd`: The window which is being drawn onto, which is always the gallery
          whose background and chrome is being drawn. Attributes used during drawing like
          the gallery hover state and individual button states can be queried from this
-         parameter by :meth:`RibbonGallery.IsHovered() <RibbonGallery.IsHovered>`, :meth:`RibbonGallery.GetExtensionButtonState() <RibbonGallery.GetExtensionButtonState>`,
-         :meth:`RibbonGallery.GetUpButtonState() <RibbonGallery.GetUpButtonState>`, and :meth:`RibbonGallery.GetDownButtonState() <RibbonGallery.GetDownButtonState>`;
+         parameter by :meth:`RibbonGallery.IsHovered() <lib.agw.ribbon.gallery.RibbonGallery.IsHovered>`,
+         :meth:`RibbonGallery.GetExtensionButtonState() <lib.agw.ribbon.gallery.RibbonGallery.GetExtensionButtonState>`,
+         :meth:`RibbonGallery.GetUpButtonState() <lib.agw.ribbon.gallery.RibbonGallery.GetUpButtonState>`, and
+         :meth:`RibbonGallery.GetDownButtonState() <lib.agw.ribbon.gallery.RibbonGallery.GetDownButtonState>`;
         :param `rect`: The rectangle within which to draw. This rectangle is the entire
          area of the gallery control, not just the client rectangle.
-
         """
 
         self.DrawPartialPageBackground(dc, wnd, rect)
 
-        if wnd.IsHovered():        
+        if wnd.IsHovered():
             dc.SetPen(wx.TRANSPARENT_PEN)
             dc.SetBrush(self._gallery_hover_background_brush)
-            if self._flags & RIBBON_BAR_FLOW_VERTICAL:            
-                dc.DrawRectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 16)            
-            else:            
+            if self._flags & RIBBON_BAR_FLOW_VERTICAL:
+                dc.DrawRectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 16)
+            else:
                 dc.DrawRectangle(rect.x + 1, rect.y + 1, rect.width - 16, rect.height - 2)
-            
+
         dc.SetPen(self._gallery_border_pen)
         # Outline
         dc.DrawLine(rect.x + 1, rect.y, rect.x + rect.width - 1, rect.y)
@@ -1560,7 +1573,7 @@ class RibbonMSWArtProvider(object):
 
     def DrawGalleryBackgroundCommon(self, dc, wnd, rect):
 
-        if self._flags & RIBBON_BAR_FLOW_VERTICAL:        
+        if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             # Divider between items and buttons
             dc.DrawLine(rect.x, rect.y + rect.height - 15, rect.x + rect.width, rect.y + rect.height - 15)
 
@@ -1569,17 +1582,17 @@ class RibbonMSWArtProvider(object):
             dc.DrawLine(down_btn.GetLeft(), down_btn.GetTop(), down_btn.GetLeft(), down_btn.GetBottom())
             ext_btn = wx.Rect(down_btn.GetRight() + 1, up_btn.GetTop(), rect.width - up_btn.GetWidth() - down_btn.GetWidth() - 1, up_btn.GetHeight())
             dc.DrawLine(ext_btn.GetLeft(), ext_btn.GetTop(), ext_btn.GetLeft(), ext_btn.GetBottom())
-        
-        else:        
+
+        else:
             # Divider between items and buttons
             dc.DrawLine(rect.x + rect.width - 15, rect.y, rect.x + rect.width - 15, rect.y + rect.height)
-            
+
             up_btn = wx.Rect(rect.x + rect.width - 15, rect.y, 15, rect.height / 3)
             down_btn = wx.Rect(up_btn.GetLeft(), up_btn.GetBottom() + 1, up_btn.GetWidth(), up_btn.GetHeight())
             dc.DrawLine(down_btn.GetLeft(), down_btn.GetTop(), down_btn.GetRight(), down_btn.GetTop())
             ext_btn = wx.Rect(up_btn.GetLeft(), down_btn.GetBottom() + 1, up_btn.GetWidth(), rect.height - up_btn.GetHeight() - down_btn.GetHeight() - 1)
             dc.DrawLine(ext_btn.GetLeft(), ext_btn.GetTop(), ext_btn.GetRight(), ext_btn.GetTop())
-        
+
         self.DrawGalleryButton(dc, up_btn, wnd.GetUpButtonState(), self._gallery_up_bitmap)
         self.DrawGalleryButton(dc, down_btn, wnd.GetDownButtonState(), self._gallery_down_bitmap)
         self.DrawGalleryButton(dc, ext_btn, wnd.GetExtensionButtonState(), self._gallery_extension_bitmap)
@@ -1610,14 +1623,14 @@ class RibbonMSWArtProvider(object):
 
         rect.x += 1
         rect.y += 1
-        
-        if self._flags & RIBBON_BAR_FLOW_VERTICAL:        
+
+        if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             rect.width -= 1
             rect.height -= 2
-        else:        
+        else:
             rect.width -= 2
             rect.height -= 1
-        
+
         dc.SetPen(wx.TRANSPARENT_PEN)
         dc.SetBrush(btn_top_brush)
         dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height / 2)
@@ -1632,7 +1645,7 @@ class RibbonMSWArtProvider(object):
 
     def DrawGalleryItemBackground(self, dc, wnd, rect, item):
         """
-        Draw the background of a single item in a :class:`~lib.agw.ribbon.gallery.RibbonGallery` control.
+        Draw the background of a single item in a :class:`~wx.lib.agw.ribbon.gallery.RibbonGallery` control.
 
         This is painted on top of a gallery background, and behind the items bitmap.
         Unlike :meth:`~RibbonMSWArtProvider.DrawButtonBarButton` and :meth:`~RibbonMSWArtProvider.DrawTool`, it is not expected to draw the
@@ -1648,8 +1661,9 @@ class RibbonMSWArtProvider(object):
          The drawing rectangle will be entirely within a rectangle on the same device
          context previously painted with :meth:`~RibbonMSWArtProvider.DrawGalleryBackground`;
         :param `item`: The item whose background is being painted. Typically the background
-         will vary if the item is hovered, active, or selected; :meth:`RibbonGallery.GetSelection() <RibbonGallery.GetSelection>`,
-         :meth:`RibbonGallery.GetActiveItem() <RibbonGallery.GetActiveItem>`, and :meth:`RibbonGallery.GetHoveredItem() <RibbonGallery.GetHoveredItem>` can be
+         will vary if the item is hovered, active, or selected; :meth:`RibbonGallery.GetSelection() <lib.agw.ribbon.gallery.RibbonGallery.GetSelection>`,
+         :meth:`RibbonGallery.GetActiveItem() <lib.agw.ribbon.gallery.RibbonGallery.GetActiveItem>`, and
+         :meth:`RibbonGallery.GetHoveredItem() <lib.agw.ribbon.gallery.RibbonGallery.GetHoveredItem>` can be
          called to test if the given item is in one of these states.
 
         """
@@ -1664,15 +1678,15 @@ class RibbonMSWArtProvider(object):
         dc.DrawLine(rect.x + 1, rect.y + rect.height - 1, rect.x + rect.width - 1, rect.y + rect.height - 1)
         dc.DrawLine(rect.x + rect.width - 1, rect.y + 1, rect.x + rect.width - 1, rect.y + rect.height - 1)
 
-        if wnd.GetActiveItem() == item or wnd.GetSelection() == item:        
+        if wnd.GetActiveItem() == item or wnd.GetSelection() == item:
             top_brush = self._gallery_button_active_background_top_brush
             bg_colour = self._gallery_button_active_background_colour
             bg_gradient_colour = self._gallery_button_active_background_gradient_colour
-        else:        
+        else:
             top_brush = self._gallery_button_hover_background_top_brush
             bg_colour = self._gallery_button_hover_background_colour
             bg_gradient_colour = self._gallery_button_hover_background_gradient_colour
-        
+
         upper = wx.Rect(*rect)
         upper.x += 1
         upper.width -= 2
@@ -1690,7 +1704,7 @@ class RibbonMSWArtProvider(object):
 
     def DrawPanelBorder(self, dc, rect, primary_colour, secondary_colour):
 
-        border_points = [wx.Point() for i in xrange(9)]
+        border_points = [wx.Point() for i in range(9)]
         border_points[0] = wx.Point(2, 0)
         border_points[1] = wx.Point(rect.width - 3, 0)
         border_points[2] = wx.Point(rect.width - 1, 2)
@@ -1700,11 +1714,11 @@ class RibbonMSWArtProvider(object):
         border_points[6] = wx.Point(0, rect.height - 3)
         border_points[7] = wx.Point(0, 2)
 
-        if primary_colour.GetColour() == secondary_colour.GetColour():        
+        if primary_colour.GetColour() == secondary_colour.GetColour():
             border_points[8] = border_points[0]
             dc.SetPen(primary_colour)
             dc.DrawLines(border_points, rect.x, rect.y)
-        else:        
+        else:
             dc.SetPen(primary_colour)
             dc.DrawLines(border_points[0:3], rect.x, rect.y)
 
@@ -1741,7 +1755,7 @@ class RibbonMSWArtProvider(object):
         true_rect = wx.Rect(*rect)
         true_rect = self.RemovePanelPadding(true_rect)
 
-        if wnd.GetExpandedPanel() != None:        
+        if wnd.GetExpandedPanel() != None:
             client_rect = wx.Rect(*true_rect)
             client_rect.x += 1
             client_rect.width -= 2
@@ -1756,7 +1770,7 @@ class RibbonMSWArtProvider(object):
             dc.GradientFillLinear(client_rect,
                                   self._panel_active_background_colour,
                                   self._panel_active_background_gradient_colour, wx.SOUTH)
-        
+
         elif wnd.IsHovered():
             client_rect = wx.Rect(*true_rect)
             client_rect.x += 1
@@ -1772,8 +1786,8 @@ class RibbonMSWArtProvider(object):
         dc.DrawRectangle(preview.x + 1, preview.y + preview.height - 8, preview.width - 2, 7)
 
         mid_pos = rect.y + rect.height / 5 - preview.y
-        
-        if mid_pos < 0 or mid_pos >= preview.height:        
+
+        if mid_pos < 0 or mid_pos >= preview.height:
             full_rect = wx.Rect(*preview)
             full_rect.x += 1
             full_rect.y += 1
@@ -1781,11 +1795,11 @@ class RibbonMSWArtProvider(object):
             full_rect.height -= 9
             if mid_pos < 0:
                 dc.GradientFillLinear(full_rect, self._page_hover_background_colour,
-                                      self._page_hover_background_gradient_colour, wx.SOUTH)            
-            else:            
+                                      self._page_hover_background_gradient_colour, wx.SOUTH)
+            else:
                 dc.GradientFillLinear(full_rect, self._page_hover_background_top_colour,
                                       self._page_hover_background_top_gradient_colour, wx.SOUTH)
-                    
+
         else:
             top_rect = wx.Rect(*preview)
             top_rect.x += 1
@@ -1800,11 +1814,11 @@ class RibbonMSWArtProvider(object):
             btm_rect.height = preview.y + preview.height - 7 - btm_rect.y
             dc.GradientFillLinear(btm_rect, self._page_hover_background_colour,
                                   self._page_hover_background_gradient_colour, wx.SOUTH)
-        
-        if bitmap.IsOk():        
+
+        if bitmap.IsOk():
             dc.DrawBitmap(bitmap, preview.x + (preview.width - bitmap.GetWidth()) / 2,
                           preview.y + (preview.height - 7 - bitmap.GetHeight()) / 2, True)
-        
+
         self.DrawPanelBorder(dc, preview, self._panel_border_pen, self._panel_border_gradient_pen)
         self.DrawPanelBorder(dc, true_rect, self._panel_minimised_border_pen, self._panel_minimised_border_gradient_pen)
 
@@ -1812,40 +1826,40 @@ class RibbonMSWArtProvider(object):
     def DrawMinimisedPanelCommon(self, dc, wnd, true_rect):
 
         preview = wx.Rect(0, 0, 32, 32)
-        
-        if self._flags & RIBBON_BAR_FLOW_VERTICAL:        
+
+        if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             preview.x = true_rect.x + 4
             preview.y = true_rect.y + (true_rect.height - preview.height) / 2
-        else:        
+        else:
             preview.x = true_rect.x + (true_rect.width - preview.width) / 2
             preview.y = true_rect.y + 4
-        
+
         dc.SetFont(self._panel_label_font)
         label_width, label_height = dc.GetTextExtent(wnd.GetLabel())
 
         xpos = true_rect.x + (true_rect.width - label_width + 1) / 2
         ypos = preview.y + preview.height + 5
 
-        if self._flags & RIBBON_BAR_FLOW_VERTICAL:        
+        if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             xpos = preview.x + preview.width + 5
             ypos = true_rect.y + (true_rect.height - label_height) / 2
-        
+
         dc.SetTextForeground(self._panel_minimised_label_colour)
         dc.DrawText(wnd.GetLabel(), xpos, ypos)
-        
-        arrow_points = [wx.Point() for i in xrange(3)]
-        
+
+        arrow_points = [wx.Point() for i in range(3)]
+
         if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             xpos += label_width
             arrow_points[0] = wx.Point(xpos + 5, ypos + label_height / 2)
             arrow_points[1] = arrow_points[0] + wx.Point(-3,  3)
             arrow_points[2] = arrow_points[0] + wx.Point(-3, -3)
-        else:        
+        else:
             ypos += label_height
             arrow_points[0] = wx.Point(true_rect.width / 2, ypos + 5)
             arrow_points[1] = arrow_points[0] + wx.Point(-3, -3)
             arrow_points[2] = arrow_points[0] + wx.Point( 3, -3)
-        
+
         dc.SetPen(wx.TRANSPARENT_PEN)
         B = wx.Brush(self._panel_minimised_label_colour)
         dc.SetBrush(B)
@@ -1856,7 +1870,7 @@ class RibbonMSWArtProvider(object):
 
     def DrawButtonBarBackground(self, dc, wnd, rect):
         """
-        Draw the background for a :class:`~lib.agw.ribbon.buttonbar.RibbonButtonBar` control.
+        Draw the background for a :class:`~wx.lib.agw.ribbon.buttonbar.RibbonButtonBar` control.
 
         :param `dc`: The device context to draw onto;
         :param `wnd`: The window which is being drawn onto (which will typically be
@@ -1882,10 +1896,10 @@ class RibbonMSWArtProvider(object):
         if isinstance(wnd, PANEL.RibbonPanel):
             panel = wnd
             hovered = allow_hovered and panel.IsHovered()
-            if panel.GetExpandedDummy() != None:            
+            if panel.GetExpandedDummy() != None:
                 offset = panel.GetExpandedDummy().GetPosition()
                 parent = panel.GetExpandedDummy().GetParent()
-            
+
         while 1:
 
             if panel is None:
@@ -1895,10 +1909,10 @@ class RibbonMSWArtProvider(object):
                     if panel.GetExpandedDummy() != None:
                         parent = panel.GetExpandedDummy()
 
-            page = parent                    
+            page = parent
             if isinstance(page, PAGE.RibbonPage):
                 break
-            
+
             offset += parent.GetPosition()
             parent = parent.GetParent()
             if parent is None:
@@ -1907,7 +1921,7 @@ class RibbonMSWArtProvider(object):
         if page != None:
             self.DrawPartialPageBackground(dc, wnd, rect, page, offset, hovered)
             return
-        
+
         # No page found - fallback to painting with a stock brush
         dc.SetBrush(wx.WHITE_BRUSH)
         dc.SetPen(wx.TRANSPARENT_PEN)
@@ -1916,7 +1930,7 @@ class RibbonMSWArtProvider(object):
 
     def DrawButtonBarButton(self, dc, wnd, rect, kind, state, label, bitmap_large, bitmap_small):
         """
-        Draw a single button for a :class:`~lib.agw.ribbon.buttonbar.RibbonButtonBar` control.
+        Draw a single button for a :class:`~wx.lib.agw.ribbon.buttonbar.RibbonButtonBar` control.
 
         :param `dc`: The device context to draw onto;
         :param `wnd`: The window which is being drawn onto;
@@ -1932,15 +1946,15 @@ class RibbonMSWArtProvider(object):
          bitmap when ``RIBBON_BUTTONBAR_BUTTON_DISABLED`` is set in `state`);
         :param `bitmap_small`: The small bitmap of the button (or the small disabled
          bitmap when ``RIBBON_BUTTONBAR_BUTTON_DISABLED`` is set in `state`).
-         
+
         """
 
         if kind == RIBBON_BUTTON_TOGGLE:
             kind = RIBBON_BUTTON_NORMAL
             if state & RIBBON_BUTTONBAR_BUTTON_TOGGLED:
                 state ^= RIBBON_BUTTONBAR_BUTTON_ACTIVE_MASK
-    
-        if state & (RIBBON_BUTTONBAR_BUTTON_HOVER_MASK | RIBBON_BUTTONBAR_BUTTON_ACTIVE_MASK):        
+
+        if state & (RIBBON_BUTTONBAR_BUTTON_HOVER_MASK | RIBBON_BUTTONBAR_BUTTON_ACTIVE_MASK):
             if state & RIBBON_BUTTONBAR_BUTTON_ACTIVE_MASK:
                 dc.SetPen(self._button_bar_active_border_pen)
             else:
@@ -1958,53 +1972,53 @@ class RibbonMSWArtProvider(object):
             bg_rect.height -= bg_rect_top.height
 
             if kind == RIBBON_BUTTON_HYBRID:
-            
+
                 result = state & RIBBON_BUTTONBAR_BUTTON_SIZE_MASK
-                
+
                 if result == RIBBON_BUTTONBAR_BUTTON_LARGE:
                     iYBorder = rect.y + bitmap_large.GetHeight() + 4
                     partial_bg = wx.Rect(*rect)
-                    
-                    if state & RIBBON_BUTTONBAR_BUTTON_NORMAL_HOVERED:                        
+
+                    if state & RIBBON_BUTTONBAR_BUTTON_NORMAL_HOVERED:
                         partial_bg.SetBottom(iYBorder - 1)
                     else:
                         partial_bg.height -= (iYBorder - partial_bg.y + 1)
                         partial_bg.y = iYBorder + 1
-                        
+
                     dc.DrawLine(rect.x, iYBorder, rect.x + rect.width, iYBorder)
                     bg_rect.Intersect(partial_bg)
                     bg_rect_top.Intersect(partial_bg)
-                    
+
                 elif result == RIBBON_BUTTONBAR_BUTTON_MEDIUM:
                     iArrowWidth = 9
-                    
-                    if state & RIBBON_BUTTONBAR_BUTTON_NORMAL_HOVERED:                    
+
+                    if state & RIBBON_BUTTONBAR_BUTTON_NORMAL_HOVERED:
                         bg_rect.width -= iArrowWidth
                         bg_rect_top.width -= iArrowWidth
                         dc.DrawLine(bg_rect_top.x + bg_rect_top.width, rect.y, bg_rect_top.x + bg_rect_top.width,
-                                    rect.y + rect.height)                    
-                    else:                    
+                                    rect.y + rect.height)
+                    else:
                         iArrowWidth -= 1
                         bg_rect.x += bg_rect.width - iArrowWidth
                         bg_rect_top.x += bg_rect_top.width - iArrowWidth
                         bg_rect.width = iArrowWidth
                         bg_rect_top.width = iArrowWidth
                         dc.DrawLine(bg_rect_top.x - 1, rect.y, bg_rect_top.x - 1, rect.y + rect.height)
-                        
+
             if state & RIBBON_BUTTONBAR_BUTTON_ACTIVE_MASK:
-            
+
                 dc.GradientFillLinear(bg_rect_top, self._button_bar_active_background_top_colour,
                                       self._button_bar_active_background_top_gradient_colour, wx.SOUTH)
                 dc.GradientFillLinear(bg_rect, self._button_bar_active_background_colour,
                                       self._button_bar_active_background_gradient_colour, wx.SOUTH)
-            
-            else:            
+
+            else:
                 dc.GradientFillLinear(bg_rect_top, self._button_bar_hover_background_top_colour,
                                       self._button_bar_hover_background_top_gradient_colour, wx.SOUTH)
                 dc.GradientFillLinear(bg_rect, self._button_bar_hover_background_colour,
                                       self._button_bar_hover_background_gradient_colour, wx.SOUTH)
 
-            border_points = [wx.Point() for i in xrange(9)]
+            border_points = [wx.Point() for i in range(9)]
             border_points[0] = wx.Point(2, 0)
             border_points[1] = wx.Point(rect.width - 3, 0)
             border_points[2] = wx.Point(rect.width - 1, 2)
@@ -2016,7 +2030,7 @@ class RibbonMSWArtProvider(object):
             border_points[8] = border_points[0]
 
             dc.DrawLines(border_points, rect.x, rect.y)
-        
+
         dc.SetFont(self._button_bar_label_font)
         dc.SetTextForeground(self._button_bar_label_colour)
         self.DrawButtonBarButtonForeground(dc, rect, kind, state, label, bitmap_large, bitmap_small)
@@ -2025,9 +2039,9 @@ class RibbonMSWArtProvider(object):
     def DrawButtonBarButtonForeground(self, dc, rect, kind, state, label, bitmap_large, bitmap_small):
 
         result = state & RIBBON_BUTTONBAR_BUTTON_SIZE_MASK
-        
+
         if result == RIBBON_BUTTONBAR_BUTTON_LARGE:
-            
+
             padding = 2
             dc.DrawBitmap(bitmap_large, rect.x + (rect.width - bitmap_large.GetWidth()) / 2,
                           rect.y + padding, True)
@@ -2035,24 +2049,24 @@ class RibbonMSWArtProvider(object):
             arrow_width = (kind == RIBBON_BUTTON_NORMAL and [0] or [8])[0]
 
             label_w, label_h = dc.GetTextExtent(label)
-            
+
             if label_w + 2 * padding <= rect.width:
-            
+
                 dc.DrawText(label, rect.x + (rect.width - label_w) / 2, ypos)
-                if arrow_width != 0:                
+                if arrow_width != 0:
                     self.DrawDropdownArrow(dc, rect.x + rect.width / 2,
                                            ypos + (label_h * 3) / 2,
                                            self._button_bar_label_colour)
             else:
                 breaki = len(label)
-                
-                while breaki > 0:                
+
+                while breaki > 0:
                     breaki -= 1
-                    if RibbonCanLabelBreakAtPosition(label, breaki):                    
+                    if RibbonCanLabelBreakAtPosition(label, breaki):
                         label_top = label[0:breaki]
                         label_w, label_h = dc.GetTextExtent(label_top)
 
-                        if label_w + 2 * padding <= rect.width:                        
+                        if label_w + 2 * padding <= rect.width:
                             dc.DrawText(label_top, rect.x + (rect.width - label_w) / 2, ypos)
                             ypos += label_h
                             label_bottom = label[breaki:]
@@ -2060,40 +2074,40 @@ class RibbonMSWArtProvider(object):
                             label_w += arrow_width
                             iX = rect.x + (rect.width - label_w) / 2
                             dc.DrawText(label_bottom, iX, ypos)
-                            
-                            if arrow_width != 0:                            
+
+                            if arrow_width != 0:
                                 self.DrawDropdownArrow(dc, iX + 2 +label_w - arrow_width,
                                                        ypos + label_h / 2 + 1,
                                                        self._button_bar_label_colour)
-                            
+
                             break
 
         elif result == RIBBON_BUTTONBAR_BUTTON_MEDIUM:
-        
+
             x_cursor = rect.x + 2
             dc.DrawBitmap(bitmap_small, x_cursor, rect.y + (rect.height - bitmap_small.GetHeight())/2, True)
             x_cursor += bitmap_small.GetWidth() + 2
             label_w, label_h = dc.GetTextExtent(label)
             dc.DrawText(label, x_cursor, rect.y + (rect.height - label_h) / 2)
             x_cursor += label_w + 3
-            
+
             if kind != RIBBON_BUTTON_NORMAL:
                 self.DrawDropdownArrow(dc, x_cursor, rect.y + rect.height / 2,
                                        self._button_bar_label_colour)
-        
+
         else:
             # TODO
             pass
-    
+
 
     def DrawToolBarBackground(self, dc, wnd, rect):
         """
-        Draw the background for a :class:`~lib.agw.ribbon.toolbar.RibbonToolBar` control.
+        Draw the background for a :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar` control.
 
 
         :param `dc`: The device context to draw onto;
         :param `wnd`: The which is being drawn onto. In most cases this will be a
-         :class:`~lib.agw.ribbon.toolbar.RibbonToolBar`, but it doesn't have to be;
+         :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar`, but it doesn't have to be;
         :param `rect`: The rectangle within which to draw. Some of this rectangle
          will later be drawn over using :meth:`~RibbonMSWArtProvider.DrawToolGroupBackground` and :meth:`~RibbonMSWArtProvider.DrawTool`,
          but not all of it will (unless there is only a single group of tools).
@@ -2105,11 +2119,11 @@ class RibbonMSWArtProvider(object):
 
     def DrawToolGroupBackground(self, dc, wnd, rect):
         """
-        Draw the background for a group of tools on a :class:`~lib.agw.ribbon.toolbar.RibbonToolBar` control.
+        Draw the background for a group of tools on a :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar` control.
 
         :param `dc`: The device context to draw onto;
         :param `wnd`: The window which is being drawn onto. In most cases this will
-         be a :class:`~lib.agw.ribbon.toolbar.RibbonToolBar`, but it doesn't have to be;
+         be a :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar`, but it doesn't have to be;
         :param `rect`: The rectangle within which to draw. This rectangle is a union
          of the individual tools' rectangles. As there are no gaps between tools,
          this rectangle will be painted over exactly once by calls to :meth:`~RibbonMSWArtProvider.DrawTool`.
@@ -2121,7 +2135,7 @@ class RibbonMSWArtProvider(object):
         """
 
         dc.SetPen(self._toolbar_border_pen)
-        outline = [wx.Point() for i in xrange(9)]
+        outline = [wx.Point() for i in range(9)]
         outline[0] = wx.Point(2, 0)
         outline[1] = wx.Point(rect.width - 3, 0)
         outline[2] = wx.Point(rect.width - 1, 2)
@@ -2137,11 +2151,11 @@ class RibbonMSWArtProvider(object):
 
     def DrawTool(self, dc, wnd, rect, bitmap, kind, state):
         """
-        Draw a single tool (for a :class:`~lib.agw.ribbon.toolbar.RibbonToolBar` control).
+        Draw a single tool (for a :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar` control).
 
         :param `dc`: The device context to draw onto;
         :param `wnd`: The window which is being drawn onto. In most cases this will
-         be a :class:`~lib.agw.ribbon.toolbar.RibbonToolBar`, but it doesn't have to be;
+         be a :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar`, but it doesn't have to be;
         :param `rect`: The rectangle within which to draw. The size of this rectangle
          will at least the size returned by :meth:`~RibbonMSWArtProvider.GetToolSize`, and the height of it will
          be equal for all tools within the same group. The rectangle will be entirely
@@ -2162,10 +2176,10 @@ class RibbonMSWArtProvider(object):
 
         bg_rect = wx.Rect(*rect)
         bg_rect.Deflate(1, 1)
-        
+
         if state & RIBBON_TOOLBAR_TOOL_LAST == 0:
             bg_rect.width += 1
-            
+
         is_split_hybrid = (kind == RIBBON_BUTTON_HYBRID and (state & (RIBBON_TOOLBAR_TOOL_HOVER_MASK | RIBBON_TOOLBAR_TOOL_ACTIVE_MASK)))
 
         # Background
@@ -2179,59 +2193,59 @@ class RibbonMSWArtProvider(object):
         bg_top_grad_colour = self._tool_background_top_gradient_colour
         bg_colour = self._tool_background_colour
         bg_grad_colour = self._tool_background_gradient_colour
-        
+
         if state & RIBBON_TOOLBAR_TOOL_ACTIVE_MASK:
             bg_top_colour = self._tool_active_background_top_colour
             bg_top_grad_colour = self._tool_active_background_top_gradient_colour
             bg_colour = self._tool_active_background_colour
             bg_grad_colour = self._tool_active_background_gradient_colour
-        
-        elif state & RIBBON_TOOLBAR_TOOL_HOVER_MASK:        
+
+        elif state & RIBBON_TOOLBAR_TOOL_HOVER_MASK:
             bg_top_colour = self._tool_hover_background_top_colour
             bg_top_grad_colour = self._tool_hover_background_top_gradient_colour
             bg_colour = self._tool_hover_background_colour
             bg_grad_colour = self._tool_hover_background_gradient_colour
-        
+
         dc.GradientFillLinear(bg_rect_top, bg_top_colour, bg_top_grad_colour, wx.SOUTH)
         dc.GradientFillLinear(bg_rect_btm, bg_colour, bg_grad_colour, wx.SOUTH)
-        
-        if is_split_hybrid:        
+
+        if is_split_hybrid:
             nonrect = wx.Rect(*bg_rect)
-            if state & (RIBBON_TOOLBAR_TOOL_DROPDOWN_HOVERED | RIBBON_TOOLBAR_TOOL_DROPDOWN_ACTIVE):            
+            if state & (RIBBON_TOOLBAR_TOOL_DROPDOWN_HOVERED | RIBBON_TOOLBAR_TOOL_DROPDOWN_ACTIVE):
                 nonrect.width -= 8
-            else:            
+            else:
                 nonrect.x += nonrect.width - 8
                 nonrect.width = 8
-            
+
             B = wx.Brush(self._tool_hover_background_top_colour)
             dc.SetPen(wx.TRANSPARENT_PEN)
             dc.SetBrush(B)
             dc.DrawRectangle(nonrect.x, nonrect.y, nonrect.width, nonrect.height)
-        
+
         # Border
         dc.SetPen(self._toolbar_border_pen)
-        
-        if state & RIBBON_TOOLBAR_TOOL_FIRST:        
-            dc.DrawPoint(rect.x + 1, rect.y + 1)
-            dc.DrawPoint(rect.x + 1, rect.y + rect.height - 2)        
-        else:
-            dc.DrawLine(rect.x, rect.y + 1, rect.x, rect.y + rect.height - 1)   
 
-        if state & RIBBON_TOOLBAR_TOOL_LAST:        
+        if state & RIBBON_TOOLBAR_TOOL_FIRST:
+            dc.DrawPoint(rect.x + 1, rect.y + 1)
+            dc.DrawPoint(rect.x + 1, rect.y + rect.height - 2)
+        else:
+            dc.DrawLine(rect.x, rect.y + 1, rect.x, rect.y + rect.height - 1)
+
+        if state & RIBBON_TOOLBAR_TOOL_LAST:
             dc.DrawPoint(rect.x + rect.width - 2, rect.y + 1)
             dc.DrawPoint(rect.x + rect.width - 2, rect.y + rect.height - 2)
-        
+
         # Foreground
         avail_width = bg_rect.GetWidth()
-        
-        if kind & RIBBON_BUTTON_DROPDOWN:        
+
+        if kind & RIBBON_BUTTON_DROPDOWN:
             avail_width -= 8
-            if is_split_hybrid:            
+            if is_split_hybrid:
                 dc.DrawLine(rect.x + avail_width + 1, rect.y, rect.x + avail_width + 1, rect.y + rect.height)
-            
+
             dc.DrawBitmap(self._toolbar_drop_bitmap, bg_rect.x + avail_width + 2,
                           bg_rect.y + (bg_rect.height / 2) - 2, True)
-        
+
         dc.DrawBitmap(bitmap, bg_rect.x + (avail_width - bitmap.GetWidth()) / 2,
                       bg_rect.y + (bg_rect.height - bitmap.GetHeight()) / 2, True)
 
@@ -2258,26 +2272,26 @@ class RibbonMSWArtProvider(object):
 
         width = 0
         mini = 0
-        
-        if (self._flags & RIBBON_BAR_SHOW_PAGE_LABELS) and label.strip():        
+
+        if (self._flags & RIBBON_BAR_SHOW_PAGE_LABELS) and label.strip():
             dc.SetFont(self._tab_label_font)
             width += dc.GetTextExtent(label)[0]
             mini += min(25, width) # enough for a few chars
-            
-            if bitmap.IsOk():            
+
+            if bitmap.IsOk():
                 # gap between label and bitmap
                 width += 4
                 mini += 2
-            
+
         if (self._flags & RIBBON_BAR_SHOW_PAGE_ICONS) and bitmap.IsOk():
             width += bitmap.GetWidth()
             mini += bitmap.GetWidth()
-        
-        ideal = width + 30        
-        small_begin_need_separator = width + 20        
-        small_must_have_separator = width + 10        
+
+        ideal = width + 30
+        small_begin_need_separator = width + 20
+        small_must_have_separator = width + 10
         minimum = mini
-        
+
         return ideal, small_begin_need_separator, small_must_have_separator, minimum
 
 
@@ -2301,14 +2315,14 @@ class RibbonMSWArtProvider(object):
             # To preserve space, a single tab need not be displayed. We still need
             # two pixels of border / padding though.
             return 2
-        
-        if self._flags & RIBBON_BAR_SHOW_PAGE_LABELS:        
+
+        if self._flags & RIBBON_BAR_SHOW_PAGE_LABELS:
             dc.SetFont(self._tab_label_font)
             text_height = dc.GetTextExtent("ABCDEFXj")[1] + 10
-        
+
         if self._flags & RIBBON_BAR_SHOW_PAGE_ICONS:
             for info in pages:
-                if info.page.GetIcon().IsOk():                
+                if info.page.GetIcon().IsOk():
                     icon_height = max(icon_height, info.page.GetIcon().GetHeight() + 4)
 
         return max(text_height, icon_height)
@@ -2349,18 +2363,18 @@ class RibbonMSWArtProvider(object):
         label_size = wx.Size(*dc.GetTextExtent(wnd.GetLabel()))
 
         client_size.IncBy(0, label_size.GetHeight())
-        
+
         if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             client_size.IncBy(4, 8)
         else:
             client_size.IncBy(6, 6)
 
-        if client_offset != None:        
+        if client_offset != None:
             if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 client_offset = wx.Point(2, 3)
             else:
                 client_offset = wx.Point(3, 2)
-        
+
         return client_size
 
 
@@ -2384,13 +2398,13 @@ class RibbonMSWArtProvider(object):
         label_size = wx.Size(*dc.GetTextExtent(wnd.GetLabel()))
 
         size.DecBy(0, label_size.GetHeight())
-        
+
         if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             size.DecBy(4, 8)
         else:
             size.DecBy(6, 6)
 
-        if client_offset != None:        
+        if client_offset != None:
             if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 client_offset = wx.Point(2, 3)
             else:
@@ -2400,13 +2414,13 @@ class RibbonMSWArtProvider(object):
             size.x = 0
         if size.y < 0:
             size.y = 0
-    
+
         return size, client_offset
 
 
     def GetGallerySize(self, dc, wnd, client_size):
         """
-        Calculate the size of a :class:`~lib.agw.ribbon.gallery.RibbonGallery` control for a given client size.
+        Calculate the size of a :class:`~wx.lib.agw.ribbon.gallery.RibbonGallery` control for a given client size.
 
         This should increment the given size by enough to fit the gallery border,
         buttons, and any other chrome.
@@ -2432,7 +2446,7 @@ class RibbonMSWArtProvider(object):
                              scroll_down_button=None, extension_button=None):
 
         """
-        Calculate the client size of a :class:`~lib.agw.ribbon.gallery.RibbonGallery` control for a given size.
+        Calculate the client size of a :class:`~wx.lib.agw.ribbon.gallery.RibbonGallery` control for a given size.
 
         This should act as the inverse to :meth:`~RibbonMSWArtProvider.GetGallerySize`, and decrement the given
         size by enough to fir the gallery border, buttons, and other chrome.
@@ -2454,7 +2468,7 @@ class RibbonMSWArtProvider(object):
         scroll_up = wx.Rect()
         scroll_down = wx.Rect()
         extension = wx.Rect()
-        
+
         if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             # Flow is vertical - put buttons on bottom
             scroll_up.y = size.GetHeight() - 15
@@ -2464,14 +2478,14 @@ class RibbonMSWArtProvider(object):
             scroll_down.y = scroll_up.y
             scroll_down.height = scroll_up.height
             scroll_down.x = scroll_up.x + scroll_up.width
-            scroll_down.width = scroll_up.width        
+            scroll_down.width = scroll_up.width
             extension.y = scroll_down.y
             extension.height = scroll_down.height
             extension.x = scroll_down.x + scroll_down.width
             extension.width = size.GetWidth() - scroll_up.width - scroll_down.width
             size.DecBy(1, 16)
             size.DecBy(2, 1)
-        
+
         else:
             # Flow is horizontal - put buttons on right
             scroll_up.x = size.GetWidth() - 15
@@ -2481,14 +2495,14 @@ class RibbonMSWArtProvider(object):
             scroll_down.x = scroll_up.x
             scroll_down.width = scroll_up.width
             scroll_down.y = scroll_up.y + scroll_up.height
-            scroll_down.height = scroll_up.height        
+            scroll_down.height = scroll_up.height
             extension.x = scroll_down.x
             extension.width = scroll_down.width
             extension.y = scroll_down.y + scroll_down.height
             extension.height = size.GetHeight() - scroll_up.height - scroll_down.height
             size.DecBy(16, 1)
             size.DecBy( 2, 1)
-        
+
         client_offset = wx.Point(2, 1)
         scroll_up_button = scroll_up
         scroll_down_button = scroll_down
@@ -2519,21 +2533,21 @@ class RibbonMSWArtProvider(object):
             if page_new_size.GetHeight() != page_old_size.GetHeight():
                 # Width and height both changed - redraw everything
                 return wx.Rect(0, 0, *page_new_size)
-            else:            
+            else:
                 # Only width changed - redraw right hand side
                 right_edge_width = 4
                 new_rect = wx.Rect(page_new_size.GetWidth() - right_edge_width, 0, right_edge_width, page_new_size.GetHeight())
                 old_rect = wx.Rect(page_old_size.GetWidth() - right_edge_width, 0, right_edge_width, page_old_size.GetHeight())
-            
-        else:        
-            if page_new_size.GetHeight() == page_old_size.GetHeight():            
+
+        else:
+            if page_new_size.GetHeight() == page_old_size.GetHeight():
                 # Nothing changed (should never happen) - redraw nothing
                 return wx.Rect(0, 0, 0, 0)
-            else:            
+            else:
                 # Height changed - need to redraw everything (as the background
                 # gradient is done vertically).
                 return wx.Rect(0, 0, *page_new_size)
-            
+
         new_rect.Union(old_rect)
         new_rect.Intersect(wx.Rect(0, 0, *page_new_size))
         return new_rect
@@ -2542,11 +2556,11 @@ class RibbonMSWArtProvider(object):
     def GetButtonBarButtonSize(self, dc, wnd, kind, size, label, bitmap_size_large, bitmap_size_small,
                                button_size=None, normal_region=None, dropdown_region=None):
         """
-        Calculate the size of a button within a :class:`~lib.agw.ribbon.buttonbar.RibbonButtonBar`.
+        Calculate the size of a button within a :class:`~wx.lib.agw.ribbon.buttonbar.RibbonButtonBar`.
 
         :param `dc`: A device context to use when one is required for size calculations;
         :param `wnd`: The window onto which the button will eventually be drawn
-         (which is normally a :class:`~lib.agw.ribbon.buttonbar.RibbonButtonBar`, though this is not guaranteed);
+         (which is normally a :class:`~wx.lib.agw.ribbon.buttonbar.RibbonButtonBar`, though this is not guaranteed);
         :param `kind`: The kind of button;
         :param `size`: The size-class to calculate the size for. Buttons on a button
          bar can have three distinct sizes: ``RIBBON_BUTTONBAR_BUTTON_SMALL``,
@@ -2566,14 +2580,14 @@ class RibbonMSWArtProvider(object):
 
         normal_region = wx.Rect()
         dropdown_region = wx.Rect()
-        
+
         dc.SetFont(self._button_bar_label_font)
         result = size & RIBBON_BUTTONBAR_BUTTON_SIZE_MASK
-        
+
         if result == RIBBON_BUTTONBAR_BUTTON_SMALL:
             # Small bitmap, no label
-            button_size = bitmap_size_small + wx.Size(6, 4)
-            
+            button_size = wx.Size(bitmap_size_small + wx.Size(6, 4))
+
             if kind in [RIBBON_BUTTON_NORMAL, RIBBON_BUTTON_TOGGLE]:
                 normal_region = wx.Rect(0, 0, *button_size)
                 dropdown_region = wx.Rect(0, 0, 0, 0)
@@ -2606,21 +2620,21 @@ class RibbonMSWArtProvider(object):
                 # no break
             elif kind in [RIBBON_BUTTON_NORMAL, RIBBON_BUTTON_TOGGLE]:
                 normal_region.SetWidth(normal_region.GetWidth() + text_size)
-            
+
         elif result == RIBBON_BUTTONBAR_BUTTON_LARGE:
             # Large bitmap, with label below (possibly split over 2 lines)
-            
+
             icon_size = wx.Size(*bitmap_size_large)
             icon_size += wx.Size(4, 4)
             best_width, label_height = dc.GetTextExtent(label)
             last_line_extra_width = 0
-            
+
             if kind not in [RIBBON_BUTTON_NORMAL, RIBBON_BUTTON_TOGGLE]:
                 last_line_extra_width += 8
-            
-            for i in xrange(0, len(label)):            
+
+            for i in range(0, len(label)):
                 if RibbonCanLabelBreakAtPosition(label, i):
-                    
+
                     width = max(dc.GetTextExtent(label[0:i])[0],
                                 dc.GetTextExtent(label[i+1:])[0] + last_line_extra_width)
                     if width < best_width:
@@ -2643,7 +2657,7 @@ class RibbonMSWArtProvider(object):
                 dropdown_region.height = icon_size.GetHeight() - normal_region.height
             elif kind in [RIBBON_BUTTON_NORMAL, RIBBON_BUTTON_TOGGLE]:
                 normal_region = wx.Rect(0, 0, *icon_size)
-            
+
         return True, button_size, normal_region, dropdown_region
 
 
@@ -2659,15 +2673,15 @@ class RibbonMSWArtProvider(object):
 
         """
 
-        if desired_bitmap_size != None:        
+        if desired_bitmap_size != None:
             desired_bitmap_size = wx.Size(16, 16)
-        
-        if expanded_panel_direction != None:        
+
+        if expanded_panel_direction != None:
             if self._flags & RIBBON_BAR_FLOW_VERTICAL:
                 expanded_panel_direction = wx.EAST
             else:
                 expanded_panel_direction = wx.SOUTH
-        
+
         base_size = wx.Size(42, 42)
 
         dc.SetFont(self._panel_label_font)
@@ -2676,19 +2690,19 @@ class RibbonMSWArtProvider(object):
         label_size.IncBy(6, 0) # Padding
         label_size.y *= 2 # Second line for dropdown button
 
-        if self._flags & RIBBON_BAR_FLOW_VERTICAL:        
+        if self._flags & RIBBON_BAR_FLOW_VERTICAL:
             # Label alongside icon
             return wx.Size(base_size.x + label_size.x, max(base_size.y, label_size.y)), \
                    desired_bitmap_size, expanded_panel_direction
-        else:        
+        else:
             # Label beneath icon
             return wx.Size(max(base_size.x, label_size.x), base_size.y + label_size.y), \
                    desired_bitmap_size, expanded_panel_direction
-        
+
 
     def GetToolSize(self, dc, wnd, bitmap_size, kind, is_first, is_last, dropdown_region=None):
         """
-        Calculate the size of a tool within a :class:`~lib.agw.ribbon.toolbar.RibbonToolBar`.
+        Calculate the size of a tool within a :class:`~wx.lib.agw.ribbon.toolbar.RibbonToolBar`.
 
         :param `dc`: A device context to use when one is required for size calculations;
         :param `wnd`: The window onto which the tool will eventually be drawn;
@@ -2714,7 +2728,7 @@ class RibbonMSWArtProvider(object):
                 dropdown_region = wx.Rect(0, 0, *size)
             else:
                 dropdown_region = wx.Rect(size.GetWidth() - 8, 0, 8, size.GetHeight())
-        else:        
+        else:
             dropdown_region = wx.Rect(0, 0, 0, 0)
 
         return size, dropdown_region

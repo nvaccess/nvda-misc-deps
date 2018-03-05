@@ -1,61 +1,22 @@
-#----------------------------------------------------------------------------
-# Name:         __init__.py
-# Purpose:      The presence of this file turns this directory into a
-#               Python package.
+#---------------------------------------------------------------------------
+# Name:        wx/__init__.py
+# Author:      Robin Dunn
 #
-# Author:       Robin Dunn
-#
-# Created:      8-Aug-1998
-# RCS-ID:       $Id$
-# Copyright:    (c) 1998 by Total Control Software
-# Licence:      wxWindows license
-#----------------------------------------------------------------------------
+# Created:     3-Nov-2010
+# Copyright:   (c) 2010-2017 by Total Control Software
+# License:     wxWindows License
+#---------------------------------------------------------------------------
 
-import __version__
-__version__ = __version__.VERSION_STRING
+# Load the main version string into the package namespace
+import wx.__version__
+__version__ = wx.__version__.VERSION_STRING
 
 
-__all__ = [
-    # Sub-packages
-    'build',
-    'lib',
-    'py',
-    'tools',
+# Import all items from the core wxPython module so they appear in the wx
+# package namespace.
+from wx.core import *
 
-    # other modules
-    'animate',
-    'aui',
-    'calendar',
-    'combo',
-    'grid',
-    'html',
-    'media',
-    'richtext',
-    'webkit',
-    'wizard',
-    'xrc',
 
-    # contribs (need a better way to find these...)
-    'gizmos',
-    'glcanvas',
-    'stc',
-    ]
-
-# Load the package namespace with the core classes and such
-from wx._core import *
+# Clean up the package namespace
+del core
 del wx
-
-if 'wxMSW' in PlatformInfo:
-    __all__ += ['activex']
-
-# Load up __all__ with all the names of items that should appear to be
-# defined in this pacakge so epydoc will document them that way.
-import wx._core
-__docfilter__ = wx._core.__DocFilter(globals())
-
-__all__ += [name for name in dir(wx._core) if not name.startswith('_')]
-
-
-
-#----------------------------------------------------------------------------
-

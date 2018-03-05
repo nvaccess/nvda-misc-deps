@@ -1,14 +1,12 @@
 """Base frame with menu."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
 import wx
 import os
-from version import VERSION
-import editwindow
-import dispatcher
+from .version import VERSION
+from . import editwindow
+from . import dispatcher
 
 ID_NEW = wx.ID_NEW
 ID_OPEN = wx.ID_OPEN
@@ -67,17 +65,16 @@ ID_HIDEFOLDINGMARGIN = wx.NewId()
 class Frame(wx.Frame):
     """Frame with standard menu items."""
 
-    revision = __revision__
 
     def __init__(self, parent=None, id=-1, title='Editor',
-                 pos=wx.DefaultPosition, size=wx.DefaultSize, 
+                 pos=wx.DefaultPosition, size=wx.DefaultSize,
                  style=wx.DEFAULT_FRAME_STYLE,shellName='PyCrust'):
         """Create a Frame instance."""
         wx.Frame.__init__(self, parent, id, title, pos, size, style)
         self.CreateStatusBar()
         self.SetStatusText('Frame')
         self.shellName=shellName
-        import images
+        from . import images
         self.SetIcon(images.getPyIcon(shellName=shellName))
         self.__createMenus()
 
@@ -159,7 +156,7 @@ class Frame(wx.Frame):
                  'Find next instance of the search text')
         m.Append(ID_FINDPREVIOUS, 'Find Pre&vious \tCtrl+Shift+G',
                  'Find previous instance of the search text')
-        
+
         # View
         m = self.viewMenu = wx.Menu()
         m.Append(ID_WRAP, '&Wrap Lines\tCtrl+Shift+W',
@@ -176,7 +173,7 @@ class Frame(wx.Frame):
             m.Append(ID_HIDEFOLDINGMARGIN,
                                 '&Hide Folding Margin',
                                 'Hide Folding Margin', wx.ITEM_CHECK)
-        
+
         # Options
         m = self.autocompMenu = wx.Menu()
         m.Append(ID_AUTOCOMP_SHOW, 'Show &Auto Completion\tCtrl+Shift+A',
@@ -195,11 +192,11 @@ class Frame(wx.Frame):
                  '&Insert Call Tips', wx.ITEM_CHECK)
 
         m = self.optionsMenu = wx.Menu()
-        m.AppendMenu(ID_AUTOCOMP, '&Auto Completion', self.autocompMenu,
+        m.Append(ID_AUTOCOMP, '&Auto Completion', self.autocompMenu,
                      'Auto Completion Options')
-        m.AppendMenu(ID_CALLTIPS, '&Call Tips', self.calltipsMenu,
+        m.Append(ID_CALLTIPS, '&Call Tips', self.calltipsMenu,
                      'Call Tip Options')
-                
+
         m.AppendSeparator()
 
         self.historyMenu = wx.Menu()
@@ -209,7 +206,7 @@ class Frame(wx.Frame):
                  'Save history')
         self.historyMenu.Append(ID_CLEARHISTORY, '&Clear History ',
                  'Clear history')
-        m.AppendMenu(-1, "&History", self.historyMenu, "History Options")
+        m.Append(-1, "&History", self.historyMenu, "History Options")
 
         self.startupMenu = wx.Menu()
         self.startupMenu.Append(ID_EXECSTARTUPSCRIPT,
@@ -222,7 +219,7 @@ class Frame(wx.Frame):
             self.startupMenu.Append(ID_SHOWPYSLICESTUTORIAL,
                                 '&Show PySlices Tutorial',
                                 'Show PySlices Tutorial', wx.ITEM_CHECK)
-        m.AppendMenu(ID_STARTUP, '&Startup', self.startupMenu, 'Startup Options')
+        m.Append(ID_STARTUP, '&Startup', self.startupMenu, 'Startup Options')
 
         self.settingsMenu = wx.Menu()
         if self.shellName in ['PySlices','SymPySlices']:
@@ -242,7 +239,7 @@ class Frame(wx.Frame):
         self.settingsMenu.Append(ID_DELSETTINGSFILE,
                                  '&Revert to default',
                                  'Revert to the default settings')
-        m.AppendMenu(ID_SETTINGS, '&Settings', self.settingsMenu, 'Settings Options')           
+        m.Append(ID_SETTINGS, '&Settings', self.settingsMenu, 'Settings Options')
 
         m = self.helpMenu = wx.Menu()
         m.Append(ID_HELP, '&Help\tF1', 'Help!')
@@ -304,7 +301,7 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnFindPrevious, id=ID_FINDPREVIOUS)
         self.Bind(wx.EVT_MENU, self.OnToggleTools, id=ID_SHOWTOOLS)
         self.Bind(wx.EVT_MENU, self.OnHideFoldingMargin, id=ID_HIDEFOLDINGMARGIN)
-        
+
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_NEW)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_OPEN)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_REVERT)
@@ -347,13 +344,13 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_FINDPREVIOUS)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_SHOWTOOLS)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateMenu, id=ID_HIDEFOLDINGMARGIN)
-        
+
         self.Bind(wx.EVT_ACTIVATE, self.OnActivate)
         self.Bind(wx.EVT_FIND, self.OnFindNext)
         self.Bind(wx.EVT_FIND_NEXT, self.OnFindNext)
         self.Bind(wx.EVT_FIND_CLOSE, self.OnFindClose)
-        
-    
+
+
 
     def OnShowLineNumbers(self, event):
         win = wx.Window.FindFocus()
@@ -384,7 +381,7 @@ class Frame(wx.Frame):
 
     def OnFileSaveACopy(self, event):
         self.bufferSaveACopy()
-    
+
     def OnFileUpdateNamespace(self, event):
         self.updateNamespace()
 
@@ -425,7 +422,7 @@ class Frame(wx.Frame):
     def OnClear(self, event):
         win = wx.Window.FindFocus()
         win.Clear()
-    
+
     def OnEmptyBuffer(self, event):
         win = wx.Window.FindFocus()
         d = wx.MessageDialog(self,
@@ -454,7 +451,7 @@ class Frame(wx.Frame):
 
     def OnHelp(self, event):
         """Display a Help window."""
-        title = 'Help'        
+        title = 'Help'
         text = "Type 'shell.help()' in the shell window."
         dialog = wx.MessageDialog(self, text, title,
                                   wx.OK | wx.ICON_INFORMATION)
@@ -488,7 +485,7 @@ class Frame(wx.Frame):
     def OnWrap(self, event):
         win = wx.Window.FindFocus()
         win.SetWrapMode(event.IsChecked())
-        wx.FutureCall(1, self.shell.EnsureCaretVisible)
+        wx.CallLater(1, self.shell.EnsureCaretVisible)
 
     def OnSaveHistory(self, event):
         self.autoSaveHistory = event.IsChecked()
@@ -501,13 +498,13 @@ class Frame(wx.Frame):
 
     def OnEnableShellMode(self, event):
         self.enableShellMode = event.IsChecked()
-    
+
     def OnEnableAutoSympy(self, event):
         self.enableAutoSympy = event.IsChecked()
-    
+
     def OnHideFoldingMargin(self, event):
         self.hideFoldingMargin = event.IsChecked()
-    
+
     def OnAutoSaveSettings(self, event):
         self.autoSaveSettings = event.IsChecked()
 
@@ -517,7 +514,7 @@ class Frame(wx.Frame):
     def OnDelSettingsFile(self, event):
         if self.config is not None:
             d = wx.MessageDialog(
-                self, "Do you want to revert to the default settings?\n" + 
+                self, "Do you want to revert to the default settings?\n" +
                 "A restart is needed for the change to take effect",
                 "Warning", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
             answer = d.ShowModal()
@@ -530,11 +527,11 @@ class Frame(wx.Frame):
     def OnEditStartupScript(self, event):
         if hasattr(self, 'EditStartupScript'):
             self.EditStartupScript()
-            
+
     def OnExecStartupScript(self, event):
         self.execStartupScript = event.IsChecked()
         self.SaveSettings(force=True)
-    
+
     def OnShowPySlicesTutorial(self,event):
         self.showPySlicesTutorial = event.IsChecked()
         self.SaveSettings(force=True)
@@ -550,13 +547,13 @@ class Frame(wx.Frame):
             self.findDlg = wx.FindReplaceDialog(win, self.findData,
                 "Find & Replace", wx.FR_NOWHOLEWORD|wx.FR_REPLACEDIALOG)
         self.findDlg.Show()
-        
+
     def OnFindNext(self, event,backward=False):
         if backward and (self.findData.GetFlags() & wx.FR_DOWN):
             self.findData.SetFlags( self.findData.GetFlags() ^ wx.FR_DOWN )
         elif not backward and not (self.findData.GetFlags() & wx.FR_DOWN):
             self.findData.SetFlags( self.findData.GetFlags() ^ wx.FR_DOWN )
-        
+
         if not self.findData.GetFindString():
             self.OnFindText(event)
             return
@@ -570,14 +567,14 @@ class Frame(wx.Frame):
 
     def OnFindPrevious(self, event):
         self.OnFindNext(event,backward=True)
-    
+
     def OnFindClose(self, event):
         self.findDlg.Destroy()
         self.findDlg = None
-    
+
     def OnToggleTools(self, event):
         self.ToggleTools()
-        
+
 
     def OnUpdateMenu(self, event):
         """Update menu items based on current status and context."""
@@ -661,11 +658,11 @@ class Frame(wx.Frame):
                              hasattr(self, 'DoSaveSettings'))
             elif id == ID_DELSETTINGSFILE:
                 event.Enable(self.config is not None)
-                
+
             elif id == ID_EXECSTARTUPSCRIPT:
                 event.Check(self.execStartupScript)
                 event.Enable(self.config is not None)
-            
+
             elif id == ID_SHOWPYSLICESTUTORIAL:
                 event.Check(self.showPySlicesTutorial)
                 event.Enable(self.config is not None)
@@ -678,11 +675,11 @@ class Frame(wx.Frame):
                              hasattr(self, 'SaveHistory'))
             elif id == ID_CLEARHISTORY:
                 event.Enable(self.dataDir is not None)
-                
+
             elif id == ID_EDITSTARTUPSCRIPT:
                 event.Enable(hasattr(self, 'EditStartupScript'))
                 event.Enable(self.dataDir is not None)
-                
+
             elif id == ID_FIND:
                 event.Enable(hasattr(win, 'DoFindNext'))
             elif id == ID_FINDNEXT:
@@ -692,11 +689,11 @@ class Frame(wx.Frame):
 
             elif id == ID_SHOWTOOLS:
                 event.Check(self.ToolsShown())
-            
+
             elif id == ID_HIDEFOLDINGMARGIN:
                 event.Check(self.hideFoldingMargin)
                 event.Enable(self.config is not None)
-            
+
             else:
                 event.Enable(False)
         except AttributeError:
@@ -724,7 +721,7 @@ class Frame(wx.Frame):
         """Called by derived classes to load settings specific to the Frame"""
         pos  = wx.Point(config.ReadInt('Window/PosX', -1),
                         config.ReadInt('Window/PosY', -1))
-                        
+
         size = wx.Size(config.ReadInt('Window/Width', -1),
                        config.ReadInt('Window/Height', -1))
 
@@ -741,7 +738,7 @@ class Frame(wx.Frame):
             w, h = self.GetSize()
             config.WriteInt('Window/Width', w)
             config.WriteInt('Window/Height', h)
-            
+
             px, py = self.GetPosition()
             config.WriteInt('Window/PosX', px)
             config.WriteInt('Window/PosY', py)
@@ -761,7 +758,7 @@ class ShellFrameMixin:
         self.startupScript = os.environ.get('PYTHONSTARTUP')
         if not self.startupScript and self.dataDir:
             self.startupScript = os.path.join(self.dataDir, 'startup')
-            
+
         self.autoSaveSettings = False
         self.autoSaveHistory = False
 
@@ -782,17 +779,17 @@ class ShellFrameMixin:
                  self.config.ReadBool('Options/EnableAutoSympy', True)
             self.hideFoldingMargin = \
                  self.config.ReadBool('Options/HideFoldingMargin', True)
-    
+
     def OnHelp(self, event):
         """Display a Help window."""
         import  wx.lib.dialogs
         title = 'Help on key bindings'
-        
+
         text = wx.py.shell.HELP_TEXT
 
         dlg = wx.lib.dialogs.ScrolledMessageDialog(self, text, title,
                                                    size = ((700, 540)))
-        fnt = wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.NORMAL)
+        fnt = wx.Font(10, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         dlg.GetChildren()[0].SetFont(fnt)
         dlg.GetChildren()[0].SetInsertionPoint(0)
         dlg.ShowModal()
@@ -807,7 +804,7 @@ class ShellFrameMixin:
                  self.config.ReadBool('Options/ExecStartupScript', True)
             self.autoSaveHistory = \
                  self.config.ReadBool('Options/AutoSaveHistory', False)
-            
+
             self.showPySlicesTutorial = \
                  self.config.ReadBool('Options/ShowPySlicesTutorial', True)
             self.enableShellMode = \
@@ -816,7 +813,7 @@ class ShellFrameMixin:
                  self.config.ReadBool('Options/EnableAutoSympy', True)
             self.hideFoldingMargin = \
                  self.config.ReadBool('Options/HideFoldingMargin', True)
-            
+
             self.LoadHistory()
 
 
@@ -825,7 +822,7 @@ class ShellFrameMixin:
             # always save these
             self.config.WriteBool('Options/AutoSaveSettings',
                                   self.autoSaveSettings)
-            
+
             if self.autoSaveSettings or force:
                 self.config.WriteBool('Options/AutoSaveHistory',
                                       self.autoSaveHistory)
@@ -848,14 +845,13 @@ class ShellFrameMixin:
         if self.dataDir:
             try:
                 name = os.path.join(self.dataDir, 'history')
-                f = file(name, 'w')
+                f = open(name, 'wb')
                 hist = []
-                enc = wx.GetDefaultPyEncoding()
+                enc = 'utf-8'
                 for h in self.shell.history:
-                    if isinstance(h, unicode):
-                        h = h.encode(enc)
+                    h = h.encode(enc)
                     hist.append(h)
-                hist = '\x00\n'.join(hist)
+                hist = b'\x00\n'.join(hist)
                 f.write(hist)
                 f.close()
             except:
@@ -870,13 +866,18 @@ class ShellFrameMixin:
             name = os.path.join(self.dataDir, 'history')
             if os.path.exists(name):
                 try:
-                    f = file(name, 'U')
+                    f = open(name, 'rb')
                     hist = f.read()
                     f.close()
-                    self.shell.history = hist.split('\x00\n')
+                    enc = 'utf-8'
+                    hist = [h.decode(enc) for h in hist.split(b'\x00\n')]
+                    self.shell.history = hist
                     dispatcher.send(signal="Shell.loadHistory",
                                     history=self.shell.history)
                 except:
+                    import traceback
+                    traceback.print_exc()
+
                     d = wx.MessageDialog(self, "Error loading history file.",
                                          "Error", wx.ICON_EXCLAMATION|wx.OK)
                     d.ShowModal()
@@ -898,7 +899,7 @@ class ShellFrameMixin:
                                   flags = wx.SAVE | wx.OVERWRITE_PROMPT)
         if not fileName:
             return
-        
+
         text = self.shell.GetText()
 
 ## This isn't working currently...
@@ -924,7 +925,7 @@ class ShellFrameMixin:
 
     def EditStartupScript(self):
         if os.path.exists(self.startupScript):
-            text = file(self.startupScript, 'U').read()
+            text = open(self.startupScript, 'U').read()
         else:
             text = ''
 
@@ -932,7 +933,7 @@ class ShellFrameMixin:
         if dlg.ShowModal() == wx.ID_OK:
             text = dlg.GetText()
             try:
-                f = file(self.startupScript, 'w')
+                f = open(self.startupScript, 'w')
                 f.write(text)
                 f.close()
             except:
@@ -948,13 +949,13 @@ class EditStartupScriptDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, size=(425,350),
                            title="Edit Startup Script",
                            style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
-        
+
         pst = wx.StaticText(self, -1, "Path:")
         ptx = wx.TextCtrl(self, -1, fileName, style=wx.TE_READONLY)
         self.editor = editwindow.EditWindow(self)
         self.editor.SetText(text)
         wx.CallAfter(self.editor.SetFocus)
-        
+
         ok = wx.Button(self, wx.ID_OK)
         cancel = wx.Button(self, wx.ID_CANCEL)
 
@@ -967,7 +968,7 @@ class EditStartupScriptDialog(wx.Dialog):
         mainSizer.Add(pthSizer, 0, wx.EXPAND|wx.ALL, 10)
 
         mainSizer.Add(self.editor, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 10)
-        
+
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
         btnSizer.Add((5,5), 1)
         btnSizer.Add(ok)
@@ -975,7 +976,7 @@ class EditStartupScriptDialog(wx.Dialog):
         btnSizer.Add(cancel)
         btnSizer.Add((5,5), 1)
         mainSizer.Add(btnSizer, 0, wx.EXPAND|wx.ALL, 10)
-        
+
         self.SetSizer(mainSizer)
         self.Layout()
 

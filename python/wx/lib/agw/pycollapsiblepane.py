@@ -3,7 +3,7 @@
 # Generic Implementation Based On wx.CollapsiblePane.
 #
 # Andrea Gavana, @ 09 Aug 2007
-# Latest Revision: 14 Mar 2012, 21.00 GMT
+# Latest Revision: 19 Dec 2012, 21.00 GMT
 #
 #
 # For All Kind Of Problems, Requests Of Enhancements And Bug Reports, Please
@@ -14,12 +14,13 @@
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
+# Tags:        phoenix-port, unittest, documented, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------------- #
 
 """
-:class:`PyCollapsiblePane` is a container with an embedded button-like control which
+:class:`~wx.lib.agw.pycollapsiblepane.PyCollapsiblePane` is a container with an embedded button-like control which
 can be used by the user to collapse or expand the pane's contents.
 
 
@@ -28,14 +29,14 @@ Description
 
 A collapsible pane is a container with an embedded button-like control which
 can be used by the user to collapse or expand the pane's contents.
-Once constructed you should use the meth:~PyCollapsiblePane.GetPane` function to access the pane and
-add your controls inside it (i.e. use the window returned from meth:~PyCollapsiblePane.GetPane` as the
+Once constructed you should use the :meth:`~PyCollapsiblePane.GetPane` function to access the pane and
+add your controls inside it (i.e. use the window returned from :meth:`~PyCollapsiblePane.GetPane` as the
 parent for the controls which must go in the pane, **not** the :class:`PyCollapsiblePane`
 itself!).
 
 :note: Note that because of its nature of control which can dynamically (and drastically)
  change its size at run-time under user-input, when putting :class:`PyCollapsiblePane`
- inside a :class:`Sizer` you should be careful to add it with a proportion value of zero;
+ inside a :class:`wx.Sizer` you should be careful to add it with a proportion value of zero;
  this is because otherwise all other windows with non-null proportion values would
  automatically get resized each time the user expands or collapse the pane window
  resulting usually in a weird, flickering effect.
@@ -56,19 +57,19 @@ Usage example::
             wx.Frame.__init__(self, parent, -1, "PyCollapsiblePane Demo")
 
             panel = wx.Panel(self)
-            
+
             title = wx.StaticText(panel, label="PyCollapsiblePane")
-            title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+            title.SetFont(wx.Font(18, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
             title.SetForegroundColour("blue")
 
-            self.cp = cp = PCP.PyCollapsiblePane(panel, label=label1,
-                                                 style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
+            self.cp = cp = PCP.PyCollapsiblePane(panel, label="Some Data",
+                                                 style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE)
 
             self.MakePaneContent(cp.GetPane())
 
             sizer = wx.BoxSizer(wx.VERTICAL)
             sizer.Add(title, 0, wx.ALL, 25)
-            sizer.Add(cp, 0, wx.RIGHT|wx.LEFT|wx.EXPAND, 25)
+            sizer.Add(cp, 0, wx.RIGHT | wx.LEFT | wx.EXPAND, 25)
 
             panel.SetSizer(sizer)
             sizer.Layout()
@@ -76,7 +77,7 @@ Usage example::
 
         def MakePaneContent(self, pane):
             ''' Just makes a few controls to put on `PyCollapsiblePane`. '''
-            
+
             nameLbl = wx.StaticText(pane, -1, "Name:")
             name = wx.TextCtrl(pane, -1, "");
 
@@ -88,31 +89,31 @@ Usage example::
             city  = wx.TextCtrl(pane, -1, "", size=(150,-1));
             state = wx.TextCtrl(pane, -1, "", size=(50,-1));
             zip   = wx.TextCtrl(pane, -1, "", size=(70,-1));
-            
+
             addrSizer = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
             addrSizer.AddGrowableCol(1)
             addrSizer.Add(nameLbl, 0,
-                          wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+                          wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL)
             addrSizer.Add(name, 0, wx.EXPAND)
             addrSizer.Add(addrLbl, 0,
-                          wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+                          wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL)
             addrSizer.Add(addr1, 0, wx.EXPAND)
-            addrSizer.Add((5,5)) 
+            addrSizer.Add((5,5))
             addrSizer.Add(addr2, 0, wx.EXPAND)
 
             addrSizer.Add(cstLbl, 0,
-                          wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+                          wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL)
 
             cstSizer = wx.BoxSizer(wx.HORIZONTAL)
             cstSizer.Add(city, 1)
-            cstSizer.Add(state, 0, wx.LEFT|wx.RIGHT, 5)
+            cstSizer.Add(state, 0, wx.LEFT | wx.RIGHT, 5)
             cstSizer.Add(zip)
             addrSizer.Add(cstSizer, 0, wx.EXPAND)
 
             border = wx.BoxSizer()
-            border.Add(addrSizer, 1, wx.EXPAND|wx.ALL, 5)
+            border.Add(addrSizer, 1, wx.EXPAND | wx.ALL, 5)
             pane.SetSizer(border)
-            
+
 
     # our normal wxApp-derived class, as usual
 
@@ -156,11 +157,11 @@ Event Name                      Description
 License And Version
 ===================
 
-:class:`PyCollapsiblePane` is distributed under the wxPython license. 
+:class:`PyCollapsiblePane` is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 14 Mar 2012, 21.00 GMT
+Latest Revision: Andrea Gavana @ 19 Dec 2012, 21.00 GMT
 
-Version 0.4
+Version 0.5
 
 """
 
@@ -197,12 +198,12 @@ if wx.VERSION < (2, 9):
 # GTKExpander widget
 #-----------------------------------------------------------------------------
 
-class GTKExpander(wx.PyControl):
+class GTKExpander(wx.Control):
     """
     A :class:`GTKExpander` allows the user to hide or show its child by clicking on an expander
     triangle.
     """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, label="", pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.NO_BORDER):
         """
@@ -218,50 +219,50 @@ class GTKExpander(wx.PyControl):
         :param `style`: the expander style.
         """
 
-        wx.PyControl.__init__(self, parent, id, pos, size, style)
+        wx.Control.__init__(self, parent, id, pos, size, style)
         self.SetLabel(label)
-        
+
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         self._parent = parent
-        
+
         self.Bind(wx.EVT_SIZE, self.OnSize)
-        
+
 
     def OnDrawGTKExpander(self, dc):
         """
         Draws the :class:`GTKExpander` triangle.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         size = self.GetSize()
         label = self._parent.GetBtnLabel()
         triangleWidth, triangleHeight = self._parent.GetExpanderDimensions()
         textWidth, textHeight, descent, externalLeading = dc.GetFullTextExtent(label, self.GetFont())
-        
+
         dc.SetBrush(wx.BLACK_BRUSH)
         dc.SetPen(wx.BLACK_PEN)
-        
+
         if self._parent.IsCollapsed():
-            startX, startY = triangleWidth/2, size.y - triangleHeight - 1 - descent
+            startX, startY = triangleWidth//2, size.y - triangleHeight - 1 - descent
             pt1 = wx.Point(startX, startY)
             pt2 = wx.Point(startX, size.y - 1 - descent)
-            pt3 = wx.Point(startX+triangleWidth, size.y-triangleHeight/2 - 1 - descent)
+            pt3 = wx.Point(startX+triangleWidth, size.y-triangleHeight//2 - 1 - descent)
         else:
 
             startX, startY = 0, size.y - triangleWidth - descent - 1
             pt1 = wx.Point(startX, startY)
             pt2 = wx.Point(startX+triangleHeight, startY)
-            pt3 = wx.Point(startX+triangleHeight/2, size.y - descent - 1)
+            pt3 = wx.Point(startX+triangleHeight//2, size.y - descent - 1)
 
-        dc.DrawPolygon([pt1, pt2, pt3])            
-                
+        dc.DrawPolygon([pt1, pt2, pt3])
+
 
     def OnDrawGTKText(self, dc):
         """
         Draws the :class:`GTKExpander` text label.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         size = self.GetSize()
@@ -280,7 +281,7 @@ class GTKExpander(wx.PyControl):
         minimal size which doesn't truncate the control, for a panel - the same size
         as it would have after a call to `Fit()`.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
         triangleWidth, triangleHeight = self._parent.GetExpanderDimensions()
@@ -291,14 +292,14 @@ class GTKExpander(wx.PyControl):
         maxHeight = max(textHeight+descent, triangleHeight)
         maxWidth = 2*triangleHeight+1 + textWidth
 
-        return wx.Size(maxWidth, maxHeight)        
+        return wx.Size(maxWidth, maxHeight)
 
 
     def OnSize(self, event):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`GTKExpander`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
         self.Refresh()
@@ -309,7 +310,7 @@ class GTKExpander(wx.PyControl):
 # PyCollapsiblePane
 #-----------------------------------------------------------------------------
 
-class PyCollapsiblePane(wx.PyPanel):
+class PyCollapsiblePane(wx.Panel):
     """
     :class:`PyCollapsiblePane` is a container with an embedded button-like control which
     can be used by the user to collapse or expand the pane's contents.
@@ -329,7 +330,7 @@ class PyCollapsiblePane(wx.PyPanel):
          chosen by either the windowing system or wxPython, depending on platform;
         :param `size`: the control size. A value of (-1, -1) indicates a default size,
          chosen by either the windowing system or wxPython, depending on platform;
-        :param `style`: the underlying :class:`PyPanel` window style;
+        :param `style`: the underlying :class:`Panel` window style;
         :param `agwStyle`: the AGW-specifi window style. This can be a combination of the
          following bits:
 
@@ -344,12 +345,12 @@ class PyCollapsiblePane(wx.PyPanel):
 
         :param `validator`: the validator associated to the :class:`PyCollapsiblePane`;
         :param `name`: the widget name.
-        
+
         """
-                
-        wx.PyPanel.__init__(self, parent, id, pos, size, style, name)
-        
-        self._pButton = self._pStaticLine = self._pPane = self._sz = None            
+
+        wx.Panel.__init__(self, parent, id, pos, size, style, name)
+
+        self._pButton = self._pStaticLine = self._pPane = self._sz = None
         self._strLabel = label
         self._bCollapsed = True
         self._agwStyle = agwStyle
@@ -367,7 +368,7 @@ class PyCollapsiblePane(wx.PyPanel):
             self._contentSizer = wx.StaticBoxSizer(self._pStaticBox, wx.VERTICAL)
             self._contentSizer.Add((1,1))  # spacer, size will be reset later
             self._contentSizer.Add(self._pPane, 1, wx.EXPAND)
-            self._sz.Add(self._contentSizer, 1, wx.EXPAND)                    
+            self._sz.Add(self._contentSizer, 1, wx.EXPAND)
 
             if self.HasAGWFlag(CP_USE_STATICBOX) and 'wxMSW' in wx.PlatformInfo:
                 # This hack is needed on Windows because wxMSW clears the
@@ -403,7 +404,7 @@ class PyCollapsiblePane(wx.PyPanel):
             self.SetButton(wx.Button(self, wx.ID_ANY, self.GetLabel(), style=wx.BU_EXACTFIT))
             self._pStaticLine = wx.StaticLine(self, wx.ID_ANY)
 
-            if self.HasAGWFlag(CP_LINE_ABOVE): 
+            if self.HasAGWFlag(CP_LINE_ABOVE):
                 # put the static line above the button
                 self._sz = wx.BoxSizer(wx.VERTICAL)
                 self._sz.Add(self._pStaticLine, 0, wx.ALL|wx.GROW, self.GetBorder())
@@ -413,7 +414,7 @@ class PyCollapsiblePane(wx.PyPanel):
                 self._sz = wx.BoxSizer(wx.HORIZONTAL)
                 self._sz.Add(self._pButton, 0, wx.LEFT|wx.TOP|wx.BOTTOM, self.GetBorder())
                 self._sz.Add(self._pStaticLine, 1, wx.ALIGN_CENTER|wx.LEFT|wx.RIGHT, self.GetBorder())
-            
+
         self.Bind(wx.EVT_SIZE, self.OnSize)
 
 
@@ -444,7 +445,7 @@ class PyCollapsiblePane(wx.PyPanel):
         """
         Returns the :class:`PyCollapsiblePane` window style.
 
-        :see: :meth:`~PyCollapsiblePane.SetAGWWindowStyleFlag` for a list of possible window style flags.        
+        :see: :meth:`~PyCollapsiblePane.SetAGWWindowStyleFlag` for a list of possible window style flags.
         """
 
         return self._agwStyle
@@ -462,14 +463,14 @@ class PyCollapsiblePane(wx.PyPanel):
         agwStyle = self.GetAGWWindowStyleFlag()
         res = (agwStyle & flag and [True] or [False])[0]
         return res
-    
+
 
     def GetBtnLabel(self):
         """ Returns the button label. """
 
         if self.GetAGWWindowStyleFlag() & CP_GTK_EXPANDER:
             return self.GetLabel()
-        
+
         return self.GetLabel() + (self.IsCollapsed() and [" >>"] or [" <<"])[0]
 
 
@@ -477,7 +478,7 @@ class PyCollapsiblePane(wx.PyPanel):
         """
         Handles the status changes (collapsing/expanding).
 
-        :param `sz`: an instance of :class:`Size`.
+        :param `sz`: an instance of :class:`wx.Size`.
         """
 
         self.SetSize(sz)
@@ -485,7 +486,7 @@ class PyCollapsiblePane(wx.PyPanel):
         if self.HasAGWFlag(wx.CP_NO_TLW_RESIZE):
             # the user asked to explicitely handle the resizing itself...
             return
-        
+
         # NB: the following block of code has been accurately designed to
         #     as much flicker-free as possible be careful when modifying it!
 
@@ -511,7 +512,7 @@ class PyCollapsiblePane(wx.PyPanel):
 
             # we shouldn't attempt to resize a maximized window, whatever happens
             if not top.IsMaximized():
-                
+
                 if self.IsCollapsed():
                     # expanded . collapsed transition
                     if top.GetSizer():
@@ -521,19 +522,19 @@ class PyCollapsiblePane(wx.PyPanel):
                         # use SetClientSize() and not SetSize() otherwise the size for
                         # e.g. a wxFrame with a menubar wouldn't be correctly set
                         top.SetClientSize(sz)
-                    
+
                     else:
-                        
+
                         top.Layout()
-                
+
                 else:
-                
+
                     # collapsed . expanded transition
 
                     # force our parent to "fit", i.e. expand so that it can honour
                     # our best size
                     top.Fit()
-                
+
 
     def Collapse(self, collapse=True):
         """
@@ -547,7 +548,7 @@ class PyCollapsiblePane(wx.PyPanel):
             return
 
         self.Freeze()
-        
+
         # update our state
         self._pPane.Show(not collapse)
         self._bCollapsed = collapse
@@ -560,7 +561,7 @@ class PyCollapsiblePane(wx.PyPanel):
         self._pButton.SetLabel(self.GetBtnLabel())
 
         self.OnStateChange(self.GetBestSize())
-        
+
 
     def Expand(self):
         """ Same as :meth:`~PyCollapsiblePane.Collapse` (False). """
@@ -571,31 +572,31 @@ class PyCollapsiblePane(wx.PyPanel):
     def IsCollapsed(self):
         """ Returns ``True`` if the pane window is currently hidden. """
 
-        return self._bCollapsed        
+        return self._bCollapsed
 
 
     def IsExpanded(self):
         """ Returns ``True`` if the pane window is currently shown. """
 
-        return not self.IsCollapsed()        
+        return not self.IsCollapsed()
 
 
     def GetPane(self):
         """
-        Returns a reference to the pane window. Use the returned :class:`Window` as
+        Returns a reference to the pane window. Use the returned :class:`wx.Window` as
         the parent of widgets to make them part of the collapsible area.
         """
 
         return self._pPane
-    
-        
+
+
     def SetLabel(self, label):
         """
         Sets the button label.
 
         :param `label`: the new button label.
 
-        :note: Overridden from :class:`PyPanel`.
+        :note: Overridden from :class:`Panel`.
         """
 
         self._strLabel =  label
@@ -603,7 +604,7 @@ class PyCollapsiblePane(wx.PyPanel):
         self._pButton.SetInitialSize()
         self._pButton.Refresh()
         self.InvalidateBestSize()
-        
+
         self.Layout()
 
 
@@ -611,9 +612,9 @@ class PyCollapsiblePane(wx.PyPanel):
         """
         Returns the button label.
 
-        :note: Overridden from :class:`PyPanel`.
+        :note: Overridden from :class:`Panel`.
         """
-        
+
         return self._strLabel
 
 
@@ -621,17 +622,17 @@ class PyCollapsiblePane(wx.PyPanel):
         """
         Sets the button font.
 
-        :param `font`: a valid :class:`Font` object.
+        :param `font`: a valid :class:`wx.Font` object.
         """
-        
+
         self._pButton.SetFont(font)
         self.InvalidateBestSize()
-        self.Layout()    
+        self.Layout()
 
 
     def GetButtonFont(self):
         """ Returns the button font. """
-        
+
         return self._pButton.GetFont()
 
 
@@ -643,10 +644,10 @@ class PyCollapsiblePane(wx.PyPanel):
         elif wx.Platform == "__WXGTK__":
             return 3
         elif wx.Platform == "__WXMSW__":
-            return self._pButton.ConvertDialogSizeToPixels(wx.Size(2, 0)).x
+            return self._pButton.ConvertDialogToPixels(wx.Size(2, 0)).x
         else:
             return 5
-        
+
 
     def SetExpanderDimensions(self, width, height):
         """
@@ -655,7 +656,7 @@ class PyCollapsiblePane(wx.PyPanel):
         :param `width`: an integer specifying the expander width in pixels;
         :param `height`: an integer specifying the expander height in pixels.
         """
-        
+
         self._expanderDimensions = width, height
         self.InvalidateBestSize()
         if self._sz:
@@ -671,15 +672,15 @@ class PyCollapsiblePane(wx.PyPanel):
         """
 
         return self._expanderDimensions
-    
-        
+
+
     def DoGetBestSize(self):
         """
         Gets the size which best suits the window: for a control, it would be the
         minimal size which doesn't truncate the control, for a panel - the same size
         as it would have after a call to `Fit()`.
 
-        :note: Overridden from :class:`PyPanel`.
+        :note: Overridden from :class:`Panel`.
         """
 
         if self.HasAGWFlag(CP_USE_STATICBOX):
@@ -691,19 +692,19 @@ class PyCollapsiblePane(wx.PyPanel):
             self._pButton.SetSize(sz)
             bdr = self.GetBorder()
             sz += (2*bdr, 2*bdr)
-                        
+
             if self.IsExpanded():
                 # Reset the spacer sizes to be based on the button size
                 adjustment = 0
                 if 'wxMac' not in wx.PlatformInfo:
                     adjustment = -3
-                self._sz.Children[0].AssignSpacer((1, sz.height/2 + adjustment))
-                self._contentSizer.Children[0].AssignSpacer((1, sz.height/2))
+                self._sz.Children[0].AssignSpacer((1, sz.height//2 + adjustment))
+                self._contentSizer.Children[0].AssignSpacer((1, sz.height//2))
 
                 ssz = self._sz.GetMinSize()
                 sz.width = max(sz.width, ssz.width)
                 sz.height = max(sz.height, ssz.height)
-                
+
         else:
             # do not use GetSize() but rather GetMinSize() since it calculates
             # the required space of the sizer
@@ -714,10 +715,10 @@ class PyCollapsiblePane(wx.PyPanel):
                 pbs = self._pPane.GetBestSize()
                 sz.width = max(sz.GetWidth(), pbs.x)
                 sz.height = sz.y + self.GetBorder() + pbs.y
-        
+
         return sz
 
-    
+
     def Layout(self):
         """ Layout the :class:`PyCollapsiblePane`. """
 
@@ -729,7 +730,7 @@ class PyCollapsiblePane(wx.PyPanel):
         if self.HasAGWFlag(CP_USE_STATICBOX):
             bdr = self.GetBorder()
             self._pButton.SetPosition((bdr, bdr))
-            
+
             if self.IsExpanded():
                 self._pPane.Show()
                 self._pPane.Layout()
@@ -741,25 +742,25 @@ class PyCollapsiblePane(wx.PyPanel):
             else:
                 if hasattr(self, '_pStaticBox'):
                     self._pStaticBox.Hide()
-                
-        else:    
+
+        else:
             # move & resize the button and the static line
             self._sz.SetDimension(0, 0, oursz.GetWidth(), self._sz.GetMinSize().GetHeight())
             self._sz.Layout()
-    
+
             if self.IsExpanded():
-            
+
                 # move & resize the container window
                 yoffset = self._sz.GetSize().GetHeight() + self.GetBorder()
-                self._pPane.SetDimensions(0, yoffset, oursz.x, oursz.y - yoffset)
-    
+                self._pPane.SetSize(0, yoffset, oursz.x, oursz.y - yoffset)
+
                 # this is very important to make the pane window layout show correctly
                 self._pPane.Show()
                 self._pPane.Layout()
-        
+
         return True
 
-    
+
     def SetButton(self, button):
         """
         Assign a new button to :class:`PyCollapsiblePane`.
@@ -767,7 +768,7 @@ class PyCollapsiblePane(wx.PyPanel):
         :param `button`: can be the standard :class:`Button` or any of the generic
          implementations which live in :mod:`lib.buttons`.
         """
-        
+
         if self._pButton:
             if not self.HasAGWFlag(CP_USE_STATICBOX):
                 self._sz.Replace(self._pButton, button)
@@ -782,15 +783,15 @@ class PyCollapsiblePane(wx.PyPanel):
             self._pButton.MoveBeforeInTabOrder(self._pPane)
         self.InvalidateBestSize()
         self.Layout()
-        
-            
+
+
     def GetButton(self):
         """ Returns the button associated with :class:`PyCollapsiblePane`. """
-        
+
         return self._pButton
-    
-    
-    
+
+
+
 #-----------------------------------------------------------------------------
 # PyCollapsiblePane - event handlers
 #-----------------------------------------------------------------------------
@@ -817,7 +818,7 @@ class PyCollapsiblePane(wx.PyPanel):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`PyCollapsiblePane`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
         self.Layout()
@@ -835,16 +836,16 @@ class PyCollapsiblePane(wx.PyPanel):
         dc = wx.AutoBufferedPaintDC(self._pButton)
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
-        
+
         self.OnDrawGTKExpander(dc)
         self.OnDrawGTKText(dc)
-        
+
 
     def OnDrawGTKExpander(self, dc):
         """
         Overridable method to draw the GTK-style expander.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         self._pButton.OnDrawGTKExpander(dc)
@@ -854,8 +855,86 @@ class PyCollapsiblePane(wx.PyPanel):
         """
         Overridable method to draw the :class:`PyCollapsiblePane` text in the expander.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         self._pButton.OnDrawGTKText(dc)
 
+
+if __name__ == '__main__':
+
+    import wx
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+
+            wx.Frame.__init__(self, parent, -1, "PyCollapsiblePane Demo")
+
+            panel = wx.Panel(self)
+
+            title = wx.StaticText(panel, label="PyCollapsiblePane")
+            title.SetFont(wx.Font(18, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+            title.SetForegroundColour("blue")
+
+            self.cp = cp = PyCollapsiblePane(panel, label='Some Data', style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
+
+            self.MakePaneContent(cp.GetPane())
+
+            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer.Add(title, 0, wx.ALL, 25)
+            sizer.Add(cp, 0, wx.RIGHT|wx.LEFT|wx.EXPAND, 25)
+
+            panel.SetSizer(sizer)
+            sizer.Layout()
+
+
+        def MakePaneContent(self, pane):
+            ''' Just makes a few controls to put on `PyCollapsiblePane`. '''
+
+            nameLbl = wx.StaticText(pane, -1, "Name:")
+            name = wx.TextCtrl(pane, -1, "");
+
+            addrLbl = wx.StaticText(pane, -1, "Address:")
+            addr1 = wx.TextCtrl(pane, -1, "");
+            addr2 = wx.TextCtrl(pane, -1, "");
+
+            cstLbl = wx.StaticText(pane, -1, "City, State, Zip:")
+            city  = wx.TextCtrl(pane, -1, "", size=(150,-1));
+            state = wx.TextCtrl(pane, -1, "", size=(50,-1));
+            zip   = wx.TextCtrl(pane, -1, "", size=(70,-1));
+
+            addrSizer = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
+            addrSizer.AddGrowableCol(1)
+            addrSizer.Add(nameLbl, 0,
+                          wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+            addrSizer.Add(name, 0, wx.EXPAND)
+            addrSizer.Add(addrLbl, 0,
+                          wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+            addrSizer.Add(addr1, 0, wx.EXPAND)
+            addrSizer.Add((5, 5))
+            addrSizer.Add(addr2, 0, wx.EXPAND)
+
+            addrSizer.Add(cstLbl, 0,
+                          wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+
+            cstSizer = wx.BoxSizer(wx.HORIZONTAL)
+            cstSizer.Add(city, 1)
+            cstSizer.Add(state, 0, wx.LEFT|wx.RIGHT, 5)
+            cstSizer.Add(zip)
+            addrSizer.Add(cstSizer, 0, wx.EXPAND)
+
+            border = wx.BoxSizer()
+            border.Add(addrSizer, 1, wx.EXPAND|wx.ALL, 5)
+            pane.SetSizer(border)
+
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()

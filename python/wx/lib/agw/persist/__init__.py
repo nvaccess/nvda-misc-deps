@@ -1,7 +1,4 @@
 """
-Introduction
-============
-
 Persistent objects are simply the objects which automatically save their state
 when they are destroyed and restore it when they are recreated, even during
 another program invocation.
@@ -28,7 +25,7 @@ The persistence framework involves:
   the original class -- which has no special persistence support -- and PersistenceManager;
 * **PersistentHandlers** which handle different kind of saving/restoring actions depending
   on the widget kind.
-  
+
 
 Using Persistent Windows
 ========================
@@ -39,15 +36,13 @@ following classes are supported:
 * wx.TopLevelWindow (and hence wx.Frame and wx.Dialog, together with their own AUI perspectives);
 * wx.MenuBar, FlatMenuBar;
 * AuiToolBar;
-* wx.Notebook, wx.Toolbook, wx.Treebook, wx.Choicebook, wx.aui.AuiNotebook,
-  AuiNotebook (together with its own AUI perspective),
-  FlatNotebook, LabelBook,
-  FlatImageBook;
+* wx.Notebook, wx.Toolbook, wx.Treebook, wx.Choicebook, AuiNotebook (together with its own AUI perspective),
+  FlatNotebook, LabelBook, FlatImageBook;
 * wx.CheckBox;
-* wx.ListBox, wx.VListBox, wx.HtmlListBox, wx.SimpleHtmlListBox, wx.gizmos.EditableListBox;
+* wx.ListBox, wx.VListBox, wx.HtmlListBox, wx.SimpleHtmlListBox, wx.adv.EditableListBox;
 * wx.ListCtrl, wx.ListView, UltimateListCtrl;
 * wx.CheckListBox;
-* wx.Choice, wx.ComboBox, wx.combo.OwnerDrawnComboBox;
+* wx.Choice, wx.ComboBox, wx.adv.OwnerDrawnComboBox;
 * wx.RadioBox;
 * wx.RadioButton;
 * wx.ScrolledWindow, wx.lib.scrolledpanel.ScrolledPanel;
@@ -59,10 +54,10 @@ following classes are supported:
   wx.lib.buttons.GenBitmapTextToggleButton, SToggleButton,
   SBitmapToggleButton, SBitmapTextToggleButton;
 * wx.TreeCtrl, wx.GenericDirCtrl, CustomTreeCtrl;
-* wx.gizmos.TreeListCtrl, HyperTreeList;
-* wx.lib.calendar.CalendarCtrl;
+* HyperTreeList;
+* wx.lib.calendar.CalendarCtrl, wx.adv.CalendarCtrl;
 * wx.CollapsiblePane, PyCollapsiblePane;
-* wx.DatePickerCtrl, wx.GenericDatePickerCtrl;
+* wx.adv.DatePickerCtrl, wx.adv.GenericDatePickerCtrl;
 * wx.media.MediaCtrl;
 * wx.ColourPickerCtrl, wx.lib.colourselect.ColourSelect;
 * wx.FilePickerCtrl, wx.DirPickerCtrl;
@@ -141,7 +136,7 @@ Example of using a notebook control which automatically remembers the last open 
 
 
 .. _persistent-windows:
-    
+
 Defining Custom Persistent Windows
 ==================================
 
@@ -153,7 +148,7 @@ for your custom class MyWidget you just need to:
   objects, typically something like "widget";
 * Implement its `Save()` and `Restore()` methods to actually save and restore the widget
   settings using `PersistentObject.SaveValue()` and `PersistentObject.RestoreValue()` methods.
-  
+
 If you want to add persistence support for a class not deriving from wx.Window, you need
 to derive MyPersistentWidget directly from PersistentObject and so implement its
 `PersistentObject.GetName()` method too. Additionally, you must ensure that
@@ -164,23 +159,23 @@ can be only done automatically for windows.
 TODOs
 =====
 
-* Find a way to handle :class:`ToolBar` UI settings as it has been done for :class:`~lib.agw.aui.auibar.AuiToolBar`:
+* Find a way to handle :class:`ToolBar` UI settings as it has been done for :class:`~wx.lib.agw.aui.auibar.AuiToolBar`:
   current :class:`ToolBar` doesn't seem to have easy access to the underlying toolbar tools;
 * Implement handler(s) for :class:`grid.Grid` for row/columns sizes (possibly adding another style
   to `PersistenceManager` as :class:`grid.Grid` sets up arrays to store individual row and column
   sizes when non-default sizes are used. The memory requirements for this could become prohibitive
   if the grid is very large);
-* Find a way to properly save and restore dialog data (:class:`ColourDialog`, :class:`FontDialog` etc...);
+* Find a way to properly save and restore dialog data (:class:`wx.ColourDialog`, :class:`wx.FontDialog` etc...);
 * Add handlers for the remaining widgets not yet wrapped (mostly in :mod:`lib`).
 
 
 License And Version
 ===================
 
-`PersistentObjects` library is distributed under the wxPython license. 
+`PersistentObjects` library is distributed under the wxPython license.
 
 Latest revision: Andrea Gavana @ 27 Mar 2013, 21.00 GMT
-Version 0.4. 
+Version 0.5.
 
 """
 
@@ -188,6 +183,6 @@ __author__ = "Andrea Gavana <andrea.gavana@gmail.com>"
 __date__ = "16 November 2009"
 
 
-from persist_constants import *
-from persistencemanager import *
-from persist_handlers import *
+from .persist_constants import *
+from .persistencemanager import *
+from .persist_handlers import *

@@ -2,10 +2,11 @@
 # CSheet - A wxPython spreadsheet class.
 # This is free software.  Feel free to adapt it as you like.
 # Author: Mark F. Russo (russomf@hotmail.com) 2002/01/31
+# Tags: phoenix-port
 #---------------------------------------------------------------------------
 # 12/11/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o 2.5 compatability update.
+# o 2.5 compatibility update.
 # o Untested.
 #
 
@@ -59,7 +60,7 @@ class CCellEditor(wx.grid.PyGridCellEditor):
     def SetSize(self, rect):
         """ Position/size the edit control within the cell rectangle. """
         # Size text control to exactly overlay in-cell editing
-        self._tc.SetDimensions(rect.x+3, rect.y+3, rect.width-2, rect.height-2)
+        self._tc.SetSize(rect.x+3, rect.y+3, rect.width-2, rect.height-2)
 
     def Show(self, show, attr):
         """ Show or hide the edit control.  Use the attr (if not None)
@@ -126,8 +127,8 @@ class CCellEditor(wx.grid.PyGridCellEditor):
         """
         key = evt.GetKeyCode()              # Get the key code
         ch = None                           # Handle num pad keys
-        if key in [ wx.WXK_NUMPAD0, wx.WXK_NUMPAD1, wx.WXK_NUMPAD2, wx.WXK_NUMPAD3, 
-                    wx.WXK_NUMPAD4, wx.WXK_NUMPAD5, wx.WXK_NUMPAD6, wx.WXK_NUMPAD7, 
+        if key in [ wx.WXK_NUMPAD0, wx.WXK_NUMPAD1, wx.WXK_NUMPAD2, wx.WXK_NUMPAD3,
+                    wx.WXK_NUMPAD4, wx.WXK_NUMPAD5, wx.WXK_NUMPAD6, wx.WXK_NUMPAD7,
                     wx.WXK_NUMPAD8, wx.WXK_NUMPAD9]:
             ch = chr(ord('0') + key - wx.WXK_NUMPAD0)
 
@@ -153,7 +154,7 @@ class CCellEditor(wx.grid.PyGridCellEditor):
 
     def Destroy(self):
         """ Final cleanup
-        
+
             NOTE: There is no need to everride this if you don't need
             to do something out of the ordinary.
         """
@@ -192,7 +193,7 @@ class CSheet(wx.grid.Grid):
         self.Bind(wx.grid.EVT_GRID_RANGE_SELECT, self.OnRangeSelect)
         self.Bind(wx.grid.EVT_GRID_ROW_SIZE, self.OnRowSize)
         self.Bind(wx.grid.EVT_GRID_COL_SIZE, self.OnColSize)
-        self.Bind(wx.grid.EVT_GRID_CELL_CHANGE, self.OnCellChange)
+        self.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.OnCellChange)
         self.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.OnGridSelectCell)
 
     def OnGridSelectCell(self, event):

@@ -1,3 +1,9 @@
+#----------------------------------------------------------------------
+# Name:        magic.py
+# Author:      David N. Mashburn <david.n.mashburn@gmail.com>
+# Created:     07/01/2009
+# Tags:        phoenix-port
+#----------------------------------------------------------------------
 """magic.py is a utility that allows a simple line from the interpreter
 be translated from a more bash-like form to a python form.
 For instance, 'plot a' is transformed to 'plot(a)'
@@ -8,7 +14,7 @@ __author__ = "David N. Mashburn <david.n.mashburn@gmail.com>"
 
 import keyword
 
-from parse import testForContinuations
+from .parse import testForContinuations
 
 aliasDict = {}
 
@@ -19,9 +25,9 @@ aliasDict = {}
 def magicSingle(command):
     if command=='': # Pass if command is blank
         return command
-    
+
     first_space=command.find(' ')
-    
+
     if command[0]==' ': # Pass if command begins with a space
         pass
     elif command[0]=='?': # Do help if starts with ?
@@ -35,7 +41,7 @@ def magicSingle(command):
     elif command[:6] == 'alias ':
         c = command[6:].lstrip().split(' ')
         if len(c)<2:
-            #print 'Not enough arguments for alias!'
+            #print('Not enough arguments for alias!')
             command = ''
         else:
             n,v = c[0],' '.join(c[1:])
@@ -67,13 +73,13 @@ def magicSingle(command):
 
 def magic(command):
     continuations = testForContinuations(command)
-    
+
     if len(continuations)==2: # Error case...
         return command
     elif len(continuations)==4:
         stringContinuationList,indentationBlockList, \
         lineContinuationList,parentheticalContinuationList = continuations
-    
+
     commandList=[]
     firstLine = True
     for i in command.split('\n'):
@@ -86,7 +92,7 @@ def magic(command):
             commandList.append(magicSingle(i)) # unless this is in a larger expression, use magic
         else:
             commandList.append(i)
-        
+
         firstLine=False
-    
+
     return '\n'.join(commandList)

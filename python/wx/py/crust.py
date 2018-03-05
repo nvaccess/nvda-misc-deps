@@ -1,8 +1,6 @@
 """Crust combines the shell and filling into one control."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
 import wx
 
@@ -11,19 +9,18 @@ import pprint
 import re
 import sys
 
-import dispatcher
-import editwindow
-from filling import Filling
-import frame
-from shell import Shell
-from version import VERSION
+from . import dispatcher
+from . import editwindow
+from .filling import Filling
+from . import frame
+from .shell import Shell
+from .version import VERSION
 
 
 class Crust(wx.SplitterWindow):
     """Crust based on SplitterWindow."""
 
     name = 'Crust'
-    revision = __revision__
     sashoffset = 300
 
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition,
@@ -42,13 +39,13 @@ class Crust(wx.SplitterWindow):
         # navigation key, but the Shell window uses it to insert lines.
         style = self.GetWindowStyle()
         self.SetWindowStyle(style & ~wx.TAB_TRAVERSAL)
-        
+
         self.shell = Shell(parent=self, introText=intro,
                            locals=locals, InterpClass=InterpClass,
                            startupScript=startupScript,
                            execStartupScript=execStartupScript,
                            *args, **kwds)
-        
+
         self.editor = self.shell
         if rootObject is None:
             rootObject = self.shell.interp.locals
@@ -61,23 +58,23 @@ class Crust(wx.SplitterWindow):
         # Add 'filling' to the interpreter's locals.
         self.shell.interp.locals['filling'] = self.filling
         self.notebook.AddPage(page=self.filling, text='Namespace', select=True)
-        
+
         self.display = Display(parent=self.notebook)
         self.notebook.AddPage(page=self.display, text='Display')
         # Add 'pp' (pretty print) to the interpreter's locals.
         self.shell.interp.locals['pp'] = self.display.setItem
         self.display.nbTab = self.notebook.GetPageCount()-1
-        
+
         self.calltip = Calltip(parent=self.notebook)
         self.notebook.AddPage(page=self.calltip, text='Calltip')
-        
+
         self.sessionlisting = SessionListing(parent=self.notebook)
         self.notebook.AddPage(page=self.sessionlisting, text='History')
-        
+
         self.dispatcherlisting = DispatcherListing(parent=self.notebook)
         self.notebook.AddPage(page=self.dispatcherlisting, text='Dispatcher')
 
-        
+
         # Initialize in an unsplit mode, and check later after loading
         # settings if we should split or not.
         self.shell.Hide()
@@ -97,7 +94,7 @@ class Crust(wx.SplitterWindow):
             self.lastsashpos = self.GetSashPosition()
         else:
             self.lastsashpos = -1
-        self.issplit = self.IsSplit()       
+        self.issplit = self.IsSplit()
 
     def ToggleTools(self):
         """Toggle the display of the filling and other tools"""
@@ -154,7 +151,7 @@ class Crust(wx.SplitterWindow):
             config.WriteInt('Sash/CrustPos', self.lastsashpos)
         config.WriteInt('Sash/IsSplit', self.issplit)
         config.WriteInt('View/Zoom/Display', self.display.GetZoom())
-        
+
 class Display(editwindow.EditWindow):
     """STC used to display an object using Pretty Print."""
 
@@ -172,6 +169,9 @@ class Display(editwindow.EditWindow):
 
     def push(self, command, more):
         """Receiver for Interpreter.push signal."""
+        if not self:
+            dispatcher.disconnect(receiver=self.push, signal='Interpreter.push')
+            return
         self.Refresh()
 
     def Refresh(self):
@@ -190,7 +190,7 @@ class Display(editwindow.EditWindow):
             focus = wx.Window.FindFocus()
             self.GetParent().SetSelection(self.nbTab)
             wx.CallAfter(focus.SetFocus)
-            
+
 
 # TODO: Switch this to a editwindow.EditWindow
 class Calltip(wx.TextCtrl):
@@ -204,11 +204,15 @@ class Calltip(wx.TextCtrl):
         dispatcher.connect(receiver=self.display, signal=self.ShellClassName+'.calltip')
 
         df = self.GetFont()
-        font = wx.Font(df.GetPointSize(), wx.TELETYPE, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(df.GetPointSize(), wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         self.SetFont(font)
 
     def display(self, calltip):
-        """Receiver for """+self.ShellClassName+""".calltip signal."""
+        """Receiver for this.calltip signal."""
+        if not self:
+            dispatcher.disconnect(receiver=self.display, signal=self.ShellClassName+'.calltip')
+            return
+
         ## self.SetValue(calltip)  # Caused refresh problem on Windows.
         self.Clear()
         self.AppendText(calltip)
@@ -223,30 +227,50 @@ class SessionListing(wx.TextCtrl):
         style = (wx.TE_MULTILINE | wx.TE_READONLY |
                  wx.TE_RICH2 | wx.TE_DONTWRAP)
         wx.TextCtrl.__init__(self, parent, id, style=style)
+        self.ShellClassName = ShellClassName
         dispatcher.connect(receiver=self.addHistory,
-                           signal=ShellClassName+".addHistory")
+                           signal=self.ShellClassName+".addHistory")
         dispatcher.connect(receiver=self.clearHistory,
-                           signal=ShellClassName+".clearHistory")
+                           signal=self.ShellClassName+".clearHistory")
         dispatcher.connect(receiver=self.loadHistory,
-                           signal=ShellClassName+".loadHistory")
+                           signal=self.ShellClassName+".loadHistory")
 
         df = self.GetFont()
-        font = wx.Font(df.GetPointSize(), wx.TELETYPE, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(df.GetPointSize(), wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         self.SetFont(font)
+
+
+    def _disconnect(self):
+        dispatcher.disconnect(receiver=self.addHistory,
+                           signal=self.ShellClassName+".addHistory")
+        dispatcher.disconnect(receiver=self.clearHistory,
+                           signal=self.ShellClassName+".clearHistory")
+        dispatcher.disconnect(receiver=self.loadHistory,
+                           signal=self.ShellClassName+".loadHistory")
+
 
     def loadHistory(self, history):
         # preload the existing history, if any
+        if not self:
+            self._disconnect()
+            return
         hist = history[:]
         hist.reverse()
         self.SetValue('\n'.join(hist) + '\n')
         self.SetInsertionPointEnd()
 
     def addHistory(self, command):
+        if not self:
+            self._disconnect()
+            return
         if command:
             self.SetInsertionPointEnd()
             self.AppendText(command + '\n')
 
     def clearHistory(self):
+        if not self:
+            self._disconnect()
+            return
         self.SetValue("")
 
 
@@ -260,11 +284,14 @@ class DispatcherListing(wx.TextCtrl):
         dispatcher.connect(receiver=self.spy)
 
         df = self.GetFont()
-        font = wx.Font(df.GetPointSize(), wx.TELETYPE, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(df.GetPointSize(), wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         self.SetFont(font)
 
     def spy(self, signal, sender):
         """Receiver for Any signal from Any sender."""
+        if not self:
+            dispatcher.disconnect(receiver=self.spy)
+            return
         text = '%r from %s' % (signal, sender)
         self.SetInsertionPointEnd()
         start, end = self.GetSelection()
@@ -278,7 +305,6 @@ class CrustFrame(frame.Frame, frame.ShellFrameMixin):
     """Frame containing all the PyCrust components."""
 
     name = 'CrustFrame'
-    revision = __revision__
 
 
     def __init__(self, parent=None, id=-1, title='PyCrust',
@@ -292,12 +318,12 @@ class CrustFrame(frame.Frame, frame.ShellFrameMixin):
         frame.Frame.__init__(self, parent, id, title, pos, size, style,
                              shellName='PyCrust')
         frame.ShellFrameMixin.__init__(self, config, dataDir)
-        
+
         if size == wx.DefaultSize:
             self.SetSize((800, 600))
-        
+
         intro = 'PyCrust %s - The Flakiest Python Shell' % VERSION
-        
+
         self.SetStatusText(intro.replace('\n', ', '))
         self.crust = Crust(parent=self, intro=intro,
                            rootObject=rootObject,
@@ -312,10 +338,10 @@ class CrustFrame(frame.Frame, frame.ShellFrameMixin):
 
         # Override the filling so that status messages go to the status bar.
         self.crust.filling.tree.setStatusText = self.SetStatusText
-        
+
         # Override the shell so that status messages go to the status bar.
         self.shell.setStatusText = self.SetStatusText
-        
+
         self.shell.SetFocus()
         self.LoadSettings()
 
@@ -334,8 +360,6 @@ class CrustFrame(frame.Frame, frame.ShellFrameMixin):
                'Yet another Python shell, only flakier.\n\n' + \
                'Half-baked by Patrick K. O\'Brien,\n' + \
                'the other half is still in the oven.\n\n' + \
-               'Shell Revision: %s\n' % self.shell.revision + \
-               'Interpreter Revision: %s\n\n' % self.shell.interp.revision + \
                'Platform: %s\n' % sys.platform + \
                'Python Version: %s\n' % sys.version.split()[0] + \
                'wxPython Version: %s\n' % wx.VERSION_STRING + \
@@ -376,4 +400,4 @@ class CrustFrame(frame.Frame, frame.ShellFrameMixin):
         if self.config is not None:
             self.SaveSettings(force=True)
             self.config.Flush()
-    
+

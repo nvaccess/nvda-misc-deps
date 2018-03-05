@@ -2,19 +2,17 @@
 the local namespace or any object."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
+# Tags: py3-port
 
 import wx
+import six
 
-import dispatcher
-import editwindow
+from . import dispatcher
+from . import editwindow
+from . import images
 import inspect
-import introspect
-import keyword
-import sys
+from . import introspect
 import types
-from version import VERSION
 
 
 COMMONTYPES = [getattr(types, t) for t in dir(types) \
@@ -29,7 +27,7 @@ DOCTYPES = ('BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
 SIMPLETYPES = [getattr(types, t) for t in dir(types) \
                if not t.startswith('_') and t not in DOCTYPES]
 
-del t
+#del t
 
 try:
     COMMONTYPES.append(type(''.__repr__))  # Method-wrapper in version 2.2.x.
@@ -39,9 +37,8 @@ except AttributeError:
 
 class FillingTree(wx.TreeCtrl):
     """FillingTree based on TreeCtrl."""
-    
+
     name = 'Filling Tree'
-    revision = __revision__
 
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.TR_DEFAULT_STYLE,
@@ -58,8 +55,7 @@ class FillingTree(wx.TreeCtrl):
             rootLabel = 'locals()'
         if not rootLabel:
             rootLabel = 'Ingredients'
-        rootData = wx.TreeItemData(rootObject)
-        self.item = self.root = self.AddRoot(rootLabel, -1, -1, rootData)
+        self.item = self.root = self.AddRoot(rootLabel, -1, -1, rootObject)
         self.SetItemHasChildren(self.root, self.objHasChildren(rootObject))
         self.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.OnItemExpanding, id=self.GetId())
         self.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.OnItemCollapsed, id=self.GetId())
@@ -70,6 +66,9 @@ class FillingTree(wx.TreeCtrl):
 
     def push(self, command, more):
         """Receiver for Interpreter.push signal."""
+        if not self:
+            dispatcher.disconnect(receiver=self.push, signal='Interpreter.push')
+            return
         self.display()
 
     def OnItemExpanding(self, event):
@@ -99,7 +98,7 @@ class FillingTree(wx.TreeCtrl):
         """Launch a DirFrame."""
         item = event.GetItem()
         text = self.getFullName(item)
-        obj = self.GetPyData(item)
+        obj = self.GetItemData(item)
         frame = FillingFrame(parent=self, size=(600, 100), rootObject=obj,
                              rootLabel=text, rootIsNamespace=False)
         frame.Show()
@@ -115,13 +114,14 @@ class FillingTree(wx.TreeCtrl):
         """Return dictionary with attributes or contents of object."""
         busy = wx.BusyCursor()
         otype = type(obj)
-        if otype is types.DictType \
-        or str(otype)[17:23] == 'BTrees' and hasattr(obj, 'keys'):
+        if (isinstance(obj, dict)
+            or 'BTrees' in six.text_type(otype)
+            and hasattr(obj, 'keys')):
             return obj
         d = {}
-        if otype is types.ListType or otype is types.TupleType:
+        if isinstance(obj, (list, tuple)):
             for n in range(len(obj)):
-                key = '[' + str(n) + ']'
+                key = '[' + six.text_type(n) + ']'
                 d[key] = obj[n]
         if otype not in COMMONTYPES:
             for key in introspect.getAttributeNames(obj):
@@ -130,31 +130,29 @@ class FillingTree(wx.TreeCtrl):
                 # module. So this is nested in a try block.
                 try:
                     d[key] = getattr(obj, key)
-                except:
+                except Exception:
                     pass
         return d
 
     def addChildren(self, item):
         self.DeleteChildren(item)
-        obj = self.GetPyData(item)
+        obj = self.GetItemData(item)
         children = self.objGetChildren(obj)
         if not children:
             return
-        keys = children.keys()
-        keys.sort(lambda x, y: cmp(str(x).lower(), str(y).lower()))
+        keys = sorted(children.keys(), key=lambda x: six.text_type(x).lower())
         for key in keys:
-            itemtext = str(key)
+            itemtext = six.text_type(key)
             # Show string dictionary items with single quotes, except
             # for the first level of items, if they represent a
             # namespace.
-            if type(obj) is types.DictType \
-            and type(key) is types.StringType \
-            and (item != self.root \
+            if isinstance(obj, dict) \
+            and isinstance(key, six.string_types) \
+            and (item != self.root
                  or (item == self.root and not self.rootIsNamespace)):
                 itemtext = repr(key)
             child = children[key]
-            data = wx.TreeItemData(child)
-            branch = self.AppendItem(parent=item, text=itemtext, data=data)
+            branch = self.AppendItem(parent=item, text=itemtext, data=child)
             self.SetItemHasChildren(branch, self.objHasChildren(child))
 
     def display(self):
@@ -164,7 +162,7 @@ class FillingTree(wx.TreeCtrl):
         if self.IsExpanded(item):
             self.addChildren(item)
         self.setText('')
-        obj = self.GetPyData(item)
+        obj = self.GetItemData(item)
         if wx.Platform == '__WXMSW__':
             if obj is None: # Windows bug fix.
                 return
@@ -172,31 +170,31 @@ class FillingTree(wx.TreeCtrl):
         otype = type(obj)
         text = ''
         text += self.getFullName(item)
-        text += '\n\nType: ' + str(otype)
+        text += '\n\nType: ' + six.text_type(otype)
         try:
-            value = str(obj)
-        except:
+            value = six.text_type(obj)
+        except Exception:
             value = ''
-        if otype is types.StringType or otype is types.UnicodeType:
+        if isinstance(obj, six.string_types):
             value = repr(obj)
         text += u'\n\nValue: ' + value
         if otype not in SIMPLETYPES:
             try:
                 text += '\n\nDocstring:\n\n"""' + \
                         inspect.getdoc(obj).strip() + '"""'
-            except:
+            except Exception:
                 pass
-        if otype is types.InstanceType:
+        if isinstance(obj, six.class_types):
             try:
                 text += '\n\nClass Definition:\n\n' + \
                         inspect.getsource(obj.__class__)
-            except:
+            except Exception:
                 pass
         else:
             try:
                 text += '\n\nSource Code:\n\n' + \
                         inspect.getsource(obj)
-            except:
+            except Exception:
                 pass
         self.setText(text)
 
@@ -207,14 +205,14 @@ class FillingTree(wx.TreeCtrl):
         obj = None
         if item != self.root:
             parent = self.GetItemParent(item)
-            obj = self.GetPyData(parent)
+            obj = self.GetItemData(parent)
         # Apply dictionary syntax to dictionary items, except the root
         # and first level children of a namepace.
-        if (type(obj) is types.DictType \
-            or str(type(obj))[17:23] == 'BTrees' \
-            and hasattr(obj, 'keys')) \
-        and ((item != self.root and parent != self.root) \
-            or (parent == self.root and not self.rootIsNamespace)):
+        if ((isinstance(obj, dict)
+            or 'BTrees' in six.text_type(type(obj))
+            and hasattr(obj, 'keys'))
+            and ((item != self.root and parent != self.root)
+            or (parent == self.root and not self.rootIsNamespace))):
             name = '[' + name + ']'
         # Apply dot syntax to multipart names.
         if partial:
@@ -234,21 +232,20 @@ class FillingTree(wx.TreeCtrl):
 
         # This method will likely be replaced by the enclosing app to
         # do something more interesting, like write to a text control.
-        print text
+        print(text)
 
     def setStatusText(self, text):
         """Display status information."""
 
         # This method will likely be replaced by the enclosing app to
         # do something more interesting, like write to a status bar.
-        print text
+        print(text)
 
 
 class FillingText(editwindow.EditWindow):
     """FillingText based on StyledTextCtrl."""
 
     name = 'Filling Text'
-    revision = __revision__
 
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.CLIP_CHILDREN,
@@ -264,6 +261,9 @@ class FillingText(editwindow.EditWindow):
 
     def push(self, command, more):
         """Receiver for Interpreter.push signal."""
+        if not self:
+            dispatcher.disconnect(receiver=self.push, signal='Interpreter.push')
+            return
         self.Refresh()
 
     def SetText(self, *args, **kwds):
@@ -276,7 +276,6 @@ class Filling(wx.SplitterWindow):
     """Filling based on wxSplitterWindow."""
 
     name = 'Filling'
-    revision = __revision__
 
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.SP_3D|wx.SP_LIVE_UPDATE,
@@ -290,9 +289,9 @@ class Filling(wx.SplitterWindow):
                                 rootIsNamespace=rootIsNamespace,
                                 static=static)
         self.text = FillingText(parent=self, static=static)
-        
-        wx.FutureCall(1, self.SplitVertically, self.tree, self.text, 200)
-        
+
+        wx.CallLater(25, self.SplitVertically, self.tree, self.text, 200)
+
         self.SetMinimumPaneSize(1)
 
         # Override the filling so that descriptions go to FillingText.
@@ -310,10 +309,11 @@ class Filling(wx.SplitterWindow):
         #event.Skip()
         pass
 
-
     def LoadSettings(self, config):
         pos = config.ReadInt('Sash/FillingPos', 200)
-        wx.FutureCall(250, self.SetSashPosition, pos)
+        if not self.IsSplit():
+            self.SplitVertically(self.tree, self.text)
+        wx.CallLater(250, self.SetSashPosition, pos)
         zoom = config.ReadInt('View/Zoom/Filling', -99)
         if zoom != -99:
             self.text.SetZoom(zoom)
@@ -328,7 +328,6 @@ class FillingFrame(wx.Frame):
     """Frame containing the namespace tree component."""
 
     name = 'Filling Frame'
-    revision = __revision__
 
     def __init__(self, parent=None, id=-1, title='PyFilling',
                  pos=wx.DefaultPosition, size=(600, 400),
@@ -339,7 +338,6 @@ class FillingFrame(wx.Frame):
         intro = 'PyFilling - The Tastiest Namespace Inspector'
         self.CreateStatusBar()
         self.SetStatusText(intro)
-        import images
         self.SetIcon(images.getPyIcon())
         self.filling = Filling(parent=self, rootObject=rootObject,
                                rootLabel=rootLabel,
@@ -353,7 +351,6 @@ class App(wx.App):
     """PyFilling standalone application."""
 
     def OnInit(self):
-        wx.InitAllImageHandlers()
         self.fillingFrame = FillingFrame()
         self.fillingFrame.Show(True)
         self.SetTopWindow(self.fillingFrame)

@@ -1,5 +1,15 @@
-#!/usr/bin/env python
-
+#----------------------------------------------------------------------------
+# Name:         BBox.py
+# Purpose:
+#
+# Author:
+#
+# Created:
+# Version:
+# Date:
+# Licence:
+# Tags:         phoenix-port
+#----------------------------------------------------------------------------
 """
 A Bounding Box object and assorted utilities , subclassed from a numpy array
 
@@ -10,39 +20,44 @@ import numpy as N
 class BBox(N.ndarray):
     """
     A Bounding Box object:
-    
-    Takes Data as an array. Data is any python sequence that can be turned into a 
-    2x2 numpy array of floats:
 
-    [[MinX, MinY ],
-     [MaxX, MaxY ]]
+    Takes Data as an array. Data is any python sequence that can be turned into a
+    2x2 numpy array of floats::
 
-    It is a subclass of numpy.ndarray, so for the most part it can be used as 
+        [
+        [MinX, MinY ],
+        [MaxX, MaxY ]
+        ]
+
+    It is a subclass of numpy.ndarray, so for the most part it can be used as
     an array, and arrays that fit the above description can be used in its place.
-    
+
     Usually created by the factory functions:
-    
+
         asBBox
-        
-        and 
-        
+
+        and
+
         fromPoints
-    
+
     """
     def __new__(subtype, data):
         """
-        Takes Data as an array. Data is any python sequence that can be turned into a 
-        2x2 numpy array of floats:
+        Takes Data as an array. Data is any python sequence that can be turned
+        into a 2x2 numpy array of floats::
 
-        [[MinX, MinY ],
-        [MaxX, MaxY ]]
+            [
+            [MinX, MinY ],
+            [MaxX, MaxY ]
+            ]
 
-        You don't usually call this directly. BBox objects are created with the factory functions:
-        
+        You don't usually call this directly. BBox objects are created with
+        the factory functions:
+
         asBBox
-        
-        and 
-        
+
+        and
+
         fromPoints
 
         """
@@ -86,7 +101,7 @@ class BBox(N.ndarray):
             return True
         else:
             return False
-    
+
     def PointInside(self, Point):
         """
         Inside(BB):
@@ -97,7 +112,7 @@ class BBox(N.ndarray):
         border.
 
         Returns False otherwise
-        
+
         Point is any length-2 sequence (tuple, list, array) or two numbers
         """
         if Point[0] >= self[0,0] and \
@@ -107,12 +122,12 @@ class BBox(N.ndarray):
             return True
         else:
             return False
-    
+
     def Merge(self, BB):
         """
         Joins this bounding box with the one passed in, maybe making this one bigger
 
-        """ 
+        """
         if self.IsNull():
             self[:] = BB
         elif N.isnan(BB).all(): ## BB may be a regular array, so I can't use IsNull
@@ -122,9 +137,9 @@ class BBox(N.ndarray):
             if BB[0,1] < self[0,1]: self[0,1] = BB[0,1]
             if BB[1,0] > self[1,0]: self[1,0] = BB[1,0]
             if BB[1,1] > self[1,1]: self[1,1] = BB[1,1]
-        
+
         return None
-    
+
     def IsNull(self):
         return N.isnan(self).all()
 
@@ -149,7 +164,7 @@ class BBox(N.ndarray):
     def _getHeight(self):
         return self[1,1] - self[0,1]
     Height = property(_getHeight)
-    
+
     def _getCenter(self):
         return self.sum(0) / 2.0
     Center = property(_getCenter)
@@ -176,8 +191,8 @@ class BBox(N.ndarray):
             return True
         else:
             return self.Array__eq__(BB).all()
-        
-   
+
+
 def asBBox(data):
     """
     returns a BBox object.
@@ -186,11 +201,13 @@ def asBBox(data):
 
     If object is a numpy array, a BBox object is returned that shares a
     view of the data with that array. The numpy array should be of the correct
-    format: a 2x2 numpy array of floats:
+    format: a 2x2 numpy array of floats::
 
-    [[MinX, MinY ],
-     [MaxX, MaxY ]]
-    
+        [
+        [MinX, MinY ],
+        [MaxX, MaxY ]
+        ]
+
     """
 
     if isinstance(data, BBox):
@@ -206,7 +223,7 @@ def fromPoints(Points):
     be any python object that can be turned into a numpy NX2 array of Floats.
 
     If a single point is passed in, a zero-size Bounding Box is returned.
-    
+
     """
     Points = N.asarray(Points, N.float).reshape(-1,2)
 
@@ -214,31 +231,31 @@ def fromPoints(Points):
     return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
 def fromBBArray(BBarray):
-   """
-   Builds a BBox object from an array of Bounding Boxes. 
-   The resulting Bounding Box encompases all the included BBs.
-   
-   The BBarray is in the shape: (Nx2x2) where BBarray[n] is a 2x2 array that represents a BBox
-   """
-   
-   #upperleft = N.minimum.reduce(BBarray[:,0])
-   #lowerright = N.maximum.reduce(BBarray[:,1])
+    """
+    Builds a BBox object from an array of Bounding Boxes.
+    The resulting Bounding Box encompases all the included BBs.
 
-#   BBarray = N.asarray(BBarray, N.float).reshape(-1,2)
-#   arr = N.vstack( (BBarray.min(0), BBarray.max(0)) )
-   BBarray = N.asarray(BBarray, N.float).reshape(-1,2,2)
-   arr = N.vstack( (BBarray[:,0,:].min(0), BBarray[:,1,:].max(0)) )
-   return asBBox(arr)
-   #return asBBox( (upperleft, lowerright) ) * 2
-   
+    The BBarray is in the shape: (Nx2x2) where BBarray[n] is a 2x2 array that represents a BBox
+    """
+
+    #upperleft = N.minimum.reduce(BBarray[:,0])
+    #lowerright = N.maximum.reduce(BBarray[:,1])
+
+ #   BBarray = N.asarray(BBarray, N.float).reshape(-1,2)
+ #   arr = N.vstack( (BBarray.min(0), BBarray.max(0)) )
+    BBarray = N.asarray(BBarray, N.float).reshape(-1,2,2)
+    arr = N.vstack( (BBarray[:,0,:].min(0), BBarray[:,1,:].max(0)) )
+    return asBBox(arr)
+    #return asBBox( (upperleft, lowerright) ) * 2
+
 def NullBBox():
     """
     Returns a BBox object with all NaN entries.
-    
+
     This represents a Null BB box;
-    
+
     BB merged with it will return BB.
-    
+
     Nothing is inside it.
 
     """
@@ -258,16 +275,16 @@ def InfBBox():
 class RectBBox(BBox):
     """
     subclass of a BBox that can be used for a rotated Rectangle
-    
+
     contributed by MArco Oster (marco.oster@bioquant.uni-heidelberg.de)
 
     """
-    
+
     def __new__(self, data, edges=None):
         return BBox.__new__(self, data)
 
     def __init__(self, data, edges=None):
-        ''' assume edgepoints are ordered such you can walk along all edges with left rotation sense
+        """ assume edgepoints are ordered such you can walk along all edges with left rotation sense
             This may be:
             left-top
             left-bottom
@@ -275,12 +292,9 @@ class RectBBox(BBox):
             right-top
 
             or any rotation.
-        '''
+        """
         BBox.BBox(data)
         self.edges = np.asarray(edges)
-
-        print "new rectbbox created"
-
 
     def ac_leftOf_ab(self, a, b, c):
         ab = np.array(b) - np.array(a)
@@ -289,8 +303,6 @@ class RectBBox(BBox):
         return (ac[0]*ab[1] - ac[1]*ab[0]) <= 0
 
     def PointInside(self, point):
-        print "point inside called"
-
         for edge in xrange(4):
             if self.ac_leftOf_ab(self.edges[edge],
                                  self.edges[(edge+1)%4],
@@ -298,6 +310,4 @@ class RectBBox(BBox):
                 continue
             else:
                 return False
-        return True 
-    
-   
+        return True

@@ -1,18 +1,17 @@
 #----------------------------------------------------------------------
-# Name:        wxPython.lib.wxpTag
+# Name:        wx.lib.wxpTag
 # Purpose:     A wxHtmlTagHandler that knows how to build and place
 #              wxPython widgets onto web pages.
 #
 # Author:      Robin Dunn
 #
 # Created:     13-Sept-1999
-# RCS-ID:      $Id$
-# Copyright:   (c) 1999 by Total Control Software
+# Copyright:   (c) 1999-2017 by Total Control Software
 # Licence:     wxWindows license
 #----------------------------------------------------------------------
 # 12/13/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o Updated for V2.5 compatability
+# o Updated for V2.5 compatibility
 #
 
 '''
@@ -28,7 +27,7 @@ wxHtmlWinParsers created from that time forth.
 Tags of the following form are recognised::
 
     <WXP class="classname" [module="modulename"] [width="num"] [height="num"]>
-        <PARAM name="parameterName" value="parameterValue>
+        <PARAM name="parameterName" value="parameterValue">
         ...
     </WXP>
 
@@ -78,15 +77,15 @@ An example::
         <param name="id" value="ID_OK">
     </wxp>
 
-Both the begining and ending WXP tags are required.
+Both the beginning and ending WXP tags are required.
 
 In the future support will be added for another tag that can be
-embedded between the two begining and ending WXP tags and will
+embedded between the two beginning and ending WXP tags and will
 facilitate calling methods of the widget to help initialize it.
 Additionally, support may be added to fetch the module from a web
 server as is done with java applets.
-
 '''
+
 #----------------------------------------------------------------------
 
 import  types
@@ -107,6 +106,7 @@ class wxpTagHandler(wx.html.HtmlWinTagHandler):
         wx.html.HtmlWinTagHandler.__init__(self)
         self.ctx = None
 
+
     def GetSupportedTags(self):
         return WXPTAG+','+PARAMTAG
 
@@ -118,7 +118,7 @@ class wxpTagHandler(wx.html.HtmlWinTagHandler):
         elif name == PARAMTAG:
             return self.HandleParamTag(tag)
         else:
-            raise ValueError, 'unknown tag: ' + name
+            raise ValueError('unknown tag: ' + name)
 
 
     def HandleWxpTag(self, tag):
@@ -136,12 +136,12 @@ class wxpTagHandler(wx.html.HtmlWinTagHandler):
 
         # find and verify the class
         if not tag.HasParam('CLASS'):
-            raise AttributeError, "WXP tag requires a CLASS attribute"
+            raise AttributeError("WXP tag requires a CLASS attribute")
 
         className = tag.GetParam('CLASS')
         self.ctx.classObj = getattr(self.ctx.classMod, className)
-        if type(self.ctx.classObj) not in [ types.ClassType, types.TypeType]:
-            raise TypeError, "WXP tag attribute CLASS must name a class"
+        #if type(self.ctx.classObj) not in [ types.ClassType, types.TypeType]:
+        #    raise TypeError("WXP tag attribute CLASS must name a class")
 
         # now look for width and height
         width = -1
@@ -162,13 +162,14 @@ class wxpTagHandler(wx.html.HtmlWinTagHandler):
 
         # create the object
         parent = self.GetParser().GetWindowInterface().GetHTMLWindow()
+
         if parent:
             obj = self.ctx.classObj(parent, **self.ctx.kwargs)
             obj.Show(True)
 
             # add it to the HtmlWindow
-            self.GetParser().GetContainer().InsertCell(
-                wx.html.HtmlWidgetCell(obj, self.ctx.floatWidth))
+            cell = wx.html.HtmlWidgetCell(obj, self.ctx.floatWidth)
+            self.GetParser().GetContainer().InsertCell(cell)
             self.ctx = None
         return True
 
@@ -269,7 +270,5 @@ def _param2dict(param):
 #----------------------------------------------------------------------
 
 
-# Add our handler class to the collection of tag handlers maintained
-# by wxWidgets.
-wx.html.HtmlWinParser_AddTagHandler(wxpTagHandler)
 
+wx.html.HtmlWinParser_AddTagHandler(wxpTagHandler)

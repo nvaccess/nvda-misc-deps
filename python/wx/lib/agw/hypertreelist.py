@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------------------- #
 # HYPERTREELIST wxPython IMPLEMENTATION
-# Inspired By And Heavily Based On wx.gizmos.TreeListCtrl.
+# Inspired By And Heavily Based On wx.gizmos.TreeListCtrl in Classic.
 #
 # Andrea Gavana, @ 08 May 2006
 # Latest Revision: 30 Jul 2014, 21.00 GMT
@@ -35,33 +35,35 @@
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
+# Tags:        phoenix-port, unittest, documented, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------------- #
 
 
 """
-:class:`HyperTreeList` is a class that mimics the behaviour of :class:`gizmos.TreeListCtrl`, with
-some more functionalities.
+:class:`~wx.lib.agw.hypertreelist.HyperTreeList` is a class that combines the
+multicolumn features of a :class:`wx.ListCtrl` in report mode with the
+hierarchical features of a :class:`wx.TreeCtrl`. Although it looks more like a
+:class:`wx.ListCtrl`, the API tends to follow the API of :class:`wx.TreeCtrl`.
 
 
 Description
 ===========
 
-:class:`HyperTreeList` is a class that mimics the behaviour of :class:`gizmos.TreeListCtrl`, with
-almost the same base functionalities plus some more enhancements. This class does
-not rely on the native control, as it is a full owner-drawn tree-list control.
-
-:class:`HyperTreeList` is somewhat an hybrid between :class:`~lib.agw.customtreectrl.CustomTreeCtrl` and :class:`gizmos.TreeListCtrl`.
-
-In addition to the standard :class:`gizmos.TreeListCtrl` behaviour this class supports:
+:class:`HyperTreeList` was originally inspired from the
+``wx.gizmos.TreeListCtrl`` class from Classic wxPython. Now in Phoenix the old
+wrapped C++ ``wxTreeListCtrl`` class is gone and this class can be used in its
+place. In addition to the features of the old ``wx.gizmos.TreeListCtrl`` this
+class supports:
 
 * CheckBox-type items: checkboxes are easy to handle, just selected or unselected
   state with no particular issues in handling the item's children;
 * Added support for 3-state value checkbox items;
-* RadioButton-type items: since I elected to put radiobuttons in :class:`~lib.agw.customtreectrl.CustomTreeCtrl`, I
-  needed some way to handle them, that made sense. So, I used the following approach:
-  
+* RadioButton-type items: since I elected to put radiobuttons in
+  :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl`, I needed some way to handle
+  them that made sense. So, I used the following approach:
+
   - All peer-nodes that are radiobuttons will be mutually exclusive. In other words,
     only one of a set of radiobuttons that share a common parent can be checked at
     once. If a radiobutton node becomes checked, then all of its peer radiobuttons
@@ -81,7 +83,7 @@ In addition to the standard :class:`gizmos.TreeListCtrl` behaviour this class su
 * Customized drag and drop images built on the fly;
 * Setting the :class:`HyperTreeList` item buttons to a personalized imagelist;
 * Setting the :class:`HyperTreeList` check/radio item icons to a personalized imagelist;
-* Changing the style of the lines that connect the items (in terms of :class:`Pen` styles);
+* Changing the style of the lines that connect the items (in terms of :class:`wx.Pen` styles);
 * Using an image as a :class:`HyperTreeList` background (currently only in "tile" mode);
 * Ellipsization of long items when the horizontal space is low, via the ``TR_ELLIPSIZE_LONG_ITEMS``
   style (`New in version 0.9.3`).
@@ -92,7 +94,7 @@ And a lot more. Check the demo for an almost complete review of the functionalit
 Base Functionalities
 ====================
 
-:class:`HyperTreeList` supports all the :class:`gizmos.TreeListCtrl` styles, except:
+:class:`HyperTreeList` supports all the :class:`wx.TreeCtrl` styles, except:
 
 - ``TR_EXTENDED``: supports for this style is on the todo list (Am I sure of this?).
 
@@ -106,14 +108,16 @@ And a style useful to hide the TreeListCtrl header:
 
 - ``TR_NO_HEADER``: hides the :class:`HyperTreeList` header.
 
-And a style related to long items (with a lot of text in them), which can be 
+And a style related to long items (with a lot of text in them), which can be
 ellipsized:
 
 - ``TR_ELLIPSIZE_LONG_ITEMS``: ellipsizes long items when the horizontal space for
   :class:`HyperTreeList` is low (`New in version 0.9.3`).
 
 
-All the methods available in :class:`gizmos.TreeListCtrl` are also available in :class:`HyperTreeList`.
+Please note that most TreeCtrl-like APIs are available in this class, although
+they may not be visible to IDEs or other tools as they are automatically
+delegated to the :class:`CustomTreeCtrl` or other helper classes.
 
 
 Usage
@@ -127,19 +131,19 @@ Usage example::
     class MyFrame(wx.Frame):
 
         def __init__(self, parent):
-        
+
             wx.Frame.__init__(self, parent, -1, "HyperTreeList Demo")
 
             tree_list = HTL.HyperTreeList(self)
-            
+
             tree_list.AddColumn("First column")
 
-            root = tree_list.AddRoot("Root", ct_type=1)
+            root = tree_list.AddRoot("Root")
 
-            parent = tree_list.AppendItem(root, "First child", ct_type=1)
-            child = tree_list.AppendItem(parent, "First Grandchild", ct_type=1)
-            
-            tree_list.AppendItem(root, "Second child", ct_type=1)
+            parent = tree_list.AppendItem(root, "First child")
+            child = tree_list.AppendItem(parent, "First Grandchild")
+
+            tree_list.AppendItem(root, "Second child")
 
 
     # our normal wxApp-derived class, as usual
@@ -151,14 +155,14 @@ Usage example::
     frame.Show()
 
     app.MainLoop()
-    
+
 
 
 Events
 ======
 
-All the events supported by :class:`gizmos.TreeListCtrl` are also available in :class:`HyperTreeList`,
-with a few exceptions:
+All the events supported by :class:`wx.TreeCtrl` and some from :class:`wx.ListCtrl` are
+also available in :class:`HyperTreeList`, with a few exceptions:
 
 - ``EVT_TREE_GET_INFO`` (don't know what this means);
 - ``EVT_TREE_SET_INFO`` (don't know what this means);
@@ -180,7 +184,7 @@ Supported Platforms
 ===================
 
 :class:`HyperTreeList` has been tested on the following platforms:
-  * Windows (Windows XP), Vista, 7;
+  * Windows
   * Linux
   * Mac
 
@@ -208,9 +212,9 @@ Window Styles                  Hex Value   Description
 ``TR_HIDE_ROOT``                     0x800 Use this style to suppress the display of the root node, effectively causing the first-level nodes to appear as a series of root nodes.
 ``TR_COLUMN_LINES``                 0x1000 Use this style to draw a contrasting border between displayed columns.
 ``TR_FULL_ROW_HIGHLIGHT``           0x2000 Use this style to have the background colour and the selection highlight extend  over the entire horizontal row of the tree control window.
-``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
-``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
-``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful foe checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
+``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
+``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
+``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful for checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
 ``TR_ALIGN_WINDOWS``               0x20000 Flag used to align windows (in items with windows) at the same horizontal position.
 ``TR_NO_HEADER``                   0x40000 Use this style to hide the columns header.
 ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`HyperTreeList` columns is low.
@@ -221,7 +225,7 @@ Window Styles                  Hex Value   Description
 Events Processing
 =================
 
-This class processes the following events:
+This class processes the following events, Note that these are the same events as ``wx.ListCtrl`` and ``wx.TreeCtrl``:
 
 ============================== ==================================================
 Event Name                     Description
@@ -265,20 +269,22 @@ License And Version
 
 Latest Revision: Andrea Gavana @ 30 Jul 2014, 21.00 GMT
 
-Version 1.3
+Version 1.4
 
 """
 
 import wx
-import wx.gizmos
 
-from customtreectrl import CustomTreeCtrl
-from customtreectrl import DragImage, TreeEvent, GenericTreeItem, ChopText
-from customtreectrl import TreeEditTimer as TreeListEditTimer
-from customtreectrl import EVT_TREE_ITEM_CHECKING, EVT_TREE_ITEM_CHECKED, EVT_TREE_ITEM_HYPERLINK
+from wx.lib.agw.customtreectrl import CustomTreeCtrl
+from wx.lib.agw.customtreectrl import DragImage, TreeEvent, GenericTreeItem, ChopText
+from wx.lib.agw.customtreectrl import TreeEditTimer as TreeListEditTimer
+from wx.lib.agw.customtreectrl import EVT_TREE_ITEM_CHECKING, EVT_TREE_ITEM_CHECKED, EVT_TREE_ITEM_HYPERLINK
+
+# Python 2/3 compatibility helper
+import six
 
 # Version Info
-__version__ = "1.3"
+__version__ = "1.4"
 
 # --------------------------------------------------------------------------
 # Constants
@@ -306,10 +312,15 @@ _EDIT_TIMER_TICKS = 250 # minimum edit wait time in ms
 # --------------------------------------------------------------------------
 # Additional HitTest style
 # --------------------------------------------------------------------------
+TREE_HITTEST_ONITEMCOLUMN     = 0x2000
+""" On the item column. """
 TREE_HITTEST_ONITEMCHECKICON  = 0x4000
 """ On the check icon, if present. """
 
 # HyperTreeList styles
+TR_DEFAULT_STYLE = wx.TR_DEFAULT_STYLE
+""" Default style for HyperTreeList. """
+
 TR_NO_BUTTONS = wx.TR_NO_BUTTONS                               # for convenience
 """ For convenience to document that no buttons are to be drawn. """
 TR_HAS_BUTTONS = wx.TR_HAS_BUTTONS                             # draw collapsed/expanded btns
@@ -324,33 +335,34 @@ TR_SINGLE = wx.TR_SINGLE                                       # for convenience
 """ For convenience to document that only one item may be selected at a time. Selecting another item causes the current selection, if any, to be deselected. This is the default. """
 TR_MULTIPLE = wx.TR_MULTIPLE                                   # can select multiple items
 """ Use this style to allow a range of items to be selected. If a second range is selected, the current range, if any, is deselected. """
-TR_EXTENDED = wx.TR_EXTENDED                                   # TODO: allow extended selection
+TR_EXTENDED = 0x40                                             # TODO: allow extended selection
 """ Use this style to allow disjoint items to be selected. (Only partially implemented; may not work in all cases). """
 TR_HAS_VARIABLE_ROW_HEIGHT = wx.TR_HAS_VARIABLE_ROW_HEIGHT     # what it says
 """ Use this style to cause row heights to be just big enough to fit the content. If not set, all rows use the largest row height. The default is that this flag is unset. """
 TR_EDIT_LABELS = wx.TR_EDIT_LABELS                             # can edit item labels
 """ Use this style if you wish the user to be able to edit labels in the tree control. """
+TR_COLUMN_LINES = 0x1000                                       # put column border around items
+""" Use this style to draw a contrasting border between displayed columns. """
 TR_ROW_LINES = wx.TR_ROW_LINES                                 # put border around items
 """ Use this style to draw a contrasting border between displayed rows. """
-TR_COLUMN_LINES = 0x1000                                       # put border between columns
-""" Use this style to draw a contrasting border between displayed columns. """
 TR_HIDE_ROOT = wx.TR_HIDE_ROOT                                 # don't display root node
 """ Use this style to suppress the display of the root node, effectively causing the first-level nodes to appear as a series of root nodes. """
 TR_FULL_ROW_HIGHLIGHT = wx.TR_FULL_ROW_HIGHLIGHT               # highlight full horz space
 """ Use this style to have the background colour and the selection highlight extend over the entire horizontal row of the tree control window. """
 
 TR_AUTO_CHECK_CHILD = 0x04000                                  # only meaningful for checkboxes
-""" Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well. """
+""" Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well. """
 TR_AUTO_TOGGLE_CHILD = 0x08000                                 # only meaningful for checkboxes
-""" Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly. """
+""" Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly. """
 TR_AUTO_CHECK_PARENT = 0x10000                                 # only meaningful for checkboxes
-""" Only meaningful foe checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well. """
+""" Only meaningful for checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well. """
 TR_ALIGN_WINDOWS = 0x20000                                     # to align windows horizontally for items at the same level
 """ Flag used to align windows (in items with windows) at the same horizontal position. """
 TR_ELLIPSIZE_LONG_ITEMS = 0x80000                              # to ellipsize long items when horizontal space is low
 """ Flag used to ellipsize long items when the horizontal space for :class:`HyperTreeList` columns is low."""
 TR_VIRTUAL = 0x100000
 """ :class:`HyperTreeList` will have virtual behaviour. """
+
 
 # --------------------------------------------------------------------------
 # Additional HyperTreeList style to hide the header
@@ -385,8 +397,8 @@ def IsBufferingSupported():
 
         return True
 
-    return False    
-    
+    return False
+
 
 class TreeListColumnInfo(object):
     """
@@ -408,12 +420,12 @@ class TreeListColumnInfo(object):
         :param `image`: an index within the normal image list assigned to
          :class:`HyperTreeList` specifying the image to use for the column;
         :param `shown`: ``True`` to show the column, ``False`` to hide it;
-        :param `colour`: a valid :class:`Colour`, representing the text foreground colour
+        :param `colour`: a valid :class:`wx.Colour`, representing the text foreground colour
          for the column;
         :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.
         """
 
-        if isinstance(input, basestring):
+        if isinstance(input, six.string_types):
             self._text = input
             self._width = width
             self._flag = flag
@@ -421,14 +433,14 @@ class TreeListColumnInfo(object):
             self._selected_image = -1
             self._shown = shown
             self._edit = edit
-            self._font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
+            self._font = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
             if colour is None:
-                self._colour = wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOWTEXT)
+                self._colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
             else:
                 self._colour = colour
-                
+
         else:
-    
+
             self._text = input._text
             self._width = input._width
             self._flag = input._flag
@@ -438,15 +450,15 @@ class TreeListColumnInfo(object):
             self._edit = input._edit
             self._colour = input._colour
             self._font = input._font
-    
+
 
     # get/set
     def GetText(self):
         """ Returns the column header label. """
-        
+
         return self._text
 
-    
+
     def SetText(self, text):
         """
         Sets the column header label.
@@ -461,7 +473,7 @@ class TreeListColumnInfo(object):
     def GetWidth(self):
         """ Returns the column header width in pixels. """
 
-        return self._width 
+        return self._width
 
 
     def SetWidth(self, width):
@@ -480,7 +492,7 @@ class TreeListColumnInfo(object):
 
         return self._flag
 
-    
+
     def SetAlignment(self, flag):
         """
         Sets the column text alignment.
@@ -490,7 +502,7 @@ class TreeListColumnInfo(object):
         """
 
         self._flag = flag
-        return self 
+        return self
 
 
     def GetColour(self):
@@ -503,17 +515,17 @@ class TreeListColumnInfo(object):
         """
         Sets the column text colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._colour = colour
         return self
-        
+
 
     def GetImage(self):
         """ Returns the column image index. """
 
-        return self._image 
+        return self._image
 
 
     def SetImage(self, image):
@@ -525,14 +537,14 @@ class TreeListColumnInfo(object):
         """
 
         self._image = image
-        return self 
+        return self
 
 
     def GetSelectedImage(self):
         """ Returns the column image index in the selected state. """
 
         return self._selected_image
-    
+
 
     def SetSelectedImage(self, image):
         """
@@ -545,23 +557,23 @@ class TreeListColumnInfo(object):
 
         self._selected_image = image
         return self
-    
+
 
     def IsEditable(self):
         """ Returns ``True`` if the column is editable, ``False`` otherwise. """
 
         return self._edit
 
-    
+
     def SetEditable(self, edit):
         """
         Sets the column as editable or non-editable.
 
         :param `edit`: ``True`` if the column should be editable, ``False`` otherwise.
         """
-        
+
         self._edit = edit
-        return self 
+        return self
 
 
     def IsShown(self):
@@ -569,7 +581,7 @@ class TreeListColumnInfo(object):
 
         return self._shown
 
-    
+
     def SetShown(self, shown):
         """
         Sets the column as shown or hidden.
@@ -579,14 +591,14 @@ class TreeListColumnInfo(object):
         """
 
         self._shown = shown
-        return self 
+        return self
 
 
     def SetFont(self, font):
         """
         Sets the column text font.
 
-        :param `font`: a valid :class:`Font` object.
+        :param `font`: a valid :class:`wx.Font` object.
         """
 
         self._font = font
@@ -596,7 +608,7 @@ class TreeListColumnInfo(object):
     def GetFont(self):
         """ Returns the column text font. """
 
-        return self._font        
+        return self._font
 
 
 #-----------------------------------------------------------------------------
@@ -605,7 +617,7 @@ class TreeListColumnInfo(object):
 
 class TreeListHeaderWindow(wx.Window):
     """ A window which holds the header of :class:`HyperTreeList`. """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, owner=None, pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=0, name="wxtreelistctrlcolumntitles"):
         """
@@ -623,22 +635,22 @@ class TreeListHeaderWindow(wx.Window):
         """
 
         wx.Window.__init__(self, parent, id, pos, size, style, name=name)
-        
+
         self._owner = owner
-        self._currentCursor = wx.StockCursor(wx.CURSOR_DEFAULT)
-        self._resizeCursor = wx.StockCursor(wx.CURSOR_SIZEWE)
+        self._currentCursor = wx.Cursor(wx.CURSOR_DEFAULT)
+        self._resizeCursor = wx.Cursor(wx.CURSOR_SIZEWE)
         self._isDragging = False
         self._dirty = False
         self._total_col_width = 0
         self._hotTrackCol = -1
         self._columns = []
         self._headerCustomRenderer = None
-        
+
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.OnMouse)
         self.Bind(wx.EVT_SET_FOCUS, self.OnSetFocus)
 
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+        self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
 
 
     def SetBuffered(self, buffered):
@@ -657,7 +669,7 @@ class TreeListHeaderWindow(wx.Window):
     def GetWidth(self):
         """ Returns the total width of all columns. """
 
-        return self._total_col_width 
+        return self._total_col_width
 
 
     # column manipulation
@@ -677,7 +689,7 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column]
 
 
@@ -690,10 +702,10 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].GetText()
 
-    
+
     def SetColumnText(self, column, text):
         """
         Sets the column text label.
@@ -704,9 +716,9 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].SetText(text)
-    
+
 
     def GetColumnAlignment(self, column):
         """
@@ -717,9 +729,9 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].GetAlignment()
-    
+
 
     def SetColumnAlignment(self, column, flag):
         """
@@ -734,9 +746,9 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].SetAlignment(flag)
-    
+
 
     def GetColumnWidth(self, column):
         """
@@ -747,9 +759,9 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].GetWidth()
-    
+
 
     def GetColumnColour(self, column):
         """
@@ -760,7 +772,7 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].GetColour()
 
 
@@ -769,12 +781,12 @@ class TreeListHeaderWindow(wx.Window):
         Sets the column text colour.
 
         :param `column`: an integer specifying the column index;
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].SetColour(colour)
 
 
@@ -787,9 +799,9 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         return self._columns[column].IsEditable()
-    
+
 
     def IsColumnShown(self, column):
         """
@@ -802,18 +814,18 @@ class TreeListHeaderWindow(wx.Window):
             raise Exception("Invalid column")
 
         return self._columns[column].IsShown()
-    
+
 
     # shift the DC origin to match the position of the main window horz
     # scrollbar: this allows us to always use logical coords
     def AdjustDC(self, dc):
         """
-        Shifts the :class:`DC` origin to match the position of the main window horizontal
+        Shifts the :class:`wx.DC` origin to match the position of the main window horizontal
         scrollbar: this allows us to always use logical coordinates.
 
-        :param `dc`: an instance of :class:`DC`.        
+        :param `dc`: an instance of :class:`wx.DC`.
         """
-        
+
         xpix, dummy = self._owner.GetScrollPixelsPerUnit()
         x, dummy = self._owner.GetViewStart()
 
@@ -827,12 +839,12 @@ class TreeListHeaderWindow(wx.Window):
 
         :param `event`: a :class:`PaintEvent` event to be processed.
         """
-        
+
         if self._buffered:
             dc = wx.BufferedPaintDC(self)
         else:
             dc = wx.PaintDC(self)
-            
+
         self.AdjustDC(dc)
 
         x = 0
@@ -843,12 +855,12 @@ class TreeListHeaderWindow(wx.Window):
         dc.SetBackgroundMode(wx.TRANSPARENT)
 
         numColumns = self.GetColumnCount()
-        
-        for i in xrange(numColumns):
+
+        for i in range(numColumns):
 
             if x >= w:
                 break
-        
+
             if not self.IsColumnShown(i):
                 continue # do next column if not shown
 
@@ -865,7 +877,7 @@ class TreeListHeaderWindow(wx.Window):
 
             if i == self._hotTrackCol:
                 flags |= wx.CONTROL_CURRENT
-            
+
             params.m_labelText = column.GetText()
             params.m_labelAlignment = column.GetAlignment()
 
@@ -880,7 +892,7 @@ class TreeListHeaderWindow(wx.Window):
             else:
                 wx.RendererNative.Get().DrawHeaderButton(self, dc, rect, flags,
                                                          wx.HDR_SORT_ICON_NONE, params)
-       
+
         # Fill up any unused space to the right of the columns
         if x < w:
             rect = wx.Rect(x, 0, w-x, h)
@@ -888,11 +900,11 @@ class TreeListHeaderWindow(wx.Window):
                self._headerCustomRenderer.DrawHeaderButton(dc, rect)
             else:
                 wx.RendererNative.Get().DrawHeaderButton(self, dc, rect)
-        
+
 
     def DrawCurrent(self):
         """ Draws the column resize line on a :class:`ScreenDC`. """
-        
+
         x1, y1 = self._currentX, 0
         x1, y1 = self.ClientToScreen((x1, y1))
         x2 = self._currentX-1
@@ -905,14 +917,14 @@ class TreeListHeaderWindow(wx.Window):
 
         dc = wx.ScreenDC()
         dc.SetLogicalFunction(wx.INVERT)
-        dc.SetPen(wx.Pen(wx.BLACK, 2, wx.SOLID))
+        dc.SetPen(wx.Pen(wx.BLACK, 2, wx.PENSTYLE_SOLID))
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
         self.AdjustDC(dc)
         dc.DrawLine (x1, y1, x2, y2)
         dc.SetLogicalFunction(wx.COPY)
-        
-        
+
+
     def SetCustomRenderer(self, renderer=None):
         """
         Associate a custom renderer with the header - all columns will use it
@@ -934,21 +946,21 @@ class TreeListHeaderWindow(wx.Window):
         :return: The column that corresponds to the logical input `x` coordinate,
          or ``wx.NOT_FOUND`` if there is no column at the `x` position.
         """
-        
+
         colLeft = 0
         numColumns = self.GetColumnCount()
-        for col in xrange(numColumns):
-        
+        for col in range(numColumns):
+
             if not self.IsColumnShown(col):
-                continue 
+                continue
 
             column = self.GetColumn(col)
 
             if x < (colLeft + column.GetWidth()):
                  return col
-            
+
             colLeft += column.GetWidth()
-        
+
         return wx.NOT_FOUND
 
 
@@ -961,13 +973,13 @@ class TreeListHeaderWindow(wx.Window):
 
         if col >= self.GetColumnCount():
             return
-        
+
         x = idx = width = 0
         while idx <= col:
-            
+
             if not self.IsColumnShown(idx):
                 idx += 1
-                continue 
+                continue
 
             column = self.GetColumn(idx)
             x += width
@@ -977,7 +989,7 @@ class TreeListHeaderWindow(wx.Window):
         x, dummy = self._owner.CalcScrolledPosition(x, 0)
         self.RefreshRect(wx.Rect(x, 0, width, self.GetSize().GetHeight()))
 
-        
+
     def OnMouse(self, event):
         """
         Handles the ``wx.EVT_MOUSE_EVENTS`` event for :class:`TreeListHeaderWindow`.
@@ -990,10 +1002,10 @@ class TreeListHeaderWindow(wx.Window):
         y = event.GetY()
 
         if event.Moving():
-        
+
             col = self.XToCol(x)
             if col != self._hotTrackCol:
-            
+
                 # Refresh the col header so it will be painted with hot tracking
                 # (if supported by the native renderer.)
                 self.RefreshColLabel(col)
@@ -1003,13 +1015,13 @@ class TreeListHeaderWindow(wx.Window):
                     self.RefreshColLabel(self._hotTrackCol)
 
                 self._hotTrackCol = col
-            
+
         if event.Leaving() and self._hotTrackCol >= 0:
-        
+
             # Leaving the window so clear any hot tracking indicator that may be present
             self.RefreshColLabel(self._hotTrackCol)
             self._hotTrackCol = -1
-        
+
         if self._isDragging:
 
             self.SendListEvent(wx.wxEVT_COMMAND_LIST_COL_DRAGGING, event.GetPosition())
@@ -1038,7 +1050,7 @@ class TreeListHeaderWindow(wx.Window):
                 # draw in the new location
                 if self._currentX < w:
                     self.DrawCurrent()
-            
+
         else: # not dragging
 
             self._minX = 0
@@ -1050,7 +1062,7 @@ class TreeListHeaderWindow(wx.Window):
             # find the column where this event occured
             countCol = self.GetColumnCount()
 
-            for column in xrange(countCol):
+            for column in range(countCol):
 
                 if not self.IsColumnShown(column):
                     continue # do next if not shown
@@ -1061,40 +1073,41 @@ class TreeListHeaderWindow(wx.Window):
                     # near the column border
                     hit_border = True
                     break
-                
+
                 if x < xpos:
                     # inside the column
                     break
-            
+
                 self._minX = xpos
-            
+
             if event.LeftDown() or event.RightUp():
                 if hit_border and event.LeftDown():
                     self._isDragging = True
-                    self.CaptureMouse()
+                    if not self.HasCapture():
+                        self.CaptureMouse()
                     self._currentX = x
                     self.DrawCurrent()
                     self.SendListEvent(wx.wxEVT_COMMAND_LIST_COL_BEGIN_DRAG, event.GetPosition())
                 else: # click on a column
                     evt = (event.LeftDown() and [wx.wxEVT_COMMAND_LIST_COL_CLICK] or [wx.wxEVT_COMMAND_LIST_COL_RIGHT_CLICK])[0]
                     self.SendListEvent(evt, event.GetPosition())
-                
+
             elif event.LeftDClick() and hit_border:
                 self.SetColumnWidth(self._column, self._owner.GetBestColumnWidth(self._column))
                 self.Refresh()
 
             elif event.Moving():
-                
+
                 if hit_border:
                     setCursor = self._currentCursor == wx.STANDARD_CURSOR
                     self._currentCursor = self._resizeCursor
                 else:
                     setCursor = self._currentCursor != wx.STANDARD_CURSOR
                     self._currentCursor = wx.STANDARD_CURSOR
-                
+
                 if setCursor:
                     self.SetCursor(self._currentCursor)
-    
+
 
     def OnSetFocus(self, event):
         """
@@ -1111,9 +1124,9 @@ class TreeListHeaderWindow(wx.Window):
         Sends a :class:`ListEvent` for the parent window.
 
         :param `evtType`: the event type;
-        :param `pos`: an instance of :class:`Point`.
+        :param `pos`: an instance of :class:`wx.Point`.
         """
-        
+
         parent = self.GetParent()
         le = wx.ListEvent(evtType, parent.GetId())
         le.SetEventObject(parent)
@@ -1134,7 +1147,7 @@ class TreeListHeaderWindow(wx.Window):
 
         :param `colInfo`: an instance of :class:`TreeListColumnInfo`.
         """
-        
+
         self._columns.append(colInfo)
         self._total_col_width += colInfo.GetWidth()
         self._owner.AdjustMyScrollbars()
@@ -1153,7 +1166,7 @@ class TreeListHeaderWindow(wx.Window):
         :param `image`: an index within the normal image list assigned to
          :class:`HyperTreeList` specifying the image to use for the column;
         :param `shown`: ``True`` to show the column, ``False`` to hide it;
-        :param `colour`: a valid :class:`Colour`, representing the text foreground colour
+        :param `colour`: a valid :class:`wx.Colour`, representing the text foreground colour
          for the column;
         :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.
         """
@@ -1169,7 +1182,7 @@ class TreeListHeaderWindow(wx.Window):
         :param `column`: an integer specifying the column index;
         :param `width`: the new width for the column, in pixels.
         """
-        
+
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
 
@@ -1191,7 +1204,7 @@ class TreeListHeaderWindow(wx.Window):
 
         if before < 0 or before >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         self._columns.insert(before, colInfo)
         self._total_col_width += colInfo.GetWidth()
         self._owner.AdjustMyScrollbars()
@@ -1199,7 +1212,7 @@ class TreeListHeaderWindow(wx.Window):
 
 
     def InsertColumn(self, before, text, width=_DEFAULT_COL_WIDTH,
-                     flag=wx.ALIGN_LEFT, image=-1, shown=True, colour=None, 
+                     flag=wx.ALIGN_LEFT, image=-1, shown=True, colour=None,
                      edit=False):
         """
         Inserts a column to the :class:`TreeListHeaderWindow` at the position specified
@@ -1213,12 +1226,12 @@ class TreeListHeaderWindow(wx.Window):
         :param `image`: an index within the normal image list assigned to
          :class:`HyperTreeList` specifying the image to use for the column;
         :param `shown`: ``True`` to show the column, ``False`` to hide it;
-        :param `colour`: a valid :class:`Colour`, representing the text foreground colour
+        :param `colour`: a valid :class:`wx.Colour`, representing the text foreground colour
          for the column;
-        :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.        
+        :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.
         """
-        
-        colInfo = TreeListColumnInfo(text, width, flag, image, shown, colour, 
+
+        colInfo = TreeListColumnInfo(text, width, flag, image, shown, colour,
                                      edit)
         self.InsertColumnInfo(before, colInfo)
 
@@ -1232,7 +1245,7 @@ class TreeListHeaderWindow(wx.Window):
 
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         self._total_col_width -= self._columns[column].GetWidth()
         self._columns.pop(column)
         self._owner.AdjustMyScrollbars()
@@ -1244,21 +1257,21 @@ class TreeListHeaderWindow(wx.Window):
         Sets a column using an instance of :class:`TreeListColumnInfo`.
 
         :param `column`: an integer specifying the column index;
-        :param `info`: an instance of :class:`TreeListColumnInfo`.        
+        :param `info`: an instance of :class:`TreeListColumnInfo`.
         """
-        
+
         if column < 0 or column >= self.GetColumnCount():
             raise Exception("Invalid column")
-        
+
         w = self._columns[column].GetWidth()
         self._columns[column] = info
-        
+
         if w != info.GetWidth():
             self._total_col_width += info.GetWidth() - w
             self._owner.AdjustMyScrollbars()
-        
+
         self._owner._dirty = True
-        
+
 
 # ---------------------------------------------------------------------------
 # TreeListItem
@@ -1268,10 +1281,10 @@ class TreeListItem(GenericTreeItem):
     This class holds all the information and methods for every single item in
     :class:`HyperTreeList`.
 
-    :note: Subclassed from :class:`GenericTreeItem`.    
+    :note: Subclassed from :class:`~wx.lib.agw.customtreectrl.GenericTreeItem`.
     """
-    
-    def __init__(self, mainWin, parent, text=[], ct_type=0, wnd=None, image=-1, selImage=-1, data=None):
+
+    def __init__(self, mainWin, parent, text="", ct_type=0, wnd=None, image=-1, selImage=-1, data=None):
         """
         Default class constructor.
         For internal use: do not call it in your code!
@@ -1301,13 +1314,13 @@ class TreeListItem(GenericTreeItem):
 
         :note: Regarding radiobutton-type items (with `ct_type` = 2), the following
          approach is used:
-         
+
          - All peer-nodes that are radiobuttons will be mutually exclusive. In other words,
            only one of a set of radiobuttons that share a common parent can be checked at
            once. If a radiobutton node becomes checked, then all of its peer radiobuttons
            must be unchecked.
          - If a radiobutton node becomes unchecked, then all of its child nodes will become
-           inactive.        
+           inactive.
         """
 
         self._col_images = []
@@ -1315,12 +1328,12 @@ class TreeListItem(GenericTreeItem):
 
         # We don't know the height here yet.
         self._text_x = 0
-        
-        GenericTreeItem.__init__(self, parent, text, ct_type, wnd, image, selImage, data)        
- 
+
+        GenericTreeItem.__init__(self, parent, text, ct_type, wnd, image, selImage, data)
+
         self._wnd = [None]             # are we holding a window?
         self._hidden = False
-        
+
         if wnd:
             self.SetWindow(wnd)
 
@@ -1339,8 +1352,8 @@ class TreeListItem(GenericTreeItem):
         """
 
         self._hidden = hide
-        
-    
+
+
     def DeleteChildren(self, tree):
         """
         Deletes the item children.
@@ -1352,7 +1365,7 @@ class TreeListItem(GenericTreeItem):
             child.DeleteChildren(tree)
             if tree:
                 tree.Delete(child)
-            
+
             if child == tree._selectItem:
                 tree._selectItem = None
 
@@ -1361,14 +1374,14 @@ class TreeListItem(GenericTreeItem):
                 if wnd:
                     wnd.Hide()
                     wnd.Destroy()
-                    
+
             child._wnd = []
 
             if child in tree._itemWithWindow:
                 tree._itemWithWindow.remove(child)
-                
+
             del child
-        
+
         self._children = []
 
 
@@ -1376,12 +1389,12 @@ class TreeListItem(GenericTreeItem):
         """
         HitTest method for an item. Called from the main window HitTest.
 
-        :param `point`: the point to test for the hit (an instance of :class:`Point`);
+        :param `point`: the point to test for the hit (an instance of :class:`wx.Point`);
         :param `theCtrl`: the main :class:`TreeListMainWindow` tree;
         :param `flags`: a bitlist of hit locations;
         :param `column`: an integer specifying the column index;
         :param `level`: the item's level inside the tree hierarchy.
-        
+
         :see: :meth:`TreeListMainWindow.HitTest() <TreeListMainWindow.HitTest>` method for the flags explanation.
         """
 
@@ -1399,18 +1412,18 @@ class TreeListItem(GenericTreeItem):
 
             # evaluate if y-pos is okay
             h = theCtrl.GetLineHeight(self)
-            
+
             if point.y >= self._y and point.y <= self._y + h:
 
                 maincol = theCtrl.GetMainColumn()
 
                 # check for above/below middle
-                y_mid = self._y + h/2
+                y_mid = self._y + h//2
                 if point.y < y_mid:
                     flags |= wx.TREE_HITTEST_ONITEMUPPERPART
                 else:
                     flags |= wx.TREE_HITTEST_ONITEMLOWERPART
-                
+
                 # check for button hit
                 if self.HasPlus() and theCtrl.HasButtons():
                     bntX = self._x - theCtrl._btnWidth2
@@ -1431,67 +1444,67 @@ class TreeListItem(GenericTreeItem):
                     chkX = self._text_x - imageWidth - numberOfMargins*_MARGIN - theCtrl._checkWidth
                     chkY = y_mid - theCtrl._checkHeight2
                     if ((point.x >= chkX) and (point.x <= (chkX + theCtrl._checkWidth)) and
-                        (point.y >= chkY) and (point.y <= (chkY + theCtrl._checkHeight))):                    
+                        (point.y >= chkY) and (point.y <= (chkY + theCtrl._checkHeight))):
                         flags |= TREE_HITTEST_ONITEMCHECKICON
                         return self, flags, maincol
-                    
+
                 # check for image hit
                 if self.GetCurrentImage() != _NO_IMAGE:
-                    imgX = self._text_x - theCtrl._imgWidth - _MARGIN                        
+                    imgX = self._text_x - theCtrl._imgWidth - _MARGIN
                     imgY = y_mid - theCtrl._imgHeight2
                     if ((point.x >= imgX) and (point.x <= (imgX + theCtrl._imgWidth)) and
                         (point.y >= imgY) and (point.y <= (imgY + theCtrl._imgHeight))):
                         flags |= wx.TREE_HITTEST_ONITEMICON
                         column = maincol
                         return self, flags, column
-                    
+
                 # check for label hit
                 if ((point.x >= self._text_x) and (point.x <= (self._text_x + self._width))):
                     flags |= wx.TREE_HITTEST_ONITEMLABEL
                     column = maincol
                     return self, flags, column
-                
+
                 # check for indent hit after button and image hit
                 if point.x < self._x:
                     flags |= wx.TREE_HITTEST_ONITEMINDENT
                     column = -1 # considered not belonging to main column
                     return self, flags, column
-                
+
                 # check for right of label
                 end = 0
-                for i in xrange(maincol):
+                for i in range(maincol):
                     end += header_win.GetColumnWidth(i)
                     if ((point.x > (self._text_x + self._width)) and (point.x <= end)):
                         flags |= wx.TREE_HITTEST_ONITEMRIGHT
                         column = -1 # considered not belonging to main column
                         return self, flags, column
-                
+
                 # else check for each column except main
                 x = 0
-                for j in xrange(theCtrl.GetColumnCount()):
+                for j in range(theCtrl.GetColumnCount()):
                     if not header_win.IsColumnShown(j):
                         continue
                     w = header_win.GetColumnWidth(j)
                     if ((j != maincol) and (point.x >= x and point.x < x+w)):
-                        flags |= wx.TREE_HITTEST_ONITEMCOLUMN
+                        flags |= TREE_HITTEST_ONITEMCOLUMN
                         column = j
                         return self, flags, column
-                    
+
                     x += w
-                
+
                 # no special flag or column found
                 return self, flags, column
 
             # if children not expanded, return no item
             if not self.IsExpanded():
                 return None, flags, wx.NOT_FOUND
-        
+
         # in any case evaluate children
         for child in self._children:
             hit, flags, column = child.HitTest(point, theCtrl, flags, column, level+1)
             if hit:
                 return hit, flags, column
-        
+
         # not found
         return None, flags, wx.NOT_FOUND
 
@@ -1505,15 +1518,15 @@ class TreeListItem(GenericTreeItem):
         """
 
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
-        
+
         if len(self._text) > 0:
             if self._owner.IsVirtual():
                 return self._owner.GetItemText(self._data, column)
             else:
                 return self._text[column]
-        
+
         return ""
-    
+
 
     def GetImage(self, which=wx.TreeItemIcon_Normal, column=None):
         """
@@ -1527,7 +1540,7 @@ class TreeListItem(GenericTreeItem):
          ``TreeItemIcon_Normal``           To get the normal item image
          ``TreeItemIcon_Selected``         To get the selected item image (i.e. the image which is shown when the item is currently selected)
          ``TreeItemIcon_Expanded``         To get the expanded image (this only makes sense for items which have children - then this image is shown when the item is expanded and the normal image is shown when it is collapsed)
-         ``TreeItemIcon_SelectedExpanded`` To get the selected expanded image (which is shown when an expanded item is currently selected) 
+         ``TreeItemIcon_SelectedExpanded`` To get the selected expanded image (which is shown when an expanded item is currently selected)
          ================================= ========================
 
         :param `column`: if not ``None``, an integer specifying the column index.
@@ -1538,7 +1551,7 @@ class TreeListItem(GenericTreeItem):
 
         if column == self._owner.GetMainColumn():
             return self._images[which]
-        
+
         if column < len(self._col_images):
             return self._col_images[column]
 
@@ -1550,17 +1563,17 @@ class TreeListItem(GenericTreeItem):
         Returns the current item image.
 
         :param `column`: if not ``None``, an integer specifying the column index.
-         If it is ``None``, the main column index is used.        
+         If it is ``None``, the main column index is used.
         """
 
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
 
         if column != self._owner.GetMainColumn():
             return self.GetImage(column=column)
-        
+
         image = GenericTreeItem.GetCurrentImage(self)
         return image
-    
+
 
     def SetText(self, column, text):
         """
@@ -1572,13 +1585,13 @@ class TreeListItem(GenericTreeItem):
         """
 
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
-    
+
         if column < len(self._text):
             self._text[column] = text
         elif column < self._owner.GetColumnCount():
             self._text.extend([""] * (column - len(self._text) + 1))
             self._text[column] = text
-        
+
 
     def SetImage(self, column, image, which):
         """
@@ -1593,7 +1606,7 @@ class TreeListItem(GenericTreeItem):
         """
 
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
-    
+
         if column == self._owner.GetMainColumn():
             self._images[which] = image
         elif column < len(self._col_images):
@@ -1601,14 +1614,14 @@ class TreeListItem(GenericTreeItem):
         elif column < self._owner.GetColumnCount():
             self._col_images.extend([_NO_IMAGE] * (column - len(self._col_images) + 1))
             self._col_images[column] = image
-        
-    
+
+
     def GetTextX(self):
         """ Returns the `x` position of the item text. """
 
         return self._text_x
 
-    
+
     def SetTextX(self, text_x):
         """
         Sets the `x` position of the item text.
@@ -1616,7 +1629,7 @@ class TreeListItem(GenericTreeItem):
         :param `text_x`: the `x` position of the item text.
         """
 
-        self._text_x = text_x 
+        self._text_x = text_x
 
 
     def SetWindow(self, wnd, column=None):
@@ -1641,20 +1654,20 @@ class TreeListItem(GenericTreeItem):
 
         if self not in self._owner._itemWithWindow:
             self._owner._itemWithWindow.append(self)
-            
+
         # We have to bind the wx.EVT_SET_FOCUS for the associated window
         # No other solution to handle the focus changing from an item in
         # HyperTreeList and the window associated to an item
         # Do better strategies exist?
         wnd.Bind(wx.EVT_SET_FOCUS, self.OnSetFocus)
-        
+
         # We don't show the window if the item is collapsed
         if self._isCollapsed:
             wnd.Show(False)
 
-        # The window is enabled only if the item is enabled                
+        # The window is enabled only if the item is enabled
         wnd.Enable(self._enabled)
-        
+
 
     def OnSetFocus(self, event):
         """
@@ -1672,24 +1685,24 @@ class TreeListItem(GenericTreeItem):
             treectrl._hasFocus = False
         else:
             treectrl._hasFocus = True
-            
+
         event.Skip()
 
-        
+
     def GetWindow(self, column=None):
         """
         Returns the window associated to the item.
 
         :param `column`: if not ``None``, an integer specifying the column index.
-         If it is ``None``, the main column index is used.        
+         If it is ``None``, the main column index is used.
         """
 
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
-        
+
         if column >= len(self._wnd):
             return None
 
-        return self._wnd[column]        
+        return self._wnd[column]
 
 
     def DeleteWindow(self, column=None):
@@ -1704,11 +1717,11 @@ class TreeListItem(GenericTreeItem):
 
         if column >= len(self._wnd):
             return
-        
+
         if self._wnd[column]:
             self._wnd[column].Destroy()
             self._wnd[column] = None
-        
+
 
     def GetWindowEnabled(self, column=None):
         """
@@ -1752,11 +1765,11 @@ class TreeListItem(GenericTreeItem):
         """
 
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
-        
+
         if not self._wnd[column]:
             raise Exception("\nERROR: This Item Has No Window Associated At Column %s"%column)
-        
-        return self._wnd[column].GetSize()   
+
+        return self._wnd[column].GetSize()
 
 
 #-----------------------------------------------------------------------------
@@ -1794,9 +1807,9 @@ class EditCtrl(object):
         self._startValue = value
         self._itemEdited = item
         self._finished = False
-        
+
         column = (column is not None and [column] or [self._owner.GetMainColumn()])[0]
-        
+
         self._column = column
 
         w = self._itemEdited.GetWidth()
@@ -1811,28 +1824,28 @@ class EditCtrl(object):
 
         if column > 0:
             x = 0
-            
-        for i in xrange(column):
+
+        for i in range(column):
             if not self._owner.GetParent()._header_win.IsColumnShown(i):
                 continue # do next column if not shown
-            
+
             col = self._owner.GetParent()._header_win.GetColumn(i)
             wCol = col.GetWidth()
             x += wCol
-        
+
         x, y = self._owner.CalcScrolledPosition(x+2, item.GetY())
 
         image_w = image_h = wcheck = hcheck = 0
         image = item.GetCurrentImage(column)
 
         if image != _NO_IMAGE:
-    
+
             if self._owner._imageListNormal:
                 image_w, image_h = self._owner._imageListNormal.GetSize(image)
                 image_w += 2*_MARGIN
-        
+
             else:
-        
+
                 raise Exception("\n ERROR: You Must Create An Image List To Use Images!")
 
         if column > 0:
@@ -1846,16 +1859,16 @@ class EditCtrl(object):
             dc = wx.ClientDC(self._owner)
             h = max(h, dc.GetTextExtent("Aq")[1])
             h = h + 2
-            
+
         # FIXME: what are all these hardcoded 4, 8 and 11s really?
         x += image_w + wcheck
         w -= image_w + 2*_MARGIN + wcheck
 
         super(EditCtrl, self).__init__(parent, id, value, wx.Point(x,y),
-                                       wx.Size(w+15, h), 
-                                       style=style|wx.SIMPLE_BORDER, 
+                                       wx.Size(w+15, h),
+                                       style=style|wx.SIMPLE_BORDER,
                                        name=name, **kwargs)
-        
+
         if wx.Platform == "__WXMAC__":
             self.SetFont(owner.GetFont())
             bs = self.GetBestSize()
@@ -1870,8 +1883,8 @@ class EditCtrl(object):
         return self._itemEdited
 
 
-    def column(self): 
-        """Returns the column currently edited.""" 
+    def column(self):
+        """Returns the column currently edited."""
 
         return self._column
 
@@ -1887,7 +1900,7 @@ class EditCtrl(object):
         """Finish editing."""
 
         if not self._finished:
-        
+
             self._finished = True
             self._owner.SetFocusIgnoringChildren()
             self._owner.ResetEditControl()
@@ -1927,7 +1940,7 @@ class EditTextCtrl(EditCtrl, wx.TextCtrl):
     """
     Text control used for in-place edit.
     """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, item=None, column=None, owner=None,
                  value="", pos=wx.DefaultPosition, size=wx.DefaultSize, style=0,
                  validator=wx.DefaultValidator, name="edittextctrl", **kwargs):
@@ -1951,9 +1964,9 @@ class EditTextCtrl(EditCtrl, wx.TextCtrl):
         :param `name`: the window name.
         """
 
-        super(EditTextCtrl, self).__init__(parent, id, item, column, owner, 
-                                           value, pos, size, style, validator, 
-                                           name, **kwargs)       
+        super(EditTextCtrl, self).__init__(parent, id, item, column, owner,
+                                           value, pos, size, style, validator,
+                                           name, **kwargs)
         self.SelectAll()
 
         self.Bind(wx.EVT_CHAR, self.OnChar)
@@ -1980,7 +1993,7 @@ class EditTextCtrl(EditCtrl, wx.TextCtrl):
 
         else:
             event.Skip()
-    
+
 
     def OnKeyUp(self, event):
         """
@@ -1995,19 +2008,19 @@ class EditTextCtrl(EditCtrl, wx.TextCtrl):
             parentSize = self._owner.GetSize()
             myPos = self.GetPosition()
             mySize = self.GetSize()
-            
+
             sx, sy = self.GetTextExtent(self.GetValue() + "M")
             if myPos.x + sx > parentSize.x:
                 sx = parentSize.x - myPos.x
             if mySize.x > sx:
                 sx = mySize.x
-                
+
             self.SetSize((sx, -1))
 
         event.Skip()
-        
-        
-        
+
+
+
 # ---------------------------------------------------------------------------
 # TreeListMainWindow implementation
 # ---------------------------------------------------------------------------
@@ -2016,7 +2029,7 @@ class TreeListMainWindow(CustomTreeCtrl):
     """
     This class represents the main window (and thus the main column) in :class:`HyperTreeList`.
 
-    :note: This is a subclass of :class:`~lib.agw.customtreectrl.CustomTreeCtrl`.
+    :note: This is a subclass of :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl`.
     """
 
     def __init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
@@ -2024,17 +2037,17 @@ class TreeListMainWindow(CustomTreeCtrl):
                  name="wxtreelistmainwindow"):
         """
         Default class constructor.
-        
+
         :param `parent`: parent window. Must not be ``None``;
         :param `id`: window identifier. A value of -1 indicates a default value;
         :param `pos`: the control position. A value of (-1, -1) indicates a default position,
          chosen by either the windowing system or wxPython, depending on platform;
         :param `size`: the control size. A value of (-1, -1) indicates a default size,
          chosen by either the windowing system or wxPython, depending on platform;
-        :param `style`: the underlying :class:`PyScrolledWindow` style;
+        :param `style`: the underlying :class:`ScrolledWindow` style;
         :param `agwStyle`: the AGW-specific :class:`TreeListMainWindow` window style. This can be a
          combination of the following bits:
-        
+
          ============================== =========== ==================================================
          Window Styles                  Hex Value   Description
          ============================== =========== ==================================================
@@ -2052,12 +2065,12 @@ class TreeListMainWindow(CustomTreeCtrl):
          ``TR_ROW_LINES``                     0x400 Use this style to draw a contrasting border between displayed rows.
          ``TR_HIDE_ROOT``                     0x800 Use this style to suppress the display of the root node, effectively causing the first-level nodes to appear as a series of root nodes.
          ``TR_FULL_ROW_HIGHLIGHT``           0x2000 Use this style to have the background colour and the selection highlight extend  over the entire horizontal row of the tree control window.
-         ``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
-         ``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
-         ``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful foe checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
+         ``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
+         ``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
+         ``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful for checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
          ``TR_ALIGN_WINDOWS``               0x20000 Flag used to align windows (in items with windows) at the same horizontal position.
          ``TR_NO_HEADER``                   0x40000 Use this style to hide the columns header.
-         ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`~lib.agw.customtreectrl.CustomTreeCtrl` is low.
+         ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl` is low.
          ``TR_VIRTUAL``                    0x100000 :class:`HyperTreeList` will have virtual behaviour.
          ============================== =========== ==================================================
 
@@ -2066,9 +2079,9 @@ class TreeListMainWindow(CustomTreeCtrl):
         """
 
         self._buffered = False
-        
+
         CustomTreeCtrl.__init__(self, parent, id, pos, size, style, agwStyle, validator, name)
-        
+
         self._shiftItem = None
         self._editItem = None
         self._selectItem = None
@@ -2093,15 +2106,16 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         self._dragTimer = wx.Timer(self)
         self._findTimer = wx.Timer(self)
-        
+
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.OnMouse)
         self.Bind(wx.EVT_SCROLLWIN, self.OnScroll)
+        self.Bind(wx.EVT_MOUSE_CAPTURE_LOST, lambda evt: None)
 
         # Sets the focus to ourselves: this is useful if you have items
         # with associated widgets.
         self.SetFocus()
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+        self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
 
 
     def SetBuffered(self, buffered):
@@ -2115,14 +2129,14 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         self._buffered = buffered
         if buffered:
-            self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+            self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         else:
-            self.SetBackgroundStyle(wx.BG_STYLE_SYSTEM)
+            self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
 
 
     def IsVirtual(self):
         """ Returns ``True`` if :class:`TreeListMainWindow` has the ``TR_VIRTUAL`` flag set. """
-        
+
         return self.HasAGWFlag(TR_VIRTUAL)
 
 
@@ -2145,10 +2159,10 @@ class TreeListMainWindow(CustomTreeCtrl):
          ``TreeItemIcon_Normal``           To get the normal item image
          ``TreeItemIcon_Selected``         To get the selected item image (i.e. the image which is shown when the item is currently selected)
          ``TreeItemIcon_Expanded``         To get the expanded image (this only makes sense for items which have children - then this image is shown when the item is expanded and the normal image is shown when it is collapsed)
-         ``TreeItemIcon_SelectedExpanded`` To get the selected expanded image (which is shown when an expanded item is currently selected) 
+         ``TreeItemIcon_SelectedExpanded`` To get the selected expanded image (which is shown when an expanded item is currently selected)
          ================================= ========================
         """
-        
+
         column = (column is not None and [column] or [self._main_column])[0]
 
         if column < 0:
@@ -2169,12 +2183,12 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         :see: :meth:`~TreeListMainWindow.GetItemImage` for a list of valid item states.
         """
-        
+
         column = (column is not None and [column] or [self._main_column])[0]
 
         if column < 0:
             return
-        
+
         item.SetImage(column, image, which)
         dc = wx.ClientDC(self)
         self.CalculateSize(item, dc)
@@ -2201,7 +2215,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         :param `column`: if not ``None``, an integer specifying the column index.
          If it is ``None``, the main column index is used.
         """
-        
+
         return item.GetWindow(column)
 
 
@@ -2222,11 +2236,11 @@ class TreeListMainWindow(CustomTreeCtrl):
         # Reparent the window to ourselves
         if window.GetParent() != self:
             window.Reparent(self)
-        
+
         item.SetWindow(window, column)
         if window:
             self._hasWindows = True
-        
+
 
     def SetItemWindowEnabled(self, item, enable=True, column=None):
         """
@@ -2256,17 +2270,17 @@ class TreeListMainWindow(CustomTreeCtrl):
         parent = item.GetParent()
 
         while parent:
-        
+
             if not parent.IsExpanded():
                 return False
-            
+
             parent = parent.GetParent()
-        
+
         startX, startY = self.GetViewStart()
         clientSize = self.GetClientSize()
 
         rect = self.GetBoundingRect(item)
-        
+
         if not rect:
             return False
         if rect.GetWidth() == 0 or rect.GetHeight() == 0:
@@ -2293,9 +2307,9 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         children = item.GetChildren()
 
-        if cookie >= 0:            
+        if cookie >= 0:
             return children[cookie], cookie-1
-        else:        
+        else:
             # there are no more of them
             return None, cookie
 
@@ -2311,7 +2325,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         Returns the next expanded item after the input one.
 
         :param `item`: an instance of :class:`TreeListItem`.
-        """                
+        """
 
         return CustomTreeCtrl.GetNextExpanded(self, item)
 
@@ -2321,7 +2335,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         Returns the previous expanded item before the input one.
 
         :param `item`: an instance of :class:`TreeListItem`.
-        """                
+        """
 
         return CustomTreeCtrl.GetPrevExpanded(self, item)
 
@@ -2337,14 +2351,14 @@ class TreeListMainWindow(CustomTreeCtrl):
         Returns the previous visible item before the input one.
 
         :param `item`: an instance of :class:`TreeListItem`.
-        """                
+        """
 
         i = self.GetPrev(item)
         while i:
             if self.IsItemVisible(i):
                 return i
             i = self.GetPrev(i)
-        
+
         return None
 
 
@@ -2372,23 +2386,23 @@ class TreeListMainWindow(CustomTreeCtrl):
         :param `separator`: unused at the moment, this parameter is present to comply with
          :meth:`CustomTreeCtrl.DoInsertItem() <lib.agw.customtreectrl.CustomTreeCtrl.DoInsertItem>` changed API.
         """
-        
+
         self._dirty = True # do this first so stuff below doesn't cause flicker
         arr = [""]*self.GetColumnCount()
         arr[self._main_column] = text
-        
+
         if not parent:
             # should we give a warning here?
             return self.AddRoot(text, ct_type, wnd, image, selImage, data)
-        
+
         self._dirty = True     # do this first so stuff below doesn't cause flicker
 
         item = TreeListItem(self, parent, arr, ct_type, wnd, image, selImage, data)
-        
+
         if wnd is not None:
             self._hasWindows = True
             self._itemWithWindow.append(item)
-        
+
         parent.Insert(item, previous)
 
         return item
@@ -2412,8 +2426,8 @@ class TreeListMainWindow(CustomTreeCtrl):
         .. warning::
 
            Only one root is allowed to exist in any given instance of :class:`TreeListMainWindow`.
-           
-        """        
+
+        """
 
         if self._anchor:
             raise Exception("\nERROR: Tree Can Have Only One Root")
@@ -2431,22 +2445,22 @@ class TreeListMainWindow(CustomTreeCtrl):
         arr = [""]*self.GetColumnCount()
         arr[self._main_column] = text
         self._anchor = TreeListItem(self, None, arr, ct_type, wnd, image, selImage, data)
-        
+
         if wnd is not None:
             self._hasWindows = True
-            self._itemWithWindow.append(self._anchor)            
-        
+            self._itemWithWindow.append(self._anchor)
+
         if self.HasAGWFlag(wx.TR_HIDE_ROOT):
             # if root is hidden, make sure we can navigate
             # into children
             self._anchor.SetHasPlus()
             self._anchor.Expand()
             self.CalculatePositions()
-        
+
         if not self.HasAGWFlag(wx.TR_MULTIPLE):
             self._current = self._key_current = self._selectItem = self._anchor
             self._current.SetHilight(True)
-        
+
         return self._anchor
 
 
@@ -2459,7 +2473,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         if not item:
             raise Exception("\nERROR: Invalid Tree Item. ")
-        
+
         self._dirty = True     # do this first so stuff below doesn't cause flicker
 
         if self._editCtrl != None and self.IsDescendantOf(item, self._editCtrl.item()):
@@ -2469,18 +2483,18 @@ class TreeListMainWindow(CustomTreeCtrl):
         # don't stay with invalid self._shiftItem or we will crash in the next call to OnChar()
         changeKeyCurrent = False
         itemKey = self._shiftItem
-        
+
         while itemKey:
             if itemKey == item:  # self._shiftItem is a descendant of the item being deleted
                 changeKeyCurrent = True
                 break
-            
+
             itemKey = itemKey.GetParent()
-        
+
         parent = item.GetParent()
         if parent:
             parent.GetChildren().remove(item)  # remove by value
-        
+
         if changeKeyCurrent:
             self._shiftItem = parent
 
@@ -2494,10 +2508,10 @@ class TreeListMainWindow(CustomTreeCtrl):
                 if wnd:
                     wnd.Hide()
                     wnd.Destroy()
-                
+
             item._wnd = []
             self._itemWithWindow.remove(item)
-            
+
         item.DeleteChildren(self)
         del item
 
@@ -2515,12 +2529,12 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         if self.IsDescendantOf(item, self._selectItem):
             self._selectItem = item
-            
+
         if item != self._current and self.IsDescendantOf(item, self._current):
             self._current.SetHilight(False)
             self._current = None
 
-            
+
     def DeleteRoot(self):
         """
         Removes the tree root item (and subsequently all the items in
@@ -2530,7 +2544,6 @@ class TreeListMainWindow(CustomTreeCtrl):
         if self._anchor:
 
             self._dirty = True
-
             self._anchor.DeleteChildren(self)
             self.Delete(self._anchor)
 
@@ -2545,18 +2558,18 @@ class TreeListMainWindow(CustomTreeCtrl):
         """ Delete all items in the :class:`TreeListMainWindow`. """
 
         self.DeleteRoot()
-        
+
 
     def HideWindows(self):
         """ Hides the windows associated to the items. Used internally. """
-        
+
         for child in self._itemWithWindow:
             if not self.IsItemVisible(child):
-                for column in xrange(self.GetColumnCount()):
+                for column in range(self.GetColumnCount()):
                     wnd = child.GetWindow(column)
                     if wnd and wnd.IsShown():
                         wnd.Hide()
-                
+
 
     def EnableItem(self, item, enable=True, torefresh=True):
         """
@@ -2566,7 +2579,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         :param `enable`: ``True`` to enable the item, ``False`` otherwise;
         :param `torefresh`: whether to redraw the item or not.
         """
-        
+
         if item.IsEnabled() == enable:
             return
 
@@ -2575,13 +2588,13 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         item.Enable(enable)
 
-        for column in xrange(self.GetColumnCount()):
+        for column in range(self.GetColumnCount()):
             wnd = item.GetWindow(column)
 
-            # Handles the eventual window associated to the item        
+            # Handles the eventual window associated to the item
             if wnd:
                 wnd.Enable(enable)
-        
+
         if torefresh:
             # We have to refresh the item line
             dc = wx.ClientDC(self)
@@ -2597,14 +2610,14 @@ class TreeListMainWindow(CustomTreeCtrl):
         """
 
         return item.IsEnabled()
-    
+
 
     def GetCurrentItem(self):
         """ Returns the current item. """
 
         return self._current
 
-    
+
     def GetColumnCount(self):
         """ Returns the total number of columns. """
 
@@ -2614,12 +2627,12 @@ class TreeListMainWindow(CustomTreeCtrl):
     def SetMainColumn(self, column):
         """
         Sets the :class:`HyperTreeList` main column (i.e. the position of the underlying
-        :class:`~lib.agw.customtreectrl.CustomTreeCtrl`.
+        :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl`.
 
         :param `column`: if not ``None``, an integer specifying the column index.
          If it is ``None``, the main column index is used.
         """
-        
+
         if column >= 0 and column < self.GetColumnCount():
             self._main_column = column
 
@@ -2627,11 +2640,11 @@ class TreeListMainWindow(CustomTreeCtrl):
     def GetMainColumn(self):
         """
         Returns the :class:`HyperTreeList` main column (i.e. the position of the underlying
-        :class:`~lib.agw.customtreectrl.CustomTreeCtrl`.
+        :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl`.
         """
-        
+
         return self._main_column
-    
+
 
     def ScrollTo(self, item):
         """
@@ -2657,15 +2670,15 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         if item._y < start_y+3:
             # going down, item should appear at top
-            self.SetScrollbars(xUnit, yUnit, (xUnit and [x/xUnit] or [0])[0], (yUnit and [y/yUnit] or [0])[0],
-                               x_pos, (yUnit and [item._y/yUnit] or [0])[0])
-            
+            self.SetScrollbars(xUnit, yUnit, (xUnit and [x//xUnit] or [0])[0], (yUnit and [y//yUnit] or [0])[0],
+                               x_pos, (yUnit and [item._y//yUnit] or [0])[0])
+
         elif item._y+self.GetLineHeight(item) > start_y+client_h:
             # going up, item should appear at bottom
             item._y += yUnit + 2
-            self.SetScrollbars(xUnit, yUnit, (xUnit and [x/xUnit] or [0])[0], (yUnit and [y/yUnit] or [0])[0],
-                               x_pos, (yUnit and [(item._y+self.GetLineHeight(item)-client_h)/yUnit] or [0])[0])
-        
+            self.SetScrollbars(xUnit, yUnit, (xUnit and [x//xUnit] or [0])[0], (yUnit and [y//yUnit] or [0])[0],
+                               x_pos, (yUnit and [(item._y+self.GetLineHeight(item)-client_h)//yUnit] or [0])[0])
+
 
     def SetDragItem(self, item):
         """
@@ -2687,7 +2700,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 # ----------------------------------------------------------------------------
 
     def AdjustMyScrollbars(self):
-        """ Internal method used to adjust the :class:`PyScrolledWindow` scrollbars. """
+        """ Internal method used to adjust the :class:`ScrolledWindow` scrollbars. """
 
         if self._anchor:
             xUnit, yUnit = self.GetScrollPixelsPerUnit()
@@ -2704,17 +2717,17 @@ class TreeListMainWindow(CustomTreeCtrl):
             if x < self.GetClientSize().GetWidth():
                 x_pos = 0
 
-            self.SetScrollbars(xUnit, yUnit, x/xUnit, y/yUnit, x_pos, y_pos)
+            self.SetScrollbars(xUnit, yUnit, x//xUnit, y//yUnit, x_pos, y_pos)
         else:
             self.SetScrollbars(0, 0, 0, 0)
-    
+
 
     def PaintItem(self, item, dc):
         """
         Actually draws an item.
 
         :param `item`: an instance of :class:`TreeListItem`;
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         def _paintText(text, textrect, alignment):
@@ -2726,7 +2739,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             :param `alignment`: the alignment for the text label, one of ``wx.ALIGN_LEFT``,
              ``wx.ALIGN_RIGHT``, ``wx.ALIGN_CENTER``.
             """
-            
+
             txt = text.splitlines()
             if alignment != wx.ALIGN_LEFT and len(txt):
                 yorigin = textrect.Y
@@ -2734,14 +2747,14 @@ class TreeListMainWindow(CustomTreeCtrl):
                     w, h = dc.GetTextExtent(t)
                     plus = textrect.Width - w
                     if alignment == wx.ALIGN_CENTER:
-                        plus /= 2
+                        plus //= 2
                     dc.DrawLabel(t, wx.Rect(textrect.X + plus, yorigin, w, yorigin+h))
                     yorigin += h
                 return
             dc.DrawLabel(text, textrect)
-        
+
         attr = item.GetAttributes()
-        
+
         if attr and attr.HasFont():
             dc.SetFont(attr.GetFont())
         elif item.IsBold():
@@ -2754,28 +2767,28 @@ class TreeListMainWindow(CustomTreeCtrl):
                 dc.SetTextForeground(self.GetHyperTextNewColour())
 
         colText = wx.Colour(*dc.GetTextForeground())
-        
+
         if item.IsSelected():
             if (wx.Platform == "__WXMAC__" and self._hasFocus):
-                colTextHilight = wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
+                colTextHilight = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
             else:
-                colTextHilight = wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
+                colTextHilight = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
 
         else:
             attr = item.GetAttributes()
             if attr and attr.HasTextColour():
                 colText = attr.GetTextColour()
-            
+
         if self._vistaselection:
             colText = colTextHilight = wx.BLACK
-                
+
         total_w = self._owner.GetHeaderWindow().GetWidth()
         total_h = self.GetLineHeight(item)
-        off_h = (self.HasAGWFlag(wx.TR_ROW_LINES) and [1] or [0])[0]
-        off_w = (self.HasAGWFlag(wx.TR_COLUMN_LINES) and [1] or [0])[0]
+        off_h = (self.HasAGWFlag(TR_ROW_LINES) and [1] or [0])[0]
+        off_w = (self.HasAGWFlag(TR_COLUMN_LINES) and [1] or [0])[0]
 ##        clipper = wx.DCClipper(dc, 0, item.GetY(), total_w, total_h) # only within line
 
-        text_w, text_h, dummy = dc.GetMultiLineTextExtent(item.GetText(self.GetMainColumn()))
+        text_w, text_h, dummy = dc.GetFullMultiLineTextExtent(item.GetText(self.GetMainColumn()))
 
         drawItemBackground = False
         # determine background and show it
@@ -2784,19 +2797,18 @@ class TreeListMainWindow(CustomTreeCtrl):
             drawItemBackground = True
         else:
             colBg = self._backgroundColour
-        
-        dc.SetBrush(wx.Brush(colBg, wx.SOLID))
 
+        dc.SetBrush(wx.Brush(colBg))
         if attr and attr.HasBorderColour():
             colBorder = attr.GetBorderColour()
-            dc.SetPen(wx.Pen(colBorder, 1, wx.SOLID))
+            dc.SetPen(wx.Pen(colBorder, 1))
         else:
             dc.SetPen(wx.TRANSPARENT_PEN)
 
         if self.HasAGWFlag(wx.TR_FULL_ROW_HIGHLIGHT):
 
             itemrect = wx.Rect(0, item.GetY() + off_h, total_w-1, total_h - off_h)
-            
+
             if item == self._dragItem:
                 dc.SetBrush(self._hilightBrush)
                 if wx.Platform == "__WXMAC__":
@@ -2812,7 +2824,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                     wndx, wndy = item.GetWindowSize(self._main_column)
 
                 itemrect = wx.Rect(0, item.GetY() + off_h, total_w-1, total_h - off_h)
-                
+
                 if self._usegradients:
                     if self._gradientstyle == 0:   # Horizontal
                         self.DrawHorizontalGradient(dc, itemrect, self._hasFocus)
@@ -2824,12 +2836,12 @@ class TreeListMainWindow(CustomTreeCtrl):
                     if wx.Platform in ["__WXGTK2__", "__WXMAC__"]:
                         flags = wx.CONTROL_SELECTED
                         if self._hasFocus: flags = flags | wx.CONTROL_FOCUSED
-                        wx.RendererNative.Get().DrawItemSelectionRect(self._owner, dc, itemrect, flags) 
+                        wx.RendererNative.Get().DrawItemSelectionRect(self._owner, dc, itemrect, flags)
                     else:
                         dc.SetBrush((self._hasFocus and [self._hilightBrush] or [self._hilightUnfocusedBrush])[0])
                         dc.SetPen((self._hasFocus and [self._borderPen] or [wx.TRANSPARENT_PEN])[0])
-                        dc.DrawRectangleRect(itemrect)
-                
+                        dc.DrawRectangle(itemrect)
+
                 dc.SetTextForeground(colTextHilight)
 
             # On GTK+ 2, drawing a 'normal' background is wrong for themes that
@@ -2838,22 +2850,22 @@ class TreeListMainWindow(CustomTreeCtrl):
             elif drawItemBackground:
 
                 itemrect = wx.Rect(0, item.GetY() + off_h, total_w-1, total_h - off_h)
-                dc.SetBrush(wx.Brush(colBg, wx.SOLID))
-                dc.DrawRectangleRect(itemrect)
+                dc.SetBrush(wx.Brush(colBg))
+                dc.DrawRectangle(itemrect)
                 dc.SetTextForeground(colText)
-                                                
+
             else:
                 dc.SetTextForeground(colText)
 
         else:
-            
+
             dc.SetTextForeground(colText)
 
-        text_extraH = (total_h > text_h and [(total_h - text_h)/2] or [0])[0]
-        img_extraH = (total_h > self._imgHeight and [(total_h-self._imgHeight)/2] or [0])[0]
+        text_extraH = (total_h > text_h and [(total_h - text_h)//2] or [0])[0]
+        img_extraH = (total_h > self._imgHeight and [(total_h-self._imgHeight)//2] or [0])[0]
         x_colstart = 0
-        
-        for i in xrange(self.GetColumnCount()):
+
+        for i in range(self.GetColumnCount()):
             if not self._owner.GetHeaderWindow().IsColumnShown(i):
                 continue
 
@@ -2868,21 +2880,21 @@ class TreeListMainWindow(CustomTreeCtrl):
                 if self.HasButtons():
                     x += (self._btnWidth-self._btnWidth2) + _LINEATROOT
                 else:
-                    x -= self._indent/2
-                
+                    x -= self._indent//2
+
                 if self._imageListNormal:
                     image = item.GetCurrentImage(i)
-                    
+
                 if item.GetType() != 0 and self._imageListCheck:
                     checkimage = item.GetCurrentCheckedImage()
                     wcheck, hcheck = self._imageListCheck.GetSize(item.GetType())
                 else:
                     wcheck, hcheck = 0, 0
-            
+
             else:
                 x = x_colstart + _MARGIN
                 image = item.GetImage(column=i)
-                
+
             if image != _NO_IMAGE:
                 image_w = self._imgWidth + _MARGIN
 
@@ -2890,21 +2902,21 @@ class TreeListMainWindow(CustomTreeCtrl):
             text = item.GetText(i)
             alignment = self._owner.GetHeaderWindow().GetColumn(i).GetAlignment()
 
-            text_w, dummy, dummy = dc.GetMultiLineTextExtent(text)
+            text_w, dummy, dummy = dc.GetFullMultiLineTextExtent(text)
 
             if alignment == wx.ALIGN_RIGHT:
                 w = col_w - (image_w + wcheck + text_w + off_w + _MARGIN + 1)
                 x += (w > 0 and [w] or [0])[0]
 
             elif alignment == wx.ALIGN_CENTER:
-                w = (col_w - (image_w + wcheck + text_w + off_w + _MARGIN))/2
+                w = (col_w - (image_w + wcheck + text_w + off_w + _MARGIN))//2
                 x += (w > 0 and [w] or [0])[0]
             else:
                 if image_w == 0 and wcheck:
                     x += 2*_MARGIN
-            
+
             text_x = x + image_w + wcheck + 1
-            
+
             if i == self.GetMainColumn():
                 item.SetTextX(text_x)
 
@@ -2917,7 +2929,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                             dc.SetPen((item == self._dragItem and [wx.BLACK_PEN] or [wx.TRANSPARENT_PEN])[0])
 
                         dc.SetTextForeground(colTextHilight)
-                        
+
                     elif item.IsSelected():
 
                         itemrect = wx.Rect(text_x-2, item.GetY() + off_h, text_w+2*_MARGIN, total_h - off_h)
@@ -2933,35 +2945,35 @@ class TreeListMainWindow(CustomTreeCtrl):
                             if wx.Platform in ["__WXGTK2__", "__WXMAC__"]:
                                 flags = wx.CONTROL_SELECTED
                                 if self._hasFocus: flags = flags | wx.CONTROL_FOCUSED
-                                wx.RendererNative.Get().DrawItemSelectionRect(self._owner, dc, itemrect, flags) 
+                                wx.RendererNative.Get().DrawItemSelectionRect(self._owner, dc, itemrect, flags)
                             else:
-                                dc.DrawRectangleRect(itemrect)
+                                dc.DrawRectangle(itemrect)
 
                         dc.SetTextForeground(colTextHilight)
 
                     elif item == self._current:
                         dc.SetPen((self._hasFocus and [wx.BLACK_PEN] or [wx.TRANSPARENT_PEN])[0])
-                    
+
                     # On GTK+ 2, drawing a 'normal' background is wrong for themes that
                     # don't allow backgrounds to be customized. Not drawing the background,
                     # except for custom item backgrounds, works for both kinds of theme.
                     elif drawItemBackground:
 
                         itemrect = wx.Rect(text_x-2, item.GetY() + off_h, text_w+2*_MARGIN, total_h - off_h)
-                        dc.SetBrush(wx.Brush(colBg, wx.SOLID))
-                        dc.DrawRectangleRect(itemrect)
+                        dc.SetBrush(wx.Brush(colBg))
+                        dc.DrawRectangle(itemrect)
 
                     else:
                         dc.SetTextForeground(colText)
-    
+
                 else:
                     dc.SetTextForeground(colText)
-                
-            if self.HasAGWFlag(wx.TR_COLUMN_LINES):  # vertical lines between columns
-                pen = wx.Pen(wx.SystemSettings_GetColour(wx.SYS_COLOUR_3DLIGHT), 1, wx.SOLID)
+
+            if self.HasAGWFlag(TR_COLUMN_LINES):  # vertical lines between columns
+                pen = wx.Pen(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT), 1, wx.PENSTYLE_SOLID)
                 dc.SetPen((self.GetBackgroundColour() == wx.WHITE and [pen] or [wx.WHITE_PEN])[0])
                 dc.DrawLine(x_colstart+col_w-1, item.GetY(), x_colstart+col_w-1, item.GetY()+total_h)
-            
+
             dc.SetBackgroundMode(wx.TRANSPARENT)
 
             if image != _NO_IMAGE:
@@ -2973,7 +2985,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                     imglist = self._imageListNormal
                 else:
                     imglist = self._grayedImageList
-                
+
                 imglist.Draw(image, dc, x, y, wx.IMAGELIST_DRAW_TRANSPARENT)
 
             if wcheck:
@@ -2986,14 +2998,14 @@ class TreeListMainWindow(CustomTreeCtrl):
                     btnWidth = self._btnWidth
                 else:
                     btnWidth = -self._btnWidth
-                
+
                 imglist.Draw(checkimage, dc,
                              item.GetX() + btnWidth + _MARGIN,
-                             item.GetY() + ((total_h > hcheck) and [(total_h-hcheck)/2] or [0])[0]+1,
+                             item.GetY() + ((total_h > hcheck) and [(total_h-hcheck)//2] or [0])[0]+1,
                              wx.IMAGELIST_DRAW_TRANSPARENT)
 
-            text_w, text_h, dummy = dc.GetMultiLineTextExtent(text)
-            text_extraH = (total_h > text_h and [(total_h - text_h)/2] or [0])[0]            
+            text_w, text_h, dummy = dc.GetFullMultiLineTextExtent(text)
+            text_extraH = (total_h > text_h and [(total_h - text_h)//2] or [0])[0]
             text_y = item.GetY() + text_extraH
             textrect = wx.Rect(text_x, text_y, text_w, text_h)
 
@@ -3004,7 +3016,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                     maxsize = col_w - (wcheck + image_w + _MARGIN)
 
                 text = ChopText(dc, text, maxsize)
-        
+
             if not item.IsEnabled():
                 foreground = dc.GetTextForeground()
                 dc.SetTextForeground(self._disabledColour)
@@ -3015,25 +3027,25 @@ class TreeListMainWindow(CustomTreeCtrl):
                     dc.SetTextForeground(wx.WHITE)
                 _paintText(text, textrect, alignment)
 
-            wnd = item.GetWindow(i)            
+            wnd = item.GetWindow(i)
             if wnd:
                 if text_w == 0:
                     wndx = text_x
                 else:
                     wndx = text_x + text_w + 2*_MARGIN
-                xa, ya = self.CalcScrolledPosition((0, item.GetY()))
+                xa, ya = self.CalcScrolledPosition(0, item.GetY())
                 wndx += xa
                 if item.GetHeight() > item.GetWindowSize(i)[1]:
-                    ya += (item.GetHeight() - item.GetWindowSize(i)[1])/2
-                    
+                    ya += (item.GetHeight() - item.GetWindowSize(i)[1])//2
+
                 if not wnd.IsShown():
                     wnd.Show()
                 if wnd.GetPosition() != (wndx, ya):
-                    wnd.SetPosition((wndx, ya))                
-            
+                    wnd.SetPosition((wndx, ya))
+
             x_colstart += col_w
             dc.DestroyClippingRegion()
-        
+
         # restore normal font
         dc.SetFont(self._normalFont)
 
@@ -3044,64 +3056,64 @@ class TreeListMainWindow(CustomTreeCtrl):
         Paint a level in the hierarchy of :class:`TreeListMainWindow`.
 
         :param `item`: an instance of :class:`TreeListItem`;
-        :param `dc`: an instance of :class:`DC`;
+        :param `dc`: an instance of :class:`wx.DC`;
         :param `level`: the item level in the tree hierarchy;
-        :param `y`: the current vertical position in the :class:`PyScrolledWindow`;
+        :param `y`: the current vertical position in the :class:`ScrolledWindow`;
         :param `x_maincol`: the horizontal position of the main column.
         """
 
         if item.IsHidden():
             return y, x_maincol
-        
+
         # Handle hide root (only level 0)
         if self.HasAGWFlag(wx.TR_HIDE_ROOT) and level == 0:
             for child in item.GetChildren():
                 y, x_maincol = self.PaintLevel(child, dc, 1, y, x_maincol)
-            
+
             # end after expanding root
             return y, x_maincol
-        
+
         # calculate position of vertical lines
         x = x_maincol + _MARGIN # start of column
 
         if self.HasAGWFlag(wx.TR_LINES_AT_ROOT):
             x += _LINEATROOT # space for lines at root
-            
+
         if self.HasButtons():
             x += (self._btnWidth-self._btnWidth2) # half button space
         else:
-            x += (self._indent-self._indent/2)
-        
+            x += (self._indent-self._indent//2)
+
         if self.HasAGWFlag(wx.TR_HIDE_ROOT):
             x += self._indent*(level-1) # indent but not level 1
         else:
             x += self._indent*level # indent according to level
-        
+
         # set position of vertical line
         item.SetX(x)
         item.SetY(y)
 
         h = self.GetLineHeight(item)
         y_top = y
-        y_mid = y_top + (h/2)
+        y_mid = y_top + (h//2)
         y += h
 
         exposed_x = dc.LogicalToDeviceX(0)
         exposed_y = dc.LogicalToDeviceY(y_top)
 
         # horizontal lines between rows?
-        draw_row_lines = self.HasAGWFlag(wx.TR_ROW_LINES)
+        draw_row_lines = self.HasAGWFlag(TR_ROW_LINES)
 
         if self.IsExposed(exposed_x, exposed_y, _MAX_WIDTH, h + draw_row_lines):
             if draw_row_lines:
                 total_width = self._owner.GetHeaderWindow().GetWidth()
                 # if the background colour is white, choose a
                 # contrasting colour for the lines
-                pen = wx.Pen(wx.SystemSettings_GetColour(wx.SYS_COLOUR_3DLIGHT), 1, wx.SOLID)
+                pen = wx.Pen(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT), 1, wx.PENSTYLE_SOLID)
                 dc.SetPen((self.GetBackgroundColour() == wx.WHITE and [pen] or [wx.WHITE_PEN])[0])
                 dc.DrawLine(0, y_top, total_width, y_top)
                 dc.DrawLine(0, y_top+h, total_width, y_top+h)
-            
+
             # draw item
             self.PaintItem(item, dc)
 
@@ -3128,10 +3140,10 @@ class TreeListMainWindow(CustomTreeCtrl):
                     else:
                         dc.DrawLine(x2, y_mid, x3 + _LINEATROOT, y_mid)
                 else:
-                    dc.DrawLine(x2, y_mid, x - self._indent/2, y_mid)
-                
+                    dc.DrawLine(x2, y_mid, x - self._indent//2, y_mid)
+
             if item.HasPlus() and self.HasButtons():  # should the item show a button?
-                
+
                 if self._imageListButtons:
 
                     # draw the image button here
@@ -3151,22 +3163,22 @@ class TreeListMainWindow(CustomTreeCtrl):
                     # draw the twisty button here
                     dc.SetPen(wx.BLACK_PEN)
                     dc.SetBrush(self._hilightBrush)
-                    button = [wx.Point() for j in xrange(3)]
+                    button = [wx.Point() for j in range(3)]
                     if item.IsExpanded():
                         button[0].x = x - (self._btnWidth2+1)
-                        button[0].y = y_mid - (self._btnHeight/3)
+                        button[0].y = y_mid - (self._btnHeight//3)
                         button[1].x = x + (self._btnWidth2+1)
                         button[1].y = button[0].y
                         button[2].x = x
                         button[2].y = button[0].y + (self._btnHeight2+1)
                     else:
-                        button[0].x = x - (self._btnWidth/3)
+                        button[0].x = x - (self._btnWidth//3)
                         button[0].y = y_mid - (self._btnHeight2+1)
                         button[1].x = button[0].x
                         button[1].y = y_mid + (self._btnHeight2+1)
                         button[2].x = button[0].x + (self._btnWidth2+1)
                         button[2].y = y_mid
-                    
+
                     dc.SetClippingRegion(x_maincol + _MARGIN, y_top, clip_width, h)
                     dc.DrawPolygon(button)
                     dc.DestroyClippingRegion()
@@ -3175,7 +3187,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
                     rect = wx.Rect(x-self._btnWidth2, y_mid-self._btnHeight2, self._btnWidth, self._btnHeight)
                     flag = (item.IsExpanded() and [wx.CONTROL_EXPANDED] or [0])[0]
-                    wx.RendererNative.GetDefault().DrawTreeItemButton(self, dc, rect, flag)        
+                    wx.RendererNative.GetDefault().DrawTreeItemButton(self, dc, rect, flag)
 
         # restore DC objects
         dc.SetBrush(wx.WHITE_BRUSH)
@@ -3188,18 +3200,18 @@ class TreeListMainWindow(CustomTreeCtrl):
             if self._imgWidth > 0:
                 oldY = y_mid + self._imgHeight2
             else:
-                oldY = y_mid + h/2
-            
+                oldY = y_mid + h//2
+
             for child in item.GetChildren():
 
                 y, x_maincol = self.PaintLevel(child, dc, level+1, y, x_maincol)
 
                 # draw vertical line
                 if not self.HasAGWFlag(wx.TR_NO_LINES):
-                    Y1 = child.GetY() + child.GetHeight()/2
+                    Y1 = child.GetY() + child.GetHeight()//2
                     dc.DrawLine(x, oldY, x, Y1)
 
-        return y, x_maincol        
+        return y, x_maincol
 
 
 # ----------------------------------------------------------------------------
@@ -3230,7 +3242,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             # paint the background
             dc = wx.BufferedPaintDC(self)
             rect = self.GetUpdateRegion().GetBox()
-            dc.SetClippingRect(rect)
+            dc.SetClippingRegion(rect)
             dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
             if self._backgroundImage:
                 self.TileBackground(dc)
@@ -3251,40 +3263,40 @@ class TreeListMainWindow(CustomTreeCtrl):
         elif self.HasButtons():
             self._btnWidth = _BTNWIDTH
             self._btnHeight = _BTNHEIGHT
-        
-        self._btnWidth2 = self._btnWidth/2
-        self._btnHeight2 = self._btnHeight/2
+
+        self._btnWidth2 = self._btnWidth//2
+        self._btnHeight2 = self._btnHeight//2
 
         # calculate image size
         if self._imageListNormal:
             self._imgWidth, self._imgHeight = self._imageListNormal.GetSize(0)
-        
-        self._imgWidth2 = self._imgWidth/2
-        self._imgHeight2 = self._imgHeight/2
+
+        self._imgWidth2 = self._imgWidth//2
+        self._imgHeight2 = self._imgHeight//2
 
         if self._imageListCheck:
             self._checkWidth, self._checkHeight = self._imageListCheck.GetSize(0)
 
-        self._checkWidth2 = self._checkWidth/2
-        self._checkHeight2 = self._checkHeight/2
-            
+        self._checkWidth2 = self._checkWidth//2
+        self._checkHeight2 = self._checkHeight//2
+
         # calculate indent size
         if self._imageListButtons:
             self._indent = max(_MININDENT, self._btnWidth + _MARGIN)
         elif self.HasButtons():
             self._indent = max(_MININDENT, self._btnWidth + _LINEATROOT)
-        
+
         # set default values
         dc.SetFont(self._normalFont)
         dc.SetPen(self._dottedPen)
 
         # calculate column start and paint
         x_maincol = 0
-        for i in xrange(self.GetMainColumn()):
+        for i in range(self.GetMainColumn()):
             if not self._owner.GetHeaderWindow().IsColumnShown(i):
                 continue
             x_maincol += self._owner.GetHeaderWindow().GetColumnWidth(i)
-        
+
         y, x_maincol = self.PaintLevel(self._anchor, dc, 0, 0, x_maincol)
 
 
@@ -3293,7 +3305,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         Calculates which (if any) item is under the given point, returning the tree item
         at this point plus extra information flags plus the item's column.
 
-        :param `point`: an instance of :class:`Point`, a point to test for hits;
+        :param `point`: an instance of :class:`wx.Point`, a point to test for hits;
         :param `flags`: a bitlist of the following values:
 
          ================================== =============== =================================
@@ -3340,13 +3352,14 @@ class TreeListMainWindow(CustomTreeCtrl):
             flags = wx.TREE_HITTEST_NOWHERE
             column = -1
             return None, flags, column
-        
-        hit, flags, column = self._anchor.HitTest(self.CalcUnscrolledPosition(point), self, flags, column, 0)
+
+        pt = wx.Point(self.CalcUnscrolledPosition(point.x, point.y))
+        hit, flags, column = self._anchor.HitTest(pt, self, flags, column, 0)
         if not hit:
             flags = wx.TREE_HITTEST_NOWHERE
             column = -1
             return None, flags, column
-        
+
         return hit, flags, column
 
 
@@ -3356,14 +3369,14 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         :param `item`: an instance of :class:`TreeListItem`;
         :param `column`: if not ``None``, an integer specifying the column index.
-         If it is ``None``, the main column index is used.        
+         If it is ``None``, the main column index is used.
         """
 
         if not item:
             return
 
         column = (column is not None and [column] or [self._main_column])[0]
-        
+
         if column < 0 or column >= self.GetColumnCount():
             return
 
@@ -3382,13 +3395,13 @@ class TreeListMainWindow(CustomTreeCtrl):
         # ensure that the position of the item it calculated in any case
         if self._dirty:
             self.CalculatePositions()
-            
+
         if self._editCtrl != None and (item != self._editCtrl.item() or column != self._editCtrl.column()):
             self._editCtrl.StopEditing()
-            
-        self._editCtrl = self._owner.CreateEditCtrl(item, column) 
+
+        self._editCtrl = self._owner.CreateEditCtrl(item, column)
         self._editCtrl.SetFocus()
-        
+
 
     def OnEditTimer(self):
         """ The timer for editing has expired. Start editing. """
@@ -3401,7 +3414,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         Called by :class:`EditTextCtrl`, to accept the changes and to send the
         ``EVT_TREE_END_LABEL_EDIT`` event.
 
-        :param `value`: the new value of the item label.        
+        :param `value`: the new value of the item label.
         """
 
         # TODO if the validator fails this causes a crash
@@ -3418,8 +3431,8 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         if self._curColumn == -1:
             self._curColumn = 0
-           
-        self.SetItemText(self._editItem, unicode(value), self._curColumn)
+
+        self.SetItemText(self._editItem, six.text_type(value), self._curColumn)
 
 
     def OnCancelEdit(self):
@@ -3437,7 +3450,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         self._owner.GetEventHandler().ProcessEvent(le)
 
-    
+
     def OnMouse(self, event):
         """
         Handles the ``wx.EVT_MOUSE_EVENTS`` event for :class:`TreeListMainWindow`.
@@ -3456,7 +3469,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                 event.GetWheelRotation() != 0 or event.Moving()):
             self._owner.GetEventHandler().ProcessEvent(event)
             return
-        
+
 
         # set focus if window clicked
         if event.LeftDown() or event.RightDown():
@@ -3466,7 +3479,8 @@ class TreeListMainWindow(CustomTreeCtrl):
         # determine event
         p = wx.Point(event.GetX(), event.GetY())
         flags = 0
-        item, flags, column = self._anchor.HitTest(self.CalcUnscrolledPosition(p), self, flags, self._curColumn, 0)
+        pt = wx.Point(self.CalcUnscrolledPosition(p.x, p.y))
+        item, flags, column = self._anchor.HitTest(pt, self, flags, self._curColumn, 0)
 
         underMouse = item
         underMouseChanged = underMouse != self._underMouse
@@ -3481,7 +3495,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             if self._underMouse:
                 # unhighlight old item
                 self._underMouse = None
-             
+
             self._underMouse = underMouse
 
         # Determines what item we are hovering over and need a tooltip for
@@ -3494,7 +3508,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         # We do not want a tooltip if we are dragging, or if the edit timer is running
         if underMouseChanged and not self._isDragging and (not self._editTimer or not self._editTimer.IsRunning()):
-            
+
             if hoverItem is not None:
                 # Ask the tree control what tooltip (if any) should be shown
                 hevent = TreeEvent(wx.wxEVT_COMMAND_TREE_ITEM_GETTOOLTIP, self.GetId())
@@ -3505,19 +3519,19 @@ class TreeListMainWindow(CustomTreeCtrl):
                     self.SetToolTip(hevent._label)
 
                 if hoverItem.IsHyperText() and (flags & wx.TREE_HITTEST_ONITEMLABEL) and hoverItem.IsEnabled():
-                    self.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                    self.SetCursor(wx.Cursor(wx.CURSOR_HAND))
                     self._isonhyperlink = True
                 else:
                     if self._isonhyperlink:
-                        self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+                        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
                         self._isonhyperlink = False
-                        
+
         # we only process dragging here
         if event.Dragging():
-            
+
             if self._isDragging:
                 if not self._dragImage:
-                    # Create the custom draw image from the icons and the text of the item                    
+                    # Create the custom draw image from the icons and the text of the item
                     self._dragImage = DragImage(self, self._current or item)
                     self._dragImage.BeginDrag(wx.Point(0,0), self)
                     self._dragImage.Show()
@@ -3529,7 +3543,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                     self._oldSelection = self._current
 
                 if item != self._dropTarget:
-                        
+
                     # unhighlight the previous drop target
                     if self._dropTarget:
                         self._dropTarget.SetHilight(False)
@@ -3546,7 +3560,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                     # Here I am trying to avoid ugly repainting problems... hope it works
                     self.RefreshLine(self._oldItem)
                     self._countDrag = 0
-                    
+
                 return # nothing to do, already done
 
             if item == None:
@@ -3555,7 +3569,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             # determine drag start
             if self._dragCount == 0:
                 self._dragTimer.Start(_DRAG_TIMER_TICKS, wx.TIMER_ONE_SHOT)
-            
+
             self._dragCount += 1
             if self._dragCount < 3:
                 return # minimum drag 3 pixel
@@ -3572,18 +3586,19 @@ class TreeListMainWindow(CustomTreeCtrl):
             nevent.SetItem(self._current) # the dragged item
             nevent.SetPoint(p)
             nevent.Veto()         # dragging must be explicit allowed!
-            
+
             if self.GetEventHandler().ProcessEvent(nevent) and nevent.IsAllowed():
-                
+
                 # we're going to drag this item
                 self._isDragging = True
-                self.CaptureMouse()
+                if not self.HasCapture():
+                    self.CaptureMouse()
                 self.RefreshSelected()
 
                 # in a single selection control, hide the selection temporarily
                 if not (self._agwStyle & wx.TR_MULTIPLE):
                     if self._oldSelection:
-                    
+
                         self._oldSelection.SetHilight(False)
                         self.RefreshLine(self._oldSelection)
                 else:
@@ -3598,8 +3613,8 @@ class TreeListMainWindow(CustomTreeCtrl):
             # end dragging
             self._dragCount = 0
             self._isDragging = False
-            if self.HasCapture():
-                self.ReleaseMouse()
+#            if self.HasCapture():
+#                self.ReleaseMouse()
             self.RefreshSelected()
 
             # send drag end event event
@@ -3608,14 +3623,14 @@ class TreeListMainWindow(CustomTreeCtrl):
             nevent.SetItem(item) # the item the drag is started
             nevent.SetPoint(p)
             self._owner.GetEventHandler().ProcessEvent(nevent)
-            
+
             if self._dragImage:
                 self._dragImage.EndDrag()
 
             if self._dropTarget:
                 self._dropTarget.SetHilight(False)
                 self.RefreshLine(self._dropTarget)
-                
+
             if self._oldSelection:
                 self._oldSelection.SetHilight(True)
                 self.RefreshLine(self._oldSelection)
@@ -3625,7 +3640,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             self._dropTarget = None
             if self._dragImage:
                 self._dragImage = None
-            
+
             self.Refresh()
 
         elif self._dragCount > 0:  # just in case dragging is initiated
@@ -3637,14 +3652,14 @@ class TreeListMainWindow(CustomTreeCtrl):
         if (item == None or not self.IsItemEnabled(item)) and not event.GetWheelRotation():
             self._owner.GetEventHandler().ProcessEvent(event)
             return
-        
+
         # remember item at shift down
         if event.ShiftDown():
             if not self._shiftItem:
                 self._shiftItem = self._current
         else:
             self._shiftItem = None
-        
+
         if event.RightUp():
 
             self.SetFocus()
@@ -3660,12 +3675,12 @@ class TreeListMainWindow(CustomTreeCtrl):
             if self._lastOnSame:
                 if item == self._current and self._curColumn != -1 and \
                    self._owner.GetHeaderWindow().IsColumnEditable(self._curColumn) and \
-                   flags & (wx.TREE_HITTEST_ONITEMLABEL | wx.TREE_HITTEST_ONITEMCOLUMN) and \
+                   flags & (wx.TREE_HITTEST_ONITEMLABEL | TREE_HITTEST_ONITEMCOLUMN) and \
                    ((self._editCtrl != None and column != self._editCtrl.column()) or self._editCtrl is None):
                     self._editTimer.Start(_EDIT_TIMER_TICKS, wx.TIMER_ONE_SHOT)
-                
+
                 self._lastOnSame = False
-            
+
             if (((flags & wx.TREE_HITTEST_ONITEMBUTTON) or (flags & wx.TREE_HITTEST_ONITEMICON)) and \
                 self.HasButtons() and item.HasPlus()):
 
@@ -3675,8 +3690,8 @@ class TreeListMainWindow(CustomTreeCtrl):
                     self.Toggle(item)
 
                 # don't select the item if the button was clicked
-                return         
-            
+                return
+
             # determine the selection if not done by left down
             if not self._left_down_selection:
                 unselect_others = not ((event.ShiftDown() or event.CmdDown()) and self.HasAGWFlag(wx.TR_MULTIPLE))
@@ -3685,16 +3700,16 @@ class TreeListMainWindow(CustomTreeCtrl):
                 self._current = self._key_current = item # make the new item the current item
             else:
                 self._left_down_selection = False
-            
+
         elif event.LeftDown() or event.RightDown() or event.LeftDClick():
 
             if column >= 0:
                 self._curColumn = column
-            
+
             if event.LeftDown() or event.RightDown():
                 self.SetFocus()
                 self._lastOnSame = item == self._current
-            
+
             if (((flags & wx.TREE_HITTEST_ONITEMBUTTON) or (flags & wx.TREE_HITTEST_ONITEMICON)) and \
                 self.HasButtons() and item.HasPlus()):
 
@@ -3716,7 +3731,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
                     self.CheckItem(item, checked)
                     return
-                
+
             # determine the selection if the current item is not selected
             if not item.IsSelected():
                 unselect_others = not ((event.ShiftDown() or event.CmdDown()) and self.HasAGWFlag(wx.TR_MULTIPLE))
@@ -3724,7 +3739,7 @@ class TreeListMainWindow(CustomTreeCtrl):
                 self.EnsureVisible(item)
                 self._current = self._key_current = item # make the new item the current item
                 self._left_down_selection = True
-            
+
             # For some reason, Windows isn't recognizing a left double-click,
             # so we need to simulate it here.  Allow 200 milliseconds for now.
             if event.LeftDClick():
@@ -3746,12 +3761,12 @@ class TreeListMainWindow(CustomTreeCtrl):
                     # double clicked
                     if item.HasPlus():
                         self.Toggle(item)
-                
+
         else: # any other event skip just in case
 
             event.Skip()
 
-        
+
     def OnScroll(self, event):
         """
         Handles the ``wx.EVT_SCROLLWIN`` event for :class:`TreeListMainWindow`.
@@ -3762,20 +3777,20 @@ class TreeListMainWindow(CustomTreeCtrl):
         def _updateHeaderWindow(header):
             header.Refresh()
             header.Update()
-            
+
         # Update the header window after this scroll event has fully finished
         # processing, and the scoll action is complete.
         if event.GetOrientation() == wx.HORIZONTAL:
             wx.CallAfter(_updateHeaderWindow, self._owner.GetHeaderWindow())
         event.Skip()
-            
+
 
     def CalculateSize(self, item, dc):
         """
         Calculates overall position and size of an item.
 
         :param `item`: an instance of :class:`TreeListItem`;
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         attr = item.GetAttributes()
@@ -3788,17 +3803,17 @@ class TreeListMainWindow(CustomTreeCtrl):
             dc.SetFont(self._normalFont)
 
         text_w = text_h = wnd_w = wnd_h = 0
-        for column in xrange(self.GetColumnCount()):
-            w, h, dummy = dc.GetMultiLineTextExtent(item.GetText(column))
+        for column in range(self.GetColumnCount()):
+            w, h, dummy = dc.GetFullMultiLineTextExtent(item.GetText(column))
             text_w, text_h = max(w, text_w), max(h, text_h)
-            
+
             wnd = item.GetWindow(column)
             if wnd:
                 wnd_h = max(wnd_h, item.GetWindowSize(column)[1])
                 if column == self._main_column:
                     wnd_w = item.GetWindowSize(column)[0]
 
-        text_w, dummy, dummy = dc.GetMultiLineTextExtent(item.GetText(self._main_column))
+        text_w, dummy, dummy = dc.GetFullMultiLineTextExtent(item.GetText(self._main_column))
         text_h+=2
 
         # restore normal font
@@ -3808,9 +3823,9 @@ class TreeListMainWindow(CustomTreeCtrl):
         image = item.GetCurrentImage()
 
         if image != _NO_IMAGE:
-        
+
             if self._imageListNormal:
-            
+
                 image_w, image_h = self._imageListNormal.GetSize(image)
                 image_w += 2*_MARGIN
 
@@ -3826,7 +3841,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         if total_h < 30:
             total_h += 2            # at least 2 pixels
         else:
-            total_h += total_h/10   # otherwise 10% extra spacing
+            total_h += total_h//10   # otherwise 10% extra spacing
 
         if total_h > self._lineHeight:
             self._lineHeight = max(total_h, wnd_h+2)
@@ -3834,15 +3849,15 @@ class TreeListMainWindow(CustomTreeCtrl):
         item.SetWidth(image_w+text_w+wcheck+2+wnd_w)
         item.SetHeight(max(total_h, wnd_h+2))
 
-        
+
     def CalculateLevel(self, item, dc, level, y, x_colstart):
         """
         Calculates the level of an item inside the tree hierarchy.
 
         :param `item`: an instance of :class:`TreeListItem`;
-        :param `dc`: an instance of :class:`DC`;
+        :param `dc`: an instance of :class:`wx.DC`;
         :param `level`: the item level in the tree hierarchy;
-        :param `y`: the current vertical position inside the :class:`PyScrolledWindow`;
+        :param `y`: the current vertical position inside the :class:`ScrolledWindow`;
         :param `x_colstart`: the x coordinate at which the item's column starts.
         """
 
@@ -3853,13 +3868,13 @@ class TreeListMainWindow(CustomTreeCtrl):
         if self.HasButtons():
             x += (self._btnWidth-self._btnWidth2) # half button space
         else:
-            x += (self._indent-self._indent/2)
-        
+            x += (self._indent-self._indent//2)
+
         if self.HasAGWFlag(wx.TR_HIDE_ROOT):
             x += self._indent * (level-1) # indent but not level 1
         else:
             x += self._indent * level # indent according to level
-        
+
         # a hidden root is not evaluated, but its children are always
         if self.HasAGWFlag(wx.TR_HIDE_ROOT) and (level == 0):
             # a hidden root is not evaluated, but its
@@ -3867,9 +3882,9 @@ class TreeListMainWindow(CustomTreeCtrl):
             children = item.GetChildren()
             count = len(children)
             level = level + 1
-            for n in xrange(count):
+            for n in range(count):
                 y = self.CalculateLevel(children[n], dc, level, y, x_colstart)  # recurse
-                
+
             return y
 
         self.CalculateSize(item, dc)
@@ -3886,15 +3901,15 @@ class TreeListMainWindow(CustomTreeCtrl):
         children = item.GetChildren()
         count = len(children)
         level = level + 1
-        for n in xrange(count):
+        for n in range(count):
             y = self.CalculateLevel(children[n], dc, level, y, x_colstart)  # recurse
-        
+
         return y
-    
+
 
     def CalculatePositions(self):
         """ Recalculates all the items positions. """
-        
+
         if not self._anchor:
             return
 
@@ -3905,11 +3920,11 @@ class TreeListMainWindow(CustomTreeCtrl):
         dc.SetPen(self._dottedPen)
 
         y, x_colstart = 2, 0
-        for i in xrange(self.GetMainColumn()):
+        for i in range(self.GetMainColumn()):
             if not self._owner.GetHeaderWindow().IsColumnShown(i):
                 continue
             x_colstart += self._owner.GetHeaderWindow().GetColumnWidth(i)
-        
+
         self.CalculateLevel(self._anchor, dc, 0, y, x_colstart) # start recursion
 
 
@@ -3942,7 +3957,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             return self._owner.OnGetItemText(item, column)
         else:
             return item.GetText(column)
-   
+
 
     def GetItemWidth(self, item, column):
         """
@@ -3951,7 +3966,7 @@ class TreeListMainWindow(CustomTreeCtrl):
         :param `item`: an instance of :class:`TreeListItem`;
         :param `column`: an integer specifying the column index.
         """
-        
+
         if not item:
             return 0
 
@@ -3967,9 +3982,9 @@ class TreeListMainWindow(CustomTreeCtrl):
             else:
                 font = self._normalFont
 
-        dc = wx.ClientDC(self)            
+        dc = wx.ClientDC(self)
         dc.SetFont(font)
-        w, h, dummy = dc.GetMultiLineTextExtent(item.GetText(column))
+        w, h, dummy = dc.GetFullMultiLineTextExtent(item.GetText(column))
         w += 2*_MARGIN
 
         # calculate width
@@ -3990,7 +4005,7 @@ class TreeListMainWindow(CustomTreeCtrl):
             while (parent and (not self.HasAGWFlag(wx.TR_HIDE_ROOT) or (parent != root))):
                 level += 1
                 parent = parent.GetParent()
-            
+
             if level:
                 width += level*self.GetIndent()
 
@@ -4046,7 +4061,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
             # next sibling
             item, cookie = self.GetNextChild(parent, cookie)
-        
+
         return max(10, width) # Prevent zero column width
 
 
@@ -4060,7 +4075,7 @@ class TreeListMainWindow(CustomTreeCtrl):
 
         item.Hide(hide)
         self.Refresh()
-        
+
 
 #----------------------------------------------------------------------------
 # TreeListCtrl - the multicolumn tree control
@@ -4095,29 +4110,34 @@ _methods = ["GetIndent", "SetIndent", "GetSpacing", "SetSpacing", "GetImageList"
             "SetItem3State", "SetItem3StateValue", "GetItem3StateValue", "IsItem3State", "GetPrev"]
 
 
-class HyperTreeList(wx.PyControl):
+class HyperTreeList(wx.Control):
     """
-    :class:`HyperTreeList` is a class that mimics the behaviour of :class:`gizmos.TreeListCtrl`, with
-    almost the same base functionalities plus some more enhancements. This class does
-    not rely on the native control, as it is a full owner-drawn tree-list control.
+    :class:`HyperTreeList` is a generic widget that combines the multicolumn
+    features of a :class:`wx.ListCtrl` with the hierarchical features of a
+    :class:`wx.TreeCtrl` This class does not rely on native native controls,
+    as it is a full owner-drawn tree-list control.
+
+    Please note that although the methods are not explicitly defined or
+    documented here, most of the API in :class:`CustomTreeCtrl` is available
+    from this class via monkey-patched delegates.
     """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
                  style=0, agwStyle=wx.TR_DEFAULT_STYLE, validator=wx.DefaultValidator,
                  name="HyperTreeList"):
         """
         Default class constructor.
-        
+
         :param `parent`: parent window. Must not be ``None``;
         :param `id`: window identifier. A value of -1 indicates a default value;
         :param `pos`: the control position. A value of (-1, -1) indicates a default position,
          chosen by either the windowing system or wxPython, depending on platform;
         :param `size`: the control size. A value of (-1, -1) indicates a default size,
          chosen by either the windowing system or wxPython, depending on platform;
-        :param `style`: the underlying :class:`PyScrolledWindow` style;
+        :param `style`: the underlying :class:`wx.Control` style;
         :param `agwStyle`: the AGW-specific :class:`HyperTreeList` window style. This can be a combination
          of the following bits:
-        
+
          ============================== =========== ==================================================
          Window Styles                  Hex Value   Description
          ============================== =========== ==================================================
@@ -4136,12 +4156,12 @@ class HyperTreeList(wx.PyControl):
          ``TR_HIDE_ROOT``                     0x800 Use this style to suppress the display of the root node, effectively causing the first-level nodes to appear as a series of root nodes.
          ``TR_COLUMN_LINES``                 0x1000 Use this style to draw a contrasting border between displayed columns.
          ``TR_FULL_ROW_HIGHLIGHT``           0x2000 Use this style to have the background colour and the selection highlight extend  over the entire horizontal row of the tree control window.
-         ``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
-         ``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
-         ``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful foe checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
+         ``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
+         ``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
+         ``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful for checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
          ``TR_ALIGN_WINDOWS``               0x20000 Flag used to align windows (in items with windows) at the same horizontal position.
          ``TR_NO_HEADER``                   0x40000 Use this style to hide the columns header.
-         ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`~lib.agw.customtreectrl.CustomTreeCtrl` is low.
+         ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl` is low.
          ``TR_VIRTUAL``                    0x100000 :class:`HyperTreeList` will have virtual behaviour.
          ============================== =========== ==================================================
 
@@ -4149,31 +4169,31 @@ class HyperTreeList(wx.PyControl):
         :param `name`: window name.
         """
 
-        wx.PyControl.__init__(self, parent, id, pos, size, style, validator, name)
+        wx.Control.__init__(self, parent, id, pos, size, style, validator, name)
 
         self._header_win = None
         self._main_win = None
         self._headerHeight = 0
         self._attr_set = False
-        
+
         main_style = style & ~(wx.SIMPLE_BORDER|wx.SUNKEN_BORDER|wx.DOUBLE_BORDER|
                                wx.RAISED_BORDER|wx.STATIC_BORDER)
 
         self._agwStyle = agwStyle
-        
+
         self._main_win = TreeListMainWindow(self, -1, wx.Point(0, 0), size, main_style, agwStyle, validator)
         self._main_win._buffered = False
 
         self._header_win = TreeListHeaderWindow(self, -1, self._main_win, wx.Point(0, 0),
                                                 wx.DefaultSize, wx.TAB_TRAVERSAL)
         self._header_win._buffered = False
-        
+
         self.CalculateAndSetHeaderHeight()
         self.Bind(wx.EVT_SIZE, self.OnSize)
 
         self.SetBuffered(IsBufferingSupported())
         self._main_win.SetAGWWindowStyleFlag(agwStyle)
-        
+
 
     def SetBuffered(self, buffered):
         """
@@ -4197,31 +4217,31 @@ class HyperTreeList(wx.PyControl):
             if h != self._headerHeight:
                 self._headerHeight = h
                 self.DoHeaderLayout()
-            
+
 
     def DoHeaderLayout(self):
         """ Layouts the header control. """
 
         w, h = self.GetClientSize()
         has_header = self._agwStyle & TR_NO_HEADER == 0
-        
+
         if self._header_win and has_header:
-            self._header_win.SetDimensions(0, 0, w, self._headerHeight)
+            self._header_win.SetSize(0, 0, w, self._headerHeight)
             self._header_win.Refresh()
         else:
-            self._header_win.SetDimensions(0, 0, 0, 0)
-        
+            self._header_win.SetSize(0, 0, 0, 0)
+
         if self._main_win and has_header:
-            self._main_win.SetDimensions(0, self._headerHeight + 1, w, h - self._headerHeight - 1)
+            self._main_win.SetSize(0, self._headerHeight + 1, w, h - self._headerHeight - 1)
         else:
-            self._main_win.SetDimensions(0, 0, w, h)
-    
+            self._main_win.SetSize(0, 0, w, h)
+
 
     def OnSize(self, event):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`HyperTreeList`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
         self.DoHeaderLayout()
@@ -4231,14 +4251,14 @@ class HyperTreeList(wx.PyControl):
         """
         Sets the default font for the header window and the main window.
 
-        :param `font`: a valid :class:`Font` object.
+        :param `font`: a valid :class:`wx.Font` object.
         """
-        
+
         if self._header_win:
             self._header_win.SetFont(font)
             self.CalculateAndSetHeaderHeight()
             self._header_win.Refresh()
-        
+
         if self._main_win:
             return self._main_win.SetFont(font)
         else:
@@ -4249,18 +4269,18 @@ class HyperTreeList(wx.PyControl):
         """
         Sets the default font for the header window..
 
-        :param `font`: a valid :class:`Font` object.
+        :param `font`: a valid :class:`wx.Font` object.
         """
 
         if not self._header_win:
             return
-        
-        for column in xrange(self.GetColumnCount()):
+
+        for column in range(self.GetColumnCount()):
             self._header_win.SetColumn(column, self.GetColumn(column).SetFont(font))
 
         self._header_win.Refresh()
 
-    
+
     def SetHeaderCustomRenderer(self, renderer=None):
         """
         Associate a custom renderer with the header - all columns will use it
@@ -4271,7 +4291,7 @@ class HyperTreeList(wx.PyControl):
         """
 
         self._header_win.SetCustomRenderer(renderer)
-        
+
 
     def SetAGWWindowStyleFlag(self, agwStyle):
         """
@@ -4297,20 +4317,20 @@ class HyperTreeList(wx.PyControl):
          ``TR_HIDE_ROOT``                     0x800 Use this style to suppress the display of the root node, effectively causing the first-level nodes to appear as a series of root nodes.
          ``TR_COLUMN_LINES``                 0x1000 Use this style to draw a contrasting border between displayed columns.
          ``TR_FULL_ROW_HIGHLIGHT``           0x2000 Use this style to have the background colour and the selection highlight extend  over the entire horizontal row of the tree control window.
-         ``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
-         ``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful foe checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
-         ``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful foe checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
+         ``TR_AUTO_CHECK_CHILD``             0x4000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are checked/unchecked as well.
+         ``TR_AUTO_TOGGLE_CHILD``            0x8000 Only meaningful for checkbox-type items: when a parent item is checked/unchecked its children are toggled accordingly.
+         ``TR_AUTO_CHECK_PARENT``           0x10000 Only meaningful for checkbox-type items: when a child item is checked/unchecked its parent item is checked/unchecked as well.
          ``TR_ALIGN_WINDOWS``               0x20000 Flag used to align windows (in items with windows) at the same horizontal position.
          ``TR_NO_HEADER``                   0x40000 Use this style to hide the columns header.
-         ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`~lib.agw.customtreectrl.CustomTreeCtrl` is low.
+         ``TR_ELLIPSIZE_LONG_ITEMS``        0x80000 Flag used to ellipsize long items when the horizontal space for :class:`~wx.lib.agw.customtreectrl.CustomTreeCtrl` is low.
          ``TR_VIRTUAL``                    0x100000 :class:`HyperTreeList` will have virtual behaviour.
          ============================== =========== ==================================================
-         
+
         :note: Please note that some styles cannot be changed after the window creation
          and that `Refresh()` might need to be be called after changing the others for
          the change to take place immediately.
         """
-        
+
         if self._main_win:
             self._main_win.SetAGWWindowStyleFlag(agwStyle)
 
@@ -4318,7 +4338,7 @@ class HyperTreeList(wx.PyControl):
         self._agwStyle = agwStyle
         if abs(agwStyle - tmp) & TR_NO_HEADER:
             self.DoHeaderLayout()
-            
+
 
     def GetAGWWindowStyleFlag(self):
         """
@@ -4330,7 +4350,7 @@ class HyperTreeList(wx.PyControl):
         agwStyle = self._agwStyle
         if self._main_win:
             agwStyle |= self._main_win.GetAGWWindowStyleFlag()
-            
+
         return agwStyle
 
 
@@ -4359,15 +4379,15 @@ class HyperTreeList(wx.PyControl):
          event handler function under Windows and automatically under GTK.
 
         :note: Setting the background colour does not cause an immediate refresh, so
-         you may wish to call :meth:`Window.ClearBackground` or :meth:`Window.Refresh` after
+         you may wish to call :meth:`wx.Window.ClearBackground` or :meth:`wx.Window.Refresh` after
          calling this function.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
         if not self._main_win:
             return False
-        
+
         return self._main_win.SetBackgroundColour(colour)
 
 
@@ -4378,12 +4398,12 @@ class HyperTreeList(wx.PyControl):
         :param `colour`: the colour to be used as the foreground colour, pass
          :class:`NullColour` to reset to the default colour.
 
-        :note: Overridden from :class:`PyControl`.         
+        :note: Overridden from :class:`wx.Control`.
         """
 
         if not self._main_win:
             return False
-        
+
         return self._main_win.SetForegroundColour(colour)
 
 
@@ -4396,15 +4416,15 @@ class HyperTreeList(wx.PyControl):
         """
 
         if width == wx.LIST_AUTOSIZE_USEHEADER:
-        
+
             font = self._header_win.GetFont()
             dc = wx.ClientDC(self._header_win)
-            width, dummy, dummy = dc.GetMultiLineTextExtent(self._header_win.GetColumnText(column))
+            width, dummy, dummy = dc.GetFullMultiLineTextExtent(self._header_win.GetColumnText(column))
             # Search TreeListHeaderWindow.OnPaint to understand this:
             width += 2*_EXTRA_WIDTH + _MARGIN
-        
+
         elif width == wx.LIST_AUTOSIZE:
-        
+
             width = self._main_win.GetBestColumnWidth(column)
 
         elif width == LIST_AUTOSIZE_CONTENT_OR_HEADER:
@@ -4413,7 +4433,7 @@ class HyperTreeList(wx.PyControl):
             font = self._header_win.GetFont()
             dc = wx.ClientDC(self._header_win)
             width2, dummy, dummy = dc.GetMultiLineTextExtent(self._header_win.GetColumnText(column))
- 
+
             width2 += 2*_EXTRA_WIDTH + _MARGIN
             width = max(width1, width2)
 
@@ -4431,7 +4451,7 @@ class HyperTreeList(wx.PyControl):
 
         return self._header_win.GetColumnWidth(column)
 
-        
+
     def SetColumnText(self, column, text):
         """
         Sets the column text label.
@@ -4466,14 +4486,14 @@ class HyperTreeList(wx.PyControl):
         :param `image`: an index within the normal image list assigned to
          :class:`HyperTreeList` specifying the image to use for the column;
         :param `shown`: ``True`` to show the column, ``False`` to hide it;
-        :param `colour`: a valid :class:`Colour`, representing the text foreground colour
+        :param `colour`: a valid :class:`wx.Colour`, representing the text foreground colour
          for the column;
         :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.
         """
 
         self._header_win.AddColumn(text, width, flag, image, shown, colour, edit)
         self.DoHeaderLayout()
-        
+
 
     def AddColumnInfo(self, colInfo):
         """
@@ -4500,7 +4520,7 @@ class HyperTreeList(wx.PyControl):
 
 
     def InsertColumn(self, before, text, width=_DEFAULT_COL_WIDTH,
-                     flag=wx.ALIGN_LEFT, image=-1, shown=True, colour=None, 
+                     flag=wx.ALIGN_LEFT, image=-1, shown=True, colour=None,
                      edit=False):
         """
         Inserts a column to the :class:`HyperTreeList` at the position specified
@@ -4514,9 +4534,9 @@ class HyperTreeList(wx.PyControl):
         :param `image`: an index within the normal image list assigned to
          :class:`HyperTreeList` specifying the image to use for the column;
         :param `shown`: ``True`` to show the column, ``False`` to hide it;
-        :param `colour`: a valid :class:`Colour`, representing the text foreground colour
+        :param `colour`: a valid :class:`wx.Colour`, representing the text foreground colour
          for the column;
-        :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.        
+        :param `edit`: ``True`` to set the column as editable, ``False`` otherwise.
         """
 
         self._header_win.InsertColumn(before, text, width, flag, image,
@@ -4540,12 +4560,12 @@ class HyperTreeList(wx.PyControl):
         Sets a column using an instance of :class:`TreeListColumnInfo`.
 
         :param `column`: an integer specifying the column index;
-        :param `info`: an instance of :class:`TreeListColumnInfo`.        
+        :param `info`: an instance of :class:`TreeListColumnInfo`.
         """
 
         self._header_win.SetColumn(column, colInfo)
         self._header_win.Refresh()
-            
+
 
     def GetColumn(self, column):
         """
@@ -4553,7 +4573,7 @@ class HyperTreeList(wx.PyControl):
 
         :param `column`: an integer specifying the column index.
         """
-        
+
         return self._header_win.GetColumn(column)
 
 
@@ -4564,7 +4584,7 @@ class HyperTreeList(wx.PyControl):
         :param `column`: an integer specifying the column index.
         :param `image`: an index within the normal image list assigned to
          :class:`HyperTreeList` specifying the image to use for the column.
-        """                
+        """
 
         self._header_win.SetColumn(column, self.GetColumn(column).SetImage(image))
         self._header_win.Refresh()
@@ -4602,7 +4622,7 @@ class HyperTreeList(wx.PyControl):
 
         if self._main_win.GetMainColumn() == column:
             shown = True # Main column cannot be hidden
-            
+
         self.SetColumn(column, self.GetColumn(column).SetShown(shown))
 
 
@@ -4645,7 +4665,7 @@ class HyperTreeList(wx.PyControl):
 
         :param `column`: an integer specifying the column index.
         """
-        
+
         return self._header_win.GetColumn(column).GetAlignment()
 
 
@@ -4654,7 +4674,7 @@ class HyperTreeList(wx.PyControl):
         Sets the column text colour.
 
         :param `column`: an integer specifying the column index;
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._header_win.SetColumn(column, self.GetColumn(column).SetColour(colour))
@@ -4669,14 +4689,14 @@ class HyperTreeList(wx.PyControl):
         """
 
         return self._header_win.GetColumn(column).GetColour()
-                
+
 
     def SetColumnFont(self, column, font):
         """
         Sets the column text font.
 
         :param `column`: an integer specifying the column index;
-        :param `font`: a valid :class:`Font` object.
+        :param `font`: a valid :class:`wx.Font` object.
         """
 
         self._header_win.SetColumn(column, self.GetColumn(column).SetFont(font))
@@ -4696,7 +4716,7 @@ class HyperTreeList(wx.PyControl):
     def Refresh(self, erase=True, rect=None):
         """
         Causes this window, and all of its children recursively (except under wxGTK1
-        where this is not implemented), to be repainted. 
+        where this is not implemented), to be repainted.
 
         :param `erase`: If ``True``, the background will be erased;
         :param `rect`: If not ``None``, only the given rectangle will be treated as damaged.
@@ -4705,7 +4725,7 @@ class HyperTreeList(wx.PyControl):
          event loop iteration, if you need to update the window immediately you should
          use `Update` instead.
 
-        :note: Overridden from :class:`PyControl`.         
+        :note: Overridden from :class:`wx.Control`.
         """
 
         self._main_win.Refresh(erase, rect)
@@ -4714,19 +4734,19 @@ class HyperTreeList(wx.PyControl):
 
     def SetFocus(self):
         """ This sets the window to receive keyboard input. """
-        
-        self._main_win.SetFocus() 
+
+        self._main_win.SetFocus()
 
 
     def GetHeaderWindow(self):
         """ Returns the header window, an instance of :class:`TreeListHeaderWindow`. """
-        
+
         return self._header_win
-    
+
 
     def GetMainWindow(self):
         """ Returns the main window, an instance of :class:`TreeListMainWindow`. """
-        
+
         return self._main_win
 
 
@@ -4736,7 +4756,7 @@ class HyperTreeList(wx.PyControl):
         minimal size which doesn't truncate the control, for a panel - the same size
         as it would have after a call to `Fit()`.
 
-        :note: Overridden from :class:`PyControl`.        
+        :note: Overridden from :class:`wx.Control`.
         """
 
         # something is better than nothing...
@@ -4752,13 +4772,13 @@ class HyperTreeList(wx.PyControl):
         :param `item`: an instance of :class:`TreeListItem`;
         :param `column`: an integer specifying the column index.
         """
-        
+
         return ""
 
 
     def SortChildren(self, item):
         """
-        Sorts the children of the given item using :meth:`~HyperTreeList.OnCompareItems` method of :class:`HyperTreeList`. 
+        Sorts the children of the given item using :meth:`~HyperTreeList.OnCompareItems` method of :class:`HyperTreeList`.
         You should override that method to change the sort order (the default is ascending
         case-sensitive alphabetical order).
 
@@ -4768,14 +4788,14 @@ class HyperTreeList(wx.PyControl):
         if not self._attr_set:
             setattr(self._main_win, "OnCompareItems", self.OnCompareItems)
             self._attr_set = True
-            
+
         self._main_win.SortChildren(item)
-        
+
 
     def OnCompareItems(self, item1, item2):
         """
         Returns whether 2 items have the same text.
-        
+
         Override this function in the derived class to change the sort order of the items
         in the :class:`HyperTreeList`. The function should return a negative, zero or positive
         value if the first item is less than, equal to or greater than the second one.
@@ -4796,10 +4816,10 @@ class HyperTreeList(wx.PyControl):
         """
         Create an edit control for editing a label of an item. By default, this
         returns a text control.
-        
+
         Override this function in the derived class to return a different type
         of control.
-        
+
         :param `item`: an instance of :class:`TreeListItem`;
         :param `column`: an integer specifying the column index.
         """
@@ -4808,37 +4828,37 @@ class HyperTreeList(wx.PyControl):
                             self.GetMainWindow(), item.GetText(column),
                             style=self.GetTextCtrlStyle(column))
 
-        
+
     def GetTextCtrlStyle(self, column):
         """
         Return the style to use for the text control that is used to edit
-        labels of items. 
-        
+        labels of items.
+
         Override this function in the derived class to support a different
         style, e.g. ``wx.TE_MULTILINE``.
-        
+
         :param `column`: an integer specifying the column index.
         """
-        
+
         return self.GetTextCtrlAlignmentStyle(column) | wx.TE_PROCESS_ENTER
 
-        
+
     def GetTextCtrlAlignmentStyle(self, column):
         """
         Return the alignment style to use for the text control that is used
-        to edit labels of items. The alignment style is derived from the 
+        to edit labels of items. The alignment style is derived from the
         column alignment.
-        
+
         :param `column`: an integer specifying the column index.
         """
 
         header_win = self.GetHeaderWindow()
         alignment = header_win.GetColumnAlignment(column)
-        return {wx.ALIGN_LEFT: wx.TE_LEFT, 
-                wx.ALIGN_RIGHT: wx.TE_RIGHT, 
+        return {wx.ALIGN_LEFT: wx.TE_LEFT,
+                wx.ALIGN_RIGHT: wx.TE_RIGHT,
                 wx.ALIGN_CENTER: wx.TE_CENTER}[alignment]
 
-    
+
     def GetClassDefaultAttributes(self):
         """
         Returns the default font and colours which are used by the control. This is
@@ -4860,9 +4880,9 @@ class HyperTreeList(wx.PyControl):
         """
 
         attr = wx.VisualAttributes()
-        attr.colFg = wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOWTEXT)
-        attr.colBg = wx.SystemSettings_GetColour(wx.SYS_COLOUR_LISTBOX)
-        attr.font  = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        attr.colFg = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
+        attr.colBg = wx.SystemSettings.GetColour(wx.SYS_COLOUR_LISTBOX)
+        attr.font  = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
         return attr
 
     GetClassDefaultAttributes = classmethod(GetClassDefaultAttributes)
@@ -4874,7 +4894,7 @@ def create_delegator_for(method):
 
     :param `method`: one method inside the :class:`TreeListMainWindow` local scope.
     """
-    
+
     def delegate(self, *args, **kwargs):
         return getattr(self._main_win, method)(*args, **kwargs)
     return delegate
@@ -4882,5 +4902,38 @@ def create_delegator_for(method):
 # Create methods that delegate to self._main_win. This approach allows for
 # overriding these methods in possible subclasses of HyperTreeList
 for method in _methods:
-    setattr(HyperTreeList, method, create_delegator_for(method))    
+    setattr(HyperTreeList, method, create_delegator_for(method))
+
+
+if __name__ == '__main__':
+
+    import wx
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+
+            wx.Frame.__init__(self, parent, -1, "HyperTreeList Demo")
+
+            tree_list = HyperTreeList(self)
+
+            tree_list.AddColumn("First column")
+
+            root = tree_list.AddRoot("Root", ct_type=1)
+
+            parent = tree_list.AppendItem(root, "First child", ct_type=1)
+            child = tree_list.AppendItem(parent, "First Grandchild", ct_type=1)
+
+            tree_list.AppendItem(root, "Second child", ct_type=1)
+
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
 

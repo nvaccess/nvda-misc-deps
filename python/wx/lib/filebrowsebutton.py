@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Name:        wxPython.lib.filebrowsebutton
+# Name:        wx.lib.filebrowsebutton
 # Purpose:     Composite controls that provide a Browse button next to
 #              either a wxTextCtrl or a wxComboBox.  The Browse button
 #              launches a wxFileDialog and loads the result into the
@@ -7,19 +7,19 @@
 #
 # Author:      Mike Fletcher
 #
-# RCS-ID:      $Id$
-# Copyright:   (c) 2000 by Total Control Software
+# Copyright:   (c) 2000-2017 by Total Control Software
 # Licence:     wxWindows license
+# Tags:        phoenix-port
 #----------------------------------------------------------------------
 # 12/02/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o 2.5 Compatability changes
+# o 2.5 Compatibility changes
 #
 
-import  os
-import  types
+import os
+import types
 
-import  wx
+import wx
 
 #----------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ class FileBrowseButton(wx.Panel):
         :param changeCallback: Optional callback called for all changes in value of the control
         :param labelWidth:     Width of the label
         """
-      
+
         # store variables
         self.labelText = labelText
         self.buttonText = buttonText
@@ -104,9 +104,9 @@ class FileBrowseButton(wx.Panel):
         self.SetAutoLayout(True)
         self.SetSizer( outsidebox )
         self.Layout()
-        if type( size ) == types.TupleType:
-            size = apply( wx.Size, size)
-        self.SetDimensions(-1, -1, size.width, size.height, wx.SIZE_USE_EXISTING)
+        if type(size) == tuple:
+            size = wx.Size(size)
+        self.SetSize(-1, -1, size.width, size.height, wx.SIZE_USE_EXISTING)
 
 #        if size.width != -1 or size.height != -1:
 #            self.SetSize(size)
@@ -129,7 +129,7 @@ class FileBrowseButton(wx.Panel):
     def createTextControl( self):
         """Create the text control"""
         textControl = wx.TextCtrl(self, -1)
-        textControl.SetToolTipString( self.toolTip )
+        textControl.SetToolTip( self.toolTip )
         if self.changeCallback:
             textControl.Bind(wx.EVT_TEXT, self.OnChanged)
             textControl.Bind(wx.EVT_COMBOBOX, self.OnChanged)
@@ -142,7 +142,7 @@ class FileBrowseButton(wx.Panel):
     def createBrowseButton( self):
         """Create the browse-button control"""
         button =wx.Button(self, -1, self.buttonText)
-        button.SetToolTipString( self.toolTip )
+        button.SetToolTip( self.toolTip )
         button.Bind(wx.EVT_BUTTON, self.OnBrowse)
         return button
 
@@ -212,18 +212,18 @@ class FileBrowseButtonWithHistory( FileBrowseButton ):
                 selection. If you discover this condition, please report it!
 
             As for a FileBrowseButton.__init__ otherwise.
-            
+
         GetHistoryControl()
             Return reference to the control which implements interfaces
             required for manipulating the history list.  See GetHistoryControl
             documentation for description of what that interface is.
-            
+
         GetHistory()
             Return current history list
-            
+
         SetHistory( value=(), selectionIndex = None )
             Set current history list, if selectionIndex is not None, select that index
-            
+
         """
     def __init__( self, *arguments, **namedarguments):
         self.history = namedarguments.get( "history" )
@@ -242,7 +242,7 @@ class FileBrowseButtonWithHistory( FileBrowseButton ):
     def createTextControl( self):
         """Create the text control"""
         textControl = wx.ComboBox(self, -1, style = wx.CB_DROPDOWN )
-        textControl.SetToolTipString( self.toolTip )
+        textControl.SetToolTip( self.toolTip )
         textControl.Bind(wx.EVT_SET_FOCUS, self.OnSetFocus)
         if self.changeCallback:
             textControl.Bind(wx.EVT_TEXT, self.OnChanged)
@@ -258,12 +258,12 @@ class FileBrowseButtonWithHistory( FileBrowseButton ):
         """
         Return a pointer to the control which provides (at least)
         the following methods for manipulating the history list:
-        
+
             Append( item ) -- add item
             Clear() -- clear all items
             Delete( index ) -- 0-based index to delete from list
             SetSelection( index ) -- 0-based index to select in list
-            
+
         Semantics of the methods follow those for the wxComboBox control
         """
         return self.textControl
@@ -374,7 +374,7 @@ if __name__ == "__main__":
         def __init__( self, tag ):
             self.tag = tag
         def __call__( self, event ):
-            print self.tag, event.GetString()
+            print(self.tag, event.GetString())
     class DemoFrame( wx.Frame ):
         def __init__(self, parent):
             wx.Frame.__init__(self, parent, -1, "File entry with browse", size=(500,260))
@@ -453,7 +453,7 @@ if __name__ == "__main__":
     def test( ):
         app = DemoApp(0)
         app.MainLoop()
-    print 'Creating dialog'
+    print('Creating dialog')
     test( )
 
 

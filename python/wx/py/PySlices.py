@@ -6,19 +6,17 @@
 # main namespace to look as much as possible like the regular Python
 # shell environment.
 import __main__
-original = __main__.__dict__.keys()
+original = list(__main__.__dict__.keys())
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com> / "
 __author__ += "David N. Mashburn <david.n.mashburn@gmail.com>"
-__cvsid__ = "$Id: PySlices.py 36607 2005-12-30 23:02:03Z RD $" # Hmmm...
-__revision__ = "$Revision: 36607 $"[11:-2] #Hmmm...
 
 import wx
 import os
 
 class App(wx.App):
     """PySlices standalone application."""
-    
+
     def __init__(self, filename=None):
         self.filename = filename
         import wx
@@ -29,7 +27,7 @@ class App(wx.App):
         import os
         import wx
         from wx import py
-        
+
         self.SetAppName("pyslices")
         confDir = wx.StandardPaths.Get().GetUserDataDir()
         if not os.path.exists(confDir):
@@ -37,7 +35,7 @@ class App(wx.App):
         fileName = os.path.join(confDir, 'config')
         self.config = wx.FileConfig(localFilename=fileName)
         self.config.SetRecordDefaults(True)
-        
+
         self.frame = py.crustslices.CrustSlicesFrame(config=self.config, dataDir=confDir,
                                                      filename=self.filename)
 ##        self.frame.startupFileName = os.path.join(confDir,'pycrust_startup')
@@ -45,8 +43,8 @@ class App(wx.App):
         self.frame.Show()
         self.SetTopWindow(self.frame)
         return True
-    
-    
+
+
 '''
 The main() function needs to handle being imported, such as with the
 pycrust script that wxPython installs:
@@ -65,13 +63,13 @@ def main(filename=None):
         filename = sys.argv[1]
     if filename:
         filename = os.path.realpath(filename)
-    
+
     import __main__
     md = __main__.__dict__
     keepers = original
     keepers.append('App')
     keepers.append('filename')
-    for key in md.keys():
+    for key in list(md.keys()):
         if key not in keepers:
             del md[key]
     # Create an application instance.
@@ -87,11 +85,11 @@ def main(filename=None):
     sys.app = app
     del sys
     # Cleanup the main namespace some more.
-    if md.has_key('App') and md['App'] is App:
+    if 'App' in md and md['App'] is App:
         del md['App']
-    if md.has_key('filename') and md['filename'] is filename:
+    if 'filename' in md and md['filename'] is filename:
         del md['filename']
-    if md.has_key('__main__') and md['__main__'] is __main__:
+    if '__main__' in md and md['__main__'] is __main__:
         del md['__main__']
     # Start the wxPython event loop.
     app.MainLoop()

@@ -8,6 +8,7 @@
 # Version       0.75
 # Date:         May 15, 2002
 # Licence:      wxWindows license
+# Tags:         phoenix-port
 #----------------------------------------------------------------------------
 # Release Notes
 
@@ -15,35 +16,37 @@
 # add index to data list after parsing total pages for paging
 #----------------------------------------------------------------------------
 # 12/10/2003 - Jeff Grimmett (grimmtooth@softhome.net)
-# o 2.5 compatability update.
+# o 2.5 compatibility update.
 #----------------------------------------------------------------------------
 # 11/23/2004 - Vernon Cole (wnvcole@peppermillcas.com)
 # o Generalize for non-2-dimensional sequences and non-text data
 #   (can use as a simple text printer by supplying a list of strings.)
 # o Add a small _main_ for self test
- 
+
 import  copy
 import  types
 import  wx
+
+import six
 
 class PrintBase(object):
     def SetPrintFont(self, font):      # set the DC font parameters
         fattr = font["Attr"]
         if fattr[0] == 1:
-            weight = wx.BOLD
+            weight = wx.FONTWEIGHT_BOLD
         else:
-            weight = wx.NORMAL
+            weight = wx.FONTWEIGHT_NORMAL
 
         if fattr[1] == 1:
-            set_style = wx.ITALIC
+            set_style = wx.FONTSTYLE_ITALIC
         else:
-            set_style = wx.NORMAL
+            set_style = wx.FONTSTYLE_NORMAL
 
         underline = fattr[2]
         fcolour = self.GetFontColour(font)
         self.DC.SetTextForeground(fcolour)
 
-        setfont = wx.Font(font["Size"], wx.SWISS, set_style, weight, underline)
+        setfont = wx.Font(font["Size"], wx.FONTFAMILY_SWISS, set_style, weight, underline)
         setfont.SetFaceName(font["Name"])
         self.DC.SetFont(setfont)
 
@@ -270,7 +273,7 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
         self.column.append(pos_x)
 
         #module logic expects two dimensional data -- fix input if needed
-        if isinstance(self.data,types.StringTypes):
+        if isinstance(self.data, six.string_types):
             self.data = [[copy.copy(self.data)]] # a string becomes a single cell
         try:
             rows = len(self.data)
@@ -279,7 +282,7 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
             rows = 1
         first_value = self.data[0]
 
-        if isinstance(first_value, types.StringTypes): # a sequence of strings
+        if isinstance(first_value, six.string_types): # a sequence of strings
             if self.label == [] and self.set_column == []:
                 data = []
                 for x in self.data:     #becomes one column
@@ -320,16 +323,16 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
                 self.column.append(pos_x)   # position of each column
 
         if pos_x > self.page_width * self.pwidth:    # check if it fits in page
-            print "Warning, Too Wide for Page"
+            print("Warning, Too Wide for Page")
             return
 
         if self.label != []:
             if len(self.column) -1 != len(self.label):
-                print "Column Settings Incorrect", "\nColumn Value: " + str(self.column), "\nLabel Value: " + str(self.label)
+                print("Column Settings Incorrect", "\nColumn Value: " + str(self.column), "\nLabel Value: " + str(self.label))
                 return
 
         if column_total != len(self.column) -1:
-            print "Cannot fit", first_value, 'in', len(self.column)-1, 'columns.'
+            print("Cannot fit", first_value, 'in', len(self.column)-1, 'columns.')
             return
 
         for col in range(column_total):
@@ -353,7 +356,7 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
 
 
     def SetPointAdjust(self):
-        f = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL)     # setup using 10 point
+        f = wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)     # setup using 10 point
         self.DC.SetFont(f)
         f.SetFaceName(self.text_font["Name"])
         x, y = self.DC.GetTextExtent("W")
@@ -525,7 +528,7 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
 
 
     def LabelColorRow(self, colour):
-        brush = wx.Brush(colour, wx.SOLID)
+        brush = wx.Brush(colour, wx.BRUSHSTYLE_SOLID)
         self.DC.SetBrush(brush)
         height = self.label_space + self.label_pt_space_before + self.label_pt_space_after
         self.DC.DrawRectangle(self.column[0], self.y,
@@ -541,9 +544,9 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
             if cellcolour is not None:
                 colour = cellcolour
 
-            brush = wx.Brush(colour, wx.SOLID)
+            brush = wx.Brush(colour, wx.BRUSHSTYLE_SOLID)
             self.DC.SetBrush(brush)
-            self.DC.SetPen(wx.Pen(wx.NamedColour('WHITE'), 0))
+            self.DC.SetPen(wx.Pen(wx.WHITE, 0))
 
             start_x = self.column[col]
             width = self.column[col+1] - start_x + 2
@@ -559,7 +562,7 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
         self.col = 0
         max_y = 0
         for vtxt in row_val:
-            if not isinstance(vtxt,types.StringTypes):
+            if not isinstance(vtxt, six.string_types):
                 vtxt = str(vtxt)
             self.region = self.column[self.col+1] - self.column[self.col]
             self.indent = self.column[self.col]
@@ -655,9 +658,7 @@ class PrintTableDraw(wx.ScrolledWindow, PrintBase):
         size = DC.GetSize()
         self.DC = DC
 
-        DC.BeginDrawing()
         self.DrawText()
-        DC.EndDrawing()
 
         self.sizew = DC.MaxY()
         self.sizeh = DC.MaxX()
@@ -682,7 +683,10 @@ class PrintTable(object):
         self.row_line_colour = {}
 
         self.parentFrame = parentFrame
-        self.SetPreviewSize()
+        if parentFrame:
+            self.SetPreviewSize(parentFrame.GetPosition(), parentFrame.GetSize())
+        else:
+            self.SetPreviewSize()
 
         self.printData = wx.PrintData()
         self.scale = 1.0
@@ -714,14 +718,14 @@ class PrintTable(object):
         self.printData.SetOrientation(orient)
 
     def SetColors(self):
-        self.row_def_line_colour = wx.NamedColour('BLACK')
+        self.row_def_line_colour = wx.BLACK
         self.row_def_line_size = 1
 
-        self.column_def_line_colour = wx.NamedColour('BLACK')
+        self.column_def_line_colour = wx.BLACK
         self.column_def_line_size = 1
-        self.column_colour = wx.NamedColour('WHITE')
+        self.column_colour = wx.WHITE
 
-        self.label_colour = wx.NamedColour('LIGHT GREY')
+        self.label_colour = wx.LIGHT_GREY
 
     def SetFonts(self):
         self.label_font = { "Name": self.default_font_name, "Size": 12, "Colour": [0, 0, 0], "Attr": [0, 0, 0] }
@@ -914,7 +918,7 @@ class PrintTable(object):
         printout = SetPrintout(self)
         printout2 = SetPrintout(self)
         self.preview = wx.PrintPreview(printout, printout2, data)
-        if not self.preview.Ok():
+        if not self.preview.IsOk():
             wx.MessageBox("There was a problem printing!", "Printing", wx.OK)
             return
 
@@ -942,7 +946,6 @@ class PrintTable(object):
 
     def DoDrawing(self, DC):
         size = DC.GetSize()
-        DC.BeginDrawing()
 
         table = PrintTableDraw(self, DC, size)
         table.data = self.data
@@ -966,8 +969,6 @@ class PrintTable(object):
 
         table.OutCanvas()
         self.page_total = table.total_pages     # total display pages
-
-        DC.EndDrawing()
 
         self.ymax = DC.MaxY()
         self.xmax = DC.MaxX()

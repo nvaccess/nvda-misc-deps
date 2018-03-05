@@ -3,13 +3,16 @@
 #   http://j.domaindlx.com/elements28/wxpython/
 #   15 Fev 2006, 22:00 GMT-03:00
 # Distributed under the wxWidgets license.
+# Tags:     phoenix-port
+
+import functools
 
 import wx
+import wx.lib.colourselect as csel
 
-import styles
-import lib_setup.colourselect as csel
-import lib_setup.fontselect as fsel
-import lib_setup.buttontreectrlpanel as bt
+from . import styles
+from .lib_setup import fontselect as fsel
+from .lib_setup import buttontreectrlpanel as bt
 
 #----------------------------------------------------------------------
 
@@ -35,13 +38,25 @@ class _GroupBase(wx.Panel):
         self.Bind(wx.EVT_TEXT_ENTER, self.OnSpin)
         self.Bind(wx.EVT_CHOICE, self.OnChoice)
 
+        # Acquire a reference to the shared custom colours up in the dialog
+        customcolours = None
+        win = self
+        while win is not None:
+            if hasattr(win, 'customcolours'):
+                customcolours = win.customcolours
+                break
+            win = win.GetParent()
+        self.customcolours = customcolours
+
 
     def OnSelectFont(self, evt):
         self.clock.SetTickFont(evt.val, self.target)
 
 
     def OnSelectColour(self, evt):
-        obj = evt.obj; val = evt.val
+        obj = evt.GetEventObject(); val = evt.GetValue()
+
+        self.customcolours.Colours = obj.GetCustomColours()
 
         if hasattr(self, "fc") and obj == self.fc:
             if self.group == "Hands":
@@ -94,7 +109,7 @@ class _GroupBase(wx.Panel):
     def OnChoice(self, evt):
         self.clock.SetWindowStyle(eval(evt.GetString()))
 
-                              
+
     def UpdateControls(self):
         if hasattr(self, "ft"):
             self.ft.SetValue(self.clock.GetTickFont(self.target)[0])
@@ -155,12 +170,13 @@ class _Group_1(_GroupBase):
 
         box = wx.StaticBoxSizer(wx.StaticBox(self, label=title), wx.VERTICAL)
 
-        sizer = self.sizer = wx.GridBagSizer(2, 6)
+        sizer = self.sizer = wx.GridBagSizer(vgap=2, hgap=6)
 
         p = wx.StaticText(self, label="Border:")
         sizer.Add(p, pos=(0, 0), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.bc = csel.ColourSelect(self)
+        p.SetCustomColours(self.customcolours)
         sizer.Add(p, pos=(0, 1), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.bw = wx.SpinCtrl(self, size=(75, 21),
@@ -171,6 +187,7 @@ class _Group_1(_GroupBase):
         sizer.Add(p, pos=(1, 0), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.fc = csel.ColourSelect(self)
+        p.SetCustomColours(self.customcolours)
         sizer.Add(p, pos=(1, 1), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.ls = wx.StaticText(self, label="Size:")
@@ -219,11 +236,12 @@ class _Group_3(_Group_1):
             sizer.Detach(widget)
             widget.Destroy()
         sizer.Layout()
-        
+
         p = wx.StaticText(self, label="Shadow:")
         sizer.Add(p, pos=(2, 0), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.sw = csel.ColourSelect(self)
+        p.SetCustomColours(self.customcolours)
         sizer.Add(p, pos=(2, 1), span=(1, 3), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         self.GetSizer().Layout()
@@ -242,12 +260,14 @@ class _Group_4(_GroupBase):
         sizer.Add(p, pos=(0, 0), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.fg = csel.ColourSelect(self)
+        p.SetCustomColours(self.customcolours)
         sizer.Add(p, pos=(0, 1), span=(1, 3), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = wx.StaticText(self, label="Background:")
         sizer.Add(p, pos=(1, 0), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = self.bg = csel.ColourSelect(self)
+        p.SetCustomColours(self.customcolours)
         sizer.Add(p, pos=(1, 1), span=(1, 3), flag=wx.ALIGN_CENTRE_VERTICAL)
 
         p = wx.StaticText(self, label="Style:")
@@ -312,7 +332,7 @@ class StylesPanel(bt.ButtonTreeCtrlPanel):
 
     def OnChanged(self, evt):
         clockStyle, hourStyle, minuteStyle = \
-          [reduce(lambda x, y: x | y,
+          [functools.reduce(lambda x, y: x | y,
            [getattr(styles, item) \
             for item in self.GetStringItemsChecked(group)], 0) \
             for group in self.groups]
@@ -386,9 +406,12 @@ class Setup(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
+        self.customcolours = csel.CustomColourData()
+
         nb = self.nb = wx.Notebook(self)
         for s in ["Styles", "Hands", "Ticks", "Misc"]:
-            page = eval(s + "Panel(nb)"); page.Fit()
+            page = eval(s + "Panel(nb)")
+            page.Fit()
             nb.AddPage(page, s)
         nb.Fit()
         sizer.Add(nb, 1, flag = wx.EXPAND|wx.ALL, border=6)
@@ -403,11 +426,9 @@ class Setup(wx.Dialog):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        self.customcolours = [None] * 16
-
         self.SetSizerAndFit(sizer)
         wx.CallAfter(self.UpdateControls)
-        
+
 
     def OnClose(self, evt):
         self.Hide()
@@ -467,7 +488,3 @@ class Setup(wx.Dialog):
 
         wx.EndBusyCursor()
 
-
-#
-#
-### eof

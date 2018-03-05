@@ -2,7 +2,7 @@
 # AQUABUTTON wxPython IMPLEMENTATION
 #
 # Andrea Gavana, @ 07 October 2008
-# Latest Revision: 03 Dec 2012, 21.00 GMT
+# Latest Revision: 27 Dec 2012, 21.00 GMT
 #
 #
 # TODO List
@@ -18,12 +18,13 @@
 #
 # Or, obviously, to the wxPython mailing list!!!
 #
+# Tags:        phoenix-port, unittest, documented, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------------- #
 
 """
-:class:`AquaButton` is another custom-drawn button class which *approximatively* mimics
+:class:`~wx.lib.agw.aquabutton.AquaButton` is another custom-drawn button class which *approximatively* mimics
 the behaviour of Aqua buttons on the Mac.
 
 
@@ -53,19 +54,19 @@ Sample usage::
     app = wx.App(0)
 
     frame = wx.Frame(None, -1, "AquaButton Test")
-    
+
     mainPanel = wx.Panel(frame)
     mainPanel.SetBackgroundColour(wx.WHITE)
-    
+
     # Initialize AquaButton 1 (with image)
     bitmap = wx.Bitmap("my_button_bitmap.png", wx.BITMAP_TYPE_PNG)
     btn1 = AB.AquaButton(mainPanel, -1, bitmap, "AquaButton")
-    
+
     # Initialize AquaButton 2 (no image)
     btn2 = AB.AquaButton(mainPanel, -1, None, "Hello World!")
 
     frame.Show()
-    
+
     app.MainLoop()
 
 
@@ -100,7 +101,7 @@ License And Version
 
 :class:`AquaButton` control is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 03 Dec 2012, 21.00 GMT
+Latest Revision: Andrea Gavana @ 27 Dec 2012, 21.00 GMT
 
 Version 0.4
 
@@ -151,7 +152,7 @@ class AquaButtonEvent(wx.PyCommandEvent):
         return self.theButton
 
 
-class AquaButton(wx.PyControl):
+class AquaButton(wx.Control):
     """ This is the main class implementation of :class:`AquaButton`. """
 
     def __init__(self, parent, id=wx.ID_ANY, bitmap=None, label="", pos=wx.DefaultPosition,
@@ -160,22 +161,22 @@ class AquaButton(wx.PyControl):
         """
         Default class constructor.
 
-        :param Window `parent`: parent window. Must not be ``None``;
+        :param wx.Window `parent`: parent window. Must not be ``None``;
         :param integer `id`: window identifier. A value of -1 indicates a default value;
-        :param Bitmap `bitmap`: the button bitmap (if any);
+        :param wx.Bitmap `bitmap`: the button bitmap (if any);
         :param string `label`: the button text label;
         :param `pos`: the control position. A value of (-1, -1) indicates a default position,
          chosen by either the windowing system or wxPython, depending on platform;
-        :type `pos`: tuple or :class:`Point`
+        :type `pos`: tuple or :class:`wx.Point`
         :param `size`: the control size. A value of (-1, -1) indicates a default size,
          chosen by either the windowing system or wxPython, depending on platform;
-        :type `size`: tuple or :class:`Size`
+        :type `size`: tuple or :class:`wx.Size`
         :param integer `style`: the button style (unused);
-        :param Validator `validator`: the validator associated to the button;
+        :param wx.Validator `validator`: the validator associated to the button;
         :param string `name`: the button name.
         """
 
-        wx.PyControl.__init__(self, parent, id, pos, size, style, validator, name)
+        wx.Control.__init__(self, parent, id, pos, size, style, validator, name)
 
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 
@@ -214,16 +215,18 @@ class AquaButton(wx.PyControl):
         if "__WXMAC__" in wx.PlatformInfo:
             self._backColour = wx.Colour(147, 202, 255)
             self._hoverColour = self.LightColour(self._backColour, 30)
+            self._focusColour = self.LightColour(self._backColour, 40)
             self._disableColour = self.LightColour(self._backColour, 70)
             self._textColour = wx.BLACK
-            self._shadowColour = wx.NamedColour("grey")
+            self._shadowColour = wx.Colour("grey")
             self._rectColour = self.GetParent().GetBackgroundColour()
         else:
             self._backColour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_ACTIVECAPTION)
             self._hoverColour = self.LightColour(self._backColour, 30)
+            self._focusColour = self.LightColour(self._backColour, 40)
             self._disableColour = self.LightColour(self._backColour, 70)
             self._textColour = wx.WHITE
-            self._shadowColour = wx.NamedColour("grey")
+            self._shadowColour = wx.Colour("grey")
             self._rectColour = self.GetParent().GetBackgroundColour()
 
 
@@ -231,9 +234,9 @@ class AquaButton(wx.PyControl):
         """
         Sets the bitmap label for the button.
 
-        :param `bitmap`: the bitmap label to set, an instance of :class:`Bitmap`.
+        :param `bitmap`: the bitmap label to set, an instance of :class:`wx.Bitmap`.
         """
-        
+
         self._bitmap = bitmap
         self.Refresh()
 
@@ -243,11 +246,11 @@ class AquaButton(wx.PyControl):
         Return light contrast of `colour`. The colour returned is from the scale of
         `colour` ==> white.
 
-        :param `colour`: the input colour to be brightened, a valid instance of :class:`Colour`;
+        :param `colour`: the input colour to be brightened, a valid instance of :class:`wx.Colour`;
         :param integer `percent`: determines how light the colour will be. `percent` = ``100``
          returns white, `percent` = ``0`` returns `colour`.
 
-        :return: A light contrast of the input `colour`, an instance of :class:`Colour`.         
+        :return: A light contrast of the input `colour`, an instance of :class:`wx.Colour`.
         """
 
         end_colour = wx.WHITE
@@ -261,8 +264,9 @@ class AquaButton(wx.PyControl):
         r = colour.Red() + ((i*rd*100)/high)/100
         g = colour.Green() + ((i*gd*100)/high)/100
         b = colour.Blue() + ((i*bd*100)/high)/100
+        a = colour.Alpha()
 
-        return wx.Colour(r, g, b)
+        return wx.Colour(int(r), int(g), int(b), int(a))
 
 
     def OnPaint(self, event):
@@ -292,7 +296,10 @@ class AquaButton(wx.PyControl):
 
         elif self._mouseAction == HOVER:
             clr = self._hoverColour
-            
+
+        elif self._hasFocus:
+            clr = self._focusColour
+
         elif not self.IsEnabled():
             clr = self._disableColour
 
@@ -349,7 +356,7 @@ class AquaButton(wx.PyControl):
             # Save the bitmap using wx.MemoryDC for later use
             self._saveBitmap = False
             memory = wx.MemoryDC()
-            self._storedBitmap = wx.EmptyBitmapRGBA(max(width, 1), max(height, 1))
+            self._storedBitmap = wx.Bitmap.FromRGBA(max(width, 1), max(height, 1))
             memory.SelectObject(self._storedBitmap)
 
             gcMemory = wx.GraphicsContext.Create(memory)
@@ -374,10 +381,10 @@ class AquaButton(wx.PyControl):
         Returns a rounded :class:`GraphicsPath` rectangle.
 
         :param `gc`: an instance of :class:`GraphicsContext`;
-        :param Rect `rc`: a client rectangle;
+        :param wx.Rect `rc`: a client rectangle;
         :param float `r`: the radius of the rounded part of the rectangle.
 
-        :return: A rounded rectangle, an instance of :class:`GraphicsPath`.        
+        :return: A rounded rectangle, an instance of :class:`GraphicsPath`.
         """
 
         x, y, w, h = rc
@@ -391,7 +398,7 @@ class AquaButton(wx.PyControl):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`AquaButton`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
         self.Invalidate()
@@ -550,7 +557,7 @@ class AquaButton(wx.PyControl):
 
         image = self._storedBitmap.AdjustChannels(gamma, gamma, gamma, 1.0)
         dc = wx.ClientDC(self)
-        dc.SetClippingRect(wx.Rect(xpos, ypos, width-8, height-8))
+        dc.SetClippingRegion(wx.Rect(xpos, ypos, width-8, height-8))
         dc.DrawBitmap(image.ConvertToBitmap(), xpos, ypos, True)
 
 
@@ -559,13 +566,13 @@ class AquaButton(wx.PyControl):
         Given the current font and bezel width settings, calculate
         and set a good size.
 
-        :param `size`: an instance of :class:`Size` or ``None``, in which case the wxWidgets
+        :param `size`: an instance of :class:`wx.Size` or ``None``, in which case the wxWidgets
          :class:`DefaultSize` is used instead.
         """
 
         if size is None:
             size = wx.DefaultSize
-        wx.PyControl.SetInitialSize(self, size)
+        wx.Control.SetInitialSize(self, size)
 
     SetBestSize = SetInitialSize
 
@@ -574,7 +581,7 @@ class AquaButton(wx.PyControl):
         """
         Can this window be given focus by mouse click?
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
         return self.IsShown() and self.IsEnabled()
@@ -586,8 +593,8 @@ class AquaButton(wx.PyControl):
         the same font/colour attributes as the native :class:`Button`.
 
         :return: an instance of :class:`VisualAttributes`.
-        
-        :note: Overridden from :class:`PyControl`.        
+
+        :note: Overridden from :class:`wx.Control`.
         """
 
         return wx.Button.GetClassDefaultAttributes()
@@ -598,7 +605,7 @@ class AquaButton(wx.PyControl):
         Overridden base class virtual. Buttons usually don't inherit
         the parent's colours.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
         return False
@@ -610,10 +617,10 @@ class AquaButton(wx.PyControl):
 
         :param bool `enable`: ``True`` to enable the button, ``False`` to disable it.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
-        wx.PyControl.Enable(self, enable)
+        wx.Control.Enable(self, enable)
         self.Refresh()
 
 
@@ -647,9 +654,9 @@ class AquaButton(wx.PyControl):
         Overridden base class virtual. Determines the best size of the
         button based on the label and bezel size.
 
-        :return: An instance of :class:`Size`.
-        
-        :note: Overridden from :class:`PyControl`.
+        :return: An instance of :class:`wx.Size`.
+
+        :note: Overridden from :class:`wx.Control`.
         """
 
         label = self.GetLabel()
@@ -671,16 +678,26 @@ class AquaButton(wx.PyControl):
         return wx.Size(retWidth+constant, retHeight+constant)
 
 
+    def DoEnable(self, enable):
+        """
+        Overridden base class virtual.
+
+        Need to Refresh otherwise Enable state change done from a
+        `wx.EVT_UPDATE_UI` will not show.
+        """
+        self.Refresh()
+
+
     def SetBackgroundColour(self, colour):
         """
         Sets the :class:`AquaButton` background colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
-        wx.PyControl.SetBackgroundColour(self, colour)
+        wx.Control.SetBackgroundColour(self, colour)
         self._backColour = colour
         self.Invalidate()
 
@@ -689,9 +706,9 @@ class AquaButton(wx.PyControl):
         """
         Returns the button colour when the mouse is not hovering on the button.
 
-        :return: An instance of :class:`Colour`.
-        
-        :note: Overridden from :class:`PyControl`.
+        :return: An instance of :class:`wx.Colour`.
+
+        :note: Overridden from :class:`wx.Control`.
         """
 
         return self._backColour
@@ -701,7 +718,7 @@ class AquaButton(wx.PyControl):
         """
         Sets the button colour when the mouse is hovering on the button.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._hoverColour = colour
@@ -712,7 +729,7 @@ class AquaButton(wx.PyControl):
         """
         Returns the button colour when the mouse is hovering on the button.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
         """
 
         return self._hoverColour
@@ -722,7 +739,7 @@ class AquaButton(wx.PyControl):
         """
         Sets the button colour when it is disabled.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._disableColour = colour
@@ -733,7 +750,7 @@ class AquaButton(wx.PyControl):
         """
         Returns the button colour when it is disabled.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
         """
 
         return self._disableColour
@@ -743,7 +760,7 @@ class AquaButton(wx.PyControl):
         """
         Sets the button shadow colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
 
         .. versionadded:: 0.9.7
         """
@@ -756,7 +773,7 @@ class AquaButton(wx.PyControl):
         """
         Returns the button shadow colour.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
 
         .. versionadded:: 0.9.7
         """
@@ -768,7 +785,7 @@ class AquaButton(wx.PyControl):
         """
         Sets the button rectangular background colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
 
         .. versionadded:: 0.9.7
         """
@@ -781,12 +798,13 @@ class AquaButton(wx.PyControl):
         """
         Returns the button rectangular background colour.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
 
         .. versionadded:: 0.9.7
         """
 
         return self._rectColour
+
 
     SetBackgroundColor = SetBackgroundColour
     SetHoverColor = SetHoverColour
@@ -803,12 +821,12 @@ class AquaButton(wx.PyControl):
         """
         Sets the :class:`AquaButton` foreground (text) colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
 
-        :note: Overridden from :class:`PyControl`.
+        :note: Overridden from :class:`wx.Control`.
         """
 
-        wx.PyControl.SetForegroundColour(self, colour)
+        wx.Control.SetForegroundColour(self, colour)
         self._textColour = colour
         self.Invalidate()
 
@@ -817,12 +835,33 @@ class AquaButton(wx.PyControl):
         """
         Returns the text colour for :class:`AquaButton`.
 
-        :return: An instance of :class:`Colour`.
-        
-        :note: Overridden from :class:`PyControl`.
+        :return: An instance of :class:`wx.Colour`.
+
+        :note: Overridden from :class:`wx.Control`.
         """
 
         return self._textColour
+
+
+    def SetFocusColour(self, colour):
+        """
+        Sets the button colour when the button has focus.
+
+        :param `colour`: a valid :class:`wx.Colour` object.
+        """
+
+        self._focusColour = colour
+        self.Invalidate()
+
+
+    def GetFocusColour(self):
+        """
+        Returns the button colour when the button has focus.
+
+        :return: An instance of :class:`wx.Colour`.
+        """
+
+        return self._hoverColour
 
 
     def Invalidate(self):
@@ -840,12 +879,12 @@ class AquaButton(wx.PyControl):
 
         :note: Under Windows, only dialog box buttons respond to this function. As normal
          under Windows and Motif, pressing return causes the default button to be depressed
-         when the return key is pressed. See also :meth:`Window.SetFocus` which sets the
+         when the return key is pressed. See also :meth:`wx.Window.SetFocus` which sets the
          keyboard focus for windows and text panel items, and :meth:`TopLevelWindow.SetDefaultItem`.
 
         :note: Note that under Motif, calling this function immediately after creation of a button
          and before the creation of other buttons will cause misalignment of the row of buttons,
-         since default buttons are larger. To get around this, call :meth:`~aquabutton.AquaButton.SetDefault` after you
+         since default buttons are larger. To get around this, call :meth:`SetDefault` after you
          have created a row of buttons: wxPython will then set the size of all buttons currently
          on the panel to the same size.
         """
@@ -868,6 +907,8 @@ class __ToggleMixin(object):
     """
     A mixin that allows to transform :class:`AquaButton` in the corresponding toggle button.
     """
+
+    up = True
 
     def SetToggle(self, flag):
         """
@@ -946,21 +987,21 @@ class __ToggleMixin(object):
 
         if not self.IsEnabled():
             return
-        
+
         if event.LeftIsDown() and self.HasCapture():
-            x, y = event.GetPositionTuple()
-            w, h = self.GetClientSizeTuple()
-            
+            x, y = event.GetPosition()
+            w, h = self.GetClientSize()
+
             if x < w and x >= 0 and y < h and y >= 0:
                 self.up = not self.saveUp
                 self.Refresh()
                 return
-            
+
             if x < 0 or y < 0 or x >= w or y >= h:
                 self.up = self.saveUp
                 self.Refresh()
                 return
-            
+
         event.Skip()
 
 
@@ -1017,7 +1058,7 @@ class __ToggleMixin(object):
         path2 = self.GetPath(gc, rc2, 10)
         br2 = gc.CreateRadialGradientBrush(rc2.x, rc2.y,
                                            rc2.x+rc2.width, rc2.y+rc2.height,
-                                           rc2.width, wx.NamedColour("grey"), wx.WHITE)
+                                           rc2.width, wx.Colour("grey"), wx.WHITE)
 
         # Create top water colour to give "aqua" effect
         rc3 = wx.Rect(*rc1)
@@ -1060,7 +1101,7 @@ class __ToggleMixin(object):
             # Save the bitmap using wx.MemoryDC for later use
             self._saveBitmap = False
             memory = wx.MemoryDC()
-            self._storedBitmap = wx.EmptyBitmapRGBA(max(width, 1), max(height, 1))
+            self._storedBitmap = wx.Bitmap.FromRGBA(max(width, 1), max(height, 1))
             memory.SelectObject(self._storedBitmap)
 
             gcMemory = wx.GraphicsContext.Create(memory)

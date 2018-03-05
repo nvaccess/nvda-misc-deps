@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Name:         art.py
+# Purpose:
+#
+# Author:       Andrea Gavana <andrea.gavana@gmail.com>
+#
+# Created:
+# Version:
+# Date:
+# Licence:      wxWindows license
+# Tags:         phoenix-port, unittest, documented, py3-port
+#----------------------------------------------------------------------------
+"""
+Contains the constants used by the ribbon package.
+"""
 # RibbonArtSetting
 RIBBON_ART_TAB_SEPARATION_SIZE = 1
 RIBBON_ART_PAGE_BORDER_LEFT_SIZE = 2
@@ -199,5 +215,5 @@ RIBBON_PANEL_EXT_BUTTON       = 1 << 3
 RIBBON_PANEL_MINIMISE_BUTTON  = 1 << 4
 RIBBON_PANEL_STRETCH          = 1 << 5
 RIBBON_PANEL_FLEXIBLE         = 1 << 6
-    
+
 RIBBON_PANEL_DEFAULT_STYLE    = 0

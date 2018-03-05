@@ -11,7 +11,7 @@
 #    in the header and footer;
 # 2) Check whether it's possible to use rounded corners and
 #    shadows on the Mac
-# 3) Split OnPaint() into smaller pieces to improve readability and 
+# 3) Split OnPaint() into smaller pieces to improve readability and
 #    ability to redefine behaviour in subclasses
 # 4) Extend text formatting capabilities
 # 5) Make better use of links (right now it's difficult to click them without hiding tooltip)
@@ -24,12 +24,13 @@
 #
 # Or, obviously, to the wxPython mailing list!!!
 #
+# Tags:         phoenix-port, documented, unittest, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------------- #
 
 """
-:class:`SuperToolTip` is a class that mimics the behaviour of :class:`TipWindow` and generic tooltip
+:class:`~wx.lib.agw.supertooltip.SuperToolTip` is a class that mimics the behaviour of :class:`TipWindow` and generic tooltip
 windows, although it is a custom-drawn widget.
 
 
@@ -67,12 +68,12 @@ Usage example::
     class MyFrame(wx.Frame):
 
         def __init__(self, parent):
-        
+
             wx.Frame.__init__(self, parent, -1, "SuperToolTip Demo")
 
             panel = wx.Panel(self)
             button = wx.Button(panel, -1, "I am the SuperToolTip target", pos=(100, 50))
-            
+
             tip = STT.SuperToolTip("A nice tooltip message")
 
             tip.SetHeader("Hello World")
@@ -80,10 +81,10 @@ Usage example::
             tip.SetDrawHeaderLine(True)
 
             tip.ApplyStyle("Office 2007 Blue")
-            
+
             tip.SetDropShadow(True)
-        
-        
+
+
     # our normal wxApp-derived class, as usual
 
     app = wx.App(0)
@@ -201,7 +202,7 @@ _colourSchemes = {"Beige": (wx.Colour(255,255,255), wx.Colour(242,242,223), wx.C
 def GetStyleKeys():
     """ Returns the predefined styles keywords. """
 
-    schemes = _colourSchemes.keys()
+    schemes = list(_colourSchemes.keys())
     schemes.sort()
     return schemes
 
@@ -214,7 +215,7 @@ def MakeBold(font):
     """
 
     newFont = wx.Font(font.GetPointSize(), font.GetFamily(), font.GetStyle(),
-                      wx.BOLD, font.GetUnderlined(), font.GetFaceName())
+                      wx.FONTWEIGHT_BOLD, font.GetUnderlined(), font.GetFaceName())
 
     return newFont
 
@@ -267,8 +268,8 @@ class ToolTipWindowBase(object):
     def OnPaint(self, event):
         """
         Handles the ``wx.EVT_PAINT`` event for :class:`SuperToolTip`.
-        
-        If the `event` parameter is ``None``, calculates best size and returns it. 
+
+        If the `event` parameter is ``None``, calculates best size and returns it.
 
         :param `event`: a :class:`PaintEvent` event to be processed or ``None``.
         """
@@ -316,7 +317,7 @@ class ToolTipWindowBase(object):
             # We got the header text
             dc.SetFont(headerFont)
             textWidth, textHeight = dc.GetTextExtent(header)
-        maxWidth = max(bmpWidth+(textWidth+self._spacing*3), maxWidth)
+            maxWidth = max(bmpWidth+(textWidth+self._spacing*3), maxWidth)
         # Calculate the header height
         height = max(textHeight, bmpHeight)
         if header:
@@ -331,22 +332,22 @@ class ToolTipWindowBase(object):
                 dc.SetPen(wx.GREY_PEN)
                 dc.DrawLine(self._spacing, yPos+self._spacing, width-self._spacing, yPos+self._spacing)
                 yPos += self._spacing
-                
+
         maxWidth = max(bmpXPos + bmpWidth + self._spacing, maxWidth)
         # Get the big body image (if any)
         embeddedImage = classParent.GetBodyImage()
         bmpWidth = bmpHeight = -1
         if embeddedImage and embeddedImage.IsOk():
             bmpWidth, bmpHeight = embeddedImage.GetWidth(), embeddedImage.GetHeight()
-        
+
         # A bunch of calculations to draw the main body message
         messageHeight = 0
         lines = classParent.GetMessage().split("\n")
         yText = yPos
         embImgPos = yPos
-        normalText = wx.SystemSettings_GetColour(wx.SYS_COLOUR_MENUTEXT)
+        normalText = wx.SystemSettings.GetColour(wx.SYS_COLOUR_MENUTEXT)
         hyperLinkText = wx.BLUE
-        messagePos = self._getTextExtent(dc, lines[0] if lines else "")[1] / 2 + self._spacing
+        messagePos = self._getTextExtent(dc, lines[0] if lines else "")[1] // 2 + self._spacing
         for line in lines:
             # Loop over all the lines in the message
             if line.startswith("<hr>"):     # draw a line
@@ -367,13 +368,13 @@ class ToolTipWindowBase(object):
                 else:
                     # Is a normal line
                     dc.SetFont(messageFont)
-    
+
                 textWidth, textHeight = self._getTextExtent(dc, line)
-    
+
                 messageHeight += textHeight
-                
+
                 xText = (bmpWidth + 2 * self._spacing) if bmpWidth > 0 else self._spacing
-                yText += textHeight / 2 + self._spacing
+                yText += textHeight/2+self._spacing
                 maxWidth = max(xText + textWidth + self._spacing, maxWidth)
                 dc.DrawText(line, xText, yText)
                 if isLink:
@@ -409,21 +410,21 @@ class ToolTipWindowBase(object):
             if drawFooter:
                 # Draw the separator line before the footer
                 dc.SetPen(wx.GREY_PEN)
-                dc.DrawLine(self._spacing, yPos-self._spacing/2+toAdd, 
+                dc.DrawLine(self._spacing, yPos-self._spacing/2+toAdd,
                             width-self._spacing, yPos-self._spacing/2+toAdd)
         # Draw the footer and footer bitmap (if any)
         dc.SetTextForeground(normalText)
         height = max(textHeight, bmpHeight)
         yPos += toAdd
         if footer:
-            toAdd = (height - textHeight + self._spacing) / 2
+            toAdd = (height - textHeight + self._spacing) // 2
             dc.DrawText(footer, bmpXPos + bmpWidth + self._spacing, yPos + toAdd)
             maxWidth = max(bmpXPos + bmpWidth + (self._spacing*2) + textWidth, maxWidth)
         if footerBmp and footerBmp.IsOk():
             toAdd = (height - bmpHeight + self._spacing) / 2
             dc.DrawBitmap(footerBmp, bmpXPos, yPos + toAdd, True)
             maxWidth = max(footerBmp.GetSize().GetWidth() + bmpXPos, maxWidth)
-        
+
         maxHeight = yPos + height + toAdd
         if event is None:
             return maxWidth, maxHeight
@@ -435,11 +436,11 @@ class ToolTipWindowBase(object):
         if textHeight == 0:
             _, textHeight = dc.GetTextExtent("a")
         return textWidth, textHeight
-    
+
     def _storeHyperLinkInfo(self, hTextPos, vTextPos, textWidth, textHeight, linkTarget):
         # Store the hyperlink rectangle and link
         self._hyperlinkRect.append(wx.Rect(hTextPos, vTextPos, textWidth, textHeight))
-        self._hyperlinkWeb.append(linkTarget)    
+        self._hyperlinkWeb.append(linkTarget)
 
 
     def OnEraseBackground(self, event):
@@ -459,7 +460,7 @@ class ToolTipWindowBase(object):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`SuperToolTip`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
         self.Refresh()
@@ -477,7 +478,7 @@ class ToolTipWindowBase(object):
         for rect in self._hyperlinkRect:
             if rect.Contains((x, y)):
                 # We are over one hyperlink...
-                self.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                self.SetCursor(wx.Cursor(wx.CURSOR_HAND))
                 self._wasOnLink = True
                 return
 
@@ -678,10 +679,10 @@ class ToolTipWindowBase(object):
         self.SetSize((maxWidth, maxHeight))
 
 
-    def CalculateBestPosition(self, widget):
+    def CalculateBestPosition(self,widget):
         screen = wx.ClientDisplayRect()[2:]
-        left,top = widget.ClientToScreenXY(0,0)
-        right,bottom = widget.ClientToScreenXY(*widget.GetClientRect()[2:])
+        left,top = widget.ClientToScreen((0, 0))
+        right,bottom = widget.ClientToScreen(widget.GetClientRect()[2:])
         size = self.GetSize()
         if right+size[0]>screen[0]:
             xpos = left-size[0]
@@ -975,7 +976,7 @@ class SuperToolTip(object):
         top, although this is not needed if :meth:`~SuperToolTip.Show` is called immediately after the frame creation.
 
         :param bool `show`: ``True`` to show the :class:`SuperToolTip` window, ``False`` to hide it.
-        
+
         :return: ``True`` if the window has been shown or hidden or ``False`` if nothing was done
          because it already was in the requested state.
 
@@ -996,7 +997,7 @@ class SuperToolTip(object):
             self.DoHideNow()
             return True
         return False
-        
+
 
     def Update(self):
         """
@@ -1032,7 +1033,7 @@ class SuperToolTip(object):
         """
         Sets the header bitmap for :class:`SuperToolTip`.
 
-        :param `bmp`: the header bitmap, a valid :class:`Bitmap` object.
+        :param `bmp`: the header bitmap, a valid :class:`wx.Bitmap` object.
         """
 
         self._headerBmp = bmp
@@ -1087,7 +1088,7 @@ class SuperToolTip(object):
         """
         Sets the main body bitmap for :class:`SuperToolTip`.
 
-        :param `bmp`: the body bitmap, a valid :class:`Bitmap` object.
+        :param `bmp`: the body bitmap, a valid :class:`wx.Bitmap` object.
         """
 
         self._embeddedImage = bmp
@@ -1124,7 +1125,7 @@ class SuperToolTip(object):
         """
         Sets the footer bitmap for :class:`SuperToolTip`.
 
-        :param `bmp`: the footer bitmap, a valid :class:`Bitmap` object.
+        :param `bmp`: the footer bitmap, a valid :class:`wx.Bitmap` object.
         """
 
         self._footerBmp = bmp
@@ -1178,7 +1179,7 @@ class SuperToolTip(object):
         """
         Sets the top gradient colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as top colour, a valid :class:`Colour` object.
+        :param `colour`: the colour to use as top colour, a valid :class:`wx.Colour` object.
         """
 
         self._topColour = colour
@@ -1190,7 +1191,7 @@ class SuperToolTip(object):
         """
         Sets the middle gradient colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as middle colour, a valid :class:`Colour` object.
+        :param `colour`: the colour to use as middle colour, a valid :class:`wx.Colour` object.
         """
 
         self._middleColour = colour
@@ -1202,7 +1203,7 @@ class SuperToolTip(object):
         """
         Sets the bottom gradient colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as bottom colour, a valid :class:`Colour` object.
+        :param `colour`: the colour to use as bottom colour, a valid :class:`wx.Colour` object.
         """
 
         self._bottomColour = colour
@@ -1214,7 +1215,7 @@ class SuperToolTip(object):
         """
         Sets the text colour for :class:`SuperToolTip`.
 
-        :param `colour`: the colour to use as text colour, a valid :class:`Colour` object.
+        :param `colour`: the colour to use as text colour, a valid :class:`wx.Colour` object.
         """
 
         self._textColour = colour
@@ -1259,13 +1260,13 @@ class SuperToolTip(object):
     def InitFont(self):
         """ Initalizes the fonts for :class:`SuperToolTip`. """
 
-        self._messageFont = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
-        self._headerFont = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
-        self._headerFont.SetWeight(wx.BOLD)
-        self._footerFont = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
-        self._footerFont.SetWeight(wx.BOLD)
-        self._hyperlinkFont = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
-        self._hyperlinkFont.SetWeight(wx.BOLD)
+        self._messageFont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        self._headerFont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        self._headerFont.SetWeight(wx.FONTWEIGHT_BOLD)
+        self._footerFont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        self._footerFont.SetWeight(wx.FONTWEIGHT_BOLD)
+        self._hyperlinkFont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        self._hyperlinkFont.SetWeight(wx.FONTWEIGHT_BOLD)
         self._hyperlinkFont.SetUnderlined(True)
 
 
@@ -1273,7 +1274,7 @@ class SuperToolTip(object):
         """
         Sets the font for the main body message.
 
-        :param `font`: the font to use for the main body message, a valid :class:`Font`
+        :param `font`: the font to use for the main body message, a valid :class:`wx.Font`
          object.
         """
 
@@ -1286,7 +1287,7 @@ class SuperToolTip(object):
         """
         Sets the font for the header text.
 
-        :param `font`: the font to use for the header text, a valid :class:`Font`
+        :param `font`: the font to use for the header text, a valid :class:`wx.Font`
          object.
         """
 
@@ -1299,7 +1300,7 @@ class SuperToolTip(object):
         """
         Sets the font for the footer text.
 
-        :param `font`: the font to use for the footer text, a valid :class:`Font`
+        :param `font`: the font to use for the footer text, a valid :class:`wx.Font`
          object.
         """
 
@@ -1312,7 +1313,7 @@ class SuperToolTip(object):
         """
         Sets the font for the hyperlink text.
 
-        :param `font`: the font to use for the hyperlink text, a valid :class:`Font`
+        :param `font`: the font to use for the hyperlink text, a valid :class:`wx.Font`
          object.
         """
 
@@ -1437,4 +1438,4 @@ class SuperToolTip(object):
         .. versionadded:: 0.9.6
         """
 
-        return wx.GetApp().__superToolTip 
+        return wx.GetApp().__superToolTip

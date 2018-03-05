@@ -5,18 +5,18 @@
 # Author:      Robin Dunn
 #
 # Created:     15-May-2001
-# RCS-ID:      $Id$
-# Copyright:   (c) 2001 by Total Control Software
+# Copyright:   (c) 2001-2017 by Total Control Software
 # Licence:     wxWindows license
+# Tags:        phoenix-port, py3-port
 #----------------------------------------------------------------------------
 # 12/14/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o 2.5 compatability update.
+# o 2.5 compatibility update.
 # o ListCtrlSelectionManagerMix untested.
 #
 # 12/21/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o wxColumnSorterMixin -> ColumnSorterMixin 
+# o wxColumnSorterMixin -> ColumnSorterMixin
 # o wxListCtrlAutoWidthMixin -> ListCtrlAutoWidthMixin
 # ...
 # 13/10/2004 - Pim Van Heuven (pim@think-wize.com)
@@ -33,6 +33,12 @@
 
 import  locale
 import  wx
+import six
+
+if six.PY3:
+    # python 3 lacks cmp:
+    def cmp(a, b):
+        return (a > b) - (a < b)
 
 #----------------------------------------------------------------------------
 
@@ -64,7 +70,7 @@ class ColumnSorterMixin:
         self.SetColumnCount(numColumns)
         list = self.GetListCtrl()
         if not list:
-            raise ValueError, "No wx.ListCtrl available"
+            raise ValueError("No wx.ListCtrl available")
         list.Bind(wx.EVT_LIST_COL_CLICK, self.__OnColClick, list)
 
 
@@ -124,8 +130,8 @@ class ColumnSorterMixin:
             self.__updateImages(oldCol)
         evt.Skip()
         self.OnSortOrderChanged()
-        
-        
+
+
     def OnSortOrderChanged(self):
         """
         Callback called after sort order has changed (whenever user
@@ -153,9 +159,11 @@ class ColumnSorterMixin:
         item2 = self.itemDataMap[key2][col]
 
         #--- Internationalization of string sorting with locale module
-        if type(item1) == unicode and type(item2) == unicode:
+        if isinstance(item1, six.text_type) and isinstance(item2, six.text_type):
+            # both are unicode (py2) or str (py3)
             cmpVal = locale.strcoll(item1, item2)
-        elif type(item1) == str or type(item2) == str:
+        elif isinstance(item1, six.binary_type) or isinstance(item2, six.binary_type):
+            # at least one is a str (py2) or byte (py3)
             cmpVal = locale.strcoll(str(item1), str(item2))
         else:
             cmpVal = cmp(item1, item2)
@@ -163,7 +171,7 @@ class ColumnSorterMixin:
 
         # If the items are equal then pick something else to make the sort value unique
         if cmpVal == 0:
-            cmpVal = apply(cmp, self.GetSecondarySortValues(col, key1, key2))
+            cmpVal = cmp(*self.GetSecondarySortValues(col, key1, key2))
 
         if ascending:
             return cmpVal
@@ -220,7 +228,7 @@ class ListCtrlAutoWidthMixin:
         else:
             self._resizeColStyle = "COL"
             self._resizeCol = col
-        
+
 
     def resizeLastColumn(self, minWidth):
         """ Resize the last column appropriately.
@@ -242,7 +250,7 @@ class ListCtrlAutoWidthMixin:
     def resizeColumn(self, minWidth):
         self._resizeColMinWidth = minWidth
         self._doResize()
-        
+
 
     # =====================
     # == Private Methods ==
@@ -272,13 +280,13 @@ class ListCtrlAutoWidthMixin:
             or calculated a minimum width.  This ensure that repeated calls to
             _doResize() don't cause the last column to size itself too large.
         """
-        
+
         if not self:  # avoid a PyDeadObject error
             return
 
         if self.GetSize().height < 32:
             return  # avoid an endless update bug when the height is small.
-        
+
         numCols = self.GetColumnCount()
         if numCols == 0: return # Nothing to resize.
 
@@ -298,7 +306,7 @@ class ListCtrlAutoWidthMixin:
         listWidth = self.GetClientSize().width
         if wx.Platform != '__WXMSW__':
             if self.GetItemCount() > self.GetCountPerPage():
-                scrollWidth = wx.SystemSettings_GetMetric(wx.SYS_VSCROLL_X)
+                scrollWidth = wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)
                 listWidth = listWidth - scrollWidth
 
         totColWidth = 0 # Width of all columns except last one.
@@ -420,7 +428,7 @@ from bisect import bisect
 
 
 class TextEditMixin:
-    """    
+    """
     A mixin class that enables any text in any column of a
     multi-column listctrl to be edited by clicking on the given row
     and column.  You close the text editor by hitting the ENTER key or
@@ -434,7 +442,7 @@ class TextEditMixin:
             def __init__(self, parent, ID, pos=wx.DefaultPosition,
                          size=wx.DefaultSize, style=0):
                 wx.ListCtrl.__init__(self, parent, ID, pos, size, style)
-                TextEditMixin.__init__(self) 
+                TextEditMixin.__init__(self)
 
 
     Authors:     Steve Zatz, Pim Van Heuven (pim@think-wize.com)
@@ -442,7 +450,7 @@ class TextEditMixin:
 
     editorBgColour = wx.Colour(255,255,175) # Yellow
     editorFgColour = wx.Colour(0,0,0)       # black
-        
+
     def __init__(self):
         #editor = wx.TextCtrl(self, -1, pos=(-1,-1), size=(-1,-1),
         #                     style=wx.TE_PROCESS_ENTER|wx.TE_PROCESS_TAB \
@@ -456,13 +464,13 @@ class TextEditMixin:
 
 
     def make_editor(self, col_style=wx.LIST_FORMAT_LEFT):
-        
+
         style =wx.TE_PROCESS_ENTER|wx.TE_PROCESS_TAB|wx.TE_RICH2
         style |= {wx.LIST_FORMAT_LEFT: wx.TE_LEFT,
                   wx.LIST_FORMAT_RIGHT: wx.TE_RIGHT,
                   wx.LIST_FORMAT_CENTRE : wx.TE_CENTRE
                   }[col_style]
-        
+
         editor = wx.TextCtrl(self, -1, style=style)
         editor.SetBackgroundColour(self.editorBgColour)
         editor.SetForegroundColour(self.editorFgColour)
@@ -480,12 +488,12 @@ class TextEditMixin:
         self.col_style = col_style
         self.editor.Bind(wx.EVT_CHAR, self.OnChar)
         self.editor.Bind(wx.EVT_KILL_FOCUS, self.CloseEditor)
-        
-        
+
+
     def OnItemSelected(self, evt):
         self.curRow = evt.GetIndex()
         evt.Skip()
-        
+
 
     def OnChar(self, event):
         ''' Catch the TAB, Shift-TAB, cursor DOWN/UP key code
@@ -496,7 +504,7 @@ class TextEditMixin:
             self.CloseEditor()
             if self.curCol-1 >= 0:
                 self.OpenEditor(self.curCol-1, self.curRow)
-            
+
         elif keycode == wx.WXK_TAB:
             self.CloseEditor()
             if self.curCol+1 < self.GetColumnCount():
@@ -516,38 +524,38 @@ class TextEditMixin:
             if self.curRow > 0:
                 self._SelectIndex(self.curRow-1)
                 self.OpenEditor(self.curCol, self.curRow)
-            
+
         else:
             event.Skip()
 
-    
+
     def OnLeftDown(self, evt=None):
         ''' Examine the click and double
         click events to see if a row has been click on twice. If so,
         determine the current row and columnn and open the editor.'''
-        
+
         if self.editor.IsShown():
             self.CloseEditor()
-            
+
         x,y = evt.GetPosition()
         row,flags = self.HitTest((x,y))
-    
+
         if row != self.curRow: # self.curRow keeps track of the current row
             evt.Skip()
             return
-        
+
         # the following should really be done in the mixin's init but
         # the wx.ListCtrl demo creates the columns after creating the
         # ListCtrl (generally not a good idea) on the other hand,
         # doing this here handles adjustable column widths
-        
+
         self.col_locs = [0]
         loc = 0
         for n in range(self.GetColumnCount()):
             loc = loc + self.GetColumnWidth(n)
             self.col_locs.append(loc)
 
-        
+
         col = bisect(self.col_locs, x+self.GetScrollPos(wx.HORIZONTAL)) - 1
         self.OpenEditor(col, row)
 
@@ -557,20 +565,20 @@ class TextEditMixin:
 
         # give the derived class a chance to Allow/Veto this edit.
         evt = wx.ListEvent(wx.wxEVT_COMMAND_LIST_BEGIN_LABEL_EDIT, self.GetId())
-        evt.m_itemIndex = row
-        evt.m_col = col
+        evt.Index = row
+        evt.Column = col
         item = self.GetItem(row, col)
-        evt.m_item.SetId(item.GetId()) 
-        evt.m_item.SetColumn(item.GetColumn()) 
-        evt.m_item.SetData(item.GetData()) 
-        evt.m_item.SetText(item.GetText()) 
+        evt.Item.SetId(item.GetId())
+        evt.Item.SetColumn(item.GetColumn())
+        evt.Item.SetData(item.GetData())
+        evt.Item.SetText(item.GetText())
         ret = self.GetEventHandler().ProcessEvent(evt)
         if ret and not evt.IsAllowed():
             return   # user code doesn't allow the edit.
 
-        if self.GetColumn(col).m_format != self.col_style:
-            self.make_editor(self.GetColumn(col).m_format)
-    
+        if self.GetColumn(col).Align != self.col_style:
+            self.make_editor(self.GetColumn(col).Align)
+
         x0 = self.col_locs[col]
         x1 = self.col_locs[col+1] - x0
 
@@ -602,20 +610,20 @@ class TextEditMixin:
                 return
 
         y0 = self.GetItemRect(row)[1]
-        
+
         editor = self.editor
-        editor.SetDimensions(x0-scrolloffset,y0, x1,-1)
-        
-        editor.SetValue(self.GetItem(row, col).GetText()) 
+        editor.SetSize(x0-scrolloffset,y0, x1,-1)
+
+        editor.SetValue(self.GetItem(row, col).GetText())
         editor.Show()
         editor.Raise()
         editor.SetSelection(-1,-1)
         editor.SetFocus()
-    
+
         self.curRow = row
         self.curCol = col
 
-    
+
     # FIXME: this function is usually called twice - second time because
     # it is binded to wx.EVT_KILL_FOCUS. Can it be avoided? (MW)
     def CloseEditor(self, evt=None):
@@ -625,18 +633,17 @@ class TextEditMixin:
         text = self.editor.GetValue()
         self.editor.Hide()
         self.SetFocus()
-        
+
         # post wxEVT_COMMAND_LIST_END_LABEL_EDIT
-        # Event can be vetoed. It doesn't has SetEditCanceled(), what would 
-        # require passing extra argument to CloseEditor() 
+        # Event can be vetoed. It doesn't has SetEditCanceled(), what would
+        # require passing extra argument to CloseEditor()
         evt = wx.ListEvent(wx.wxEVT_COMMAND_LIST_END_LABEL_EDIT, self.GetId())
-        evt.m_itemIndex = self.curRow
-        evt.m_col = self.curCol
-        item = self.GetItem(self.curRow, self.curCol)
-        evt.m_item.SetId(item.GetId()) 
-        evt.m_item.SetColumn(item.GetColumn()) 
-        evt.m_item.SetData(item.GetData()) 
-        evt.m_item.SetText(text) #should be empty string if editor was canceled
+        evt.Index = self.curRow
+        evt.Column = self.curCol
+        item = wx.ListItem(self.GetItem(self.curRow, self.curCol))
+        item.SetText(text)
+        evt.SetItem(item)
+
         ret = self.GetEventHandler().ProcessEvent(evt)
         if not ret or evt.IsAllowed():
             if self.IsVirtual():
@@ -644,7 +651,7 @@ class TextEditMixin:
                 # data source
                 self.SetVirtualData(self.curRow, self.curCol, text)
             else:
-                self.SetStringItem(self.curRow, self.curCol, text)
+                self.SetItem(self.curRow, self.curCol, text)
         self.RefreshItem(self.curRow)
 
     def _SelectIndex(self, row):
@@ -653,7 +660,7 @@ class TextEditMixin:
             return
         if row > (listlen-1):
             row = listlen -1
-            
+
         self.SetItemState(self.curRow, ~wx.LIST_STATE_SELECTED,
                           wx.LIST_STATE_SELECTED)
         self.EnsureVisible(row)
@@ -669,7 +676,6 @@ class TextEditMixin:
 FILENAME: CheckListCtrlMixin.py
 AUTHOR:   Bruce Who (bruce.who.hk at gmail.com)
 DATE:     2006-02-09
-$Revision$
 DESCRIPTION:
     This script provide a mixin for ListCtrl which add a checkbox in the first
     column of each row. It is inspired by limodou's CheckList.py(which can be
@@ -691,12 +697,12 @@ HISTORY:
 1.1     - Initial version
 """
 
-class CheckListCtrlMixin:
+class CheckListCtrlMixin(object):
     """
     This is a mixin for ListCtrl which add a checkbox in the first
     column of each row. It is inspired by limodou's CheckList.py(which
     can be got from his NewEdit) and improved:
-    
+
         - You can just use InsertStringItem() to insert new items;
 
         - Once a checkbox is checked/unchecked, the corresponding item
@@ -730,28 +736,32 @@ class CheckListCtrlMixin:
         self.__last_check_ = None
 
         self.Bind(wx.EVT_LEFT_DOWN, self.__OnLeftDown_)
-        
-        # override the default methods of ListCtrl/ListView
-        self.InsertStringItem = self.__InsertStringItem_
+
+        # Monkey-patch in a new InsertItem so we can also set the image ID for the item
+        self._origInsertItem = self.InsertItem
+        self.InsertItem = self.__InsertItem_
+
+
+    def __InsertItem_(self, *args, **kw):
+        index = self._origInsertItem(*args, **kw)
+        self.SetItemImage(index, self.uncheck_image)
+        return index
+
 
     def __CreateBitmap(self, flag=0, size=(16, 16)):
         """Create a bitmap of the platforms native checkbox. The flag
         is used to determine the checkboxes state (see wx.CONTROL_*)
 
         """
-        bmp = wx.EmptyBitmap(*size)
+        bmp = wx.Bitmap(*size)
         dc = wx.MemoryDC(bmp)
+        dc.SetBackground(wx.WHITE_BRUSH)
         dc.Clear()
         wx.RendererNative.Get().DrawCheckBox(self, dc,
                                              (0, 0, size[0], size[1]), flag)
         dc.SelectObject(wx.NullBitmap)
         return bmp
 
-    # NOTE: if you use InsertItem, InsertImageItem or InsertImageStringItem,
-    #       you must set the image yourself.
-    def __InsertStringItem_(self, index, label):
-        index = self.InsertImageStringItem(index, label, 0)
-        return index
 
     def __OnLeftDown_(self, evt):
         (index, flags) = self.HitTest(evt.GetPosition())
@@ -789,12 +799,12 @@ class CheckListCtrlMixin:
     def IsChecked(self, index):
         return self.GetItem(index).GetImage() == 1
 
-    def CheckItem(self, index, check = True):
+    def CheckItem(self, index, check=True):
         img_idx = self.GetItem(index).GetImage()
-        if img_idx == 0 and check is True:
+        if img_idx == 0 and check:
             self.SetItemImage(index, 1)
             self.OnCheckItem(index, True)
-        elif img_idx == 1 and check is False:
+        elif img_idx == 1 and not check:
             self.SetItemImage(index, 0)
             self.OnCheckItem(index, False)
 
@@ -835,27 +845,28 @@ class ListRowHighlighter:
 
     def RefreshRows(self):
         """Re-color all the rows"""
-        for row in xrange(self.GetItemCount()):
-            if self._defaultb is None:
-                self._defaultb = self.GetItemBackgroundColour(row)
-
-            if self._mode & HIGHLIGHT_EVEN:
+        if self._color is None:
+            if wx.Platform in ('__WXGTK__', '__WXMSW__'):
+                color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT)
+            else:
+                color = wx.Colour(237, 243, 254)
+        else:
+            color = self._color
+        local_defaultb = self._defaultb
+        local_mode = self._mode
+        for row in range(self.GetItemCount()):
+            if local_mode & HIGHLIGHT_EVEN:
                 dohlight = not row % 2
             else:
                 dohlight = row % 2
 
             if dohlight:
-                if self._color is None:
-                    if wx.Platform in ['__WXGTK__', '__WXMSW__']:
-                        color = wx.SystemSettings_GetColour(wx.SYS_COLOUR_3DLIGHT)
-                    else:
-                        color = wx.Colour(237, 243, 254)
-                else:
-                    color = self._color
-            else:
-                color = self._defaultb
-
-            self.SetItemBackgroundColour(row, color)
+                self.SetItemBackgroundColour(row, color)
+            elif local_defaultb:
+                self.SetItemBackgroundColour(row, local_defaultb)
+            else: # This part of the loop should only happen once if self._defaultb is None.
+                local_defaultb = self._defaultb = self.GetItemBackgroundColour(row)
+                self.SetItemBackgroundColour(row, local_defaultb)
 
     def SetHighlightColor(self, color):
         """Set the color used to highlight the rows. Call :meth:`RefreshRows` after

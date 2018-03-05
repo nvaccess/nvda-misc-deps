@@ -13,13 +13,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 """
 # 12/14/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o 2.5 compatability update.
+# o 2.5 compatibility update.
 #
 # 12/21/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
 # o wxPyColorChooser -> PyColorChooser
 # o wxPyColourChooser -> PyColourChooser
 #
+# Tags:     phoenix-port
 
 import  wx
 
@@ -37,7 +38,7 @@ class PyColourBox(wx.Panel):
 
         self.colour_box = wx.Window(self, -1, style=wx.SIMPLE_BORDER)
 
-        sizer = wx.GridSizer(1, 1)
+        sizer = wx.GridSizer(rows=1, cols=1, vgap=0, hgap=0)
         sizer.Add(self.colour_box, 0, wx.FIXED_MINSIZE | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER_HORIZONTAL)
         sizer.SetItemMinSize(self.colour_box, size[0] - 5, size[1] - 5)
         self.SetAutoLayout(True)
@@ -66,6 +67,7 @@ class PyColourBox(wx.Panel):
         """Sets the box's current couple to the given tuple."""
         self.colour = colour
         self.colour_box.SetBackgroundColour(wx.Colour(*self.colour))
+        self.colour_box.Refresh()
 
     def Update(self):
         wx.Panel.Update(self)

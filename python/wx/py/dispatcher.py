@@ -1,15 +1,12 @@
 """Provides global signal dispatching services."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
-import exceptions
 import types
 import weakref
 
 
-class DispatcherError(exceptions.Exception):
+class DispatcherError(Exception):
     def __init__(self, args=None):
         self.args = args
 
@@ -34,23 +31,23 @@ _boundMethods = weakref.WeakKeyDictionary()
 def connect(receiver, signal=Any, sender=Any, weak=True):
     """
     Connect receiver to sender for signal.
-    
+
     * If sender is Any, receiver will receive signal from any sender.
     * If signal is Any, receiver will receive any signal from sender.
     * If sender is None, receiver will receive signal from Anonymous.
-    * If signal is Any and sender is None, receiver will receive any 
+    * If signal is Any and sender is None, receiver will receive any
       signal from Anonymous.
-    * If signal is Any and sender is Any, receiver will receive any 
+    * If signal is Any and sender is Any, receiver will receive any
       signal from any sender.
     * If weak is true, weak references will be used.
     """
     if signal is None:
-        raise DispatcherError, 'signal cannot be None'
+        raise DispatcherError('signal cannot be None')
     if weak:
         receiver = safeRef(receiver)
     senderkey = id(sender)
     signals = {}
-    if connections.has_key(senderkey):
+    if senderkey in connections:
         signals = connections[senderkey]
     else:
         connections[senderkey] = signals
@@ -66,7 +63,7 @@ def connect(receiver, signal=Any, sender=Any, weak=True):
             except:
                 pass
     receivers = []
-    if signals.has_key(signal):
+    if signal in signals:
         receivers = signals[signal]
     else:
         signals[signal] = receivers
@@ -78,30 +75,27 @@ def connect(receiver, signal=Any, sender=Any, weak=True):
 
 def disconnect(receiver, signal=Any, sender=Any, weak=True):
     """Disconnect receiver from sender for signal.
-    
+
     Disconnecting is not required. The use of disconnect is the same as for
     connect, only in reverse. Think of it as undoing a previous connection."""
     if signal is None:
-        raise DispatcherError, 'signal cannot be None'
+        raise DispatcherError('signal cannot be None')
     if weak:
         receiver = safeRef(receiver)
     senderkey = id(sender)
     try:
         receivers = connections[senderkey][signal]
     except KeyError:
-        raise DispatcherError, \
-              'No receivers for signal %r from sender %s' % (signal, sender)
+        raise DispatcherError('No receivers for signal %r from sender %s' % (signal, sender))
     try:
         receivers.remove(receiver)
     except ValueError:
-        raise DispatcherError, \
-              'No connection to receiver %s for signal %r from sender %s' % \
-              (receiver, signal, sender)
+        raise DispatcherError('No connection to receiver %s for signal %r from sender %s' % (receiver, signal, sender))
     _cleanupConnections(senderkey, signal)
 
 def send(signal, sender=Anonymous, **kwds):
     """Send signal from sender to all connected receivers.
-    
+
     Return a list of tuple pairs [(receiver, response), ... ].
     If sender is not specified, signal is sent anonymously."""
     senderkey = id(sender)
@@ -158,24 +152,25 @@ def _call(receiver, **kwds):
     """Call receiver with only arguments it can accept."""
 ##    if type(receiver) is types.InstanceType:
     if hasattr(receiver, '__call__') and \
-       (hasattr(receiver.__call__, 'im_func') or hasattr(receiver.__call__, 'im_code')):
+       (hasattr(receiver.__call__, '__func__') or hasattr(receiver.__call__, '__code__')):
         # receiver is a class instance; assume it is callable.
         # Reassign receiver to the actual method that will be called.
         receiver = receiver.__call__
-    if hasattr(receiver, 'im_func'):
+    if hasattr(receiver, '__func__'):
         # receiver is a method. Drop the first argument, usually 'self'.
-        fc = receiver.im_func.func_code
+        fc = receiver.__func__.__code__
         acceptable = fc.co_varnames[1:fc.co_argcount]
-    elif hasattr(receiver, 'func_code'):
+    elif hasattr(receiver, '__code__'):
         # receiver is a function.
-        fc = receiver.func_code
+        fc = receiver.__code__
         acceptable = fc.co_varnames[0:fc.co_argcount]
     else:
-        raise DispatcherError, 'Unknown receiver %s of type %s' % (receiver, type(receiver))
+        raise DispatcherError('Unknown receiver %s of type %s' % (receiver, type(receiver)))
     if not (fc.co_flags & 8):
-        # fc does not have a **kwds type parameter, therefore 
+        # fc does not have a **kwds type parameter, therefore
         # remove unacceptable arguments.
-        for arg in kwds.keys():
+        keys = list(kwds.keys())
+        for arg in keys:
             if arg not in acceptable:
                 del kwds[arg]
     return receiver(**kwds)
@@ -183,15 +178,15 @@ def _call(receiver, **kwds):
 
 def safeRef(object):
     """Return a *safe* weak reference to a callable object."""
-    if hasattr(object, 'im_self'):
-        if object.im_self is not None:
+    if hasattr(object, '__self__'):
+        if object.__self__ is not None:
             # Turn a bound method into a BoundMethodWeakref instance.
             # Keep track of these instances for lookup by disconnect().
-            selfkey = object.im_self
-            funckey = object.im_func
-            if not _boundMethods.has_key(selfkey):
+            selfkey = object.__self__
+            funckey = object.__func__
+            if selfkey not in _boundMethods:
                 _boundMethods[selfkey] = weakref.WeakKeyDictionary()
-            if not _boundMethods[selfkey].has_key(funckey):
+            if funckey not in _boundMethods[selfkey]:
                 _boundMethods[selfkey][funckey] = \
                 BoundMethodWeakref(boundMethod=object)
             return _boundMethods[selfkey][funckey]
@@ -208,8 +203,8 @@ class BoundMethodWeakref:
             """Set self.isDead to true when method or instance is destroyed."""
             self.isDead = 1
             _removeReceiver(receiver=self)
-        self.weakSelf = weakref.ref(boundMethod.im_self, remove)
-        self.weakFunc = weakref.ref(boundMethod.im_func, remove)
+        self.weakSelf = weakref.ref(boundMethod.__self__, remove)
+        self.weakFunc = weakref.ref(boundMethod.__func__, remove)
 
     def __repr__(self):
         """Return the closest representation."""
@@ -231,15 +226,17 @@ class BoundMethodWeakref:
 
 def _removeReceiver(receiver):
     """Remove receiver from connections."""
+    list_keys = []
     for senderkey in connections.keys():
         for signal in connections[senderkey].keys():
-            receivers = connections[senderkey][signal]
-            try:
-                receivers.remove(receiver)
-            except:
-                pass
-            _cleanupConnections(senderkey, signal)
-            
+            list_keys.append((senderkey, signal))
+    for senderkey, signal in list_keys:
+        try:
+            connections[senderkey][signal].remove(receiver)
+        except:
+            pass
+        _cleanupConnections(senderkey, signal)
+
 def _cleanupConnections(senderkey, signal):
     """Delete any empty signals for senderkey. Delete senderkey if empty."""
     receivers = connections[senderkey][signal]
@@ -250,11 +247,11 @@ def _cleanupConnections(senderkey, signal):
         if not signals:
             # No more signal connections. Therefore, remove the sender.
             _removeSender(senderkey)
-            
+
 def _removeSender(senderkey):
     """Remove senderkey from connections."""
     del connections[senderkey]
-    # Senderkey will only be in senders dictionary if sender 
+    # Senderkey will only be in senders dictionary if sender
     # could be weakly referenced.
     try:
         del senders[senderkey]

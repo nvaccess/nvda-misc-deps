@@ -1,5 +1,5 @@
 #---------------------------------------------------------------------------
-# Name:        wxPython.lib.evtmgr
+# Name:        wx.lib.evtmgr
 # Purpose:     An easier, more "Pythonic" and more OO method of registering
 #              handlers for wxWindows events using the Publish/Subscribe
 #              pattern.
@@ -7,13 +7,13 @@
 # Author:      Robb Shecter and Robin Dunn
 #
 # Created:     12-December-2002
-# RCS-ID:      $Id$
 # Copyright:   (c) 2003 by db-X Corporation
 # Licence:     wxWindows license
+# Tags:        phoenix-port
 #---------------------------------------------------------------------------
 # 12/02/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o Updated for 2.5 compatability.
+# o Updated for 2.5 compatibility.
 #
 
 """
@@ -61,25 +61,25 @@ class EventManager:
         Registers a listener function (or any callable object) to
         receive events of type event coming from the source window.
         For example::
-        
+
             eventManager.Register(self.OnButton, EVT_BUTTON, theButton)
 
         Alternatively, the specific window where the event is
         delivered, and/or the ID of the event source can be specified.
         For example::
-        
+
             eventManager.Register(self.OnButton, EVT_BUTTON, win=self, id=ID_BUTTON)
-            
+
         or::
-        
+
             eventManager.Register(self.OnButton, EVT_BUTTON, theButton, self)
-            
+
         """
 
         # 1. Check if the 'event' is actually one of the multi-
         #    event macros.
         if _macroInfo.isMultiEvent(event):
-            raise Exception, 'Cannot register the macro, '+`event`+'.  Register instead the individual events.'
+            raise Exception('Cannot register the macro, ' + repr(event) + '.  Register instead the individual events.')
 
         # Support a more OO API.  This allows the GUI widget itself to
         # be specified, and the id to be retrieved from the system,
@@ -88,11 +88,11 @@ class EventManager:
         # the natural way of doing things.)
         if source is not None:
             id  = source.GetId()
-            
+
         if win is None:
             # Some widgets do not function as their own windows.
             win = self._determineWindow(source)
-            
+
         topic = ".".join([str(event.typeId), str(win.GetId()), str(id)])
 
         #  Create an adapter from the PS system back to wxEvents, and
@@ -105,7 +105,7 @@ class EventManager:
                 self.messageAdapterDict[topic] = {}
                 self.messageAdapterDict[topic][listener] = messageAdapter
 
-            if not self.eventAdapterDict.has_key(topic):
+            if not topic in self.eventAdapterDict:
                 self.eventAdapterDict[topic] = EventAdapter(event, win, id)
         else:
             # Throwing away a duplicate request
@@ -169,7 +169,7 @@ class EventManager:
         for topic in topicList:
             topicDict = self.messageAdapterDict[topic]
 
-            if topicDict.has_key(listener):
+            if listener in topicDict:
                 topicDict[listener].Destroy()
                 del topicDict[listener]
 
@@ -222,7 +222,7 @@ class EventManager:
             name = aWin.GetClassName()
             i    = id(aWin)
             return '%s #%d' % (name, i)
-        except wx.PyDeadObjectError:
+        except RuntimeError:
             return '(dead wx.Object)'
 
 
@@ -284,7 +284,7 @@ class EventManager:
         with these specs.
         """
         try:
-            return self.messageAdapterDict[topicPattern].has_key(eventHandler)
+            return eventHandler in self.messageAdapterDict[topicPattern]
         except KeyError:
             return 0
 
@@ -407,10 +407,10 @@ class EventAdapter:
 
         # Register myself with the wxWindows event system
         try:
-            func(win, id, self.handleEvent)
+            win.Bind(func, self.handleEvent, id)
             self.callStyle = 3
         except (TypeError, AssertionError):
-            func(win, self.handleEvent)
+            win.Bind(func, self.handleEvent)
             self.callStyle = 2
 
 
@@ -431,9 +431,9 @@ class EventAdapter:
     def Destroy(self):
         try:
             if not self.disconnect():
-                print 'disconnect failed'
-        except wx.PyDeadObjectError:
-            print 'disconnect failed: dead object'              ##????
+                print('disconnect failed')
+        except RuntimeError:
+            print('disconnect failed: dead object')              ##????
 
 
 #---------------------------------------------------------------------------
@@ -464,7 +464,7 @@ class MessageAdapter:
 
     def deliverEvent(self, message):
         # the message is the event object
-        self.eventHandler(message) 
+        self.eventHandler(message)
 
     def Destroy(self):
         pub.unsubscribe(self.deliverEvent, self.topicPattern)
@@ -499,16 +499,16 @@ if __name__ == '__main__':
     #
 
     def printEvent(event):
-        print 'Name:',event.GetClassName(),'Timestamp',event.GetTimestamp()
+        print('Name:',event.GetClassName(),'Timestamp',event.GetTimestamp())
 
     def enableFrameEvents(event):
         # Turn the output of mouse events on and off
         if event.IsChecked():
-            print '\nEnabling mouse events...'
+            print('\nEnabling mouse events...')
             eventManager.Register(printEvent, wx.EVT_MOTION,    frame)
             eventManager.Register(printEvent, wx.EVT_LEFT_DOWN, frame)
         else:
-            print '\nDisabling mouse events...'
+            print('\nDisabling mouse events...')
             eventManager.DeregisterWindow(frame)
 
     # Send togglebutton events to both the on/off code as well

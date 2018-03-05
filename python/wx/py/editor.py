@@ -1,25 +1,28 @@
+#----------------------------------------------------------------------
+# Name:        editor.py
+# Author:      Patrick K. O'Brien <pobrien@orbtech.com>
+# Tags:        phoenix-port
+#----------------------------------------------------------------------
 """PyAlaCarte and PyAlaMode editors."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
 import wx
 
-from buffer import Buffer
-import crust
-import dispatcher
-import editwindow
-import frame
-from shell import Shell
-import version
+from .buffer import Buffer
+from . import crust
+from . import dispatcher
+from . import editwindow
+from . import frame
+from .shell import Shell
+from . import version
 
 
 class EditorFrame(frame.Frame):
     """Frame containing one editor."""
 
     def __init__(self, parent=None, id=-1, title='PyAlaCarte',
-                 pos=wx.DefaultPosition, size=(800, 600), 
+                 pos=wx.DefaultPosition, size=(800, 600),
                  style=wx.DEFAULT_FRAME_STYLE | wx.NO_FULL_REPAINT_ON_RESIZE,
                  filename=None):
         """Create EditorFrame instance."""
@@ -114,7 +117,7 @@ class EditorFrame(frame.Frame):
         else:
             if title.startswith('* '):
                 self.SetTitle(title[2:])
-        
+
     def hasBuffer(self):
         """Return True if there is a current buffer."""
         if self.buffer:
@@ -137,7 +140,7 @@ class EditorFrame(frame.Frame):
         self.bufferDestroy()
         buffer = Buffer()
         self.panel = panel = wx.Panel(parent=self, id=-1)
-        panel.Bind (wx.EVT_ERASE_BACKGROUND, lambda x: x)        
+        panel.Bind (wx.EVT_ERASE_BACKGROUND, lambda x: x)
         editor = Editor(parent=panel)
         panel.editor = editor
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -150,7 +153,7 @@ class EditorFrame(frame.Frame):
         self.setEditor(editor)
         self.editor.setFocus()
         self.SendSizeEvent()
-        
+
 
     def bufferDestroy(self):
         """Destroy the current buffer."""
@@ -254,7 +257,7 @@ class EditorNotebookFrame(EditorFrame):
     """Frame containing one or more editors in a notebook."""
 
     def __init__(self, parent=None, id=-1, title='PyAlaMode',
-                 pos=wx.DefaultPosition, size=(800, 600), 
+                 pos=wx.DefaultPosition, size=(800, 600),
                  style=wx.DEFAULT_FRAME_STYLE | wx.NO_FULL_REPAINT_ON_RESIZE,
                  filename=None):
         """Create EditorNotebookFrame instance."""
@@ -273,8 +276,7 @@ class EditorNotebookFrame(EditorFrame):
         intro = 'Py %s' % version.VERSION
         import imp
         module = imp.new_module('__main__')
-        import __builtin__
-        module.__dict__['__builtins__'] = __builtin__
+        module.__dict__['__builtins__'] = __builtins__
         namespace = module.__dict__.copy()
         self.crust = crust.Crust(parent=self.notebook, intro=intro, locals=namespace)
         self.shell = self.crust.shell
@@ -290,6 +292,10 @@ class EditorNotebookFrame(EditorFrame):
 
     def _editorChange(self, editor):
         """Editor change signal receiver."""
+        if not self:
+            dispatcher.disconnect(receiver=self._editorChange,
+                                  signal='EditorChange', sender=self.notebook)
+            return
         self.setEditor(editor)
 
     def OnAbout(self, event):
@@ -313,12 +319,12 @@ class EditorNotebookFrame(EditorFrame):
 ##         else:
 ##             if title.startswith('* '):
 ##                 self.SetTitle(title[2:])
-        
+
     def bufferCreate(self, filename=None):
         """Create new buffer."""
         buffer = Buffer()
         panel = wx.Panel(parent=self.notebook, id=-1)
-        panel.Bind(wx.EVT_ERASE_BACKGROUND, lambda x: x)        
+        panel.Bind(wx.EVT_ERASE_BACKGROUND, lambda x: x)
         editor = Editor(parent=panel)
         panel.editor = editor
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -335,7 +341,7 @@ class EditorNotebookFrame(EditorFrame):
     def bufferDestroy(self):
         """Destroy the current buffer."""
         selection = self.notebook.GetSelection()
-##         print "Destroy Selection:", selection
+##         print("Destroy Selection:", selection)
         if selection > 0:  # Don't destroy the PyCrust tab.
             if self.buffer:
                 del self.buffers[self.buffer.id]
@@ -429,7 +435,7 @@ class EditorShellNotebookFrame(EditorNotebookFrame):
     """Frame containing a notebook containing EditorShellNotebooks."""
 
     def __init__(self, parent=None, id=-1, title='PyAlaModeTest',
-                 pos=wx.DefaultPosition, size=(600, 400), 
+                 pos=wx.DefaultPosition, size=(600, 400),
                  style=wx.DEFAULT_FRAME_STYLE,
                  filename=None, singlefile=False):
         """Create EditorShellNotebookFrame instance."""
@@ -480,7 +486,7 @@ class EditorShellNotebookFrame(EditorNotebookFrame):
             self.notebook = None
         else:
             selection = self.notebook.GetSelection()
-##             print "Destroy Selection:", selection
+##             print("Destroy Selection:", selection)
             self.notebook.DeletePage(selection)
 
     def bufferNew(self):
@@ -639,25 +645,25 @@ class Editor:
 
     def OnChar(self, event):
         """Keypress event handler.
-        
+
         Only receives an event if OnKeyDown calls event.Skip() for the
         corresponding event."""
 
         key = event.GetKeyCode()
         if key in self.autoCompleteKeys:
             # Usually the dot (period) key activates auto completion.
-            if self.window.AutoCompActive(): 
+            if self.window.AutoCompActive():
                 self.window.AutoCompCancel()
             self.window.ReplaceSelection('')
             self.window.AddText(chr(key))
             text, pos = self.window.GetCurLine()
             text = text[:pos]
-            if self.window.autoComplete: 
+            if self.window.autoComplete:
                 self.autoCompleteShow(text)
         elif key == ord('('):
             # The left paren activates a call tip and cancels an
             # active auto completion.
-            if self.window.AutoCompActive(): 
+            if self.window.AutoCompActive():
                 self.window.AutoCompCancel()
             self.window.ReplaceSelection('')
             self.window.AddText('(')
@@ -696,9 +702,9 @@ class Editor:
 
     def autoCompleteShow(self, command):
         """Display auto-completion popup list."""
-        list = self.buffer.interp.getAutoCompleteList(command, 
-                    includeMagic=self.window.autoCompleteIncludeMagic, 
-                    includeSingle=self.window.autoCompleteIncludeSingle, 
+        list = self.buffer.interp.getAutoCompleteList(command,
+                    includeMagic=self.window.autoCompleteIncludeMagic,
+                    includeSingle=self.window.autoCompleteIncludeSingle,
                     includeDouble=self.window.autoCompleteIncludeDouble)
         if list:
             options = ' '.join(list)
@@ -747,7 +753,7 @@ class DialogResults:
         self.returned = returned
         self.positive = returned in (wx.ID_OK, wx.ID_YES)
         self.text = self._asString()
-        
+
 
     def __repr__(self):
         return str(self.__dict__)
@@ -766,7 +772,7 @@ class DialogResults:
 
 def fileDialog(parent=None, title='Open', directory='', filename='',
                wildcard='All Files (*.*)|*.*',
-               style=wx.OPEN | wx.MULTIPLE):
+               style=wx.FD_OPEN | wx.FD_MULTIPLE):
     """File dialog wrapper function."""
     dialog = wx.FileDialog(parent, title, directory, filename,
                            wildcard, style)
@@ -780,7 +786,7 @@ def fileDialog(parent=None, title='Open', directory='', filename='',
 
 
 def openSingle(parent=None, title='Open', directory='', filename='',
-               wildcard='All Files (*.*)|*.*', style=wx.OPEN):
+               wildcard='All Files (*.*)|*.*', style=wx.FD_OPEN):
     """File dialog wrapper function."""
     dialog = wx.FileDialog(parent, title, directory, filename,
                            wildcard, style)
@@ -795,14 +801,14 @@ def openSingle(parent=None, title='Open', directory='', filename='',
 
 def openMultiple(parent=None, title='Open', directory='', filename='',
                  wildcard='All Files (*.*)|*.*',
-                 style=wx.OPEN | wx.MULTIPLE):
+                 style=wx.FD_OPEN | wx.FD_MULTIPLE):
     """File dialog wrapper function."""
     return fileDialog(parent, title, directory, filename, wildcard, style)
 
 
 def saveSingle(parent=None, title='Save', directory='', filename='',
                wildcard='All Files (*.*)|*.*',
-               style=wx.SAVE | wx.OVERWRITE_PROMPT):
+               style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT):
     """File dialog wrapper function."""
     dialog = wx.FileDialog(parent, title, directory, filename,
                            wildcard, style)

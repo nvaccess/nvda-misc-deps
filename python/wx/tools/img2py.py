@@ -4,9 +4,9 @@
 #
 # Author:      Robin Dunn
 #
-# RCS-ID:      $Id$
-# Copyright:   (c) 2002 by Total Control Software
+# Copyright:   (c) 2002-2017 by Total Control Software
 # Licence:     wxWindows license
+# Tags:        phoenix-port, py3-port
 #----------------------------------------------------------------------
 #
 # Changes:
@@ -14,7 +14,7 @@
 #      20021206: Added catalog (-c) option.
 #
 # 12/21/2003 - Jeff Grimmett (grimmtooth@softhome.net)
-#        V2.5 compatibility update 
+#        V2.5 compatibility update
 #
 # 2/25/2007 - Gianluca Costa (archimede86@katamail.com)
 #        -Refactorization of the script-creation code in a specific "img2py()" function
@@ -56,14 +56,14 @@ Options:
     -n <name>      Normally generic names (getBitmap, etc.) are used for the
                    image access functions.  If you use this option you can
                    specify a name that should be used to customize the access
-                   fucntions, (getNameBitmap, etc.)
+                   functions, (getNameBitmap, etc.)
 
     -c             Maintain a catalog of names that can be used to reference
-                   images.  Catalog can be accessed via catalog and 
-                   index attributes of the module.  
+                   images.  Catalog can be accessed via catalog and
+                   index attributes of the module.
                    If the -n <name> option is specified then <name>
                    is used for the catalog key and index value, otherwise
-                   the filename without any path or extension is used 
+                   the filename without any path or extension is used
                    as the key.
 
     -a             This flag specifies that the python_file should be appended
@@ -73,8 +73,8 @@ Options:
     -i             Also output a function to return the image as a wxIcon.
 
     -f             Generate code compatible with the old function interface.
-                   (This option is ON by default in 2.8, use -F to turn off.)
-    
+                   (This option is ON by default in 2.8, use -f to turn off.)
+
 You can also import this module from your Python scripts, and use its img2py()
 function. See its docstring for more info.
 """
@@ -88,7 +88,7 @@ import sys
 import tempfile
 
 import wx
-import img2img
+from . import img2img
 
 try:
     b64encode = base64.b64encode
@@ -117,13 +117,13 @@ def convert(fileName, maskClr, outputDir, outputName, outType, outExt):
         else:
             newname = os.path.join(outputDir,
                                    os.path.basename(os.path.splitext(fileName)[0]) + outExt)
-        file(newname, "wb").write(file(fileName, "rb").read())
+        open(newname, "wb").write(open(fileName, "rb").read())
         return 1, "ok"
-  
+
     else:
         return img2img.convert(fileName, maskClr, outputDir, outputName, outType, outExt)
-    
-    
+
+
 def img2py(image_file, python_file,
            append=DEFAULT_APPEND,
            compressed=DEFAULT_COMPRESSED,
@@ -140,21 +140,21 @@ def img2py(image_file, python_file,
     --python_file: string; the path of the destination python file
     --other arguments: they are equivalent to the command-line arguments
     """
-    
+
     # was the typo version used?
     if functionCompatibile != -1:
         functionCompatible = functionCompatibile
-        
+
     global app
     if not wx.GetApp():
-        app = wx.App()
-        
+        app = wx.App(0)
+
     # convert the image file to a temporary file
     tfname = tempfile.mktemp()
     try:
         ok, msg = convert(image_file, maskClr, None, tfname, wx.BITMAP_TYPE_PNG, ".png")
         if not ok:
-            print msg
+            print(msg)
             return
 
         lines = []
@@ -162,7 +162,10 @@ def img2py(image_file, python_file,
         while data:
             part = data[:72]
             data = data[72:]
-            output = '    "%s"' % part
+            if sys.version > '3':
+                output = '    %s' % part
+            else:
+                output = '    "%s"' % part
             if not data:
                 output += ")"
             lines.append(output)
@@ -176,13 +179,13 @@ def img2py(image_file, python_file,
         # check to see if catalog exists already (file may have been created
         # with an earlier version of img2py or without -c option)
         pyPath, pyFile = os.path.split(python_file)
-        
+
         append_catalog = True
-        
+
         sourcePy = open(python_file, "r")
         try:
             for line in sourcePy:
-                
+
                 if line == "catalog = {}\n":
                     append_catalog = False
                 else:
@@ -207,17 +210,17 @@ def img2py(image_file, python_file,
         out = open(python_file, "a")
     else:
         out = open(python_file, "w")
-        
+
     try:
         imgPath, imgFile = os.path.split(image_file)
         if not imgName:
             imgName = os.path.splitext(imgFile)[0]
-            print "\nWarning: -n not specified. Using filename (%s) for name of image and/or catalog entry." % imgName
+            print("\nWarning: -n not specified. Using filename (%s) for name of image and/or catalog entry." % imgName)
 
         out.write("#" + "-" * 70 + "\n")
         if not append:
             out.write("# This file was generated by %s\n#\n" % sys.argv[0])
-            out.write("from wx.lib.embeddedimage import PyEmbeddedImage\n\n")        
+            out.write("from wx.lib.embeddedimage import PyEmbeddedImage\n\n")
             if catalog:
                 out.write("catalog = {}\n")
                 out.write("index = []\n\n")
@@ -235,8 +238,8 @@ def img2py(image_file, python_file,
 
         if catalog:
             if imgName in old_index:
-                print "Warning: %s already in catalog." % imgName
-                print "         Only the last entry will be accessible.\n"
+                print("Warning: %s already in catalog." % imgName)
+                print("         Only the last entry will be accessible.\n")
             old_index.append(imgName)
             out.write("index.append('%s')\n" % imgName)
             out.write("catalog['%s'] = %s\n" % (imgName, varName))
@@ -253,28 +256,28 @@ def img2py(image_file, python_file,
         if imgName:
             n_msg = ' using "%s"' % imgName
         else:
-            n_msg = ""        
-            
+            n_msg = ""
+
         if maskClr:
-            m_msg = " with mask %s" % maskClr 
+            m_msg = " with mask %s" % maskClr
         else:
             m_msg = ""
 
-        print "Embedded %s%s into %s%s" % (image_file, n_msg, python_file, m_msg)
+        print("Embedded %s%s into %s%s" % (image_file, n_msg, python_file, m_msg))
     finally:
         if python_file != '-':
             out.close()
-        
 
-    
+
+
 def main(args=None):
     if not args:
         args = sys.argv[1:]
-        
+
     if not args or ("-h" in args):
-        print __doc__
+        print(__doc__)
         return
-        
+
     append = DEFAULT_APPEND
     compressed = DEFAULT_COMPRESSED
     maskClr = DEFAULT_MASKCLR
@@ -286,7 +289,7 @@ def main(args=None):
     try:
         opts, fileArgs = getopt.getopt(args, "auicfFn:m:")
     except getopt.GetoptError:
-        print __doc__
+        print(__doc__)
         return
 
     for opt, val in opts:
@@ -306,12 +309,12 @@ def main(args=None):
             compatible = False
 
     if len(fileArgs) != 2:
-        print __doc__
+        print(__doc__)
         return
 
     image_file, python_file = fileArgs
     img2py(image_file, python_file,
            append, compressed, maskClr, imgName, icon, catalog, compatible)
- 
+
 if __name__ == "__main__":
     main(sys.argv[1:])

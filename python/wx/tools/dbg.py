@@ -1,15 +1,15 @@
 #----------------------------------------------------------------------------
 # Name:         dbg.py
-# RCS-ID:       $Id$
 # Author:       Will Sadkin
 # Email:        wsadkin@nameconnector.com
 # Created:      07/11/2002
 # Copyright:    (c) 2002 by Will Sadkin, 2002
 # License:      wxWindows license
+# Tags:         phoenix-port
 #----------------------------------------------------------------------------
 # 12/21/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o V2.5 compatability update 
+# o V2.5 compatibility update
 #
 
 """
@@ -229,8 +229,8 @@ class Logger:
 if __name__ == "__main__":
     import  sys
     import  wx
-    
-    wx.Log_SetActiveTarget( wx.LogStderr() )
+
+    wx.Log.SetActiveTarget(wx.LogStderr())
     logger = Logger('module')
     dbg = logger.dbg
     dbg(enable=1)

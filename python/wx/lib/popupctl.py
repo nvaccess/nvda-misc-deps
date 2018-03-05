@@ -6,8 +6,8 @@
 #
 # Created:      2002/11/20
 # Version:      0.1
-# RCS-ID:       $Id$
 # License:      wxWindows license
+# Tags:         phoenix-port
 #----------------------------------------------------------------------
 # 11/24/2007 - Cody Precord
 #
@@ -15,7 +15,7 @@
 #
 # 12/09/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o 2.5 compatability update.
+# o 2.5 compatibility update.
 #
 # 12/20/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
@@ -27,9 +27,9 @@ import  wx
 from wx.lib.buttons import GenButtonEvent
 
 
-class PopButton(wx.PyControl):
+class PopButton(wx.Control):
     def __init__(self,*_args,**_kwargs):
-        wx.PyControl.__init__(self, *_args, **_kwargs)
+        wx.Control.__init__(self, *_args, **_kwargs)
 
         self.up = True
         self.didDown = False
@@ -96,7 +96,7 @@ class PopButton(wx.PyControl):
             flag = wx.CONTROL_PRESSED
         wx.RendererNative.Get().DrawComboBoxDropButton(self, dc, self.GetClientRect(), flag)
 
-        
+
 #---------------------------------------------------------------------------
 
 
@@ -146,29 +146,29 @@ class PopupDialog(wx.Dialog):
 #---------------------------------------------------------------------------
 
 
-class PopupControl(wx.PyControl):
+class PopupControl(wx.Control):
     def __init__(self,*_args,**_kwargs):
-        if _kwargs.has_key('value'):
+        if 'value' in _kwargs:
             del _kwargs['value']
         style = _kwargs.get('style', 0)
         if (style & wx.BORDER_MASK) == 0:
             style |= wx.BORDER_NONE
             _kwargs['style'] = style
-        wx.PyControl.__init__(self, *_args, **_kwargs)
+        wx.Control.__init__(self, *_args, **_kwargs)
 
         self.textCtrl = wx.TextCtrl(self, wx.ID_ANY, '', pos = (0,0))
         self.bCtrl = PopButton(self, wx.ID_ANY, style=wx.BORDER_NONE)
         self.pop = None
         self.content = None
-        
+
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.bCtrl.Bind(wx.EVT_BUTTON, self.OnButton, self.bCtrl)
         self.Bind(wx.EVT_SET_FOCUS, self.OnFocus)
 
         self.SetInitialSize(_kwargs.get('size', wx.DefaultSize))
         self.SendSizeEvent()
-        
-        
+
+
     def OnFocus(self,evt):
         # embedded control should get focus on TAB keypress
         self.textCtrl.SetFocus()
@@ -178,8 +178,8 @@ class PopupControl(wx.PyControl):
     def OnSize(self, evt):
         # layout the child widgets
         w,h = self.GetClientSize()
-        self.textCtrl.SetDimensions(0, 0, w - self.marginWidth - self.buttonWidth, h)
-        self.bCtrl.SetDimensions(w - self.buttonWidth, 0, self.buttonWidth, h)
+        self.textCtrl.SetSize(0, 0, w - self.marginWidth - self.buttonWidth, h)
+        self.bCtrl.SetSize(w - self.buttonWidth, 0, self.buttonWidth, h)
 
     def DoGetBestSize(self):
         # calculate the best size of the combined control based on the
@@ -187,7 +187,7 @@ class PopupControl(wx.PyControl):
         tbs = self.textCtrl.GetBestSize()
         return wx.Size(tbs.width + self.marginWidth + self.buttonWidth,
                        tbs.height)
-    
+
 
     def OnButton(self, evt):
         if not self.pop:
@@ -195,13 +195,13 @@ class PopupControl(wx.PyControl):
                 self.pop = PopupDialog(self,self.content)
                 del self.content
             else:
-                print 'No Content to pop'
+                print('No Content to pop')
         if self.pop:
             self.pop.Display()
 
 
     def Enable(self, flag):
-        wx.PyControl.Enable(self,flag)
+        wx.Control.Enable(self,flag)
         self.textCtrl.Enable(flag)
         self.bCtrl.Enable(flag)
 
@@ -243,7 +243,7 @@ class PopupControl(wx.PyControl):
     def _get_buttonWidth(self):
         return 20
     buttonWidth = property(_get_buttonWidth)
-    
+
 
 # an alias
 PopupCtrl = PopupControl

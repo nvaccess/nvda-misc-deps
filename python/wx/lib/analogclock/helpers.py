@@ -3,12 +3,13 @@
 #   http://j.domaindlx.com/elements28/wxpython/
 #   15 Fev 2006, 22:00 GMT-03:00
 # Distributed under the wxWidgets license.
+# Tags:     phoenix-port
 
 from time import strftime, localtime
 import math
 import wx
 
-from styles import *
+from .styles import *
 
 #----------------------------------------------------------------------
 
@@ -60,8 +61,8 @@ class Element:
 
     def RecalcCoords(self, clocksize, centre, scale):
         pass
-        
-        
+
+
     def GetSize(self):
         return self.size
 
@@ -76,8 +77,8 @@ class Element:
 
     def GetMaxSize(self, scale=1):
         return self.size * scale
-        
-        
+
+
     def GetScale(self):
         return self.scale
 
@@ -146,7 +147,7 @@ class ElementWithDyer(Element):
     def GetShadowColour(self):
         return self.dyer.GetShadowColour()
 
-        
+
     def SetFillColour(self, colour):
         self.dyer.SetFillColour(colour)
 
@@ -157,8 +158,8 @@ class ElementWithDyer(Element):
 
     def SetBorderWidth(self, width):
         self.dyer.SetBorderWidth(width)
-        
-        
+
+
     def SetShadowColour(self, colour):
         self.dyer.SetShadowColour(colour)
 
@@ -262,7 +263,7 @@ class TickPoly(Element):
 
         width = max([x for x, y in polygon])
         height = max([y for x, y in polygon])
-        
+
         return polygon, width, height
 
 
@@ -380,7 +381,7 @@ class TickNone(Element):
 
     def Draw(self, dc, offset=0):
         pass
-        
+
 #----------------------------------------------------------------------
 
 class Dyer:
@@ -407,12 +408,12 @@ class Dyer:
         """Selects the current settings into the dc."""
 
         if not shadow:
-            dc.SetPen(wx.Pen(self.border, self.width, wx.SOLID))
-            dc.SetBrush(wx.Brush(self.fill, wx.SOLID))
+            dc.SetPen(wx.Pen(self.border, self.width, wx.PENSTYLE_SOLID))
+            dc.SetBrush(wx.Brush(self.fill, wx.BRUSHSTYLE_SOLID))
             dc.SetTextForeground(self.fill)
         else:
-            dc.SetPen(wx.Pen(self.shadow, self.width, wx.SOLID))
-            dc.SetBrush(wx.Brush(self.shadow, wx.SOLID))
+            dc.SetPen(wx.Pen(self.shadow, self.width, wx.PENSTYLE_SOLID))
+            dc.SetBrush(wx.Brush(self.shadow, wx.BRUSHSTYLE_SOLID))
             dc.SetTextForeground(self.shadow)
 
 
@@ -483,7 +484,7 @@ class HandSet:
                 # else prevent exceptions on leap seconds
                 elif idx <= 0 or idx > 60:
                     idx = 59
-                # and adjust idx offset for minutes and non-leap seconds 
+                # and adjust idx offset for minutes and non-leap seconds
                 else:
                     idx = idx - 1
                 angle = math.radians(180 - 6 * (idx + 1))
@@ -593,7 +594,7 @@ class TickSet:
 
     def _draw(self, dc, shadow=False):
         dc.SetFont(self.font)
-        
+
         a_tick = self.ticks[0]
 
         if shadow:
@@ -657,11 +658,11 @@ class TickSet:
         if a_tick.text is not None:
             self.font.SetPointSize(size)
             dc = wx.MemoryDC()
-            dc.SelectObject(wx.EmptyBitmap(*clocksize.Get()))
+            dc.SelectObject(wx.Bitmap(*clocksize.Get()))
             dc.SetFont(self.font)
             maxsize = size
             for tick in self.ticks.values():
-                maxsize = max(*(dc.GetTextExtent(tick.text) + (maxsize,)))
+                maxsize = max(*(dc.GetTextExtent(tick.text).Get() + (maxsize,)))
 
         radius = self.radius = min(clocksize.Get()) / 2. - \
                                self.dyer.width / 2. - \
@@ -669,7 +670,7 @@ class TickSet:
                                a_tick.GetOffset() * scale - \
                                self.parent.shadowOffset * scale
 
-        # If we are a set of hours, the number of elements of this tickset is 
+        # If we are a set of hours, the number of elements of this tickset is
         # 12 and ticks are separated by a distance of 30 degrees;
         # if we are a set of minutes, the number of elements of this tickset is
         # 60 and ticks are separated by a distance of 6 degrees.
@@ -940,7 +941,7 @@ class Box:
         for i, attr in enumerate(["TicksH", "TicksM"]):
             if _targets[i] & target:
                 tick = getattr(self, attr)
-                tick.SetFont(wx.FontFromNativeInfoString(fs))
+                tick.SetFont(wx.Font(fs))
 
 
     def SetIsRotated(self, rotate):

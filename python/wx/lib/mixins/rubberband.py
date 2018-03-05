@@ -1,17 +1,17 @@
 #---------------------------------------------------------------------------
-# Name:        wxPython.lib.mixins.rubberband
+# Name:        wx.lib.mixins.rubberband
 # Purpose:     A mixin class for doing "RubberBand"-ing on a window.
 #
 # Author:      Robb Shecter and members of wxPython-users
 #
 # Created:     11-September-2002
-# RCS-ID:      $Id$
 # Copyright:   (c) 2002 by db-X Corporation
 # Licence:     wxWindows license
+# Tags:        phoenix-port
 #---------------------------------------------------------------------------
 # 12/14/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
-# o 2.5 compatability update.
+# o 2.5 compatibility update.
 # o Tested, but there is an anomaly between first use and subsequent uses.
 #   First use is odd, subsequent uses seem to be OK. Init error?
 #   -- No, the first time it uses an aspect ratio, but after the reset it doesn't.
@@ -142,7 +142,7 @@ class RubberBand:
         return self.__enabled
 
     def __handleOnPaint(self, event):
-        #print 'paint'
+        #print('paint')
         event.Skip()
 
     def __isMovingCursor(self):
@@ -302,7 +302,7 @@ class RubberBand:
         """
         if self.__currentCursor != id:  # Avoid redundant calls
             if id:
-                self.drawingSurface.SetCursor(wx.StockCursor(id))
+                self.drawingSurface.SetCursor(wx.Cursor(id))
             else:
                 self.drawingSurface.SetCursor(wx.NullCursor)
             self.__currentCursor = id
@@ -328,27 +328,25 @@ class RubberBand:
         Draw one box shape and possibly erase another.
         """
         dc = wx.ClientDC(self.drawingSurface)
-        dc.BeginDrawing()
-        dc.SetPen(wx.Pen(wx.WHITE, 1, wx.DOT))
+        dc.SetPen(wx.Pen(wx.WHITE, 1, wx.PENSTYLE_DOT))
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
         dc.SetLogicalFunction(wx.XOR)
         if boxToErase:
             r = wx.Rect(*boxToErase)
-            dc.DrawRectangleRect(r)
+            dc.DrawRectangle(r)
 
         r = wx.Rect(*boxToDraw)
-        dc.DrawRectangleRect(r)
-        dc.EndDrawing()
+        dc.DrawRectangle(r)
 
     def __dumpMouseEvent(self, event):
-        print 'Moving:          ',event.Moving()
-        print 'Dragging:        ',event.Dragging()
-        print 'LeftDown:        ',event.LeftDown()
-        print 'LeftisDown:      ',event.LeftIsDown()
-        print 'LeftUp:          ',event.LeftUp()
-        print 'Position:        ',event.GetPosition()
-        print 'x,y:             ',event.GetX(),event.GetY()
-        print
+        print('Moving:          ',event.Moving())
+        print('Dragging:        ',event.Dragging())
+        print('LeftDown:        ',event.LeftDown())
+        print('LeftisDown:      ',event.LeftIsDown())
+        print('LeftUp:          ',event.LeftUp())
+        print('Position:        ',event.GetPosition())
+        print('x,y:             ',event.GetX(),event.GetY())
+        print()
 
 
     #

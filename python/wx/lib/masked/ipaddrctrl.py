@@ -4,8 +4,10 @@
 # Email:        wsadkin@nameconnector.com
 # Created:      02/11/2003
 # Copyright:    (c) 2003 by Will Sadkin, 2003
-# RCS-ID:       $Id$
 # License:      wxWidgets license
+#
+# Tags:        phoenix-port, py3-port, unittest, documented
+#
 #----------------------------------------------------------------------------
 # NOTE:
 #   Masked.IpAddrCtrl is a minor modification to masked.TextCtrl, that is
@@ -20,12 +22,13 @@ limits of IP Addresses, and allows automatic field navigation as the
 user hits '.' when typing.
 """
 
-import  wx, types, string
+import  wx
+import  six
 from wx.lib.masked import BaseMaskedTextCtrl
 
 # jmg 12/9/03 - when we cut ties with Py 2.2 and earlier, this would
 # be a good place to implement the 2.3 logger class
-from wx.tools.dbg import Logger
+##from wx.tools.dbg import Logger
 ##dbg = Logger()
 ##dbg(enable=0)
 
@@ -76,22 +79,39 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
     character, so that typing an IP address can be done naturally.
     """
 
-
-
     def __init__( self, parent, id=-1, value = '',
                   pos = wx.DefaultPosition,
                   size = wx.DefaultSize,
                   style = wx.TE_PROCESS_TAB,
                   validator = wx.DefaultValidator,
                   name = 'IpAddrCtrl',
-                  setupEventHandling = True,        ## setup event handling by default
+                  setupEventHandling = True,
                   **kwargs):
 
-        if not kwargs.has_key('mask'):
-           kwargs['mask'] = mask = "###.###.###.###"
-        if not kwargs.has_key('formatcodes'):
+        """
+        Default class constructor.
+
+        :param wx.Window `parent`: the window parent. Must not be ``None``;
+        :param integer `id`: window identifier. A value of -1 indicates a default value;
+        :param string `value`: value to be shown;
+        :param `pos`: the control position. A value of (-1, -1) indicates a default position,
+         chosen by either the windowing system or wxPython, depending on platform;
+        :type `pos`: tuple or :class:`wx.Point`
+        :param `size`: the control size. A value of (-1, -1) indicates a default size,
+         chosen by either the windowing system or wxPython, depending on platform;
+        :param integer `style`: the window style;
+        :param wx.Validator `validator`: this is mainly provided for data-transfer, as control does
+          its own validation;
+        :param string `name`: the window name;
+        :param boolean `setupEventHandling`: setup event handling by default.
+
+        """
+
+        if 'mask' not in kwargs:
+            kwargs['mask'] = mask = "###.###.###.###"
+        if 'formatcodes' not in kwargs:
             kwargs['formatcodes'] = 'F_Sr<>'
-        if not kwargs.has_key('validRegex'):
+        if 'validRegex' not in kwargs:
             kwargs['validRegex'] = "(  \d| \d\d|(1\d\d|2[0-4]\d|25[0-5]))(\.(  \d| \d\d|(1\d\d|2[0-4]\d|25[0-5]))){3}"
 
 
@@ -143,7 +163,6 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
         return self._OnChangeField(event)
 
 
-
     def GetAddress(self):
         """
         Returns the control value, with any spaces removed.
@@ -155,7 +174,7 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
     def _OnCtrl_S(self, event):
 ##        dbg("IpAddrCtrl::_OnCtrl_S")
         if self._demo:
-            print "value:", self.GetAddress()
+            print("value:", self.GetAddress())
         return False
 
     def SetValue(self, value):
@@ -164,11 +183,14 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
         splits it into an array of 4 fields, justifies it
         appropriately, and inserts it into the control.
         Invalid values will raise a ValueError exception.
+
+        :param string `value`: the IP address in the form '000.000.000.000'
+
         """
 ##        dbg('IpAddrCtrl::SetValue(%s)' % str(value), indent=1)
-        if type(value) not in (types.StringType, types.UnicodeType):
+        if not isinstance(value, six.string_types):
 ##            dbg(indent=0)
-            raise ValueError('%s must be a string', str(value))
+            raise ValueError('%s must be a string' % str(value))
 
         bValid = True   # assume True
         parts = value.split('.')
@@ -183,13 +205,13 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
                     break
                 elif part.strip():  # non-empty part
                     try:
-                        j = string.atoi(part)
+                        j = int(part)
                         if not 0 <= j <= 255:
                             bValid = False
                             break
                         else:
                             parts[i] = '%3d' % j
-                    except:
+                    except Exception:
                         bValid = False
                         break
                 else:
@@ -202,7 +224,7 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
             raise ValueError('value (%s) must be a string of form n.n.n.n where n is empty or in range 0-255' % str(value))
         else:
 ##            dbg('parts:', parts)
-            value = string.join(parts, '.')
+            value = '.'.join(parts)
             BaseMaskedTextCtrl.SetValue(self, value)
 ##        dbg(indent=0)
 

@@ -3,6 +3,7 @@
 #   http://j.domaindlx.com/elements28/wxpython/
 #   15 Fev 2006, 22:00 GMT-03:00
 # Distributed under the wxWidgets license.
+# Tags:     phoenix-port
 
 import wx
 from wx.lib.newevent import NewEvent
@@ -16,13 +17,13 @@ from wx.lib.buttons import GenButton
 
 class FontSelect(GenButton):
     def __init__(self, parent, size=(75, 21), value=None):
-        GenButton.__init__(self, parent, wx.ID_ANY, label="Select...", 
+        GenButton.__init__(self, parent, wx.ID_ANY, label="Select...",
                            size=size)
         self.SetBezelWidth(1)
 
         self.parent = parent
         self.SetValue(value)
-        
+
         self.parent.Bind(wx.EVT_BUTTON, self.OnClick, self)
 
 
@@ -54,8 +55,3 @@ class FontSelect(GenButton):
         if changed:
             nevt = FontSelectEvent(id=self.GetId(), obj=self, val=self.value)
             wx.PostEvent(self.parent, nevt)
-
-
-#
-##
-### eof

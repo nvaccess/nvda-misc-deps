@@ -11,9 +11,9 @@
 #
 #              Editable blocks by Roman Rolinsky
 #
-# RCS-ID:      $Id$
-# Copyright:   (c) 2004 by Total Control Software, 2000 Vaclav Slavik
+# Copyright:   (c) 2004-2017 by Total Control Software, 2000 Vaclav Slavik
 # Licence:     wxWindows license
+# Tags:        phoenix-port
 #----------------------------------------------------------------------
 
 """
@@ -21,8 +21,8 @@ pywxrc -- Python XML resource compiler
           (see http://wiki.wxpython.org/index.cgi/pywxrc for more info)
 
 Usage: python pywxrc.py -h
-       python pywxrc.py [-p] [-g] [-e] [-v] [-o filename] xrc input files... 
-       
+       python pywxrc.py [-p] [-g] [-e] [-v] [-o filename] xrc input files...
+
   -h, --help     show help message
   -p, --python   generate python module
   -g, --gettext  output list of translatable strings (may be combined with -p)
@@ -31,10 +31,9 @@ Usage: python pywxrc.py -h
   -o, --output   output filename, or - for stdout
 """
 
-import sys, os, getopt, glob, re, cPickle
+import sys, os, getopt, glob, re
 import xml.dom.minidom as minidom
-import wx
-import wx.xrc
+from six import print_
 
 #----------------------------------------------------------------------
 
@@ -65,12 +64,12 @@ class xrc%(windowName)s(wx.%(windowClass)s):
 #!XRCED:begin-block:xrc%(windowName)s.PreCreate
     def PreCreate(self, pre):
         \"\"\" This function is called during the class's initialization.
-        
+
         Override it for custom setup before the window is created usually to
         set additional window styles using SetWindowStyle() and SetExtraStyle().
         \"\"\"
         pass
-        
+
 #!XRCED:end-block:xrc%(windowName)s.PreCreate
 
     def __init__(self, parent):
@@ -94,13 +93,13 @@ class %(subclass)s(wx.%(windowClass)s):
 #!XRCED:begin-block:%(subclass)s._PostInit
     def _PostInit(self):
         \"\"\" This function is called after the subclassed object is created.
-        
+
         Override it for custom setup before the window is created usually to
         set additional window styles using SetWindowStyle() and SetExtraStyle().
         \"\"\"
         pass
 #!XRCED:end-block:%(subclass)s._PostInit
-        
+
     def OnCreate(self, evt):
         self.Unbind(wx.EVT_WINDOW_CREATE)
         self._PostInit()
@@ -171,8 +170,8 @@ class %(subclass)s(wx.%(windowClass)s):
 #!XRCED:begin-block:xrc%(windowName)s.%(eventHandler)s
     def %(eventHandler)s(self, evt):
         # Replace with event handler code
-        print \"%(eventHandler)s()\"
-#!XRCED:end-block:xrc%(windowName)s.%(eventHandler)s        
+        print(\"%(eventHandler)s()\")
+#!XRCED:end-block:xrc%(windowName)s.%(eventHandler)s
 """
 
     MENU_CLASS_HEADER = """\
@@ -196,7 +195,7 @@ class xrc%(windowName)s(wx.%(windowClass)s):
     def __init__(self):
         pre = get_resources().LoadMenuBar("%(windowName)s")
         self.PostCreate(pre)
-        
+
         # Define variables for the menu items
 """
 
@@ -205,7 +204,7 @@ class xrc%(windowName)s(wx.%(windowClass)s):
     def __init__(self, parent):
         pre = get_resources().LoadToolBar(parent, "%(windowName)s")
         self.PostCreate(pre)
-        
+
         # Define variables for the toolbar items
 """
 
@@ -246,17 +245,17 @@ def __gettext_strings():
     # the XRC file in the _("a string") format to be recognized by GNU
     # gettext utilities (specificaly the xgettext utility) and the
     # mki18n.py script.  For more information see:
-    # http://wiki.wxpython.org/index.cgi/Internationalization 
-    
+    # http://wiki.wxpython.org/index.cgi/Internationalization
+
     def _(str): pass
-    
+
 %s
 """
 
 #----------------------------------------------------------------------
 
 class XmlResourceCompiler:
-    
+
     templates = PythonTemplates()
 
     """This class generates Python code from XML resource files (XRC)."""
@@ -289,9 +288,9 @@ class XmlResourceCompiler:
 
             if generateGetText:
                 gettextStrings += self.FindStringsInNode(resourceDocument.firstChild)
-                
+
         # now write it all out
-        print >>outputFile, self.templates.FILE_HEADER
+        print_(self.templates.FILE_HEADER, file=outputFile)
 
         # Note: Technically it is not legal to have anything other
         # than ascii for class and variable names, but since the user
@@ -300,22 +299,22 @@ class XmlResourceCompiler:
         # later when they try to run the program.
         if subclasses:
             subclasses = self.ReplaceBlocks(u"\n".join(subclasses))
-            print >>outputFile, subclasses.encode("UTF-8")
+            print_(subclasses.encode("UTF-8"), file=outputFile)
         if classes:
             classes = self.ReplaceBlocks(u"\n".join(classes))
-            print >>outputFile, classes.encode("UTF-8")
+            print_(classes.encode("UTF-8"), file=outputFile)
 
-        print >>outputFile, self.templates.INIT_RESOURE_HEADER
+        print_(self.templates.INIT_RESOURE_HEADER, file=outputFile)
         if embedResources:
-            print >>outputFile, self.templates.PREPARE_MEMFS
+            print_(self.templates.PREPARE_MEMFS, file=outputFile)
         resources = u"\n".join(resources)
-        print >>outputFile, resources.encode("UTF-8")
+        print_(resources.encode("UTF-8"), file=outputFile)
 
         if generateGetText:
             # These have already been converted to utf-8...
             gettextStrings = ['    _("%s")' % s for s in gettextStrings]
             gettextStrings = "\n".join(gettextStrings)
-            print >>outputFile, self.templates.GETTEXT_DUMMY_FUNC % gettextStrings
+            print_(self.templates.GETTEXT_DUMMY_FUNC % gettextStrings, file=outputFile)
 
     #-------------------------------------------------------------------
 
@@ -330,25 +329,25 @@ class XmlResourceCompiler:
             resource = resourceDocument.firstChild
             strings = self.FindStringsInNode(resource)
             strings = ['_("%s");' % s for s in strings]
-            print >>outputFile, "\n".join(strings)
+            print_("\n".join(strings), file=outputFile)
 
     #-------------------------------------------------------------------
 
     def GenerateClasses(self, resourceDocument):
         outputList = []
-        
+
         resource = resourceDocument.firstChild
         topWindows = [e for e in resource.childNodes
                       if e.nodeType == e.ELEMENT_NODE and e.tagName == "object" \
                       and not e.getAttribute('subclass')]
-        
+
         # Generate a class for each top-window object (Frame, Panel, Dialog, etc.)
         for topWindow in topWindows:
             windowClass = topWindow.getAttribute("class")
             windowClass = re.sub("^wx", "", windowClass)
             windowName = topWindow.getAttribute("name")
             if not windowName: continue
-            
+
             if windowClass in ["MenuBar"]:
                 genfunc = self.GenerateMenuBarClass
             elif windowClass in ["Menu"]:
@@ -363,7 +362,7 @@ class XmlResourceCompiler:
             outputList.append('\n')
 
             outputList += self.GenerateEventHandlers(windowClass, windowName, topWindow, vars)
-                    
+
         return "".join(outputList)
 
     #-------------------------------------------------------------------
@@ -493,7 +492,7 @@ class XmlResourceCompiler:
 
     def GenerateSubclasses(self, resourceDocument):
         outputList = []
-        
+
         objectNodes = resourceDocument.getElementsByTagName("object")
         subclasses = set()
         bases = {}
@@ -509,9 +508,8 @@ class XmlResourceCompiler:
                     bases[subclass] = klass
                 else:
                     if klass != bases[subclass]:
-                        print 'pywxrc: error: conflicting base classes for subclass %(subclass)s' \
-                              % subclass
-            
+                        print('pywxrc: error: conflicting base classes for subclass %(subclass)s' % subclass)
+
         # Generate subclasses
         for subclass in subclasses:
             windowClass = bases[subclass]
@@ -519,7 +517,7 @@ class XmlResourceCompiler:
             windowClass = re.sub("^wx", "", windowClass)
             outputList.append(self.templates.SUBCLASS_HEADER % locals())
             outputList.append('\n')
-                    
+
         return "".join(outputList)
 
     #-------------------------------------------------------------------
@@ -528,7 +526,7 @@ class XmlResourceCompiler:
         outputList = []
 
         # Generate child event handlers
-        eventHandlers = []            
+        eventHandlers = []
         for elem in topWindow.getElementsByTagName("XRCED"):
             try:
                 eventNode = elem.getElementsByTagName("events")[0]
@@ -581,9 +579,9 @@ class XmlResourceCompiler:
         resourcePath = os.path.split(resourceFilename)[0]
         memoryPath = self.GetMemoryFilename(os.path.splitext(os.path.split(resourceFilename)[1])[0])
         resourceFilename = self.GetMemoryFilename(os.path.split(resourceFilename)[1])
-        
+
         self.ReplaceFilenamesInXRC(resourceDocument.firstChild, files, resourcePath)
-        
+
         filename = resourceFilename
         fileData = resourceDocument.toxml() # what about this? encoding=resourceDocument.encoding)
         outputList.append(self.templates.FILE_AS_STRING % locals())
@@ -596,11 +594,11 @@ class XmlResourceCompiler:
         for f in [resourceFilename] + files:
             filename = self.GetMemoryFilename(f)
             outputList.append(self.templates.ADD_FILE_TO_MEMFS % locals())
-   
+
         outputList.append(self.templates.LOAD_RES_MEMFS % locals())
-        
+
         return "".join(outputList)
-        
+
     #-------------------------------------------------------------------
 
     def GenerateInitResourcesFile(self, resourceFilename, resourceDocument):
@@ -620,7 +618,7 @@ class XmlResourceCompiler:
 
     def FileToString(self, filename):
         outputList = []
-        
+
         buffer = open(filename, "rb").read()
         fileLen = len(buffer)
 
@@ -634,19 +632,19 @@ class XmlResourceCompiler:
             elif c < 32 or c > 127 or s == "'":
                 tmp = "\\x%02x" % c
             elif s == "\\":
-                tmp = "\\\\"            
+                tmp = "\\\\"
             else:
                 tmp = s
 
             if linelng > 70:
                 linelng = 0
                 outputList.append("\\\n")
-            
+
             outputList.append(tmp)
             linelng += len(tmp)
-            
+
         return "".join(outputList)
-            
+
     #-------------------------------------------------------------------
 
     def NodeContainsFilename(self, node):
@@ -682,11 +680,11 @@ class XmlResourceCompiler:
     #-------------------------------------------------------------------
 
     def ReplaceFilenamesInXRC(self, node, files, resourcePath):
-        """ Finds all files mentioned in resource file, e.g. <bitmap>filename</bitmap> 
+        """ Finds all files mentioned in resource file, e.g. <bitmap>filename</bitmap>
         and replaces them with the memory filenames.
-        
+
         Fills a list of the filenames found."""
-        
+
         # Is 'node' XML node element?
         if node is None: return
         if node.nodeType != minidom.Document.ELEMENT_NODE: return
@@ -698,7 +696,7 @@ class XmlResourceCompiler:
             if (containsFilename and
                 (n.nodeType == minidom.Document.TEXT_NODE or
                  n.nodeType == minidom.Document.CDATA_SECTION_NODE)):
-                
+
                 filename = n.nodeValue
                 memoryFilename = self.GetMemoryFilename(filename)
                 n.nodeValue = memoryFilename
@@ -719,7 +717,7 @@ class XmlResourceCompiler:
                 return True
             except ValueError:
                 return False
-            
+
         strings = []
         if parent is None:
             return strings;
@@ -762,7 +760,7 @@ class XmlResourceCompiler:
             if skipNext:
                 skipNext = False
                 continue
-            
+
             if dt[i] == '_':
                 if dt[i+1] == '_':
                     st2 += '_'
@@ -782,10 +780,10 @@ class XmlResourceCompiler:
                     st2 += '\\'
             elif dt[i] == '"':
                 st2 += '\\"'
-            else:            
+            else:
                 st2 += dt[i]
 
-        return st2.encode("UTF-8")                
+        return st2.encode("UTF-8")
 
     #-------------------------------------------------------------------
 
@@ -806,7 +804,7 @@ class XmlResourceCompiler:
                 mo = reEndBlock.match(l)
                 if mo:
                     if mo.groups()[0] != block:
-                        print "pywxrc: error: block mismatch: %s != %s" % (block, mo.groups()[0])
+                        print("pywxrc: error: block mismatch: %s != %s" % (block, mo.groups()[0]))
                     block = None
         return ''.join(output)
 
@@ -832,17 +830,17 @@ class XmlResourceCompiler:
                         mo = reEndBlock.match(l)
                         if mo:
                             if mo.groups()[0] != block:
-                                print "pywxrc: error: block mismatch: %s != %s" % (block, mo.groups()[0])
+                                print("pywxrc: error: block mismatch: %s != %s" % (block, mo.groups()[0]))
                             self.blocks[block] = "".join(blockLines)
                             block = None
-            
+
             try:
                 outputFile = open(outputFilename, "wt")
             except IOError:
                 raise IOError("Can't write output to '%s'" % outputFilename)
         return outputFile
 
-    
+
 
 
 
@@ -851,7 +849,7 @@ class XmlResourceCompiler:
 def main(args=None):
     if not args:
         args = sys.argv[1:]
-        
+
     resourceFilename = ""
     outputFilename = None
     embedResources = False
@@ -863,21 +861,21 @@ def main(args=None):
         opts, args = getopt.gnu_getopt(args,
                                        "hpgevo:",
                                        "help python gettext embed novar output=".split())
-    except getopt.GetoptError, e:
-        print "\nError : %s\n" % str(e)
-        print __doc__
+    except getopt.GetoptError as exc:
+        print("\nError : %s\n" % str(exc))
+        print(__doc__)
         sys.exit(1)
 
     # If there is no input file argument, show help and exit
     if not args:
-        print __doc__
-        print "No xrc input file was specified."
+        print(__doc__)
+        print("No xrc input file was specified.")
         sys.exit(1)
 
     # Parse options and arguments
     for opt, val in opts:
         if opt in ["-h", "--help"]:
-            print __doc__
+            print(__doc__)
             sys.exit(1)
 
         if opt in ["-p", "--python"]:
@@ -885,7 +883,7 @@ def main(args=None):
 
         if opt in ["-o", "--output"]:
             outputFilename = val
-            
+
         if opt in ["-e", "--embed"]:
             embedResources = True
 
@@ -903,13 +901,13 @@ def main(args=None):
 
 
     comp = XmlResourceCompiler()
-    
+
     try:
         if generatePython:
             if not outputFilename:
                 outputFilename = os.path.splitext(args[0])[0] + "_xrc.py"
             comp.MakePythonModule(inputFiles, outputFilename,
-                                  embedResources, generateGetText, 
+                                  embedResources, generateGetText,
                                   assignVariables)
 
         elif generateGetText:
@@ -918,16 +916,16 @@ def main(args=None):
             comp.MakeGetTextOutput(inputFiles, outputFilename)
 
         else:
-            print __doc__
-            print "One or both of -p, -g must be specified."
+            print(__doc__)
+            print("One or both of -p, -g must be specified.")
             sys.exit(1)
-            
-            
-    except IOError, e:
-        print >>sys.stderr, "%s." % str(e)
+
+
+    except IOError as exc:
+        print_("%s." % str(exc), file=sys.stderr)
     else:
         if outputFilename != "-":
-            print >>sys.stderr, "Resources written to %s." % outputFilename
+            print_("Resources written to %s." % outputFilename, file=outputFilename)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -1,4 +1,4 @@
-# Name:         viewer.py 
+# Name:         viewer.py
 # Package:      wx.lib.pdfviewer
 #
 # Purpose:      A PDF report viewer class
@@ -7,84 +7,78 @@
 # Copyright:    Forestfield Software Ltd
 # Licence:      Same as wxPython host
 
-# History:      17 Jun 2009 Created 
+# History:      Created 17 Jun 2009
 #
-#               08 Oct 2011 Michael Hipp    michael@redmule.com
+#               08 Oct 2011, Michael Hipp    michael@redmule.com
 #               Added prompt, printer_name, orientation options to
 #               pdfViewer.Print(). Added option to pdfViewer.LoadFile() to
 #               accept a file-like object as well as a path string
-#               
-#               23 Mar 2013 Werner F Bruhin werner.bruhin@free.fr
-#               Added option to import PyPDF2 instead and converted
-#               ShowLoadProgress and UsePrintDirect from directives
-#               into settable properties
 #
-#               14 Jun 2013 David Hughes
-#               Use mupdf library (via Python-fitz bindings) as backend PDF 
-#               extraction & rendering engine if installed otherwise use
-#               PyPDF2 else pyPdf. Available from
-#               https://github.com/rk700/python-fitz
-#               http://www.mupdf.com
-#               http://knowah.github.io/PyPDF2/
-#               http://pypi.python.org/pypi/pyPdf/1.12
-#
-#               WARNING. mupdf is GPL so be wary of distributing this in a frozen app
-#                        using py2exe, py2app or similar.
+# Tags:         phoenix-port, documented, unittest
 #
 #----------------------------------------------------------------------------
 
-import sys, os, time, types
-import copy, shutil, cStringIO
+"""
+
+This module provides the :class:`~wx.lib.pdfviewer.viewer.pdfViewer` to view PDF
+files.
+"""
+
+import sys
+import os
+import time
+import types
+import copy
+import shutil
+from six import BytesIO, string_types
+
 import wx
 
-VERBOSE = False
-# the following only used with pyPdf/PyPDF2
-CACHE_LATE_PAGES = True
-LATE_THRESHOLD = 200        # Time to render (ttr), milliseconds
+VERBOSE = True
 
 try:
+    # see http://pythonhosted.org/PyMuPDF - documentation & installation
     import fitz
     mupdf = True
-    if VERBOSE: print 'pdfviewer using Python-fitz/mupdf library (GPL)'
-except ImportError:    
+    if VERBOSE: print('pdfviewer using PyMuPDF (GPL)')
+except ImportError:
     mupdf = False
     try:
+        # see http://pythonhosted.org/PyPDF2
         import PyPDF2
         from PyPDF2 import PdfFileReader
         from PyPDF2.pdf import ContentStream, PageObject
         from PyPDF2.filters import ASCII85Decode, FlateDecode
-        if VERBOSE: print 'pdfviewer using PyPDF2'
+        if VERBOSE: print('pdfviewer using PyPDF2')
     except ImportError:
-        try:
-            import pyPdf
-            from pyPdf import PdfFileReader
-            from pyPdf.pdf import ContentStream, PageObject
-            from pyPdf.filters import ASCII85Decode, FlateDecode
-            if VERBOSE: print 'pdfviewer using PyPdf'
-        except ImportError:
-            msg = "Python-fitz (mupdf) or PyPDF2 or pyPdf package must be available"
-            raise ImportError(msg)
-try:
-    import cairo
-    from wx.lib.graphics import GraphicsContext
-    have_cairo = True
-    if VERBOSE: print 'pdfviewer using Cairo'
-except ImportError:
-    have_cairo = False
-    GraphicsContext = wx.GraphicsContext
-    if VERBOSE: print 'pdfviewer using wx.GraphicsContext'
+        msg = "PyMuPDF or PyPDF2 must be available to use pdfviewer"
+        raise ImportError(msg)
 
+GraphicsContext = wx.GraphicsContext
+have_cairo = False
 if not mupdf:
-    from dcgraphics import dcGraphicsContext
+    try:
+        import wx.lib.wxcairo as wxcairo
+        import cairo
+        from wx.lib.graphics import GraphicsContext
+        have_cairo = True
+        if VERBOSE: print('pdfviewer using Cairo')
+    except ImportError:
+        if VERBOSE: print('pdfviewer using wx.GraphicsContext')
+
     # New PageObject method added by Forestfield Software
-    # locate and return all commands in the order they
-    # occur in the content stream
     def extractOperators(self):
+        """
+        Locate and return all commands in the order they
+        occur in the content stream
+        """
         ops = []
         content = self["/Contents"].getObject()
         if not isinstance(content, ContentStream):
             content = ContentStream(content, self.pdf)
         for op in content.operations:
+            if type(op[1] == bytes):
+                op = (op[0], op[1].decode())
             ops.append(op)
         return ops
     # Inject this method into the PageObject class
@@ -96,30 +90,43 @@ if not mupdf:
     try:
         from reportlab.pdfbase.pdfmetrics import stringWidth
         have_rlwidth = True
-        if VERBOSE: print 'pdfviewer using reportlab stringWidth function'
+        if VERBOSE: print('pdfviewer using reportlab stringWidth function')
     except ImportError:
         have_rlwidth = False
 
 #----------------------------------------------------------------------------
-    
+
 class pdfViewer(wx.ScrolledWindow):
-    """ View pdf reports in a scrolled window.  Contents are read from PDF file
-        and rendered in a GraphicsContext. Show visible window contents
-        as quickly as possible then read the whole file and build the set of drawing
-        commands for each page. Using pyPdf this can take time for a big file or if
-        there are complex drawings eg. ReportLab's colour shading inside charts and a 
-        progress bar can be displayed by setting self.ShowLoadProgress = True (default)
     """
-    def __init__(self, parent, id, pos, size, style):
-        wx.ScrolledWindow.__init__(self, parent, id, pos, size,
+    View pdf file in a scrolled window.  Contents are read from PDF file
+    and rendered in a GraphicsContext. Show visible window contents
+    as quickly as possible then, when using pyPDF, read the whole file and build
+    the set of drawing commands for each page. This can take time for a big file or if
+    there are complex drawings eg. ReportLab's colour shading inside charts and a
+    progress bar can be displayed by setting self.ShowLoadProgress = True (default)
+    """
+    def __init__(self, parent, nid, pos, size, style):
+        """
+        Default class constructor.
+
+        :param wx.Window `parent`: parent window. Must not be ``None``;
+        :param integer `nid`: window identifier. A value of -1 indicates a default value;
+        :param `pos`: the control position. A value of (-1, -1) indicates a default position,
+         chosen by either the windowing system or wxPython, depending on platform;
+        :type `pos`: tuple or :class:`wx.Point`
+        :param `size`: the control size. A value of (-1, -1) indicates a default size,
+         chosen by either the windowing system or wxPython, depending on platform;
+        :type `size`: tuple or :class:`wx.Size`
+        :param integer `style`: the button style (unused);
+
+        """
+        wx.ScrolledWindow.__init__(self, parent, nid, pos, size,
                                 style | wx.NO_FULL_REPAINT_ON_RESIZE)
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)     # recommended in wxWidgets docs
         self.buttonpanel = None     # reference to panel is set by their common parent
         self._showLoadProgress = (not mupdf)
-        self._usePrintDirect = (not mupdf)
 
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Bind(wx.EVT_SIZE, self.OnResize)
         self.Bind(wx.EVT_SCROLLWIN, self.OnScroll)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
@@ -127,79 +134,86 @@ class pdfViewer(wx.ScrolledWindow):
         self.resizing = False
         self.numpages = None
         self.zoomscale = -1     # fit page to screen width
-        self.nom_page_gap = 20  # nominal inter-page gap (points) 
+        self.nom_page_gap = 20  # nominal inter-page gap (points)
         self.scrollrate = 20    # pixels per scrollbar increment
+        self.page_buffer_valid = False
+        self.page_after_zoom_change = None
         self.ClearBackground()
 
     def OnIdle(self, event):
-        " Redraw on resize"
+        """
+        Redraw on resize.
+        """
         if self.resizing:
             self.Render()
             self.resizing = False
         event.Skip()
 
-    def OnEraseBackground(self, event):
-        "Does this need to be handled?"
-        event.Skip()
-
     def OnResize(self, event):
-        " Buffer size change due to client area resize."
+        """
+        Buffer size change due to client area resize.
+        """
         self.resizing = True
-        if hasattr(self, 'cachedpages'):
-            self.cachedpages = {}
         event.Skip()
 
-    def OnScroll(self,event):
-        " Recalculate and redraw visible area. CallAfter is *essential* for coordination."
-        wx.CallAfter(self.Render, force=False)
+    def OnScroll(self, event):
+        """
+        Recalculate and redraw visible area. CallAfter is *essential*
+        for coordination.
+        """
+        wx.CallAfter(self.Render)
         event.Skip()
 
     def OnPaint(self, event):
-        " Refresh visible window with bitmap contents"
+        """
+        Refresh visible window with bitmap contents.
+        """
         paintDC = wx.PaintDC(self)
+        paintDC.Clear()         # in case buffer now smaller than visible window
         if hasattr(self, 'pdc'):
-            paintDC.BeginDrawing()
             paintDC.Blit(0, 0, self.winwidth, self.winheight, self.pdc,
                                                      self.xshift, self.yshift)
-            paintDC.EndDrawing()
-        else:
-            paintDC.Clear()
 
 #----------------------------------------------------------------------------
 
     # This section defines the externally callable methods:
-    # LoadFile, Save, Print, SetZoom, and GoPage also
-    # getters and setters for ShowLoadProgress and UsePrintDirect
-    # that are only needed if using pyPdf
-        
+    # LoadFile, Save, Print, SetZoom, and GoPage
+    # also the getter and setter for ShowLoadProgress
+    # that is only applicable if using PyPDF2
+
     def LoadFile(self, pdf_file):
         """
-        Read pdf file using pypdf. Assume all pages are same size, for now.
-        
-        :param `pdf_file`: can be either a string holding a filename path or
-         a file-like object (pyPdf only).
+        Read pdf file. Assume all pages are same size, for now.
+
+        :param `pdf_file`: can be either a string holding
+        a filename path or a file-like object.
         """
-        if isinstance(pdf_file, types.StringTypes):
-            # it must be a filename/path string, open it as a file
-            fileobj = file(pdf_file, 'rb')
+        def create_fileobject(filename):
+            """
+            Create and return a file object with the contents of filename,
+            only used for testing.
+            """
+            f = open(filename, 'rb')
+            stream = f.read()
+            return BytesIO(stream)
+
+        self.pdfpathname = ''
+        if isinstance(pdf_file, string_types):
+            # a filename/path string, save its name
             self.pdfpathname = pdf_file
-        else:
-            # assume it is a file-like object
-            fileobj = pdf_file
-            self.pdfpathname = ''  # empty default file name
-        self.ShowLoadProgress = True
+            # remove comment from next line to test using a file-like object
+            # pdf_file = create_fileobject(pdf_file)
         if mupdf:
-            self.pdfdoc = mupdfProcessor(self, self.pdfpathname)
+            self.pdfdoc = mupdfProcessor(self, pdf_file)
         else:
-            self.pdfdoc = pypdfProcessor(self, fileobj, self.ShowLoadProgress)
-            self.cachedpages = {}
+            self.pdfdoc = pypdfProcessor(self, pdf_file, self.ShowLoadProgress)
 
         self.numpages = self.pdfdoc.numpages
         self.pagewidth = self.pdfdoc.pagewidth
         self.pageheight = self.pdfdoc.pageheight
-        self.newdoc = True
-        self.Scroll(0,0)                # in case this is a re-LoadFile
-        self.CalculateDimensions(True)  # to get initial visible page range
+        self.page_buffer_valid = False
+        self.Scroll(0, 0)               # in case this is a re-LoadFile
+        self.CalculateDimensions()      # to get initial visible page range
         # draw and display the minimal set of pages
         self.pdfdoc.DrawFile(self.frompage, self.topage)
         self.have_file = True
@@ -211,23 +225,23 @@ class pdfViewer(wx.ScrolledWindow):
         if self.pdfpathname:
             wild = "Portable document format (*.pdf)|*.pdf"
             dlg = wx.FileDialog(self, message="Save file as ...",
-                                      wildcard=wild, style=wx.SAVE|wx.OVERWRITE_PROMPT)
+                                  wildcard=wild, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
             if dlg.ShowModal() == wx.ID_OK:
                 pathname = dlg.GetPath()
                 shutil.copy(self.pdfpathname, pathname)
-            dlg.Destroy()    
+            dlg.Destroy()
 
     def Print(self, prompt=True, printer_name=None, orientation=None):
         """
         Print the pdf.
-        
+
         :param boolean `prompt`: show the print dialog to the user (True/False). If
          False, the print dialog will not be shown and the pdf will be printed
          immediately. Default: True.
         :param string `printer_name`: the name of the printer that is to
          receive the printout. Default: as set by the O/S.
-        :param `orientation`: select the orientation (wx.PORTRAIT or
-         wx.LANDSCAPE) for the printout. Default: as set by the O/S.
+        :param `orientation`: select the orientation (:class:`wx.PORTRAIT` or
+         :class:`wx.LANDSCAPE`) for the printout. Default: as set by the O/S.
         """
         pdd = wx.PrintDialogData()
         pdd.SetMinPage(1)
@@ -255,75 +269,77 @@ class pdfViewer(wx.ScrolledWindow):
         printout.Destroy()
 
     def SetZoom(self, zoomscale):
-        """ Positive integer or floating zoom scale will render the file at corresponding
-            size where 1.0 is "actual" point size (1/72"). 
-            -1 fits page width and -2 fits page height into client area
-            Redisplay the current page(s) at the new size
+        """
+        Positive integer or floating zoom scale will render the file at corresponding
+        size where 1.0 is "actual" point size (1/72").
+        -1 fits page width and -2 fits page height into client area
+        Redisplay the current page(s) at the new size
+
+        :param `zoomscale`: an integer or float
+
         """
         pagenow = self.frompage
         self.zoomscale = zoomscale
-        if hasattr(self, 'cachedpages'):
-            self.cachedpages = {}
-        self.CalculateDimensions(True)
+        self.page_buffer_valid = False
+        # calling GoPage now will trigger rendering at the new size but the page location
+        # will be calculated based on the old zoom scale - so save the required page number
+        # and call GoPage again *after* rendering at the new size
+        self.page_after_zoom_change = pagenow
         self.GoPage(pagenow)
 
     def GoPage(self, pagenum):
+        """
+        Go to page
+
+        :param integer `pagenum`: go to the provided page number if it is valid
+
+        """
         if pagenum > 0 and pagenum <= self.numpages:
-            self.Scroll(0, pagenum*self.Ypagepixels/self.GetScrollPixelsPerUnit()[1])
+            self.Scroll(0, pagenum*self.Ypagepixels/self.GetScrollPixelsPerUnit()[1] + 1)
         else:
             self.Scroll(0, 0)
-        # calling Scroll sometimes doesn't raise wx.EVT_SCROLLWIN eg Windows 8 64 bit - so  
-        wx.CallAfter(self.Render, force=False)
-    
+        # calling Scroll sometimes doesn't raise wx.EVT_SCROLLWIN eg Windows 8 64 bit - so
+        wx.CallAfter(self.Render)
+
     @property
     def ShowLoadProgress(self):
-        """Property to control if loading progress be shown."""
+        """Property to control if file reading progress is shown (PyPDF2 only)"""
         return self._showLoadProgress
-    
+
     @ShowLoadProgress.setter
     def ShowLoadProgress(self, flag):
         """Setter for showLoadProgress."""
         self._showLoadProgress = flag
-       
-    @property
-    def UsePrintDirect(self):
-        """
-        Property to control to use either Cairo (via a page buffer) or
-        dcGraphicsContext depending.
-        """
-        return self._usePrintDirect
-    
-    @UsePrintDirect.setter
-    def UsePrintDirect(self, flag):
-        """Setter for usePrintDirect."""
-        self._usePrintDirect = flag
- 
+
 #----------------------------------------------------------------------------
 
-    "This section is concerned with rendering a sub-set of drawing commands on demand"
+    # This section is concerned with rendering a sub-set of drawing commands on demand
 
-    def CalculateDimensions(self, force):
-        """ Compute the required buffer sizes to hold the viewed rectangle and
-            the range of pages visible. Override force flag and set true if 
-            the current set of rendered pages changes
+    def CalculateDimensions(self):
+        """
+        Compute the required buffer sizes to hold the viewed rectangle and
+        the range of pages visible. Set self.page_buffer_valid = False if
+        the current set of rendered pages changes
         """
         self.frompage = 0
         self.topage = 0
-        self.clientdc = dc = wx.ClientDC(self)      # dc for device scaling 
-        self.device_scale = dc.GetPPI()[0]/72.0     # pixels per inch / points per inch 
-        if wx.PlatformInfo[1] == 'wxMSW': 
-            # for Windows only wx.GraphicsContext fonts are too big in the ratio  
-            # of screen pixels per inch to points per inch 
-            self.font_scale = 1.0 / self.device_scale
-        else:
-            self.font_scale = 1.0
-                                       
-        self.winwidth, self.winheight = self.GetClientSizeTuple()
+        device_scale = wx.ClientDC(self).GetPPI()[0]/72.0   # pixels per inch/points per inch
+        self.font_scale_metrics =  1.0
+        self.font_scale_size = 1.0
+        # for Windows only with wx.GraphicsContext the rendered font size is too big
+        # in the ratio of screen pixels per inch to points per inch
+        # and font metrics are too big in the same ratio for both for Cairo and wx.GC
+        if wx.PlatformInfo[1] == 'wxMSW':
+            self.font_scale_metrics = 1.0 / device_scale
+            if not have_cairo:
+                self.font_scale_size = 1.0 / device_scale
+
+        self.winwidth, self.winheight = self.GetClientSize()
         if self.winheight < 100:
             return
         self.Ypage = self.pageheight + self.nom_page_gap
         if self.zoomscale > 0.0:
-            self.scale = self.zoomscale * self.device_scale
+            self.scale = self.zoomscale * device_scale
         else:
             if int(self.zoomscale) == -1:   # fit width
                 self.scale = self.winwidth / self.pagewidth
@@ -341,104 +357,106 @@ class pdfViewer(wx.ScrolledWindow):
             self.Ypagepixels = nhi
         else:
             self.Ypagepixels = nlo
-        self.page_gap = self.Ypagepixels/self.scale - self.pageheight   
+        self.page_gap = self.Ypagepixels/self.scale - self.pageheight
 
         self.maxwidth = max(self.winwidth, self.Xpagepixels)
         self.maxheight = max(self.winheight, self.numpages*self.Ypagepixels)
         self.SetVirtualSize((self.maxwidth, self.maxheight))
-        self.SetScrollRate(self.scrollrate,self.scrollrate)
+        self.SetScrollRate(self.scrollrate, self.scrollrate)
 
         xv, yv = self.GetViewStart()
         dx, dy = self.GetScrollPixelsPerUnit()
         self.x0, self.y0   = (xv * dx, yv * dy)
-        self.frompage = min(self.y0/self.Ypagepixels, self.numpages-1)
-        self.topage = min((self.y0+self.winheight-1)/self.Ypagepixels, self.numpages-1)
+        self.frompage = int(min(self.y0/self.Ypagepixels, self.numpages-1))
+        self.topage = int(min((self.y0+self.winheight-1)/self.Ypagepixels, self.numpages-1))
         self.pagebufferwidth = max(self.Xpagepixels, self.winwidth)
         self.pagebufferheight = (self.topage - self.frompage + 1) * self.Ypagepixels
 
         # Inform buttonpanel controls of any changes
         if self.buttonpanel:
             self.buttonpanel.Update(self.frompage, self.numpages,
-                                      self.scale/self.device_scale)
+                                      self.scale/device_scale)
 
         self.page_y0 = self.frompage * self.Ypagepixels
         self.page_x0 = 0
         self.xshift = self.x0 - self.page_x0
         self.yshift = self.y0 - self.page_y0
-        if force:               # by external request 
+        if not self.page_buffer_valid:  # via external setting
             self.cur_frompage = self.frompage
             self.cur_topage = self.topage
         else:   # page range unchanged? whole visible area will always be inside page buffer
-            if self.frompage <> self.cur_frompage or self.topage <> self.cur_topage:  
-                force = True    # due to page buffer change
+            if self.frompage != self.cur_frompage or self.topage != self.cur_topage:
+                self.page_buffer_valid = False    # due to page buffer change
                 self.cur_frompage = self.frompage
                 self.cur_topage = self.topage
-        return force
+        return
 
-    def Render(self, force=True):
-        """ Recalculate dimensions as client area may have been scrolled or resized.
-            The smallest unit of rendering that can be done is the pdf page. So render
-            the drawing commands for the pages in the visible rectangle into a buffer
-            big enough to hold this set of pages. Force re-creating the page buffer
-            only when client view moves outside it.
-            With pyPdf, use gc.Translate to render each page wrt the pdf origin,
-            which is at the bottom left corner of the page.
+    def Render(self):
+        """
+        Recalculate dimensions as client area may have been scrolled or resized.
+        The smallest unit of rendering that can be done is the pdf page. So render
+        the drawing commands for the pages in the visible rectangle into a buffer
+        big enough to hold this set of pages. Force re-creating the page buffer
+        only when client view moves outside it.
+        With PyPDF2, use gc.Translate to render each page wrt the pdf origin,
+        which is at the bottom left corner of the page.
         """
         if not self.have_file:
             return
-        force =  self.CalculateDimensions(force or self.newdoc)
-        self.newdoc = False     # this ensured page buffer recreated if a new document
-        if force:
-            # Initialize the buffer bitmap. 
-            self.pagebuffer = wx.EmptyBitmap(self.pagebufferwidth, self.pagebufferheight)
+        self.CalculateDimensions()
+        if not self.page_buffer_valid:
+            # Initialize the buffer bitmap.
+            self.pagebuffer = wx.Bitmap(self.pagebufferwidth, self.pagebufferheight)
             self.pdc = wx.MemoryDC(self.pagebuffer)     # must persist
+
             gc = GraphicsContext.Create(self.pdc)       # Cairo/wx.GraphicsContext API
+
             # white background
             path = gc.CreatePath()
-            path.AddRectangle(0, 0, self.pagebuffer.GetWidth(), self.pagebuffer.GetHeight())
+            path.AddRectangle(0, 0,
+                                self.pagebuffer.GetWidth(), self.pagebuffer.GetHeight())
             gc.SetBrush(wx.WHITE_BRUSH)
             gc.FillPath(path)
 
             for pageno in range(self.frompage, self.topage+1):
                 self.xpageoffset = 0 - self.x0
                 self.ypageoffset = pageno*self.Ypagepixels - self.page_y0
-                if not mupdf and pageno in self.cachedpages:
-                    self.pdc.Blit(self.xpageoffset, self.ypageoffset,
-                                     self.Xpagepixels, self.Ypagepixels, 
-                                       self.cachedpages[pageno], 0, 0)
-                else:    
-                    t1 = time.time()
-                    gc.PushState()
-                    if mupdf:
-                        gc.Translate(self.xpageoffset, self.ypageoffset)
-                        # scaling is done inside RenderPage
-                    else:    
+                gc.PushState()
+                if mupdf:
+                    gc.Translate(self.xpageoffset, self.ypageoffset)
+                    # scaling is done inside RenderPage
+                else:
 
-                        gc.Translate(self.xpageoffset, self.ypageoffset +
-                                        self.pageheight*self.scale)
-                        gc.Scale(self.scale, self.scale)
-                    self.pdfdoc.RenderPage(gc, pageno, self.scale)
-                    # Show inter-page gap
-                    gc.SetBrush(wx.Brush(wx.Colour(180, 180, 180)))        #mid grey
-                    gc.SetPen(wx.TRANSPARENT_PEN)
-                    if mupdf:
-                        gc.DrawRectangle(0, self.pageheight*self.scale,
-                                     self.pagewidth*self.scale, self.page_gap*self.scale)
-                    else:    
-                        gc.DrawRectangle(0, 0, self.pagewidth, self.page_gap)
-                    gc.PopState()
-                    ttr = time.time()-t1 
-                    if not mupdf and CACHE_LATE_PAGES and ttr * 1000 > LATE_THRESHOLD:
-                        self.CachePage(pageno)      # save page out of buffer
-            gc.PushState()    
+                    gc.Translate(self.xpageoffset, self.ypageoffset +
+                                    self.pageheight*self.scale)
+                    gc.Scale(self.scale, self.scale)
+                self.pdfdoc.RenderPage(gc, pageno, scale=self.scale)
+                # Show inter-page gap
+                gc.SetBrush(wx.Brush(wx.Colour(180, 180, 180)))        #mid grey
+                gc.SetPen(wx.TRANSPARENT_PEN)
+                if mupdf:
+                    gc.DrawRectangle(0, self.pageheight*self.scale,
+                                 self.pagewidth*self.scale, self.page_gap*self.scale)
+                else:
+                    gc.DrawRectangle(0, 0, self.pagewidth, self.page_gap)
+                gc.PopState()
+            gc.PushState()
             gc.Translate(0-self.x0, 0-self.page_y0)
             self.RenderPageBoundaries(gc)
             gc.PopState()
 
-        self.Refresh(0)     # Blit appropriate area of new or existing page buffer to screen
+        self.page_buffer_valid = True
+        self.Refresh(0) # Blit appropriate area of new or existing page buffer to screen
+
+        # ensure we stay on the same page after zoom scale is changed
+        if self.page_after_zoom_change:
+            self.GoPage(self.page_after_zoom_change)
+            self.page_after_zoom_change = None
 
     def RenderPageBoundaries(self, gc):
-        "Show non-page areas in grey"
+        """
+        Show non-page areas in grey.
+        """
         gc.SetBrush(wx.Brush(wx.Colour(180, 180, 180)))        #mid grey
         gc.SetPen(wx.TRANSPARENT_PEN)
         gc.Scale(1.0, 1.0)
@@ -449,81 +467,72 @@ class pdfViewer(wx.ScrolledWindow):
         if extraheight > 0:
             gc.DrawRectangle(0, self.winheight-extraheight, self.maxwidth, extraheight)
 
-    def CachePage(self, pageno):
-        """ When page takes a 'long' time to render, save its contents out of
-            self.pdc and re-use it to minimise jerky scrolling
-        """
-        cachebuffer = wx.EmptyBitmap(self.Xpagepixels, self.Ypagepixels)
-        cdc = wx.MemoryDC(cachebuffer)
-        cdc.Blit(0, 0, self.Xpagepixels, self.Ypagepixels,
-                      self.pdc, self.xpageoffset, self.ypageoffset)
-        self.cachedpages[pageno] = cdc
-       
 #============================================================================
 
 class mupdfProcessor(object):
-    """ Create an instance of this class to open a PDF file, process the contents of
-        each page and render each one on demand using the GPL mupdf library, which is
-        accessed via the python-fitz package bindings
-    """ 
-    def __init__(self, parent, pathname):
-        " pathname must be Stringtype not unicode"
+    """
+    Create an instance of this class to open a PDF file, process the contents of
+    each page and render each one on demand using the GPL mupdf library, which is
+    accessed via the python-fitz package bindings (version 1.9.1 or later)
+    """
+    def __init__(self, parent, pdf_file):
+        """
+        :param `pdf_file`: a File object or an object that supports the standard
+        read and seek methods similar to a File object.
+        Could also be a string representing a path to a PDF file.
+        """
         self.parent = parent
-        if isinstance(pathname, types.UnicodeType):
-            pathname = pathname.encode('latin-1')
-        self.context = fitz.Context(fitz.FZ_STORE_UNLIMITED)
-        self.pdfdoc = self.context.open_document(pathname)
-        self.numpages = self.pdfdoc.count_pages()
-        page1 = self.pdfdoc.load_page(0)
-        self.pagewidth = page1.bound_page().x1
-        self.pageheight = page1.bound_page().y1
-        self.pagedrawings = {}
+        if isinstance(pdf_file, string_types):
+            # a filename/path string, pass the name to fitz.open
+            pathname = pdf_file
+            self.pdfdoc = fitz.open(pathname)
+        else:
+            # assume it is a file-like object, pass the stream content to fitz.open
+            # and a '.pdf' extension in pathname to identify the stream type
+            pathname = 'fileobject.pdf'
+            if pdf_file.tell() > 0:     # not positioned at start
+                pdf_file.seek(0)
+            stream = bytearray(pdf_file.read())
+            self.pdfdoc = fitz.open(pathname, stream)
+
+        self.numpages = self.pdfdoc.pageCount
+        page = self.pdfdoc.loadPage(0)
+        self.pagewidth = page.bound().width
+        self.pageheight = page.bound().height
+        self.page_rect = page.bound()
         self.zoom_error = False     #set if memory errors during render
 
     def DrawFile(self, frompage, topage):
-        """ Build set of drawing commands from PDF contents. This need be done only
-            once for the whole file. Each page is placed in a display_list which can
-            be (re)drawn many times using run_display_list()
-        """  
-        for pageno in range(frompage, topage+1):
-            self.page = self.pdfdoc.load_page(pageno)
-            self.pagedrawings[pageno] = self.context.new_display_list()
-            mdev = self.pagedrawings[pageno].new_list_device()
-            self.page.run_page(mdev, fitz.fz_identity, None)
-            self.page_rect = self.page.bound_page()
+        """
+        This is a no-op for mupdf. Each page is scaled and drawn on
+        demand during RenderPage directly via a call to page.getPixmap()
+        """
         self.parent.GoPage(frompage)
 
     def RenderPage(self, gc, pageno, scale=1.0):
         " Render the set of pagedrawings into gc for specified page "
-        self.trans = fitz.scale_matrix(scale, scale)
-        self.rect = self.trans.transform_rect(self.page_rect) #page_rect is the unscaled one
-        self.bbox = self.rect.round_rect()
-
+        page = self.pdfdoc.loadPage(pageno)
+        matrix = fitz.Matrix(scale, scale)
         try:
-            self.pix = self.context.new_pixmap_with_irect(fitz.fz_device_rgb, self.bbox)
-            self.pix.clear_pixmap(255)
-            width = self.pix.get_width()
-            height = self.pix.get_height()
-            dev = self.pix.new_draw_device()
-            self.pagedrawings[pageno].run_display_list(dev, self.trans, self.rect, None)
-            bmp = wx.BitmapFromBufferRGBA(width, height,self.pix.get_samples())
-            gbmp = gc.CreateBitmap(bmp)
-            gc.DrawBitmap(gbmp, 0, 0, width, height)
+            pix = page.getPixmap(matrix=matrix)   # MUST be keyword arg(s)
+            bmp = wx.Bitmap.FromBufferRGBA(pix.width, pix.height, pix.samples)
+            gc.DrawBitmap(bmp, 0, 0, pix.width, pix.height)
             self.zoom_error = False
-        except RuntimeError, MemoryError:
+        except (RuntimeError, MemoryError):
             if not self.zoom_error:     # report once only
                 self.zoom_error = True
-                dlg = wx.MessageDialog(self, 'Out of memory. Zoom level too high',
+                dlg = wx.MessageDialog(self.parent, 'Out of memory. Zoom level too high?',
                               'pdf viewer' , wx.OK |wx.ICON_EXCLAMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
-       
+
 #============================================================================
 
 class pypdfProcessor(object):
-    """ Create an instance of this class to open a PDF file, process the contents of
-        each page and draw each one on demand using the Python pypdf package
-    """    
+    """
+    Create an instance of this class to open a PDF file, process the contents of
+    every page using PyPDF2 then render each one on demand
+    """
     def __init__(self, parent, fileobj, showloadprogress):
         self.parent = parent
         self.showloadprogress = showloadprogress
@@ -535,14 +544,19 @@ class pypdfProcessor(object):
         self.pagedrawings = {}
         self.unimplemented = {}
         self.formdrawings = {}
+        self.page = None
+        self.gstate = None
+        self.saved_state = None
+        self.knownfont = False
+        self.progbar = None
 
-    "These methods interpret the PDF contents as a set of drawing commands"
+    # These methods interpret the PDF contents as a set of drawing commands
 
     def Progress(self, ptype, value):
         " This function is called at regular intervals during Drawfile"
         if ptype == 'start':
-            msg = 'Reading pdf file'
-            self.progbar = wx.ProgressDialog('Load file', msg, value, None,  
+            pmsg = 'Reading pdf file'
+            self.progbar = wx.ProgressDialog('Load file', pmsg, value, None,
                          wx.PD_AUTO_HIDE|
                             wx.PD_ESTIMATED_TIME|wx.PD_REMAINING_TIME)
         elif ptype == 'progress':
@@ -551,39 +565,38 @@ class pypdfProcessor(object):
             self.progbar.Destroy()
 
     def DrawFile(self, frompage, topage):
-        """ Build set of drawing commands from PDF contents. Ideally these could be drawn
-            straight into a PseudoDC and the visible section painted directly into
-            scrolled window, but we need to be able to zoom and scale the output quickly
-            without having to rebuild the drawing commands (slow). So roll our
-            own command lists, one per page, into self.pagedrawings.
-        """  
-        t0 = time.time()
+        """
+        Build set of drawing commands from PDF contents. Ideally these could be drawn
+        straight into a PseudoDC and the visible section painted directly into
+        scrolled window, but we need to be able to zoom and scale the output quickly
+        without having to rebuild the drawing commands (slow). So build our
+        own command lists, one per page, into self.pagedrawings.
+        """
         numpages_generated = 0
         rp = (self.showloadprogress and frompage == 0 and topage == self.numpages-1)
         if rp: self.Progress('start', self.numpages)
-        for self.pageno in range(frompage, topage+1):
+        for pageno in range(frompage, topage+1):
             self.gstate = pdfState()    # state is reset with every new page
             self.saved_state = []
-            self.page = self.pdfdoc.getPage(self.pageno)
+            self.page = self.pdfdoc.getPage(pageno)
             numpages_generated += 1
             pdf_fonts = self.FetchFonts(self.page)
-            self.pagedrawings[self.pageno] = self.ProcessOperators(
-                                    self.page.extractOperators(), pdf_fonts)    
+            self.pagedrawings[pageno] = self.ProcessOperators(
+                                    self.page.extractOperators(), pdf_fonts)
             if rp: self.Progress('progress', numpages_generated)
 
-        ## print 'Pages %d to %d. %d pages created in %.2f seconds' % (
-        ##           frompage, topage, numpages_generated,(time.time()-t0))
         if rp: self.Progress('end', None)
         self.parent.GoPage(frompage)
 
     def RenderPage(self, gc, pageno, scale=None):
-        """ Render the set of pagedrawings
-            In a pdf file, bitmaps are treated as being of unit width and height and
-            are scaled via a previous ConcatTransform containing the corresponding width 
-            and height as scale factors. wx.GraphicsContext/Cairo appear not to respond to  
-            this so scaling is removed from transform and width & height are added
-            to the Drawbitmap call.
-        """    
+        """
+        Render the set of pagedrawings
+        In a pdf file, bitmaps are treated as being of unit width and height and
+        are scaled via a previous ConcatTransform containing the corresponding width
+        and height as scale factors. wx.GraphicsContext/Cairo appear not to respond to
+        this so scaling is removed from transform and width & height are added
+        to the Drawbitmap call.
+        """
         drawdict = {'ConcatTransform': gc.ConcatTransform,
                     'PushState': gc.PushState,
                     'PopState': gc.PopState,
@@ -595,6 +608,9 @@ class pypdfProcessor(object):
                     'CreatePath': gc.CreatePath,
                     'DrawPath': gc.DrawPath }
         for drawcmd, args, kwargs in self.pagedrawings[pageno]:
+            # scale font if requested by printer DC
+            if drawcmd == 'SetFont' and hasattr(gc, 'font_scale'):
+                args[0].Scale(gc.font_scale)
             if drawcmd == 'ConcatTransform':
                 cm = gc.CreateMatrix(*args, **kwargs)
                 args = (cm,)
@@ -605,13 +621,16 @@ class pypdfProcessor(object):
                 args = (gp, args[1])
             if drawcmd in drawdict:
                 drawdict[drawcmd](*args, **kwargs)
+                # reset font scaling in case RenderPage call is repeated
+                if drawcmd == 'SetFont' and hasattr(gc, 'font_scale'):
+                    args[0].Scale(1.0/gc.font_scale)
             else:
                 pathdict = {'MoveToPoint': gp.MoveToPoint,
                             'AddLineToPoint': gp.AddLineToPoint,
                             'AddCurveToPoint': gp.AddCurveToPoint,
                             'AddRectangle': gp.AddRectangle,
                             'CloseSubpath': gp.CloseSubpath }
-                if drawcmd in pathdict:    
+                if drawcmd in pathdict:
                     pathdict[drawcmd](*args, **kwargs)
 
     def FetchFonts(self, currentobject):
@@ -626,15 +645,17 @@ class pypdfProcessor(object):
         return pdf_fonts
 
     def ProcessOperators(self, opslist, pdf_fonts):
-        " Interpret each operation in opslist and return in drawlist"
+        """
+        Interpret each operation in opslist and return in drawlist.
+        """
         drawlist = []
         path = []
         for operand, operator in opslist :
             g = self.gstate
-            if operator == 'cm':        # new transformation matrix
+            if operator == 'cm' and operand:        # new transformation matrix
                 # some operands need inverting because directions of y axis
                 # in pdf and graphics context are opposite
-                a, b, c, d, e, f = map(float, operand)
+                a, b, c, d, e, f = [float(n) for n in operand]
                 drawlist.append(['ConcatTransform', (a, -b, -c, d, e, -f), {}])
             elif operator == 'q':       # save state
                 self.saved_state.append(copy.deepcopy(g))
@@ -643,10 +664,10 @@ class pypdfProcessor(object):
                 self.gstate = self.saved_state.pop()
                 drawlist.append(['PopState', (), {}])
             elif operator == 'RG':      # Stroke RGB
-                rs, gs, bs = [int(v*255) for v in map(float, operand)]
+                rs, gs, bs = [int(float(n)*255) for n in operand]
                 g.strokeRGB = wx.Colour(rs, gs, bs)
             elif operator == 'rg':      # Fill RGB
-                rf, gf, bf = [int(v*255) for v in map(float, operand)]
+                rf, gf, bf = [int(float(n)*255) for n in operand]
                 g.fillRGB = wx.Colour(rf, gf, bf)
             elif operator == 'K':       # Stroke CMYK
                 rs, gs, bs = self.ConvertCMYK(operand)
@@ -655,7 +676,7 @@ class pypdfProcessor(object):
                 rf, gf, bf = self.ConvertCMYK(operand)
                 g.fillRGB = wx.Colour(rf, gf, bf)
             elif operator == 'w':       # Line width
-                g.lineWidth = float(operand[0])
+                g.lineWidth = max(float(operand[0]), 1.0)
             elif operator == 'J':       # Line cap
                 ix = float(operand[0])
                 g.lineCapStyle = {0: wx.CAP_BUTT, 1: wx.CAP_ROUND,
@@ -665,10 +686,10 @@ class pypdfProcessor(object):
                 g.lineJoinStyle = {0: wx.JOIN_MITER, 1: wx.JOIN_ROUND,
                                               2: wx.JOIN_BEVEL}[ix]
             elif operator == 'd':       # Line dash pattern
-                g.lineDashArray = map(int, operand[0])
+                g.lineDashArray = [int(n) for n in operand[0]]
                 g.lineDashPhase = int(operand[1])
             elif operator in ('m', 'c', 'l', 're', 'v', 'y', 'h'):    # path defining ops
-                path.append([map(float, operand), operator])
+                path.append([[float(n) for n in operand], operator])
             elif operator in ('b', 'B', 'b*', 'B*', 'f', 'F', 'f*',
                                            's', 'S', 'n'):    # path drawing ops
                 drawlist.extend(self.DrawPath(path, operator))
@@ -679,8 +700,8 @@ class pypdfProcessor(object):
             elif operator == 'ET':      # end text object
                 continue
             elif operator == 'Tm':      # text matrix
-                g.textMatrix = map(float, operand)
-                g.textLineMatrix = map(float, operand)
+                g.textMatrix = [float(n) for n in operand]
+                g.textLineMatrix = [float(n) for n in operand]
             elif operator == 'TL':      # text leading
                 g.leading = float(operand[0])
             #elif operator == 'Tc':     # character spacing
@@ -701,7 +722,8 @@ class pypdfProcessor(object):
                 g.font = pdf_fonts[operand[0]]
                 g.fontSize = float(operand[1])
             elif operator == 'Tj':      # show text
-                drawlist.extend(self.DrawTextString(operand[0]))
+                drawlist.extend(self.DrawTextString(
+                                       operand[0].original_bytes.decode('latin-1')))
             elif operator == 'Do':      # invoke named XObject
                 dlist = self.InsertXObject(operand[0])
                 if dlist:               # may be unimplemented decode
@@ -712,75 +734,98 @@ class pypdfProcessor(object):
                     drawlist.extend(dlist)
             else:                       # report once
                 if operator not in self.unimplemented:
-                    if VERBOSE: print 'PDF operator %s is not implemented' % operator
+                    if VERBOSE: print('PDF operator %s is not implemented' % operator)
                     self.unimplemented[operator] = 1
 
-        # Fix bitmap transform. Remove the scaling from any transform matrix that precedes
-        # a DrawBitmap operation as the scaling is now done in that operation.
+        # Fix bitmap transform. Move the scaling from any transform matrix that precedes
+        # a DrawBitmap operation into the op itself - the width and height extracted from
+        # the bitmap is the size of the original PDF image not the size it is to be drawn
         for k in range(len(drawlist)-1):
             if drawlist[k][0] == 'ConcatTransform' and drawlist[k+1][0] == 'DrawBitmap':
-                args = list(drawlist[k][1])
-                args[0] = 1.0
-                args[3] = 1.0
-                drawlist[k][1] = tuple(args)
-        return drawlist            
+                ctargs = list(drawlist[k][1])
+                bmargs = list(drawlist[k+1][1])
+                bmargs[2] = -ctargs[3]          # y position
+                bmargs[3] = ctargs[0]           # width
+                bmargs[4] = ctargs[3]           # height
+                ctargs[0] = 1.0
+                ctargs[3] = 1.0
+                drawlist[k][1] = tuple(ctargs)
+                drawlist[k+1][1] = tuple(bmargs)
+        return drawlist
 
     def SetFont(self, pdfont, size):
-        """ Returns wx.Font instance from supplied pdf font information """
+        """
+        Returns :class:`wx.Font` instance from supplied pdf font information.
+        """
         self.knownfont = True
         pdfont = pdfont.lower()
         if pdfont.count('courier'):
-            family = wx.FONTFAMILY_MODERN 
+            family = wx.FONTFAMILY_MODERN
             font = 'Courier New'
         elif pdfont.count('helvetica'):
-            family = wx.FONTFAMILY_SWISS 
+            family = wx.FONTFAMILY_SWISS
             font = 'Arial'
         elif pdfont.count('times'):
-            family = wx.FONTFAMILY_ROMAN 
+            family = wx.FONTFAMILY_ROMAN
             font = 'Times New Roman'
         elif pdfont.count('symbol'):
-            family = wx.FONTFAMILY_DEFAULT 
+            family = wx.FONTFAMILY_DEFAULT
             font = 'Symbol'
         elif pdfont.count('zapfdingbats'):
-            family = wx.FONTFAMILY_DEFAULT 
+            family = wx.FONTFAMILY_DEFAULT
             font = 'Wingdings'
         else:
-            if VERBOSE: print 'Unknown font %s' % pdfont
+            if VERBOSE: print('Unknown font %s' % pdfont)
             self.knownfont = False
-            family = wx.FONTFAMILY_SWISS 
+            family = wx.FONTFAMILY_SWISS
             font = 'Arial'
-           
-        weight = wx.FONTWEIGHT_NORMAL         
+
+        weight = wx.FONTWEIGHT_NORMAL
         if pdfont.count('bold'):
-            weight = wx.FONTWEIGHT_BOLD 
+            weight = wx.FONTWEIGHT_BOLD
         style = wx.FONTSTYLE_NORMAL
         if pdfont.count('oblique') or pdfont.count('italic'):
             style = wx.FONTSTYLE_ITALIC
-        return wx.Font(max(1,size), family, style, weight, faceName=font)
+        return wx.Font(max(1, size), family, style, weight, faceName=font)
 
-    def DrawTextString(self, text): 
-        "word spacing only works for horizontal text (??)"
+    def DrawTextString(self, text):
+        """
+        Draw a text string. Word spacing only works for horizontal text.
+
+        :param string `text`: the text to draw
+
+        """
         dlist = []
         g = self.gstate
-        f  = self.SetFont(g.font, g.fontSize*self.parent.font_scale)
-        dlist.append(['SetFont', (f, g.fillRGB), {}])
+        f0  = self.SetFont(g.font, g.fontSize)
+        f0.Scale(self.parent.font_scale_metrics)
+        f1  = self.SetFont(g.font, g.fontSize)
+        f1.Scale(self.parent.font_scale_size)
+        dlist.append(['SetFont', (f1, g.fillRGB), {}])
         if g.wordSpacing > 0:
             textlist = text.split(' ')
         else:
             textlist = [text,]
         for item in textlist:
-            dlist.append(self.DrawTextItem(item, f))
-        return dlist    
+            dlist.append(self.DrawTextItem(item, f0))
+        return dlist
 
     def DrawTextItem(self, textitem, f):
-        dc = wx.ClientDC(self.parent)      # dummy dc for text extents 
+        """
+        Draw a text item.
+
+        :param `textitem`: the item to draw
+        :param `f`: the font to use for text extent measuring
+
+        """
+        dc = wx.ClientDC(self.parent)      # dummy dc for text extents
         g = self.gstate
         x = g.textMatrix[4]
         y = g.textMatrix[5] + g.textRise
         if g.wordSpacing > 0:
             textitem += ' '
-        wid, ht, descend, xlead = dc.GetFullTextExtent(textitem, f)
-        if have_rlwidth and self.knownfont:   # use ReportLab stringWidth if available 
+        wid, ht, descend, x_lead = dc.GetFullTextExtent(textitem, f)
+        if have_rlwidth and self.knownfont:   # use ReportLab stringWidth if available
             width = stringWidth(textitem, g.font, g.fontSize)
         else:
             width = wid
@@ -788,7 +833,9 @@ class pypdfProcessor(object):
         return ['DrawText', (textitem, x, -y-(ht-descend)), {}]
 
     def DrawPath(self, path, action):
-        """ Stroke and/or fill the defined path depending on operator """
+        """
+        Stroke and/or fill the defined path depending on operator.
+        """
         dlist = []
         g = self.gstate
         acts = {'S':  (1, 0, 0),
@@ -807,9 +854,9 @@ class pypdfProcessor(object):
 
         if stroke:
             if g.lineDashArray:
-                style = wx.USER_DASH
+                style = wx.PENSTYLE_USER_DASH
             else:
-                style = wx.SOLID
+                style = wx.PENSTYLE_SOLID
             cpen = wx.Pen(g.strokeRGB, g.lineWidth, style)
             cpen.SetCap(g.lineCapStyle)
             cpen.SetJoin(g.lineJoinStyle)
@@ -819,12 +866,12 @@ class pypdfProcessor(object):
         else:
             dlist.append(['SetPen', (wx.TRANSPARENT_PEN,), {}])
 
-        if fill:    
+        if fill:
             dlist.append(['SetBrush', (wx.Brush(g.fillRGB),), {}])
-        else:   
+        else:
             dlist.append(['SetBrush', (wx.TRANSPARENT_BRUSH,), {}])
 
-        dlist.append(['CreatePath', (), {}]) 
+        dlist.append(['CreatePath', (), {}])
         for xylist, op in path:
             if op == 'm':           # move (to) current point
                 x0 = xc = xylist[0]
@@ -836,30 +883,35 @@ class pypdfProcessor(object):
                 dlist.append(['AddLineToPoint', (x2, y2), {}])
                 xc = x2
                 yc = y2
-            elif op == 're':        # draw rectangle (x,y at top left)
+            elif op == 're':        # draw rectangle
                 x = xylist[0]
                 y = -xylist[1]
                 w = xylist[2]
                 h = xylist[3]
-                dlist.append(['AddRectangle', (x, y-h, w, h), {}])
+                retuple = (x, y-h, w, h)
+                if h < 0.0:
+                    retuple = (x, y, w, -h)
+                dlist.append(['AddRectangle', retuple, {}])
             elif op in ('c', 'v', 'y'):         # draw Bezier curve
                 args = []
                 if op == 'v':
                     args.extend([xc, yc])
-                args.extend([xylist[0], -xylist[1], 
+                args.extend([xylist[0], -xylist[1],
                                 xylist[2], -xylist[3]])
                 if op == 'y':
                     args.extend([xylist[2], -xylist[3]])
                 if op == 'c':
-                    args.extend([xylist[4], -xylist[5]]) 
+                    args.extend([xylist[4], -xylist[5]])
                 dlist.append(['AddCurveToPoint', args, {}])
             elif op == 'h':
                 dlist.append(['CloseSubpath', (), {}])
-        dlist.append(['DrawPath', ('GraphicsPath', rule), {}]) 
+        dlist.append(['DrawPath', ('GraphicsPath', rule), {}])
         return dlist
 
     def InsertXObject(self, name):
-        " XObject can be an image or a 'form' (an arbitrary PDF sequence) "
+        """
+        XObject can be an image or a 'form' (an arbitrary PDF sequence).
+        """
         dlist = []
         xobject = self.page["/Resources"].getObject()['/XObject']
         stream = xobject[name]
@@ -867,7 +919,7 @@ class pypdfProcessor(object):
             # insert contents into current page drawing
             if not name in self.formdrawings:       # extract if not already done
                 pdf_fonts = self.FetchFonts(stream)
-                bbox = stream.get('/BBox')
+                x_bbox = stream.get('/BBox')
                 matrix = stream.get('/Matrix')
                 form_ops = ContentStream(stream, self.pdfdoc).operations
                 oplist = [([], 'q'), (matrix, 'cm')]    # push state & apply matrix
@@ -876,9 +928,9 @@ class pypdfProcessor(object):
                 self.formdrawings[name] = self.ProcessOperators(oplist, pdf_fonts)
             dlist.extend(self.formdrawings[name])
         elif stream.get('/Subtype') == '/Image':
-            width = stream['/Width'] 
+            width = stream['/Width']
             height = stream['/Height']
-            depth = stream['/BitsPerComponent']
+            x_depth = stream['/BitsPerComponent']
             filters = stream["/Filter"]
             item = self.AddBitmap(stream._data, width, height, filters)
             if item:            # may be unimplemented
@@ -886,13 +938,13 @@ class pypdfProcessor(object):
         return dlist
 
     def InlineImage(self, operand):
-        " operand contains an image"
+        """ operand contains an image"""
         dlist = []
         data = operand.get('data')
         settings = operand.get('settings')
-        width = settings['/W'] 
+        width = settings['/W']
         height = settings['/H']
-        depth = settings['/BPC']
+        x_depth = settings['/BPC']
         filters = settings['/F']
         item = self.AddBitmap(data, width, height, filters)
         if item:            # may be unimplemented
@@ -900,25 +952,32 @@ class pypdfProcessor(object):
         return dlist
 
     def AddBitmap(self, data, width, height, filters):
-        "Add wx.Bitmap from data, processed by filters"
+        """
+        Add wx.Bitmap from data, processed by filters.
+        """
         if '/A85' in filters or '/ASCII85Decode' in filters:
-            data = _AsciiBase85DecodePYTHON(data)
+            data = ASCII85Decode.decode(data)
         if '/Fl' in filters or '/FlateDecode' in filters:
             data = FlateDecode.decode(data, None)
-        if '/CCF' in filters or  '/CCITTFaxDecode' in filters: 
+        if '/CCF' in filters or  '/CCITTFaxDecode' in filters:
             if VERBOSE:
-                print 'PDF operation /CCITTFaxDecode is not implemented'
+                print('PDF operation /CCITTFaxDecode is not implemented')
             return []
         if '/DCT' in filters or '/DCTDecode' in filters:
-            stream = cStringIO.StringIO(data)
-            image = wx.ImageFromStream(stream, wx.BITMAP_TYPE_JPEG)
-            bitmap = wx.BitmapFromImage(image)
-        else:    
-            bitmap = wx.BitmapFromBuffer(width, height, data)
+            stream = BytesIO(data)
+            image = wx.Image(stream, wx.BITMAP_TYPE_JPEG)
+            bitmap = wx.Bitmap(image)
+        else:
+            try:
+                bitmap = wx.Bitmap.FromBuffer(width, height, data)
+            except:
+                return []       # any error
         return ['DrawBitmap', (bitmap, 0, 0-height, width, height), {}]
 
     def ConvertCMYK(self, operand):
-        "Convert CMYK values (0 to 1.0) in operand to nearest RGB"
+        """
+        Convert CMYK values (0 to 1.0) in operand to nearest RGB.
+        """
         c, m, y, k = operand
         r = round((1-c)*(1-k)*255)
         b = round((1-y)*(1-k)*255)
@@ -928,12 +987,15 @@ class pypdfProcessor(object):
 #----------------------------------------------------------------------------
 
 class pdfState(object):
-    """ Instance holds the current pdf graphics and text state. It can be
-        saved (pushed) and restored (popped) by the owning parent
+    """
+    Instance holds the current pdf graphics and text state. It can be
+    saved (pushed) and restored (popped) by the owning parent
     """
     def __init__ (self):
-        """ Creates an instance with default values. Individual attributes 
-            are modified directly not via getters and setters """
+        """
+        Creates an instance with default values. Individual attributes
+        are modified directly not via getters and setters
+        """
         self.lineWidth = 1.0
         self.lineCapStyle = wx.CAP_BUTT
         self.lineJoinStyle = wx.JOIN_MITER
@@ -958,160 +1020,58 @@ class pdfState(object):
 #------------------------------------------------------------------------------
 
 class pdfPrintout(wx.Printout):
-    """ Class encapsulating the functionality of printing out the document. The methods below
-        over-ride those of the base class and supply document-specific information to the
-        printing framework that calls them internally.
+    """
+    Class encapsulating the functionality of printing out the document. The methods below
+    over-ride those of the base class and supply document-specific information to the
+    printing framework that calls them internally.
     """
     def __init__(self, title, view):
-        "Pass in the instance of dpViewer to be printed"
+        """
+        Pass in the instance of dpViewer to be printed.
+        """
         wx.Printout.__init__(self, title)
         self.view = view
 
     def HasPage(self, pageno):
-        "Report whether pageno exists"
+        """
+        Report whether pageno exists.
+        """
         if pageno <= self.view.numpages:
             return True
         else:
             return False
 
     def GetPageInfo(self):
-        """ Supply maximum range of pages and the range to be printed
-            These are initial values passed to Printer dialog, where they
-            can be amended by user.
-        """ 
-        max = self.view.numpages
-        return (1, max, 1, max)
+        """
+        Supply maximum range of pages and the range to be printed
+        These are initial values passed to Printer dialog, where they
+        can be amended by user.
+        """
+        maxnum = self.view.numpages
+        return (1, maxnum, 1, maxnum)
 
     def OnPrintPage(self, page):
-        """ Provide the data for page by rendering the drawing commands
-            to the printer DC using either Cairo (via a page buffer) or
-            dcGraphicsContext depending on self.view.usePrintDirect
         """
-        if not mupdf and self.view.UsePrintDirect:
-            self.PrintDirect(page)
-        else:
-            self.PrintViaBuffer(page)
-        return True    
-
-    def PrintDirect(self, page):
-        """ Provide the data for page by rendering the drawing commands
-            to the printer DC using dcGraphicsContext
+        Provide the data for page by rendering the drawing commands
+        to the printer DC, MuPDF returns the page content from an internally
+        generated bitmap and sfac sets it to a high enough resolution that
+        reduces anti-aliasing blur but keeps it small to minimise printing time
         """
+        sfac = 1.0
+        if mupdf:
+            sfac = 4.0
         pageno = page - 1       # zero based
         width = self.view.pagewidth
         height = self.view.pageheight
-        self.FitThisSizeToPage(wx.Size(width, height))
+        self.FitThisSizeToPage(wx.Size(width*sfac, height*sfac))
         dc = self.GetDC()
-        gc = dcGraphicsContext.Create(dc, height, have_cairo)
-        self.view.pdfdoc.RenderPage(gc, pageno)
-
-    def PrintViaBuffer(self, page):
-        """ Provide the data for page by drawing it as a bitmap to the printer DC
-            sfac needs to provide a high enough resolution bitmap for printing that
-            reduces anti-aliasing blur but be kept small to minimise printing time 
-        """
-        sfac = 4.0
-        pageno = page - 1       # zero based
-        dc = self.GetDC()
-        width = self.view.pagewidth*sfac
-        height = self.view.pageheight*sfac
-        self.FitThisSizeToPage(wx.Size(width, height))
-        # Initialize the buffer bitmap. 
-        abuffer = wx.EmptyBitmap(width, height)
-        mdc = wx.MemoryDC(abuffer)
-        gc = GraphicsContext.Create(mdc)
-        # white background
-        path = gc.CreatePath()
-        path.AddRectangle(0, 0, width, height)
-        gc.SetBrush(wx.WHITE_BRUSH)
-        gc.FillPath(path)
-        if mupdf:
-            self.view.pdfdoc.RenderPage(gc, pageno, sfac)
-        else:    
+        gc = wx.GraphicsContext.Create(dc)
+        if not mupdf:
             gc.Translate(0, height)
-            gc.Scale(sfac, sfac)
-            self.view.pdfdoc.RenderPage(gc, pageno)
-        dc.DrawBitmap(abuffer, 0, 0)
+        if wx.PlatformInfo[1] == 'wxMSW' and have_cairo:
+            device_scale = wx.ClientDC(self.view).GetPPI()[0]/72.0   # pixels per inch/ppi
+            gc.font_scale = 1.0 / device_scale
 
-#------------------------------------------------------------------------------
-
-""" The following has been "borrowed" from  from reportlab.pdfbase.pdfutils,
-    where it is used for testing, because the equivalent function in pyPdf
-    fails when attempting to decode an embedded JPEG image
-"""
-
-def _AsciiBase85DecodePYTHON(input):
-    """Decodes input using ASCII-Base85 coding.
-
-    This is not used - Acrobat Reader decodes for you
-    - but a round trip is essential for testing."""
-    #strip all whitespace
-    stripped = ''.join(input.split())
-    #check end
-    assert stripped[-2:] == '~>', 'Invalid terminator for Ascii Base 85 Stream'
-    stripped = stripped[:-2]  #chop off terminator
-
-    #may have 'z' in it which complicates matters - expand them
-    stripped = stripped.replace('z','!!!!!')
-    # special rules apply if not a multiple of five bytes.
-    whole_word_count, remainder_size = divmod(len(stripped), 5)
-    #print '%d words, %d leftover' % (whole_word_count, remainder_size)
-    #assert remainder_size <> 1, 'invalid Ascii 85 stream!'
-    cut = 5 * whole_word_count
-    body, lastbit = stripped[0:cut], stripped[cut:]
-
-    out = [].append
-    for i in xrange(whole_word_count):
-        offset = i*5
-        c1 = ord(body[offset]) - 33
-        c2 = ord(body[offset+1]) - 33
-        c3 = ord(body[offset+2]) - 33
-        c4 = ord(body[offset+3]) - 33
-        c5 = ord(body[offset+4]) - 33
-
-        num = ((85L**4) * c1) + ((85**3) * c2) + ((85**2) * c3) + (85*c4) + c5
-
-        temp, b4 = divmod(num,256)
-        temp, b3 = divmod(temp,256)
-        b1, b2 = divmod(temp, 256)
-
-        assert  num == 16777216 * b1 + 65536 * b2 + 256 * b3 + b4, 'dodgy code!'
-        out(chr(b1))
-        out(chr(b2))
-        out(chr(b3))
-        out(chr(b4))
-
-    #decode however many bytes we have as usual
-    if remainder_size > 0:
-        while len(lastbit) < 5:
-            lastbit = lastbit + '!'
-        c1 = ord(lastbit[0]) - 33
-        c2 = ord(lastbit[1]) - 33
-        c3 = ord(lastbit[2]) - 33
-        c4 = ord(lastbit[3]) - 33
-        c5 = ord(lastbit[4]) - 33
-        num = (((85*c1+c2)*85+c3)*85+c4)*85L + (c5
-                 +(0,0,0xFFFFFF,0xFFFF,0xFF)[remainder_size])
-        temp, b4 = divmod(num,256)
-        temp, b3 = divmod(temp,256)
-        b1, b2 = divmod(temp, 256)
-        assert  num == 16777216 * b1 + 65536 * b2 + 256 * b3 + b4, 'dodgy code!'
-        #print 'decoding: %d %d %d %d %d -> %d -> %d %d %d %d' % (
-        #    c1,c2,c3,c4,c5,num,b1,b2,b3,b4)
-
-        #the last character needs 1 adding; the encoding loses
-        #data by rounding the number to x bytes, and when
-        #divided repeatedly we get one less
-        if remainder_size == 2:
-            lastword = chr(b1)
-        elif remainder_size == 3:
-            lastword = chr(b1) + chr(b2)
-        elif remainder_size == 4:
-            lastword = chr(b1) + chr(b2) + chr(b3)
-        else:
-            lastword = ''
-        out(lastword)
-
-    #terminator code for ascii 85
-    return ''.join(out.__self__)
+        self.view.pdfdoc.RenderPage(gc, pageno, sfac)
+        return True
 

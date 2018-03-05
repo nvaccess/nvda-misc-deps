@@ -3,7 +3,7 @@
 # Python Code By:
 #
 # Andrea Gavana, @ 29 May 2005
-# Latest Revision: 17 Aug 2011, 15.00 GMT
+# Latest Revision: 16 Jul 2012, 15.00 GMT
 #
 #
 # TODO List/Caveats
@@ -35,12 +35,13 @@
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
+# Tags:        phoenix-port, unittest, documented
 #
 # End Of Comments
 # --------------------------------------------------------------------------- #
 
 """
-:class:`BalloonTip` is a class that allows you to display tooltips in a balloon style
+:class:`~wx.lib.agw.balloontip.BalloonTip` is a class that allows you to display tooltips in a balloon style
 window.
 
 
@@ -66,7 +67,7 @@ What it can do:
 - Possibility to set the delay after which the :class:`BalloonTip` is destroyed;
 - Three different behaviors for the :class:`BalloonTip` window (regardless the delay
   destruction time set):
-  
+
   a) Destroy by leave: the :class:`BalloonTip` is destroyed when the mouse leaves the
      target control/window;
   b) Destroy by click: the :class:`BalloonTip` is destroyed when you click on any area
@@ -89,10 +90,10 @@ Usage example::
 
         def __init__(self, parent):
 
-            wx.Frame.__init(self, parent, -1, "BalloonTip Demo")        
+            wx.Frame.__init__(self, parent, -1, "BalloonTip Demo")
 
             panel = wx.Panel(self)
-            
+
             # Let's suppose that in your application you have a wx.TextCtrl defined as:
             mytextctrl = wx.TextCtrl(panel, -1, "I am a textctrl", pos=(100, 100))
 
@@ -107,7 +108,7 @@ Usage example::
             # Set the BalloonTip background colour
             tipballoon.SetBalloonColour(wx.WHITE)
             # Set the font for the balloon title
-            tipballoon.SetTitleFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD, False))
+            tipballoon.SetTitleFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False))
             # Set the colour for the balloon title
             tipballoon.SetTitleColour(wx.BLACK)
             # Leave the message font as default
@@ -157,15 +158,17 @@ License And Version
 
 BalloonTip is distributed under the wxPython license.
 
-Latest revision: Andrea Gavana @ 17 Aug 2011, 15.00 GMT
+Latest revision: Andrea Gavana @ 16 Jul 2012, 15.00 GMT
 
-Version 0.2
+Version 0.3
 
 """
 
 
 import wx
 import time
+
+import wx.adv
 from wx.lib.buttons import GenButton
 
 # Define The Values For The BalloonTip Frame Shape
@@ -250,7 +253,7 @@ class BalloonFrame(wx.Frame):
 
         if self._toptitle != "":
             stt = wx.StaticText(panel, -1, self._toptitle)
-            stt.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD, False))
+            stt.SetFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False))
             if self._topicon is None:
                 hsizer.Add((10,0), 0, wx.EXPAND)
 
@@ -263,7 +266,7 @@ class BalloonFrame(wx.Frame):
         if self._tipstyle == BT_BUTTON:
             self._closebutton = GenButton(panel, -1, "X", style=wx.NO_BORDER)
             self._closebutton.SetMinSize((16,16))
-            self._closebutton.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD, False))
+            self._closebutton.SetFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False))
             self._closebutton.Bind(wx.EVT_ENTER_WINDOW, self.OnEnterButton)
             self._closebutton.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeaveButton)
             self._closebutton.SetUseFocusIndicator(False)
@@ -333,13 +336,13 @@ class BalloonFrame(wx.Frame):
         """
         Sets the balloon shape.
 
-        :param `event`: on wxGTK, a :class:`WindowCreateEvent` event to process.
+        :param `event`: on wxGTK, a :class:`wx.WindowCreateEvent` event to process.
         """
 
         size = self.GetSize()
         pos = self.GetPosition()
 
-        dc = wx.MemoryDC(wx.EmptyBitmap(1,1))
+        dc = wx.MemoryDC(wx.Bitmap(1,1))
         textlabel = self._balloonmsg.GetLabel()
         textfont = self._balloonmsg.GetFont()
         textextent = dc.GetFullTextExtent(textlabel, textfont)
@@ -380,12 +383,11 @@ class BalloonFrame(wx.Frame):
             xpos = position[0]
             ypos = position[1] - boxheight + 20
 
-        bmp = wx.EmptyBitmap(size.x,size.y)
+        bmp = wx.Bitmap(size.x,size.y)
         dc = wx.BufferedDC(None, bmp)
-        dc.BeginDrawing()
-        dc.SetBackground(wx.Brush(wx.Colour(0,0,0), wx.SOLID))
+        dc.SetBackground(wx.Brush(wx.Colour(0,0,0)))
         dc.Clear()
-        dc.SetPen(wx.Pen(wx.Colour(0,0,0), 1, wx.TRANSPARENT))
+        dc.SetPen(wx.Pen(wx.Colour(0,0,0), 1, wx.PENSTYLE_TRANSPARENT))
 
         if self._shape == BT_ROUNDED:
             dc.DrawRoundedRectangle(0, 20, boxwidth, boxheight-20, 12)
@@ -405,9 +407,7 @@ class BalloonFrame(wx.Frame):
         else:
             dc.DrawPolygon(((20, boxheight), (20, boxheight+20), (40, boxheight)))
 
-        dc.EndDrawing()
-
-        r = wx.RegionFromBitmapColour(bmp, wx.Colour(0,0,0))
+        r = wx.Region(bmp, wx.Colour(0, 0, 0))
         self.hasShape = self.SetShape(r)
 
         if self._tipstyle == BT_BUTTON:
@@ -454,7 +454,7 @@ class BalloonFrame(wx.Frame):
         When the :class:`BalloonTip` is created with the `tipstyle` = ``BT_BUTTON``, this event
         provide some kind of 3D effect when the mouse enters the button area.
 
-        :param `event`: a :class:`MouseEvent` event to be processed.        
+        :param `event`: a :class:`MouseEvent` event to be processed.
         """
 
         button = event.GetEventObject()
@@ -472,7 +472,7 @@ class BalloonFrame(wx.Frame):
         :param `event`: a :class:`CloseEvent` event to be processed.
         """
 
-        if isinstance(self._parent._widget, wx.TaskBarIcon):
+        if isinstance(self._parent._widget, wx.adv.TaskBarIcon):
             self._parent.taskbarcreation = 0
             self._parent.taskbartime.Stop()
             del self._parent.taskbartime
@@ -493,7 +493,7 @@ class BalloonTip(object):
     window.
 
     This is the main class implementation.
-    """    
+    """
     def __init__(self, topicon=None, toptitle="",
                  message="", shape=BT_ROUNDED, tipstyle=BT_LEAVE):
         """
@@ -501,7 +501,7 @@ class BalloonTip(object):
 
         :param `topicon`: an icon that will be displayed on the top-left part of the
          :class:`BalloonTip` frame. If set to ``None``, no icon will be displayed;
-        :type `topicon`: :class:`Bitmap` or ``None``
+        :type `topicon`: :class:`wx.Bitmap` or ``None``
         :param string `toptitle`: a title that will be displayed on the top part of the
          :class:`BalloonTip` frame. If set to an empty string, no title will be displayed;
         :param string `message`: the tip message that will be displayed. It can not be set to
@@ -514,7 +514,7 @@ class BalloonTip(object):
          ``BT_ROUNDED``           0x1      :class:`BalloonTip` will have a rounded rectangular shape.
          ``BT_RECTANGLE``         0x2      :class:`BalloonTip` will have a rectangular shape.
          ======================= ========= ====================================
-         
+
         :param integer `tipstyle`: the :class:`BalloonTip` destruction behavior. It can be one of:
 
          ======================= ========= ====================================
@@ -572,13 +572,13 @@ class BalloonTip(object):
         """
         Sets the target control/window for the :class:`BalloonTip`.
 
-        :param `widget`: any subclass of :class:`Window`.
+        :param `widget`: any subclass of :class:`wx.Window`.
         """
 
         self._widget = widget
 
-        if isinstance(widget, wx.TaskBarIcon):
-            self._widget.Bind(wx.EVT_TASKBAR_MOVE, self.OnTaskBarMove)
+        if isinstance(widget, wx.adv.TaskBarIcon):
+            self._widget.Bind(wx.adv.EVT_TASKBAR_MOVE, self.OnTaskBarMove)
             self._widget.Bind(wx.EVT_WINDOW_DESTROY, self.OnDestroy)
             self.taskbarcreation = 0
         else:
@@ -592,9 +592,9 @@ class BalloonTip(object):
         """
         Returns the target window for the :class:`BalloonTip`.
 
-        :return: An instance of :class:`Window`.
+        :return: An instance of :class:`wx.Window`.
 
-        :raise: `Exception` if the :meth:`~BalloonTip.SetTarget` method has not previously called.        
+        :raise: `Exception` if the :meth:`~BalloonTip.SetTarget` method has not previously called.
         """
 
         if not hasattr(self, "_widget"):
@@ -668,7 +668,8 @@ class BalloonTip(object):
         if not self._runningapp.__tooltipenabled__:
             return
 
-        self.showtime = wx.PyTimer(self.NotifyTimer)
+        self.showtime = wx.Timer(self._widget)
+        self._widget.Bind(wx.EVT_TIMER, self.NotifyTimer, self.showtime)
         self.showtime.Start(self._startdelaytime)
 
         event.Skip()
@@ -677,7 +678,7 @@ class BalloonTip(object):
     def OnWidgetLeave(self, event):
         """
         Handles the ``wx.EVT_LEAVE_WINDOW`` for the target control/window.
-        
+
         :param `event`: a :class:`MouseEvent` event to be processed.
 
         :note: If the BalloonTip `tipstyle` is set to ``BT_LEAVE``, the :class:`BalloonTip` is destroyed.
@@ -716,9 +717,11 @@ class BalloonTip(object):
             if self.taskbarcreation == 0:
                 self.mousepos = wx.GetMousePosition()
                 self.currentmousepos = self.mousepos
-                self.taskbartime = wx.PyTimer(self.TaskBarTimer)
+                self.taskbartime = wx.Timer(self._widget)
+                self._widget.Bind(wx.EVT_TIMER, self.TaskBarTimer, self.taskbartime)
                 self.taskbartime.Start(100)
-                self.showtime = wx.PyTimer(self.NotifyTimer)
+                self.showtime = wx.Timer(self._widget)
+                self._widget.Bind(wx.EVT_TIMER, self.NotifyTimer, self.showtime)
                 self.showtime.Start(self._startdelaytime)
 
             if self.taskbarcreation == 0:
@@ -751,27 +754,35 @@ class BalloonTip(object):
         event.Skip()
 
 
-    def NotifyTimer(self):
-        """ The creation timer has expired. Creates the :class:`BalloonTip` frame."""
+    def NotifyTimer(self, event):
+        """
+        The creation timer has expired. Creates the :class:`BalloonTip` frame.
+
+        :param `event`: a :class:`wx.TimerEvent` to be processed.
+        """
 
         self.BalloonFrame = BalloonFrame(self._widget, classparent=self)
         self.BalloonFrame.Show(True)
         self.starttime = time.time()
 
-        self.showtime.Stop()
-        del self.showtime
+        if hasattr(self, "showtime"):
+            self.showtime.Stop()
+            del self.showtime
 
-        self.destroytime = wx.PyTimer(self.DestroyTimer)
+        self.destroytime = wx.Timer(self._widget)
+        self._widget.Bind(wx.EVT_TIMER, self.NotifyTimer, self.destroytime)
         self.destroytime.Start(self._enddelaytime)
 
 
-    def TaskBarTimer(self):
+    def TaskBarTimer(self, event):
         """
         This timer check periodically the mouse position.
 
         If the current mouse position is sufficiently far from the coordinates
         it had when entered the taskbar icon and the :class:`BalloonTip` style is
         ``BT_LEAVE``, the :class:`BalloonTip` frame is destroyed.
+
+        :param `event`: a :class:`wx.TimerEvent` to be processed.
         """
 
         self.currentmousepos = wx.GetMousePosition()
@@ -791,8 +802,12 @@ class BalloonTip(object):
                         pass
 
 
-    def DestroyTimer(self):
-        """ The destruction timer has expired. Destroys the :class:`BalloonTip` frame."""
+    def DestroyTimer(self, event):
+        """
+        The destruction timer has expired. Destroys the :class:`BalloonTip` frame.
+
+        :param `event`: a :class:`wx.TimerEvent` to be processed.
+        """
 
         self.destroytime.Stop()
         del self.destroytime
@@ -810,7 +825,7 @@ class BalloonTip(object):
         :param integer `shape`: should be one of ``BT_ROUNDED`` or ``BT_RECTANGLE``.
 
         :raise: `Exception` if the `shape` parameter is not a valid value
-         (i.e., it's not one of ``BT_ROUNDED``, ``BT_RECTANGLE``);        
+         (i.e., it's not one of ``BT_ROUNDED``, ``BT_RECTANGLE``);
         """
 
         if shape not in [BT_ROUNDED, BT_RECTANGLE]:
@@ -833,12 +848,12 @@ class BalloonTip(object):
         """
         Sets the :class:`BalloonTip` top-left icon.
 
-        :param `icon`: an instance of :class:`Bitmap`.
+        :param `icon`: an instance of :class:`wx.Bitmap`.
 
-        :raise: `Exception` if the `icon` bitmap is not a valid :class:`Bitmap`.
+        :raise: `Exception` if the `icon` bitmap is not a valid :class:`wx.Bitmap`.
         """
 
-        if icon.Ok():
+        if icon.IsOk():
             self._topicon = icon
         else:
             raise Exception("\nERROR: Invalid Image Passed To BalloonTip")
@@ -848,7 +863,7 @@ class BalloonTip(object):
         """
         Returns the :class:`BalloonTip` top-left icon.
 
-        :return: An instance of :class:`Bitmap`.
+        :return: An instance of :class:`wx.Bitmap`.
         """
 
         return self._topicon
@@ -876,13 +891,13 @@ class BalloonTip(object):
 
     def SetBalloonMessage(self, message):
         """
-        Sets the :class:`BalloonTip` tip message. 
+        Sets the :class:`BalloonTip` tip message.
 
         :param string `message`: a string identifying the main message body of :class:`BalloonTip`.
 
         :raise: `Exception` if the message is an empty string.
 
-        :note: The :class:`BalloonTip` message should never be empty.        
+        :note: The :class:`BalloonTip` message should never be empty.
         """
 
         if len(message.strip()) < 1:
@@ -931,7 +946,7 @@ class BalloonTip(object):
         Returns the :class:`BalloonTip` `tipstyle` parameter.
 
         :return: An integer representing the style.
-        
+
         :see: :meth:`~BalloonTip.SetBalloonTipStyle`
         """
 
@@ -942,7 +957,7 @@ class BalloonTip(object):
         """
         Sets the :class:`BalloonTip` background colour.
 
-        :param `colour`: a valid :class:`Colour` instance.
+        :param `colour`: a valid :class:`wx.Colour` instance.
         """
 
         if colour is None:
@@ -955,7 +970,7 @@ class BalloonTip(object):
         """
         Returns the :class:`BalloonTip` background colour.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
         """
 
         return self._ballooncolour
@@ -965,11 +980,11 @@ class BalloonTip(object):
         """
         Sets the font for the top title.
 
-        :param `font`: a valid :class:`Font` instance.
+        :param `font`: a valid :class:`wx.Font` instance.
         """
 
         if font is None:
-            font = wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD, False)
+            font = wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False)
 
         self._balloontitlefont = font
 
@@ -978,7 +993,7 @@ class BalloonTip(object):
         """
         Returns the font for the top title.
 
-        :return: An instance of :class:`Font`.
+        :return: An instance of :class:`wx.Font`.
         """
 
         return self._balloontitlefont
@@ -988,11 +1003,11 @@ class BalloonTip(object):
         """
         Sets the font for the tip message.
 
-        :param `font`: a valid :class:`Font` instance.
+        :param `font`: a valid :class:`wx.Font` instance.
         """
 
         if font is None:
-            font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.NORMAL, False)
+            font = wx.Font(8, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
 
         self._balloonmsgfont = font
 
@@ -1001,7 +1016,7 @@ class BalloonTip(object):
         """
         Returns the font for the tip message.
 
-        :return: An instance of :class:`Font`.
+        :return: An instance of :class:`wx.Font`.
         """
 
         return self._balloonmsgfont
@@ -1011,7 +1026,7 @@ class BalloonTip(object):
         """
         Sets the colour for the top title.
 
-        :param `colour`: a valid :class:`Colour` instance.
+        :param `colour`: a valid :class:`wx.Colour` instance.
         """
 
         if colour is None:
@@ -1024,7 +1039,7 @@ class BalloonTip(object):
         """
         Returns the colour for the top title.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
         """
 
         return self._balloontitlecolour
@@ -1034,7 +1049,7 @@ class BalloonTip(object):
         """
         Sets the colour for the tip message.
 
-        :param `colour`: a valid :class:`Colour` instance.
+        :param `colour`: a valid :class:`wx.Colour` instance.
         """
 
         if colour is None:
@@ -1047,7 +1062,7 @@ class BalloonTip(object):
         """
         Returns the colour for the tip message.
 
-        :return: An instance of :class:`Colour`.
+        :return: An instance of :class:`wx.Colour`.
         """
 
         return self._balloonmsgcolour
@@ -1058,14 +1073,14 @@ class BalloonTip(object):
         Handles the target destruction, specifically handling the ``wx.EVT_WINDOW_DESTROY``
         event.
 
-        :param `event`: a :class:`WindowDestroyEvent` event to be processed.        
+        :param `event`: a :class:`wx.WindowDestroyEvent` event to be processed.
         """
-        
+
         if hasattr(self, "BalloonFrame"):
             if self.BalloonFrame:
                 try:
-                    if isinstance(self._widget, wx.TaskBarIcon):
-                        self._widget.Unbind(wx.EVT_TASKBAR_MOVE)
+                    if isinstance(self._widget, wx.adv.TaskBarIcon):
+                        self._widget.Unbind(wx.adv.EVT_TASKBAR_MOVE)
                         self.taskbartime.Stop()
                         del self.taskbartime
                     else:
@@ -1089,4 +1104,54 @@ class BalloonTip(object):
         """
 
         self._runningapp.__tooltipenabled__ = enable
+
+
+if __name__ == '__main__':
+
+    import wx
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+
+            wx.Frame.__init__(self, parent, -1, "BalloonTip Demo")
+
+            panel = wx.Panel(self)
+
+            # Let's suppose that in your application you have a wx.TextCtrl defined as:
+            mytextctrl = wx.TextCtrl(panel, -1, "I am a textctrl", pos=(100, 100))
+
+            # You can define your BalloonTip as follows:
+            tipballoon = BalloonTip(topicon=None, toptitle="textctrl",
+                                    message="this is a textctrl",
+                                    shape=BT_ROUNDED,
+                                    tipstyle=BT_LEAVE)
+
+            # Set the BalloonTip target
+            tipballoon.SetTarget(mytextctrl)
+            # Set the BalloonTip background colour
+            tipballoon.SetBalloonColour(wx.WHITE)
+            # Set the font for the balloon title
+            tipballoon.SetTitleFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False))
+            # Set the colour for the balloon title
+            tipballoon.SetTitleColour(wx.BLACK)
+            # Leave the message font as default
+            tipballoon.SetMessageFont()
+            # Set the message (tip) foreground colour
+            tipballoon.SetMessageColour(wx.LIGHT_GREY)
+            # Set the start delay for the BalloonTip
+            tipballoon.SetStartDelay(1000)
+            # Set the time after which the BalloonTip is destroyed
+            tipballoon.SetEndDelay(3000)
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
+
 

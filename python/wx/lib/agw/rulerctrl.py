@@ -2,7 +2,7 @@
 # RULERCTRL wxPython IMPLEMENTATION
 #
 # Andrea Gavana, @ 03 Nov 2006
-# Latest Revision: 17 Aug 2011, 15.00 GMT
+# Latest Revision: 19 Dec 2012, 21.00 GMT
 #
 #
 # TODO List
@@ -17,12 +17,13 @@
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
+# Tags:        phoenix-port, unittest, documented, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------------- #
 
 """
-:class:`RulerCtrl` implements a ruler window that can be placed on top, bottom, left or right
+:class:`~wx.lib.agw.rulerctrl.RulerCtrl` implements a ruler window that can be placed on top, bottom, left or right
 to any wxPython widget.
 
 
@@ -48,7 +49,7 @@ editors software, though not so powerful.
 - Logarithmic scale available;
 - Possibility to draw a thin line over a selected window when moving an indicator,
   which emulates the text editors software.
-  
+
 
 And a lot more. See the demo for a review of the functionalities.
 
@@ -64,7 +65,7 @@ Usage example::
     class MyFrame(wx.Frame):
 
         def __init__(self, parent):
-        
+
             wx.Frame.__init__(self, parent, -1, "RulerCtrl Demo")
 
             panel = wx.Panel(self)
@@ -92,7 +93,7 @@ Usage example::
 
             panel.SetSizer(mainsizer)
 
-        
+
     # our normal wxApp-derived class, as usual
 
     app = wx.App(0)
@@ -144,20 +145,17 @@ Event Name                 Description
 License And Version
 ===================
 
-:class:`RulerCtrl` is distributed under the wxPython license. 
+:class:`RulerCtrl` is distributed under the wxPython license.
 
-Latest Revision: Andrea Gavana @ 17 Aug 2011, 15.00 GMT
+Latest Revision: Andrea Gavana @ 19 Dec 2012, 21.00 GMT
 
-Version 0.3
+Version 0.4
 
 """
 
-__docformat__ = "epytext"
-
-
 import wx
 import math
-import cStringIO, zlib
+import zlib
 
 # Try to import PIL, if possible.
 # This is used only to change the colour for an indicator arrow.
@@ -167,6 +165,9 @@ try:
     _hasPIL = True
 except:
     pass
+
+# Python 2/3 compatibility helper
+import six
 
 # Built-in formats
 IntFormat = 1
@@ -195,9 +196,9 @@ EVT_INDICATOR_CHANGED = wx.PyEventBinder(wxEVT_INDICATOR_CHANGED, 2)
 
 def GetIndicatorData():
     """ Returns the image indicator as a decompressed stream of characters. """
-    
+
     return zlib.decompress(
-'x\xda\x01x\x01\x87\xfe\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\
+b'x\xda\x01x\x01\x87\xfe\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\
 \x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\
 \x08|\x08d\x88\x00\x00\x01/IDAT\x18\x95m\xceO(\x83q\x1c\xc7\xf1\xf7\xef\xf9\
 \xcd\xf6D6\xca\x1c\xc8\x9f\x14\'J-\xc4A9(9(-\xe5 \xed\xe4\xe2\xe2\xb2\x928\
@@ -216,16 +217,16 @@ def GetIndicatorData():
 
 
 def GetIndicatorBitmap():
-    """ Returns the image indicator as a :class:`Bitmap`. """
+    """ Returns the image indicator as a :class:`wx.Bitmap`. """
 
-    return wx.BitmapFromImage(GetIndicatorImage())
+    return wx.Bitmap(GetIndicatorImage())
 
 
 def GetIndicatorImage():
-    """ Returns the image indicator as a :class:`Image`. """
-    
-    stream = cStringIO.StringIO(GetIndicatorData())
-    return wx.ImageFromStream(stream)
+    """ Returns the image indicator as a :class:`wx.Image`. """
+
+    stream = six.BytesIO(GetIndicatorData())
+    return wx.Image(stream)
 
 
 def MakePalette(tr, tg, tb):
@@ -236,24 +237,24 @@ def MakePalette(tr, tg, tb):
     :param `tg`: the green intensity of the input colour;
     :param `tb`: the blue intensity of the input colour.
     """
-    
+
     l = []
     for i in range(255):
-        l.extend([tr*i / 255, tg*i / 255, tb*i / 255])
-        
+        l.extend([tr*i // 255, tg*i // 255, tb*i // 255])
+
     return l
 
 
 def ConvertWXToPIL(bmp):
     """
-    Converts a :class:`Image` into a PIL image.
+    Converts a :class:`wx.Image` into a PIL image.
 
-    :param `bmp`: an instance of :class:`Image`.
+    :param `bmp`: an instance of :class:`wx.Image`.
 
     :note: Requires PIL (Python Imaging Library), which can be downloaded from
      http://www.pythonware.com/products/pil/
     """
-    
+
     width = bmp.GetWidth()
     height = bmp.GetHeight()
     img = Image.fromstring("RGBA", (width, height), bmp.GetData())
@@ -263,7 +264,7 @@ def ConvertWXToPIL(bmp):
 
 def ConvertPILToWX(pil, alpha=True):
     """
-    Converts a PIL image into a :class:`Image`.
+    Converts a PIL image into a :class:`wx.Image`.
 
     :param `pil`: a PIL image;
     :param `alpha`: ``True`` if the image contains alpha transparency, ``False``
@@ -272,28 +273,28 @@ def ConvertPILToWX(pil, alpha=True):
     :note: Requires PIL (Python Imaging Library), which can be downloaded from
      http://www.pythonware.com/products/pil/
     """
-    
+
     if alpha:
-        image = apply(wx.EmptyImage, pil.size)
+        image = wx.Image(*pil.size)
         image.SetData(pil.convert("RGB").tostring())
-        image.SetAlphaData(pil.convert("RGBA").tostring()[3::4])
+        image.SetAlpha(pil.convert("RGBA").tostring()[3::4])
     else:
-        image = wx.EmptyImage(pil.size[0], pil.size[1])
+        image = wx.Image(pil.size[0], pil.size[1])
         new_image = pil.convert('RGB')
         data = new_image.tostring()
         image.SetData(data)
-       
+
     return image
 
 # ---------------------------------------------------------------------------- #
 # Class RulerCtrlEvent
 # ---------------------------------------------------------------------------- #
 
-class RulerCtrlEvent(wx.PyCommandEvent):
+class RulerCtrlEvent(wx.CommandEvent):
     """
     Represent details of the events that the :class:`RulerCtrl` object sends.
     """
-    
+
     def __init__(self, eventType, eventId=1):
         """
         Default class constructor.
@@ -302,7 +303,7 @@ class RulerCtrlEvent(wx.PyCommandEvent):
         :param `eventId`: the event identifier.
         """
 
-        wx.PyCommandEvent.__init__(self, eventType, eventId)
+        wx.CommandEvent.__init__(self, eventType, eventId)
 
 
     def SetValue(self, value):
@@ -319,7 +320,7 @@ class RulerCtrlEvent(wx.PyCommandEvent):
         """ Returns the event value. """
 
         return self._value
-    
+
 
     def SetOldValue(self, oldValue):
         """
@@ -334,7 +335,7 @@ class RulerCtrlEvent(wx.PyCommandEvent):
     def GetOldValue(self):
         """ Returns the event old value. """
 
-        return self._oldValue        
+        return self._oldValue
 
 
 # ---------------------------------------------------------------------------- #
@@ -345,7 +346,7 @@ class Label(object):
     """
     Auxilary class. Just holds information about a label in :class:`RulerCtrl`.
     """
-    
+
     def __init__(self, pos=-1, lx=-1, ly=-1, text=""):
         """
         Default class constructor.
@@ -369,7 +370,7 @@ class Label(object):
 class Indicator(object):
     """
     This class holds all the information about a single indicator inside :class:`RulerCtrl`.
-    
+
     You should not call this class directly. Use::
 
         ruler.AddIndicator(id, value)
@@ -377,7 +378,7 @@ class Indicator(object):
 
     to add an indicator to your :class:`RulerCtrl`.
     """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, value=0):
         """
         Default class constructor.
@@ -406,9 +407,9 @@ class Indicator(object):
         left, top, right, bottom = self._parent.GetBounds()
         minval = self._parent._min
         maxval = self._parent._max
-        
+
         value = self._value
-        
+
         if self._parent._log:
             value = math.log10(value)
             maxval = math.log10(maxval)
@@ -417,33 +418,33 @@ class Indicator(object):
         pos = float(value-minval)/abs(maxval - minval)
 
         if orient == wx.HORIZONTAL:
-            xpos = int(pos*right) - self._img.GetWidth()/2
+            xpos = int(pos*right) - self._img.GetWidth()//2
             if flip:
                 ypos = top
             else:
                 ypos = bottom - self._img.GetHeight()
         else:
-            ypos = int(pos*bottom) - self._img.GetHeight()/2
+            ypos = int(pos*bottom) - self._img.GetHeight()//2
             if flip:
                 xpos = left
             else:
                 xpos = right - self._img.GetWidth()
 
         return xpos, ypos
-                    
+
 
     def GetImageSize(self):
         """ Returns the indicator bitmap size. """
 
         return self._img.GetWidth(), self._img.GetHeight()
-    
+
 
     def GetRect(self):
         """ Returns the indicator client rectangle. """
 
         return self._rect
 
-    
+
     def RotateImage(self, img=None):
         """
         Rotates the default indicator bitmap.
@@ -453,7 +454,7 @@ class Indicator(object):
 
         if img is None:
             img = GetIndicatorImage()
-            
+
         orient = self._parent._orientation
         flip = self._parent._flip
         left, top, right, bottom = self._parent.GetBounds()
@@ -463,12 +464,12 @@ class Indicator(object):
                 img = img.Rotate(math.pi, (5, 5), True)
         else:
             if flip:
-                img = img.Rotate(-math.pi/2, (5, 5), True)
+                img = img.Rotate(-math.pi/2.0, (5, 5), True)
             else:
-                img = img.Rotate(math.pi/2, (5, 5), True)
-        
+                img = img.Rotate(math.pi/2.0, (5, 5), True)
+
         self._img = img
-        
+
 
     def SetValue(self, value):
         """
@@ -476,7 +477,7 @@ class Indicator(object):
 
         :param `value`: the new indicator value.
         """
-        
+
         if value < self._parent._min:
             value = self._parent._min
         if value > self._parent._max:
@@ -484,25 +485,25 @@ class Indicator(object):
 
         self._value = value
         self._rect = wx.Rect()
-        
+
         self._parent.Refresh()
 
 
     def GetValue(self):
         """ Returns the indicator value. """
 
-        return self._value        
+        return self._value
 
 
     def Draw(self, dc):
         """
         Actually draws the indicator.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         xpos, ypos = self.GetPosition()
-        bmp = wx.BitmapFromImage(self._img)
+        bmp = wx.Bitmap(self._img)
         dc.DrawBitmap(bmp, xpos, ypos, True)
         self._rect = wx.Rect(xpos, ypos, self._img.GetWidth(), self._img.GetHeight())
 
@@ -512,20 +513,20 @@ class Indicator(object):
 
         return self._id
 
-    
+
     def SetColour(self, colour):
         """
         Sets the indicator colour.
 
-        :param `colour`: the new indicator colour, an instance of :class:`Colour`.
-        
+        :param `colour`: the new indicator colour, an instance of :class:`wx.Colour`.
+
         :note: Requires PIL (Python Imaging Library), which can be downloaded from
          http://www.pythonware.com/products/pil/
         """
 
         if not _hasPIL:
             return
-        
+
         palette = colour.Red(), colour.Green(), colour.Blue()
 
         img = ConvertWXToPIL(GetIndicatorBitmap())
@@ -540,13 +541,13 @@ class Indicator(object):
         self.RotateImage(img)
 
         self._parent.Refresh()
-        
+
 
 # ---------------------------------------------------------------------------- #
 # Class RulerCtrl
 # ---------------------------------------------------------------------------- #
 
-class RulerCtrl(wx.PyPanel):
+class RulerCtrl(wx.Panel):
     """
     :class:`RulerCtrl` implements a ruler window that can be placed on top, bottom, left or right
     to any wxPython widget. It is somewhat similar to the rulers you can find in text
@@ -568,10 +569,10 @@ class RulerCtrl(wx.PyPanel):
         :param `orient`: sets the orientation of the :class:`RulerCtrl`, and can be either
          ``wx.HORIZONTAL`` of ``wx.VERTICAL``.
         """
-        
-        wx.PyPanel.__init__(self, parent, id, pos, size, style)
 
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)        
+        wx.Panel.__init__(self, parent, id, pos, size, style)
+
+        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         width, height = size
 
         self._min = 0.0
@@ -584,7 +585,7 @@ class RulerCtrl(wx.PyPanel):
         self._log = False
         self._labeledges = False
         self._units = ""
-        
+
         self._drawingparent = None
         self._drawingpen = wx.Pen(wx.BLACK, 2)
 
@@ -603,12 +604,8 @@ class RulerCtrl(wx.PyPanel):
         if wx.Platform == "__WXMSW__":
             fontsize = 8
 
-        self._minorfont = wx.Font(fontsize, wx.SWISS, wx.NORMAL, wx.NORMAL)
-        self._majorfont = wx.Font(fontsize, wx.SWISS, wx.NORMAL, wx.BOLD)
-
-        if wx.Platform == "__WXMAC__":
-            self._minorfont.SetNoAntiAliasing(True)
-            self._majorfont.SetNoAntiAliasing(True)
+        self._minorfont = wx.Font(fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        self._majorfont = wx.Font(fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 
         self._bits = []
         self._userbits = []
@@ -630,9 +627,9 @@ class RulerCtrl(wx.PyPanel):
         wbound, hbound = self.CheckStyle()
 
         if orient & wx.VERTICAL:
-            self.SetBestSize((28, height))
+            self.SetInitialSize((28, height))
         else:
-            self.SetBestSize((width, 28))
+            self.SetInitialSize((width, 28))
 
         self.SetBounds(0, 0, wbound, hbound)
 
@@ -647,7 +644,7 @@ class RulerCtrl(wx.PyPanel):
         """
         Handles the ``wx.EVT_MOUSE_EVENTS`` event for :class:`RulerCtrl`.
 
-        :param `event`: a :class:`MouseEvent` event to be processed.        
+        :param `event`: a :class:`MouseEvent` event to be processed.
         """
 
         if not self._indicators:
@@ -675,13 +672,13 @@ class RulerCtrl(wx.PyPanel):
         #    self._currentIndicator = None
 
         event.Skip()
-        
-        
+
+
     def OnPaint(self, event):
         """
         Handles the ``wx.EVT_PAINT`` event for :class:`RulerCtrl`.
 
-        :param `event`: a :class:`PaintEvent` event to be processed.        
+        :param `event`: a :class:`PaintEvent` event to be processed.
         """
 
         dc = wx.BufferedPaintDC(self)
@@ -694,13 +691,13 @@ class RulerCtrl(wx.PyPanel):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`RulerCtrl`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.        
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
-        width, height = self.CheckStyle()
+        width, height = event.GetSize()
         self.SetBounds(0, 0, width, height)
 
-        self.Invalidate()        
+        self.Invalidate()
         event.Skip()
 
 
@@ -710,10 +707,10 @@ class RulerCtrl(wx.PyPanel):
 
         :param `event`: a :class:`EraseEvent` event to be processed.
 
-        :note: This method is intentionally empty to reduce flicker.        
+        :note: This method is intentionally empty to reduce flicker.
         """
 
-        pass        
+        pass
 
 
     def SetIndicatorValue(self, sendEvent=True):
@@ -725,10 +722,10 @@ class RulerCtrl(wx.PyPanel):
 
         if self._currentIndicator is None:
             return
-        
+
         left, top, right, bottom = self.GetBounds()
-        
-        x = self._mousePosition.x 
+
+        x = self._mousePosition.x
         y = self._mousePosition.y
 
         maxvalue = self._max
@@ -737,16 +734,16 @@ class RulerCtrl(wx.PyPanel):
         if self._log:
             minvalue = math.log10(minvalue)
             maxvalue = math.log10(maxvalue)
-            
+
         deltarange = abs(self._max - self._min)
-        
+
         if self._orientation == wx.HORIZONTAL:  # only x moves
             value = deltarange*float(x)/(right - left)
         else:
             value = deltarange*float(y)/(bottom - top)
 
         value += minvalue
-        
+
         if self._log:
             value = 10**value
 
@@ -754,11 +751,11 @@ class RulerCtrl(wx.PyPanel):
             return
 
         self.DrawOnParent(self._currentIndicator)
-        
+
         if sendEvent:
             event = RulerCtrlEvent(wxEVT_INDICATOR_CHANGING, self._currentIndicator.GetId())
             event.SetOldValue(self._currentIndicator.GetValue())
-            
+
             event.SetValue(value)
             event.SetEventObject(self)
 
@@ -767,21 +764,21 @@ class RulerCtrl(wx.PyPanel):
                 return
 
             self._currentIndicator.SetValue(value)
-            
+
         if sendEvent:
             event.SetEventType(wxEVT_INDICATOR_CHANGED)
             event.SetOldValue(value)
             self.GetEventHandler().ProcessEvent(event)
             self.DrawOnParent(self._currentIndicator)
-                
+
         self.Refresh()
-        
+
 
     def GetIndicator(self, mousePos):
         """
         Returns the indicator located at the mouse position `mousePos` (if any).
 
-        :param `mousePos`: the mouse position, an instance of :class:`Point`.
+        :param `mousePos`: the mouse position, an instance of :class:`wx.Point`.
         """
 
         for indicator in self._indicators:
@@ -794,7 +791,7 @@ class RulerCtrl(wx.PyPanel):
         """ Adjust the :class:`RulerCtrl` style accordingly to borders, units, etc..."""
 
         width, height = self.GetSize()
-        
+
         if self._orientation & wx.HORIZONTAL:
             if self._style & wx.NO_BORDER:
                 hbound = 28
@@ -843,22 +840,22 @@ class RulerCtrl(wx.PyPanel):
 
         maxWidth = max(maxWidth, minWidth)
         maxHeight = max(maxHeight, minHeight)
-        
+
         if self._orientation == wx.HORIZONTAL:
             if maxHeight + 4 > hbound:
                 hbound = maxHeight
-                self.SetBestSize((-1, maxHeight + 4))
+                self.SetInitialSize((-1, maxHeight + 4))
                 if self.GetContainingSizer():
                     self.GetContainingSizer().Layout()
         else:
             if maxWidth + 4 > wbound:
                 wbound = maxWidth
-                self.SetBestSize((maxWidth + 4, -1))
+                self.SetInitialSize((maxWidth + 4, -1))
                 if self.GetContainingSizer():
                     self.GetContainingSizer().Layout()
-                
+
         return wbound, hbound
-    
+
 
     def TickMajor(self, tick=True):
         """
@@ -882,7 +879,7 @@ class RulerCtrl(wx.PyPanel):
         if self._tickminor != tick:
             self._tickminor = tick
             self.Invalidate()
-        
+
 
     def LabelMinor(self, label=True):
         """
@@ -911,7 +908,7 @@ class RulerCtrl(wx.PyPanel):
     def GetTimeFormat(self):
         """ Returns the time format. """
 
-        return self._timeformat        
+        return self._timeformat
 
 
     def SetTimeFormat(self, format=TimeFormat):
@@ -924,7 +921,7 @@ class RulerCtrl(wx.PyPanel):
         if self._timeformat != format:
             self._timeformat = format
             self.Invalidate()
-            
+
 
     def SetFormat(self, format):
         """
@@ -947,7 +944,7 @@ class RulerCtrl(wx.PyPanel):
         if self._format != format:
             self._format = format
             self.Invalidate()
-    
+
 
     def GetFormat(self):
         """
@@ -957,13 +954,13 @@ class RulerCtrl(wx.PyPanel):
         """
 
         return self._format
-    
+
 
     def SetLog(self, log=True):
         """
         Sets whether :class:`RulerCtrl` should have a logarithmic scale or not.
 
-        :param `log`: ``True`` to use a logarithmic scake, ``False`` to use a
+        :param `log`: ``True`` to use a logarithmic scale, ``False`` to use a
          linear one.
         """
 
@@ -983,29 +980,29 @@ class RulerCtrl(wx.PyPanel):
         # want numbers like "1.6" formatted as "1.6 dB".
 
         if self._units != units:
-            self._units = units             
+            self._units = units
             self.Invalidate()
-    
+
 
     def SetBackgroundColour(self, colour):
         """
         Sets the :class:`RulerCtrl` background colour.
 
-        :param `colour`: an instance of :class:`Colour`.
+        :param `colour`: an instance of :class:`wx.Colour`.
 
-        :note: Overridden from :class:`PyPanel`.        
+        :note: Overridden from :class:`Panel`.
         """
 
         self._background = colour
-        wx.PyPanel.SetBackgroundColour(self, colour)
+        wx.Panel.SetBackgroundColour(self, colour)
         self.Refresh()
 
-        
+
     def SetOrientation(self, orient=None):
         """
         Sets the :class:`RulerCtrl` orientation.
 
-        :param `orient`: can be ``wx.HORIZONTAL`` or ``wx.VERTICAL``.        
+        :param `orient`: can be ``wx.HORIZONTAL`` or ``wx.VERTICAL``.
         """
 
         if orient is None:
@@ -1013,12 +1010,12 @@ class RulerCtrl(wx.PyPanel):
 
         if self._orientation != orient:
             self._orientation = orient
-             
+
             if self._orientation == wx.VERTICAL and not self._hassetspacing:
                 self._spacing = 2
-             
+
             self.Invalidate()
-    
+
 
     def SetRange(self, minVal, maxVal):
         """
@@ -1037,7 +1034,7 @@ class RulerCtrl(wx.PyPanel):
             self._max = maxVal
             self.Invalidate()
 
-    
+
     def SetSpacing(self, spacing):
         """
         Sets the :class:`RulerCtrl` spacing between labels.
@@ -1050,7 +1047,7 @@ class RulerCtrl(wx.PyPanel):
         if self._spacing != spacing:
             self._spacing = spacing
             self.Invalidate()
-    
+
 
     def SetLabelEdges(self, labelEdges=True):
         """
@@ -1063,10 +1060,10 @@ class RulerCtrl(wx.PyPanel):
         # receive a label.  If not, the nearest round number is
         # labeled (which may or may not be the edge).
 
-        if self._labeledges != labelEdges: 
-            self._labeledges = labelEdges        
+        if self._labeledges != labelEdges:
+            self._labeledges = labelEdges
             self.Invalidate()
-    
+
 
     def SetFlip(self, flip=True):
         """
@@ -1085,22 +1082,18 @@ class RulerCtrl(wx.PyPanel):
             self.Invalidate()
             for indicator in self._indicators:
                 indicator.RotateImage()
-    
+
 
     def SetFonts(self, minorFont, majorFont):
         """
         Sets the fonts for minor and major tick labels.
 
-        :param `minorFont`: the font used to draw minor ticks, a valid :class:`Font` object;
-        :param `majorFont`: the font used to draw major ticks, a valid :class:`Font` object.        
+        :param `minorFont`: the font used to draw minor ticks, a valid :class:`wx.Font` object;
+        :param `majorFont`: the font used to draw major ticks, a valid :class:`wx.Font` object.
         """
 
         self._minorfont = minorFont
         self._majorfont = majorFont
-
-        if wx.Platform == "__WXMAC__":
-            self._minorfont.SetNoAntiAliasing(True)
-            self._majorfont.SetNoAntiAliasing(True)
 
         self.Invalidate()
 
@@ -1109,7 +1102,7 @@ class RulerCtrl(wx.PyPanel):
         """
         Sets the pen colour to draw the ticks.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._tickpen = wx.Pen(colour)
@@ -1120,12 +1113,12 @@ class RulerCtrl(wx.PyPanel):
         """
         Sets the labels colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._textcolour = colour
         self.Refresh()
-    
+
 
     def OfflimitsPixels(self, start, end):
         """ Used internally. """
@@ -1135,21 +1128,21 @@ class RulerCtrl(wx.PyPanel):
                 self._length = self._right-self._left
             else:
                 self._length = self._bottom-self._top
-                
-            self._userbits = [0]*self._length            
+
+            self._userbits = [0]*self._length
             self._userbitlen  = self._length+1
-        
+
         if end < start:
             i = end
             end = start
             start = i
-        
+
         if start < 0:
             start = 0
         if end > self._length:
             end = self._length
 
-        for ii in xrange(start, end+1):
+        for ii in range(start, end+1):
             self._userbits[ii] = 1
 
 
@@ -1165,7 +1158,7 @@ class RulerCtrl(wx.PyPanel):
 
         if self._left != left or self._top != top or self._right != right or \
            self._bottom != bottom:
-            
+
             self._left = left
             self._top = top
             self._right = right
@@ -1177,7 +1170,7 @@ class RulerCtrl(wx.PyPanel):
     def GetBounds(self):
         """ Returns the :class:`RulerCtrl` bounds (its client rectangle). """
 
-        return self._left, self._top, self._right, self._bottom        
+        return self._left, self._top, self._right, self._bottom
 
 
     def AddIndicator(self, id, value):
@@ -1191,21 +1184,21 @@ class RulerCtrl(wx.PyPanel):
 
         self._indicators.append(Indicator(self, id, value))
         self.Refresh()
-        
+
 
     def SetIndicatorColour(self, id, colour=None):
         """
         Sets the indicator colour.
 
         :param `id`: the indicator identifier;
-        :param `colour`: a valid :class:`Colour` object.
-        
+        :param `colour`: a valid :class:`wx.Colour` object.
+
         :note: This method requires PIL to change the image palette.
         """
 
         if not _hasPIL:
             return
-        
+
         if colour is None:
             colour = wx.WHITE
 
@@ -1214,7 +1207,7 @@ class RulerCtrl(wx.PyPanel):
                 indicator.SetColour(colour)
                 break
 
-        
+
     def Invalidate(self):
         """ Invalidates the ticks calculations. """
 
@@ -1231,7 +1224,7 @@ class RulerCtrl(wx.PyPanel):
         self._userbits = []
         self._userbitlen = 0
         self.Refresh()
-        
+
 
     def FindLinearTickSizes(self, UPP):
         """ Used internally. """
@@ -1252,38 +1245,38 @@ class RulerCtrl(wx.PyPanel):
         self._digits = 0
 
         if self._format == LinearDBFormat:
-            
+
             if units < 0.1:
                 self._minor = 0.1
                 self._major = 0.5
                 return
-            
+
             if units < 1.0:
                 self._minor = 1.0
                 self._major = 6.0
                 return
-            
+
             self._minor = 3.0
             self._major = 12.0
             return
 
         elif self._format == IntFormat:
-            
+
             d = 1.0
             while 1:
                 if units < d:
                     self._minor = d
                     self._major = d*5.0
                     return
-                
+
                 d = d*5.0
                 if units < d:
                     self._minor = d
                     self._major = d*2.0
                     return
-                
+
                 d = 2.0*d
-            
+
         elif self._format == TimeFormat:
 
             if units > 0.5:
@@ -1291,67 +1284,67 @@ class RulerCtrl(wx.PyPanel):
                     self._minor = 1.0
                     self._major = 5.0
                     return
-                
+
                 if units < 5.0:  # 5 sec
                     self._minor = 5.0
                     self._major = 15.0
                     return
-                
+
                 if units < 10.0:
                     self._minor = 10.0
                     self._major = 30.0
                     return
-                
+
                 if units < 15.0:
                     self._minor = 15.0
                     self._major = 60.0
                     return
-                
-                if units < 30.0: 
+
+                if units < 30.0:
                     self._minor = 30.0
                     self._major = 60.0
                     return
-                
+
                 if units < 60.0:  # 1 min
                     self._minor = 60.0
                     self._major = 300.0
                     return
-                
+
                 if units < 300.0:  # 5 min
                     self._minor = 300.0
                     self._major = 900.0
                     return
-                
+
                 if units < 600.0:  # 10 min
                     self._minor = 600.0
                     self._major = 1800.0
                     return
-                
+
                 if units < 900.0:  # 15 min
                     self._minor = 900.0
                     self._major = 3600.0
                     return
-                
+
                 if units < 1800.0:  # 30 min
                     self._minor = 1800.0
                     self._major = 3600.0
                     return
-                
+
                 if units < 3600.0:  # 1 hr
                     self._minor = 3600.0
                     self._major = 6*3600.0
                     return
-                
+
                 if units < 6*3600.0:  # 6 hrs
                     self._minor = 6*3600.0
                     self._major = 24*3600.0
                     return
-                
+
                 if units < 24*3600.0:  # 1 day
                     self._minor = 24*3600.0
                     self._major = 7*24*3600.0
                     return
-                
+
                 self._minor = 24.0*7.0*3600.0 # 1 week
                 self._major = 24.0*7.0*3600.0
 
@@ -1360,25 +1353,25 @@ class RulerCtrl(wx.PyPanel):
         # the same way as for RealFormat)
 
         elif self._format == RealFormat:
-            
+
             d = 0.000001
             self._digits = 6
-            
+
             while 1:
                 if units < d:
                     self._minor = d
                     self._major = d*5.0
                     return
-                
+
                 d = d*5.0
                 if units < d:
                     self._minor = d
                     self._major = d*2.0
                     return
-                
+
                 d = d*2.0
                 self._digits = self._digits - 1
-            
+
 
     def LabelString(self, d, major=None):
         """ Used internally. """
@@ -1389,13 +1382,13 @@ class RulerCtrl(wx.PyPanel):
         # i.e. how far zoomed in or out you are.
 
         s = ""
-        
+
         if d < 0.0 and d + self._minor > 0.0:
             d = 0.0
 
         if self._format == IntFormat:
             s = "%d"%int(math.floor(d+0.5))
-            
+
         elif self._format == LinearDBFormat:
             if self._minor >= 1.0:
                 s = "%d"%int(math.floor(d+0.5))
@@ -1407,7 +1400,7 @@ class RulerCtrl(wx.PyPanel):
                 s = "%d"%int(math.floor(d+0.5))
             else:
                 s = (("%." + str(self._digits) + "f")%d).strip()
-            
+
         elif self._format == TimeFormat:
             if major:
                 if d < 0:
@@ -1415,60 +1408,60 @@ class RulerCtrl(wx.PyPanel):
                     d = -d
 
                 if self.GetTimeFormat() == HHMMSS_Format:
-                    
+
                     secs = int(d + 0.5)
                     if self._minor >= 1.0:
-                        s = ("%d:%02d:%02d")%(secs/3600, (secs/60)%60, secs%60)
-                    
+                        s = ("%d:%02d:%02d")%(secs//3600, (secs//60)%60, secs%60)
+
                     else:
-                        t1 = ("%d:%02d:")%(secs/3600, (secs/60)%60)
+                        t1 = ("%d:%02d:")%(secs//3600, (secs//60)%60)
                         format = "%" + "%0d.%dlf"%(self._digits+3, self._digits)
                         t2 = format%(d%60.0)
                         s = s + t1 + t2
-                        
+
                 else:
-                    
+
                     if self._minor >= 3600.0:
                         hrs = int(d/3600.0 + 0.5)
                         h = "%d:00:00"%hrs
                         s = s + h
-                    
+
                     elif self._minor >= 60.0:
                         minutes = int(d/60.0 + 0.5)
                         if minutes >= 60:
-                            m = "%d:%02d:00"%(minutes/60, minutes%60)
+                            m = "%d:%02d:00"%(minutes//60, minutes%60)
                         else:
                             m = "%d:00"%minutes
-                            
+
                         s = s + m
-                    
+
                     elif self._minor >= 1.0:
                         secs = int(d + 0.5)
                         if secs >= 3600:
-                            t = "%d:%02d:%02d"%(secs/3600, (secs/60)%60, secs%60)
+                            t = "%d:%02d:%02d"%(secs//3600, (secs//60)%60, secs%60)
                         elif secs >= 60:
-                            t = "%d:%02d"%(secs/60, secs%60)
+                            t = "%d:%02d"%(secs//60, secs%60)
                         else:
                             t = "%d"%secs
-                            
+
                         s = s + t
-                    
+
                     else:
                         secs = int(d)
                         if secs >= 3600:
-                            t1 = "%d:%02d:"%(secs/3600, (secs/60)%60)
+                            t1 = "%d:%02d:"%(secs//3600, (secs//60)%60)
                         elif secs >= 60:
-                            t1 = "%d:"%(secs/60)
+                            t1 = "%d:"%(secs//60)
 
                         if secs >= 60:
                             format = "%%0%d.%dlf"%(self._digits+3, self._digits)
                         else:
                             format = "%%%d.%dlf"%(self._digits+3, self._digits)
-                            
+
                         t2 = format%(d%60.0)
 
                         s = s + t1 + t2
-   
+
         if self._units != "":
             s = s + " " + self._units
 
@@ -1479,7 +1472,7 @@ class RulerCtrl(wx.PyPanel):
         """
         Ticks a particular position.
 
-        :param `dc`: an instance of :class:`DC`;
+        :param `dc`: an instance of :class:`wx.DC`;
         :param `pos`: the label position;
         :param `d`: the current label value;
         :param `major`: ``True`` if it is a major ticks, ``False`` if it is a minor one.
@@ -1501,10 +1494,10 @@ class RulerCtrl(wx.PyPanel):
 
         l = self.LabelString(d, major)
         strw, strh = dc.GetTextExtent(l)
-        
-        if self._orientation == wx.HORIZONTAL: 
+
+        if self._orientation == wx.HORIZONTAL:
             strlen = strw
-            strpos = pos - strw/2
+            strpos = pos - strw//2
             if strpos < 0:
                 strpos = 0
             if strpos + strw >= self._length:
@@ -1516,10 +1509,10 @@ class RulerCtrl(wx.PyPanel):
             else:
                 strtop = self._bottom - strh - 6
                 self._maxheight = max(self._maxheight, strh + 6)
-            
-        else: 
+
+        else:
             strlen = strh
-            strpos = pos - strh/2
+            strpos = pos - strh//2
             if strpos < 0:
                 strpos = 0
             if strpos + strh >= self._length:
@@ -1536,7 +1529,7 @@ class RulerCtrl(wx.PyPanel):
         # label is already covered
 
         if major and self._labelmajor or not major and self._labelminor:
-            for ii in xrange(strlen):
+            for ii in range(strlen):
                 if self._bits[strpos+ii]:
                     return
 
@@ -1550,34 +1543,34 @@ class RulerCtrl(wx.PyPanel):
             if self._tickmajor and not self._labelmajor:
                 label.text = ""
             self._majorlabels[-1] = label
-            
+
         else:
             if self._tickminor and not self._labelminor:
                 label.text = ""
             label.text = label.text.replace(self._units, "")
             self._minorlabels[-1] = label
-            
+
         # And mark these pixels, plus some surrounding
         # ones (the spacing between labels), as covered
 
         if (not major and self._labelminor) or (major and self._labelmajor):
-            
+
             leftmargin = self._spacing
-            
+
             if strpos < leftmargin:
                 leftmargin = strpos
-                
+
             strpos = strpos - leftmargin
             strlen = strlen + leftmargin
 
             rightmargin = self._spacing
-            
+
             if strpos + strlen > self._length - self._spacing:
                 rightmargin = self._length - strpos - strlen
-                
+
             strlen = strlen + rightmargin
 
-            for ii in xrange(strlen):
+            for ii in range(strlen):
                 self._bits[strpos+ii] = 1
 
 
@@ -1585,7 +1578,7 @@ class RulerCtrl(wx.PyPanel):
         """
         Updates all the ticks calculations.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         # This gets called when something has been changed
@@ -1603,10 +1596,10 @@ class RulerCtrl(wx.PyPanel):
         self._middlepos = []
 
         if self._userbits:
-            for ii in xrange(self._length):
+            for ii in range(self._length):
                 self._bits[ii] = self._userbits[ii]
         else:
-            for ii in xrange(self._length):
+            for ii in range(self._length):
                 self._bits[ii] = 0
 
         if not self._log:
@@ -1614,36 +1607,36 @@ class RulerCtrl(wx.PyPanel):
             UPP = (self._max - self._min)/float(self._length)  # Units per pixel
 
             self.FindLinearTickSizes(UPP)
-            
+
             # Left and Right Edges
             if self._labeledges:
                 self.Tick(dc, 0, self._min, True)
                 self.Tick(dc, self._length, self._max, True)
-            
+
             # Zero (if it's in the middle somewhere)
-            if self._min*self._max < 0.0: 
+            if self._min*self._max < 0.0:
                 mid = int(self._length*(self._min/(self._min-self._max)) + 0.5)
                 self.Tick(dc, mid, 0.0, True)
-            
+
             sg = ((UPP > 0.0) and [1.0] or [-1.0])[0]
-            
+
             # Major ticks
-            d = self._min - UPP/2
+            d = self._min - UPP/2.0
             lastd = d
             majorint = int(math.floor(sg*d/self._major))
             ii = -1
-            
+
             while ii <= self._length:
                 ii = ii + 1
                 lastd = d
                 d = d + UPP
-                
+
                 if int(math.floor(sg*d/self._major)) > majorint:
                     majorint = int(math.floor(sg*d/self._major))
                     self.Tick(dc, ii, sg*majorint*self._major, True)
-                
+
             # Minor ticks
-            d = self._min - UPP/2
+            d = self._min - UPP/2.0
             lastd = d
             minorint = int(math.floor(sg*d/self._minor))
             ii = -1
@@ -1652,19 +1645,19 @@ class RulerCtrl(wx.PyPanel):
                 ii = ii + 1
                 lastd = d
                 d = d + UPP
-                
+
                 if int(math.floor(sg*d/self._minor)) > minorint:
                     minorint = int(math.floor(sg*d/self._minor))
                     self.Tick(dc, ii, sg*minorint*self._minor, False)
-            
+
             # Left and Right Edges
             if self._labeledges:
                 self.Tick(dc, 0, self._min, True)
                 self.Tick(dc, self._length, self._max, True)
-            
-        else: 
+
+        else:
             # log case
-            
+
             lolog = math.log10(self._min)
             hilog = math.log10(self._max)
             scale = self._length/(hilog - lolog)
@@ -1675,32 +1668,32 @@ class RulerCtrl(wx.PyPanel):
             if self._labeledges:
                 self.Tick(dc, 0, self._min, True)
                 self.Tick(dc, self._length, self._max, True)
-                
+
             startdecade = 10.0**lodecade
-            
+
             # Major ticks are the decades
             decade = startdecade
-            for ii in xrange(lodecade, hidecade):
+            for ii in range(lodecade, hidecade):
                 if ii != lodecade:
                     val = decade
                     if val > self._min and val < self._max:
                         pos = int(((math.log10(val) - lolog)*scale)+0.5)
                         self.Tick(dc, pos, val, True)
-                    
+
                 decade = decade*10.0
-            
+
             # Minor ticks are multiples of decades
             decade = startdecade
 
-            for ii in xrange(lodecade, hidecade):
-                for jj in xrange(2, 10):
+            for ii in range(lodecade, hidecade):
+                for jj in range(2, 10):
                     val = decade*jj
                     if val >= self._min and val < self._max:
                         pos = int(((math.log10(val) - lolog)*scale)+0.5)
                         self.Tick(dc, pos, val, False)
-                    
+
                 decade = decade*10.0
-            
+
         self._valid = True
 
 
@@ -1708,7 +1701,7 @@ class RulerCtrl(wx.PyPanel):
         """
         Actually draws the whole :class:`RulerCtrl`.
 
-        :param `dc`: an instance of :class:`DC`.
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         if not self._valid:
@@ -1718,14 +1711,14 @@ class RulerCtrl(wx.PyPanel):
         dc.SetPen(self._tickpen)
         dc.SetTextForeground(self._textcolour)
 
-        dc.DrawRectangleRect(self.GetClientRect())        
+        dc.DrawRectangle(self.GetClientRect())
 
         if self._orientation == wx.HORIZONTAL:
             if self._flip:
                 dc.DrawLine(self._left, self._top, self._right+1, self._top)
             else:
                 dc.DrawLine(self._left, self._bottom-1, self._right+1, self._bottom-1)
-        
+
         else:
             if self._flip:
                 dc.DrawLine(self._left, self._top, self._left, self._bottom+1)
@@ -1736,7 +1729,7 @@ class RulerCtrl(wx.PyPanel):
 
         for label in self._majorlabels:
             pos = label.pos
-            
+
             if self._orientation == wx.HORIZONTAL:
                 if self._flip:
                     dc.DrawLine(self._left + pos, self._top,
@@ -1744,7 +1737,7 @@ class RulerCtrl(wx.PyPanel):
                 else:
                     dc.DrawLine(self._left + pos, self._bottom - 5,
                                 self._left + pos, self._bottom)
-            
+
             else:
                 if self._flip:
                     dc.DrawLine(self._left, self._top + pos,
@@ -1752,10 +1745,10 @@ class RulerCtrl(wx.PyPanel):
                 else:
                     dc.DrawLine(self._right - 5, self._top + pos,
                                 self._right, self._top + pos)
-            
+
             if label.text != "":
                 dc.DrawText(label.text, label.lx, label.ly)
-        
+
         dc.SetFont(self._minorfont)
 
         for label in self._minorlabels:
@@ -1768,7 +1761,7 @@ class RulerCtrl(wx.PyPanel):
                 else:
                     dc.DrawLine(self._left + pos, self._bottom - 3,
                                 self._left + pos, self._bottom)
-            
+
             else:
                 if self._flip:
                     dc.DrawLine(self._left, self._top + pos,
@@ -1776,19 +1769,19 @@ class RulerCtrl(wx.PyPanel):
                 else:
                     dc.DrawLine(self._right - 3, self._top + pos,
                                 self._right, self._top + pos)
-            
+
             if label.text != "":
                 dc.DrawText(label.text, label.lx, label.ly)
 
         for indicator in self._indicators:
             indicator.Draw(dc)
-            
+
 
     def SetDrawingParent(self, dparent):
         """
         Sets the window to which :class:`RulerCtrl` draws a thin line over.
 
-        :param `dparent`: an instance of :class:`Window`, representing the window to
+        :param `dparent`: an instance of :class:`wx.Window`, representing the window to
          which :class:`RulerCtrl` draws a thin line over.
         """
 
@@ -1807,7 +1800,7 @@ class RulerCtrl(wx.PyPanel):
 
         :param `indicator`: the current indicator, an instance of :class:`Indicator`.
 
-        :note: This method is currently not available on wxMac as it uses :class:`ScreenDC`.        
+        :note: This method is currently not available on wxMac as it uses :class:`ScreenDC`.
         """
 
         if not self._drawingparent:
@@ -1816,33 +1809,79 @@ class RulerCtrl(wx.PyPanel):
         xpos, ypos = indicator.GetPosition()
         parentrect = self._drawingparent.GetClientRect()
 
-        dc = wx.ScreenDC()        
+        dc = wx.ScreenDC()
         dc.SetLogicalFunction(wx.INVERT)
         dc.SetPen(self._drawingpen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
         imgx, imgy = indicator.GetImageSize()
-        
+
         if self._orientation == wx.HORIZONTAL:
 
-            x1 = xpos+ imgx/2
+            x1 = xpos+ imgx//2
             y1 = parentrect.y
             x2 = x1
             y2 = parentrect.height
-            x1, y1 = self._drawingparent.ClientToScreenXY(x1, y1)
-            x2, y2 = self._drawingparent.ClientToScreenXY(x2, y2)
-                                         
+            x1, y1 = self._drawingparent.ClientToScreen((x1, y1))
+            x2, y2 = self._drawingparent.ClientToScreen((x2, y2))
+
         elif self._orientation == wx.VERTICAL:
 
             x1 = parentrect.x
-            y1 = ypos + imgy/2
+            y1 = ypos + imgy//2
             x2 = parentrect.width
             y2 = y1
 
-            x1, y1 = self._drawingparent.ClientToScreenXY(x1, y1)
-            x2, y2 = self._drawingparent.ClientToScreenXY(x2, y2)
+            x1, y1 = self._drawingparent.ClientToScreen((x1, y1))
+            x2, y2 = self._drawingparent.ClientToScreen((x2, y2))
 
         dc.DrawLine(x1, y1, x2, y2)
         dc.SetLogicalFunction(wx.COPY)
 
-    
+
+if __name__ == '__main__':
+
+    import wx
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+
+            wx.Frame.__init__(self, parent, -1, "RulerCtrl Demo")
+
+            panel = wx.Panel(self)
+
+            text = wx.TextCtrl(panel, -1, "Hello World! wxPython rules", style=wx.TE_MULTILINE)
+
+            ruler1 = RulerCtrl(panel, -1, orient=wx.HORIZONTAL, style=wx.SUNKEN_BORDER)
+            ruler2 = RulerCtrl(panel, -1, orient=wx.VERTICAL, style=wx.SUNKEN_BORDER)
+
+            mainsizer = wx.BoxSizer(wx.HORIZONTAL)
+            leftsizer = wx.BoxSizer(wx.VERTICAL)
+            bottomleftsizer = wx.BoxSizer(wx.HORIZONTAL)
+            topsizer = wx.BoxSizer(wx.HORIZONTAL)
+
+            leftsizer.Add((20, 20))
+            topsizer.Add((39, 0))
+            topsizer.Add(ruler1, 1, wx.EXPAND, 0)
+            leftsizer.Add(topsizer, 0, wx.EXPAND, 0)
+
+            bottomleftsizer.Add(10, 0)
+            bottomleftsizer.Add(ruler2, 0, wx.EXPAND, 0)
+            bottomleftsizer.Add(text, 1, wx.EXPAND, 0)
+            leftsizer.Add(bottomleftsizer, 1, wx.EXPAND, 0)
+            mainsizer.Add(leftsizer, 3, wx.EXPAND, 0)
+
+            panel.SetSizer(mainsizer)
+
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()
+

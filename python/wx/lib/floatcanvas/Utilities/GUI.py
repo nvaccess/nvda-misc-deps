@@ -1,3 +1,15 @@
+#----------------------------------------------------------------------------
+# Name:         GUI.py
+# Purpose:      Contains GUI related utilities for FloatCanvas
+#
+# Author:
+#
+# Created:
+# Version:
+# Date:
+# Licence:
+# Tags:         phoenix-port, unittest, documented, py3-port
+#----------------------------------------------------------------------------
 """
 
 Part of the floatcanvas.Utilities package.
@@ -10,7 +22,7 @@ So far, they are:
 RubberBandBox: used to draw a RubberBand Box on the screen
 
 """
- 
+
 import numpy as np
 
 import wx
@@ -25,29 +37,20 @@ class RubberBandBox(GUIMode.GUIBase):
     def __init__(self, CallBack, Tol=5):
 
         """
-        To initialize:
-        
-        RubberBandBox(CallBack, Tol=5)
+        Default class constructor.
 
-        CallBack: is the method you want called when the mouse is
+        :param `CallBack`: is the method you want called when the mouse is
                   released. That method will be called, passing in a rect
                   parameter, where rect is: (Point, WH) of the rect in
                   world coords.
-
-        Tol: The tolerance for the smallest rectangle allowed. defaults
-             to 5. In pixels
-
-        
-        Attributes:
-
-        CallBack: The callback function.
-                  
+        :param `Tol`: The tolerance for the smallest rectangle allowed. defaults
+                  to 5. In pixels
         """
 
         self.Canvas = None # this will be set when the mode is set on a Canvas
         self.CallBack = CallBack
         self.Tol = Tol
-        
+
         self.Drawing = False
         self.RBRect = None
         self.StartPointWorld = None
@@ -66,16 +69,16 @@ class RubberBandBox(GUIMode.GUIBase):
                 dc.SetBrush(wx.TRANSPARENT_BRUSH)
                 dc.SetLogicalFunction(wx.XOR)
                 if self.RBRect:
-                    dc.DrawRectanglePointSize(*self.RBRect)
+                    dc.DrawRectangle(*self.RBRect)
                 self.RBRect = ((x, y), (w, h) )
-                dc.DrawRectanglePointSize(*self.RBRect)
+                dc.DrawRectangle(*self.RBRect)
         self.Canvas._RaiseMouseEvent(event,FloatCanvas.EVT_FC_MOTION)
-                
+
     def OnLeftDown(self, event):
         # Start drawing
         self.Drawing = True
         self.StartPoint = event.GetPosition()
-            
+
     def OnLeftUp(self, event):
         # Stop Drawing
         if self.Drawing:

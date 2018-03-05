@@ -6,11 +6,9 @@
 # main namespace to look as much as possible like the regular Python
 # shell environment.
 import __main__
-original = __main__.__dict__.keys()
+original = list(__main__.__dict__.keys())
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
 import wx
 import os
@@ -53,15 +51,15 @@ def main():
     md = __main__.__dict__
     keepers = original
     keepers.append('App')
-    for key in md.keys():
+    for key in list(md.keys()):
         if key not in keepers:
             del md[key]
     # Create an application instance.
     app = App(0)
     # Cleanup the main namespace some more.
-    if md.has_key('App') and md['App'] is App:
+    if 'App' in md and md['App'] is App:
         del md['App']
-    if md.has_key('__main__') and md['__main__'] is __main__:
+    if '__main__' in md and md['__main__'] is __main__:
         del md['__main__']
     # Mimic the contents of the standard Python shell's sys.path.
     import sys

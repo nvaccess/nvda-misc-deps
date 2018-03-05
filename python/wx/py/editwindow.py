@@ -1,8 +1,6 @@
 """EditWindow class."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
 import wx
 from wx import stc
@@ -12,8 +10,8 @@ import os
 import sys
 import time
 
-import dispatcher
-from version import VERSION
+from . import dispatcher
+from .version import VERSION
 
 
 if 'wxMSW' in wx.PlatformInfo:
@@ -70,20 +68,24 @@ else: # GTK1, etc.
 class EditWindow(stc.StyledTextCtrl):
     """EditWindow based on StyledTextCtrl."""
 
-    revision = __revision__
 
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.CLIP_CHILDREN | wx.SUNKEN_BORDER):
         """Create EditWindow instance."""
         stc.StyledTextCtrl.__init__(self, parent, id, pos, size, style)
         self.__config()
-        stc.EVT_STC_UPDATEUI(self, id, self.OnUpdateUI)
+        self.Bind(stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
         dispatcher.connect(receiver=self._fontsizer, signal='FontIncrease')
         dispatcher.connect(receiver=self._fontsizer, signal='FontDecrease')
         dispatcher.connect(receiver=self._fontsizer, signal='FontDefault')
 
     def _fontsizer(self, signal):
         """Receiver for Font* signals."""
+        if not self:
+            dispatcher.disconnect(receiver=self._fontsizer, signal='FontIncrease')
+            dispatcher.disconnect(receiver=self._fontsizer, signal='FontDecrease')
+            dispatcher.disconnect(receiver=self._fontsizer, signal='FontDefault')
+            return
         size = self.GetZoom()
         if signal == 'FontIncrease':
             size += 1
@@ -96,7 +98,7 @@ class EditWindow(stc.StyledTextCtrl):
 
     def __config(self):
         self.setDisplayLineNumbers(False)
-        
+
         self.SetLexer(stc.STC_LEX_PYTHON)
         self.SetKeyWords(0, ' '.join(keyword.kwlist))
 
@@ -134,7 +136,7 @@ class EditWindow(stc.StyledTextCtrl):
             # Leave a small margin so the feature hidden lines marker can be seen
             self.SetMarginType(1, 0)
             self.SetMarginWidth(1, 10)
-        
+
     def setStyles(self, faces):
         """Configure font size, typeface and color for lexer."""
 
@@ -146,7 +148,7 @@ class EditWindow(stc.StyledTextCtrl):
         self.StyleClearAll()
         self.SetSelForeground(True, wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT))
         self.SetSelBackground(True, wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT))
-        
+
         # Built in styles
         self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,
                           "back:#C0C0C0,face:%(mono)s,size:%(lnsize)d" % FACES)

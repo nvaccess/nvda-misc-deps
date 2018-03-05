@@ -3,7 +3,7 @@
 # Python Code By:
 #
 # Andrea Gavana, @ 31 Oct 2005
-# Latest Revision: 17 Aug 2011, 15.00 GMT
+# Latest Revision: 16 Jul 2012, 15.00 GMT
 #
 #
 # TODO List/Caveats
@@ -22,13 +22,14 @@
 #
 # Or, Obviously, To The wxPython Mailing List!!!
 #
+# Tags:        phoenix-port, unittest, documented, py3-port
 #
 # End Of Comments
 # --------------------------------------------------------------------------- #
 
 
 """
-:class:`PieCtrl` and :class:`ProgressPie` are simple classes that reproduce the behavior of a pie
+:class:`~wx.lib.agw.piectrl.PieCtrl` and :class:`~wx.lib.agw.piectrl.ProgressPie` are simple classes that reproduce the behavior of a pie
 chart.
 
 
@@ -47,17 +48,17 @@ Usage
 
 Usage example::
 
-    import wx    
+    import wx
     import wx.lib.agw.piectrl as PC
 
     class MyFrame(wx.Frame):
 
         def __init__(self, parent):
-        
+
             wx.Frame.__init__(self, parent, -1, "PieCtrl Demo")
 
             panel = wx.Panel(self)
-    
+
             # create a simple PieCtrl with 3 sectors
             mypie = PC.PieCtrl(panel, -1, wx.DefaultPosition, wx.Size(180,270))
 
@@ -87,7 +88,7 @@ Usage example::
                                           wx.Size(180, 200), wx.SIMPLE_BORDER)
 
             progress_pie.SetBackColour(wx.Colour(150, 200, 255))
-            progress_pie.SetFilledcolour(wx.Colour(255, 0, 0))
+            progress_pie.SetFilledColour(wx.Colour(255, 0, 0))
             progress_pie.SetUnfilledColour(wx.WHITE)
             progress_pie.SetHeight(20)
 
@@ -142,9 +143,9 @@ License And Version
 
 :class:`PieCtrl` is distributed under the wxPython license.
 
-Latest revision: Andrea Gavana @ 17 Aug 2011, 15.00 GMT
+Latest revision: Andrea Gavana @ 16 Jul 2012, 15.00 GMT
 
-Version 0.2
+Version 0.3
 
 """
 
@@ -191,6 +192,7 @@ class PieCtrlLegend(wx.Window):
         self._verborder = 5
         self._titlecolour = wx.Colour(0, 0, 127)
         self._labelcolour = wx.BLACK
+        self._labelfont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._backcolour = wx.Colour(255, 255, 0)
         self._backgroundDC = wx.MemoryDC()
         self._parent = parent
@@ -214,11 +216,11 @@ class PieCtrlLegend(wx.Window):
         """
         Recreates the legend background.
 
-        :param `parentdc`: an instance of :class:`DC`.
+        :param `parentdc`: an instance of :class:`wx.DC`.
         """
 
         w, h = self.GetSize()
-        self._background = wx.EmptyBitmap(w, h)
+        self._background = wx.Bitmap(w, h)
         self._backgroundDC.SelectObject(self._background)
 
         if self.IsTransparent():
@@ -272,7 +274,7 @@ class PieCtrlLegend(wx.Window):
         """
         Sets the legend label colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._labelcolour = colour
@@ -289,7 +291,7 @@ class PieCtrlLegend(wx.Window):
         """
         Sets the legend label font.
 
-        :param `font`: a valid :class:`Font` object.
+        :param `font`: a valid :class:`wx.Font` object.
         """
 
         self._labelfont = font
@@ -306,7 +308,7 @@ class PieCtrlLegend(wx.Window):
         """
         Sets the legend background colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._backcolour = colour
@@ -335,7 +337,7 @@ class PieCtrlLegend(wx.Window):
         pdc = wx.PaintDC(self)
 
         w, h = self.GetSize()
-        bmp = wx.EmptyBitmap(w, h)
+        bmp = wx.Bitmap(w, h)
         mdc = wx.MemoryDC()
         mdc.SelectObject(bmp)
 
@@ -354,11 +356,11 @@ class PieCtrlLegend(wx.Window):
         mdc.SetTextForeground(self._labelcolour)
         maxwidth = 0
 
-        for ii in xrange(len(self._parent._series)):
+        for ii in range(len(self._parent._series)):
 
             tw, th = mdc.GetTextExtent(self._parent._series[ii].GetLabel())
             mdc.SetBrush(wx.Brush(self._parent._series[ii].GetColour()))
-            mdc.DrawCircle(self._horborder+5, dy+th/2, 5)
+            mdc.DrawCircle(self._horborder+5, dy+th//2, 5)
             mdc.DrawText(self._parent._series[ii].GetLabel(), self._horborder+15, dy)
             dy = dy + th + 3
             maxwidth = max(maxwidth, int(2*self._horborder+tw+15))
@@ -416,7 +418,7 @@ class PiePart(object):
         """
         Sets the segment colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._colour = colour
@@ -454,7 +456,7 @@ class PieCtrl(wx.Window):
     :class:`PieCtrl` is somewhat a "static" control, that you may create in order to display
     a simple pie chart on a :class:`Panel` or similar.
     """
-    
+
     def __init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=0, name="PieCtrl"):
         """
@@ -472,11 +474,11 @@ class PieCtrl(wx.Window):
 
         wx.Window.__init__(self, parent, id, pos, size, style, name)
 
-        self._angle = pi/12
+        self._angle = pi/12.0
         self._rotationangle = 0
         self._height = 10
         self._background = wx.NullBitmap
-        self._canvasbitmap = wx.EmptyBitmap(1, 1)
+        self._canvasbitmap = wx.Bitmap(1, 1)
         self._canvasDC = wx.MemoryDC()
         self._backcolour = wx.WHITE
         self._showedges = True
@@ -494,7 +496,7 @@ class PieCtrl(wx.Window):
         """
         Sets the :class:`PieCtrl` background image.
 
-        :param `bmp`: a valid :class:`Bitmap` object.
+        :param `bmp`: a valid :class:`wx.Bitmap` object.
         """
 
         self._background = bmp
@@ -511,7 +513,7 @@ class PieCtrl(wx.Window):
         """
         Handles the ``wx.EVT_SIZE`` event for :class:`PieCtrl`.
 
-        :param `event`: a :class:`SizeEvent` event to be processed.
+        :param `event`: a :class:`wx.SizeEvent` event to be processed.
         """
 
         self.RecreateCanvas()
@@ -522,8 +524,8 @@ class PieCtrl(wx.Window):
     def RecreateCanvas(self):
         """ Recreates the :class:`PieCtrl` container (canvas). """
 
-        self._canvasbitmap = wx.EmptyBitmap(self.GetSize().GetWidth(),
-                                            self.GetSize().GetHeight())
+        self._canvasbitmap = wx.Bitmap(self.GetSize().GetWidth(),
+                                       self.GetSize().GetHeight())
         self._canvasDC.SelectObject(self._canvasbitmap)
 
 
@@ -533,13 +535,13 @@ class PieCtrl(wx.Window):
         angles = []
         total = 0.0
 
-        for ii in xrange(len(self._series)):
+        for ii in range(len(self._series)):
             total = total + self._series[ii].GetValue()
 
         current = 0.0
         angles.append(current)
 
-        for ii in xrange(len(self._series)):
+        for ii in range(len(self._series)):
 
             current = current + self._series[ii].GetValue()
             angles.append(360.0*current/total)
@@ -612,7 +614,7 @@ class PieCtrl(wx.Window):
         """
         Sets the :class:`PieCtrl` background colour.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._backcolour = colour
@@ -651,7 +653,7 @@ class PieCtrl(wx.Window):
         """
         Draws the :class:`PieCtrl` external edges.
 
-        :param `dc`: an instance of :class:`DC`;
+        :param `dc`: an instance of :class:`wx.DC`;
         :param `cx`: the part `x` coordinate;
         :param `cy`: the part `y` coordinate;
         :param `w`: the control's width;
@@ -664,7 +666,7 @@ class PieCtrl(wx.Window):
         if self._showedges:
             dc.SetPen(wx.BLACK_PEN)
 
-        for ii in xrange(len(angles)):
+        for ii in range(len(angles)):
 
             if ii > 0:
 
@@ -674,7 +676,7 @@ class PieCtrl(wx.Window):
                 dc.SetBrush(wx.Brush(self._series[ii-1].GetColour()))
 
                 if angles[ii-1] != angles[ii]:
-                    dc.DrawEllipticArc(0, int((1-sin(self._angle))*(h/2)+cy), w,
+                    dc.DrawEllipticArc(0, int((1-sin(self._angle))*(h//2)+cy), w,
                                        int(h*sin(self._angle)),
                                        angles[ii-1]+self._rotationangle/pi*180,
                                        angles[ii]+self._rotationangle/pi*180)
@@ -683,7 +685,7 @@ class PieCtrl(wx.Window):
         if len(self._series) == 1:
 
             dc.SetBrush(wx.Brush(self._series[0].GetColour()))
-            dc.DrawEllipticArc(0, int((1-sin(self._angle))*(h/2)+cy), w,
+            dc.DrawEllipticArc(0, int((1-sin(self._angle))*(h//2)+cy), w,
                                int(h*sin(self._angle)), 0, 360)
 
         dc.SetPen(oldpen)
@@ -693,20 +695,19 @@ class PieCtrl(wx.Window):
         """
         Draws all the sectors of :class:`PieCtrl`.
 
-        :param `dc`: an instance of :class:`DC`.        
+        :param `dc`: an instance of :class:`wx.DC`.
         """
 
         w, h = self.GetSize()
 
-        self._canvasDC.BeginDrawing()
         self._canvasDC.SetBackground(wx.WHITE_BRUSH)
         self._canvasDC.Clear()
 
         if self._background != wx.NullBitmap:
 
-            for ii in xrange(0, w, self._background.GetWidth()):
+            for ii in range(0, w, self._background.GetWidth()):
 
-                for jj in xrange(0, h, self._background.GetHeight()):
+                for jj in range(0, h, self._background.GetHeight()):
 
                     self._canvasDC.DrawBitmap(self._background, ii, jj)
 
@@ -745,10 +746,10 @@ class PieCtrl(wx.Window):
                         x = angles[angleindex+1]*pi/180.0
 
                 points[0] = points[1]
-                px = int(w/2*(1+cos(x+self._rotationangle)))
-                py = int(h/2-sin(self._angle)*h/2*sin(x+self._rotationangle)-1)
+                px = int(w/2.0*(1+cos(x+self._rotationangle)))
+                py = int(h/2.0-sin(self._angle)*h/2.0*sin(x+self._rotationangle)-1)
                 points[1] = [px, py]
-                triangle[0] = [w / 2, h / 2]
+                triangle[0] = [w // 2, h // 2]
                 triangle[1] = points[0]
                 triangle[2] = points[1]
 
@@ -768,10 +769,10 @@ class PieCtrl(wx.Window):
 
             x = 2*pi
             points[0] = points[1]
-            px = int(w/2 * (1+cos(x+self._rotationangle)))
-            py = int(h/2-sin(self._angle)*h/2*sin(x+self._rotationangle)-1)
+            px = int(w/2.0 * (1+cos(x+self._rotationangle)))
+            py = int(h/2.0-sin(self._angle)*h/2.0*sin(x+self._rotationangle)-1)
             points[1] = [px, py]
-            triangle[0] = [w / 2, h / 2]
+            triangle[0] = [w // 2, h // 2]
             triangle[1] = points[0]
             triangle[2] = points[1]
 
@@ -797,16 +798,16 @@ class PieCtrl(wx.Window):
 
                 points[0] = points[1]
                 points[3] = points[2]
-                px = int(w/2 * (1+cos(x+self._rotationangle)))
-                py = int(h/2-sin(self._angle)*h/2*sin(x+self._rotationangle)-1)
+                px = int(w/2.0 * (1+cos(x+self._rotationangle)))
+                py = int(h/2.0-sin(self._angle)*h/2.0*sin(x+self._rotationangle)-1)
                 points[1] = [px, py]
                 points[2] = [px, int(py+self._height*cos(self._angle))]
 
                 if w > 0:
 
-                    curColour = wx.Colour(self._series[angleindex].GetColour().Red()*(1.0-float(px)/w),
-                                          self._series[angleindex].GetColour().Green()*(1.0-float(px)/w),
-                                          self._series[angleindex].GetColour().Blue()*(1.0-float(px)/w))
+                    curColour = wx.Colour(int(self._series[angleindex].GetColour().Red()*(1.0-float(px)/w)),
+                                          int(self._series[angleindex].GetColour().Green()*(1.0-float(px)/w)),
+                                          int(self._series[angleindex].GetColour().Blue()*(1.0-float(px)/w)))
 
                     if not self._showedges:
                         self._canvasDC.SetPen(wx.Pen(curColour))
@@ -825,16 +826,16 @@ class PieCtrl(wx.Window):
             x = 2*pi
             points[0] = points[1]
             points[3] = points[2]
-            px = int(w/2 * (1+cos(x+self._rotationangle)))
-            py = int(h/2-sin(self._angle)*h/2*sin(x+self._rotationangle)-1)
+            px = int(w/2.0 * (1+cos(x+self._rotationangle)))
+            py = int(h/2.0-sin(self._angle)*h/2.0*sin(x+self._rotationangle)-1)
             points[1] = [px, py]
             points[2] = [px, int(py+self._height*cos(self._angle))]
 
             if w > 0:
 
-                curColour = wx.Colour(self._series[angleindex].GetColour().Red()*(1.0-float(px)/w),
-                                          self._series[angleindex].GetColour().Green()*(1.0-float(px)/w),
-                                          self._series[angleindex].GetColour().Blue()*(1.0-float(px)/w))
+                curColour = wx.Colour(int(self._series[angleindex].GetColour().Red()*(1.0-float(px)/w)),
+                                      int(self._series[angleindex].GetColour().Green()*(1.0-float(px)/w)),
+                                      int(self._series[angleindex].GetColour().Blue()*(1.0-float(px)/w)))
 
                 if not self._showedges:
                     self._canvasDC.SetPen(wx.Pen(curColour))
@@ -848,8 +849,6 @@ class PieCtrl(wx.Window):
                 self.DrawParts(self._canvasDC, 0, 0, w, h)
             else:
                 self.DrawParts(self._canvasDC, 0, int(self._height*cos(self._angle)), w, h)
-
-        self._canvasDC.EndDrawing()
 
         pdc.Blit(0, 0, w, h, self._canvasDC, 0, 0)
         self._legend.RecreateBackground(self._canvasDC)
@@ -877,7 +876,7 @@ class ProgressPie(PieCtrl):
     :class:`ProgressPie` tries to emulate the behavior of :class:`ProgressDialog`, but
     using a pie chart instead of a gauge.
     """
-    
+
     def __init__(self, parent, maxvalue, value, id=wx.ID_ANY,
                  pos=wx.DefaultPosition, size=wx.DefaultSize, style=0):
         """
@@ -955,7 +954,7 @@ class ProgressPie(PieCtrl):
         """
         Sets the colour that progressively fills the :class:`ProgressPie` .
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._filledcolour = colour
@@ -967,7 +966,7 @@ class ProgressPie(PieCtrl):
         """
         Sets the colour that is filled.
 
-        :param `colour`: a valid :class:`Colour` object.
+        :param `colour`: a valid :class:`wx.Colour` object.
         """
 
         self._unfilledcolour= colour
@@ -986,3 +985,68 @@ class ProgressPie(PieCtrl):
 
         return self._unfilledcolour
 
+
+
+if __name__ == '__main__':
+
+    import wx
+
+    class MyFrame(wx.Frame):
+
+        def __init__(self, parent):
+
+            wx.Frame.__init__(self, parent, -1, "PieCtrl Demo")
+
+            panel = wx.Panel(self)
+
+            # create a simple PieCtrl with 3 sectors
+            mypie = PieCtrl(panel, -1, wx.DefaultPosition, wx.Size(180,270))
+
+            part = PiePart()
+
+            part.SetLabel("Label 1")
+            part.SetValue(300)
+            part.SetColour(wx.Colour(200, 50, 50))
+            mypie._series.append(part)
+
+            part = PiePart()
+
+            part.SetLabel("Label 2")
+            part.SetValue(200)
+            part.SetColour(wx.Colour(50, 200, 50))
+            mypie._series.append(part)
+
+            part = PiePart()
+
+            part.SetLabel("helloworld label 3")
+            part.SetValue(50)
+            part.SetColour(wx.Colour(50, 50, 200))
+            mypie._series.append(part)
+
+            # create a ProgressPie
+            progress_pie = ProgressPie(panel, 100, 50, -1, wx.DefaultPosition,
+                                       wx.Size(180, 200), wx.SIMPLE_BORDER)
+
+            progress_pie.SetBackColour(wx.Colour(150, 200, 255))
+            progress_pie.SetFilledColour(wx.Colour(255, 0, 0))
+            progress_pie.SetUnfilledColour(wx.WHITE)
+            progress_pie.SetHeight(20)
+
+            main_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+            main_sizer.Add(mypie, 1, wx.EXPAND | wx.ALL, 5)
+            main_sizer.Add(progress_pie, 1, wx.EXPAND | wx.ALL, 5)
+
+            panel.SetSizer(main_sizer)
+            main_sizer.Layout()
+
+
+    # our normal wxApp-derived class, as usual
+
+    app = wx.App(0)
+
+    frame = MyFrame(None)
+    app.SetTopWindow(frame)
+    frame.Show()
+
+    app.MainLoop()

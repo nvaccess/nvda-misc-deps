@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-__cvsid__ = "$Id$"
-__revision__ = "$Revision$"[11:-2]
 
 import unittest
 
@@ -32,8 +30,6 @@ class ModuleTestCase(unittest.TestCase):
     def test_module(self):
         module = introspect
         self.assert_(module.__author__)
-        self.assert_(module.__cvsid__)
-        self.assert_(module.__revision__)
         self.assert_(module.getAllAttributeNames)
         self.assert_(module.getAttributeNames)
         self.assert_(module.getAutoCompleteList)
@@ -52,38 +48,38 @@ class RtrimTerminusTestCase(unittest.TestCase):
             ('', None, ''),
             ('', '.', ''),
             ('', '(', ''),
-            
+
             ('.', '', '.'),
             ('.', None, '.'),
             ('.', '.', '.'),
             ('.', '(', '.'),
-            
+
             ('(', '', '('),
             ('(', None, '('),
             ('(', '.', '('),
             ('(', '(', '('),
-            
+
             ('spam', '', 'spam'),
             ('spam', None, 'spam'),
             ('spam', '.', 'spam'),
             ('spam', '(', 'spam'),
-            
+
             ('spam.', '', 'spam.'),
             ('spam.', None, 'spam.'),
             ('spam.', '.', 'spam.'),
             ('spam.', '(', 'spam.'),
-            
+
             ('spam(', '', 'spam('),
             ('spam(', None, 'spam('),
             ('spam(', '.', 'spam('),
             ('spam(', '(', 'spam('),
-            
+
             ('spam.eggs', '.', 'spam.'),
             ('spam.eggs.', '.', 'spam.eggs.'),
             ('spam.eggs(', '(', 'spam.eggs('),
             ('spam.eggs.', '(', 'spam.eggs.'),
             ('spam.eggs(', '.', 'spam.'),
-            
+
             ('x = spam.', '.', 'x = spam.'),
             ('x = spam.eggs', '.', 'x = spam.'),
             ('x = spam.eggs.', '.', 'x = spam.eggs.'),
@@ -110,38 +106,38 @@ class GetRootTestCase(unittest.TestCase):
             ('', None, ''),
             ('', '.', ''),
             ('', '(', ''),
-            
+
             ('.', '', '.'),
             ('.', None, '.'),
             ('.', '.', ''),
             ('.', '(', '.'),
-            
+
             ('(', '', ''),
             ('(', None, ''),
             ('(', '.', ''),
             ('(', '(', ''),
-            
+
             ('spam', '', 'spam'),
             ('spam', None, 'spam'),
             ('spam', '.', ''),
             ('spam', '(', 'spam'),
-            
+
             ('spam.', '', 'spam.'),
             ('spam.', None, 'spam.'),
             ('spam.', '.', 'spam'),
             ('spam.', '(', 'spam.'),
-            
+
             ('spam(', '', ''),
             ('spam(', None, ''),
             ('spam(', '.', ''),
             ('spam(', '(', 'spam'),
-            
+
             ('spam.eggs', '.', 'spam'),
             ('spam.eggs.', '.', 'spam.eggs'),
             ('spam.eggs(', '(', 'spam.eggs'),
             ('spam.eggs.', '(', 'spam.eggs.'),
             ('spam.eggs(', '.', 'spam'),
-            
+
             ('x = spam.', '.', 'spam'),
             ('x = spam.eggs', '.', 'spam'),
             ('x = spam.eggs.', '.', 'spam.eggs'),
@@ -159,17 +155,17 @@ class GetRootTestCase(unittest.TestCase):
             ('spam_', None, 'spam_'),
             ('spam_', '.', ''),
             ('spam_', '(', 'spam_'),
-            
+
             ('_spam', '', '_spam'),
             ('_spam', None, '_spam'),
             ('_spam', '.', ''),
             ('_spam', '(', '_spam'),
-            
+
             ('spam_eggs', '', 'spam_eggs'),
             ('spam_eggs', None, 'spam_eggs'),
             ('spam_eggs', '.', ''),
             ('spam_eggs', '(', 'spam_eggs'),
-            
+
             ('spam123', '', 'spam123'),
             ('spam123', None, 'spam123'),
             ('spam123', '.', ''),
@@ -205,18 +201,18 @@ class GetRootTestCase(unittest.TestCase):
 ##            ("x = 'spam.", '.', ''),
 ##            ('x = """spam.', '.', ''),
 ##            ("x = '''spam.", '.', ''),
-##            
+##
 ##            ('x = "spam', '(', ''),
 ##            ('x = "spam(', '(', ''),
 ##            ("x = 'spam(", '(', ''),
 ##            ('x = """spam(', '(', ''),
 ##            ("x = '''spam(", '(', ''),
-##            
+##
 ##            ('x = "spam.eggs.', '.', ''),
 ##            ("x = 'spam.eggs.", '.', ''),
 ##            ('x = """spam.eggs.', '.', ''),
 ##            ("x = '''spam.eggs.", '.', ''),
-##            
+##
 ##            ('x = "spam.eggs(', '(', ''),
 ##            ("x = 'spam.eggs(", '(', ''),
 ##            ('x = """spam.eggs(', '(', ''),
@@ -235,11 +231,11 @@ class GetRootTestCase(unittest.TestCase):
             ('[].', '.', '[]'),
             ('().', '.', '()'),
             ('{}.', '.', '{}'),
-            
+
             ('[](', '(', '[]'),
             ('()(', '(', '()'),
             ('{}(', '(', '{}'),
-            
+
             ("x = ''.", '.', "''"),
             ('x = "".', '.', '""'),
             ('x = """""".', '.', '""""""'),
@@ -248,7 +244,7 @@ class GetRootTestCase(unittest.TestCase):
             ('x = [].', '.', '[]'),
             ('x = ().', '.', '()'),
             ('x = {}.', '.', '{}'),
-            
+
             ('x = [](', '(', '[]'),
             ('x = ()(', '(', '()'),
             ('x = {}(', '(', '{}'),
@@ -256,7 +252,7 @@ class GetRootTestCase(unittest.TestCase):
             ('print [].', '.', '[]'),
             ('print ().', '.', '()'),
             ('print {}.', '.', '{}'),
-            
+
             ('print [](', '(', '[]'),
             ('print ()(', '(', '()'),
             ('print {}(', '(', '{}'),
@@ -269,7 +265,7 @@ class GetRootTestCase(unittest.TestCase):
             ('[].attr.', '.', '[].attr'),
             ('().attr.', '.', '().attr'),
             ('{}.attr.', '.', '{}.attr'),
-            
+
             ('[].attr(', '(', '[].attr'),
             ('().attr(', '(', '().attr'),
             ('{}.attr(', '(', '{}.attr'),
@@ -623,7 +619,7 @@ class GetAttributeTestCase(unittest.TestCase):
 class BrokenStr:
     def __str__(self):
         raise Exception
-    
+
 brokenStr = BrokenStr()
 
 class GetAttributeNamesTestCase(GetAttributeTestCase):
@@ -694,7 +690,7 @@ class GetAttributeNamesTestCase(GetAttributeTestCase):
     def test_getAttributeNames(self):
         for item in self.items:
             self._checkAttributeNames(item)
-        if __builtins__.has_key('object'):
+        if 'object' in __builtins__:
             self._checkAttributeNames(object)
 
     def test_getAttributeNames_NoSingle(self):
@@ -702,7 +698,7 @@ class GetAttributeNamesTestCase(GetAttributeTestCase):
             result = introspect.getAttributeNames(item, includeSingle=0)
             attributes = [attribute for attribute in result \
                           if attribute[0] != '_' or attribute[:2] == '__']
-            self.assertEqual(result, attributes, 
+            self.assertEqual(result, attributes,
                              ':item: %r' % (item,))
 
     def test_getAttributeNames_NoDouble(self):
@@ -710,16 +706,16 @@ class GetAttributeNamesTestCase(GetAttributeTestCase):
             result = introspect.getAttributeNames(item, includeDouble=0)
             attributes = [attribute for attribute in result \
                           if attribute[:2] != '__']
-            self.assertEqual(result, attributes, 
+            self.assertEqual(result, attributes,
                              ':item: %r' % (item,))
 
     def test_getAttributeNames_NoSingleOrDouble(self):
         for item in self.items:
-            result = introspect.getAttributeNames(item, includeSingle=0, 
+            result = introspect.getAttributeNames(item, includeSingle=0,
                                                   includeDouble=0)
             attributes = [attribute for attribute in result \
                           if attribute[0] != '_']
-            self.assertEqual(result, attributes, 
+            self.assertEqual(result, attributes,
                              ':item: %r' % (item,))
 
     def _checkAttributeNames(self, item):
@@ -727,7 +723,7 @@ class GetAttributeNamesTestCase(GetAttributeTestCase):
         attributes = [attribute for attribute in self.values \
                       if hasattr(item, attribute)]
         for attribute in attributes:
-            self.assert_(attribute in result, 
+            self.assert_(attribute in result,
                          ':item: %r :attribute: %r' % (item, attribute))
 
 
@@ -755,7 +751,7 @@ class GetAutoCompleteListTestCase(GetAttributeTestCase):
             attributes = [attribute for attribute in self.values \
                           if hasattr(object, attribute)]
             for attribute in attributes:
-                self.assert_(attribute in result, 
+                self.assert_(attribute in result,
                              ':item: %r :attribute: %r' % (item, attribute))
 
     def test_getAutoCompleteList_NoSingle(self):
@@ -763,7 +759,7 @@ class GetAutoCompleteListTestCase(GetAttributeTestCase):
             result = introspect.getAutoCompleteList(item, includeSingle=0)
             attributes = [attribute for attribute in result \
                           if attribute[0] != '_' or attribute[:2] == '__']
-            self.assertEqual(result, attributes, 
+            self.assertEqual(result, attributes,
                              ':item: %r' % (item,))
 
     def test_getAutoCompleteList_NoDouble(self):
@@ -771,16 +767,16 @@ class GetAutoCompleteListTestCase(GetAttributeTestCase):
             result = introspect.getAutoCompleteList(item, includeDouble=0)
             attributes = [attribute for attribute in result \
                           if attribute[:2] != '__']
-            self.assertEqual(result, attributes, 
+            self.assertEqual(result, attributes,
                              ':item: %r' % (item,))
 
     def test_getAutoCompleteList_NoSingleOrDouble(self):
         for item in self.items:
-            result = introspect.getAutoCompleteList(item, includeSingle=0, 
+            result = introspect.getAutoCompleteList(item, includeSingle=0,
                                                     includeDouble=0)
             attributes = [attribute for attribute in result \
                           if attribute[0] != '_']
-            self.assertEqual(result, attributes, 
+            self.assertEqual(result, attributes,
                              ':item: %r' % (item,))
 
 
@@ -800,7 +796,7 @@ class C1(A1):
 class D1(C1, B1):
     pass
 
-if __builtins__.has_key('object'):
+if 'object' in __builtins__:
     class A2(object):
         def __init__(self, a):
             self.a = a
@@ -814,7 +810,7 @@ if __builtins__.has_key('object'):
 
     class D2(C2, B2):
         pass
-    
+
 class N:
     pass
 
@@ -851,7 +847,7 @@ class GetConstructorTestCase(unittest.TestCase):
         args = ('self', 'a')
         varnames = introspect.getConstructor(D1).func_code.co_varnames
         self.assertEqual(varnames, args)
-        if __builtins__.has_key('object'):
+        if 'object' in __builtins__:
             # Test new style inheritance rules as well.
             args = ('self', 'b')
             varnames = introspect.getConstructor(D2).func_code.co_varnames
