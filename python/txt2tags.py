@@ -2125,7 +2125,7 @@ class ConfigMaster:
 		# Flags ON comes empty. we'll add the 1 value now
 		if val == '' and (
 		   key in self.dft_flags or
-		   key in dft_actions):
+		   key in self.dft_actions):
 			val = 1
 		# Multi value or single?
 		if key in self.multi:
