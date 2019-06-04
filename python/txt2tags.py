@@ -4569,15 +4569,15 @@ def convert(bodylines, config, firstlinenr=1):
 
 def load_GUI_resources():
 	"Load all extra modules and methods used by GUI"
-	global askopenfilename, showinfo, showwarning, showerror, Tkinter
-	from six.moves.tkinter_filedialog import askopenfilename
-	from six.moves.tkinter_messagebox import showinfo,showwarning,showerror
-	import six.moves.tkinter
+	global askopenfilename, showinfo, showwarning, showerror, tkinter
+	from tkinter.filedialog import askopenfilename
+	from tkinter.messagebox import showinfo,showwarning,showerror
+	import tkinter
 
 class Gui:
 	"Graphical Tk Interface"
 	def __init__(self, conf={}):
-		self.root = six.moves.tkinter.Tk()    # mother window, come to butthead
+		self.root = tkinter.Tk()    # mother window, come to butthead
 		self.root.title(my_name)    # window title bar text
 		self.window = self.root     # variable "focus" for inclusion
 		self.row = 0                # row count for grid()
@@ -4616,13 +4616,13 @@ class Gui:
 		self.root.config(bd=15,bg=self.bg1)
 	
 	### Config as dic for python 1.5 compat (**opts don't work :( )
-	def entry(self, **opts): return six.moves.tkinter.Entry(self.window, opts)
+	def entry(self, **opts): return tkinter.Entry(self.window, opts)
 	def label(self, txt='', bg=None, **opts):
 		opts.update({'text':txt,'bg':bg or self.bg1})
-		return six.moves.tkinter.Label(self.window, opts)
+		return tkinter.Label(self.window, opts)
 	def button(self,name,cmd,**opts):
 		opts.update({'text':name,'command':cmd})
-		return six.moves.tkinter.Button(self.window, opts)
+		return tkinter.Button(self.window, opts)
 	def check(self,name,checked=0,**opts):
 		bg, fg = self.bg2, self.fg2
 		opts.update({
@@ -4631,18 +4631,18 @@ class Gui:
 		  'activebackground':bg, 'bg':bg,
 		  'highlightbackground':bg, 'anchor':'w'
 		})
-		chk = six.moves.tkinter.Checkbutton(self.window, opts)
+		chk = tkinter.Checkbutton(self.window, opts)
 		if checked: chk.select()
 		chk.grid(columnspan=2, sticky='w', padx=0)
 	def menu(self,sel,items):
-		return six.moves.tkinter.OptionMenu(*(self.window,sel)+tuple(items))
+		return tkinter.OptionMenu(*(self.window,sel)+tuple(items))
 	
 	# Handy auxiliary functions
 	def action(self, txt):
 		self.label(txt, fg=self.fg1, bg=self.bg1,
 		     wraplength=self.action_length).grid(column=0,row=self.row)
 	def frame_open(self):
-		self.window = six.moves.tkinter.Frame(self.root,bg=self.bg2,
+		self.window = tkinter.Frame(self.root,bg=self.bg2,
 		     borderwidth=self.frame_border)
 	def frame_close(self):
 		self.window.grid(column=1, row=self.row, sticky='w',
@@ -4662,7 +4662,7 @@ class Gui:
 		self.target_name = self.setvar(name)
 	
 	def exit(self): self.root.destroy()
-	def setvar(self, val): z = six.moves.tkinter.StringVar() ; z.set(val) ; return z
+	def setvar(self, val): z = tkinter.StringVar() ; z.set(val) ; return z
 	
 	def askfile(self):
 		ftypes= [(_('txt2tags files'),('*.t2t','*.txt')),
@@ -4680,13 +4680,13 @@ class Gui:
 	
 	def scrollwindow(self, txt='no text!', title=''):
 		# Create components
-		win    = six.moves.tkinter.Toplevel() ; win.title(title)
-		frame  = six.moves.tkinter.Frame(win)
-		scroll = six.moves.tkinter.Scrollbar(frame)
-		text   = six.moves.tkinter.Text(frame,yscrollcommand=scroll.set)
-		button = six.moves.tkinter.Button(win)
+		win    = tkinter.Toplevel() ; win.title(title)
+		frame  = tkinter.Frame(win)
+		scroll = tkinter.Scrollbar(frame)
+		text   = tkinter.Text(frame,yscrollcommand=scroll.set)
+		button = tkinter.Button(win)
 		# Config
-		text.insert(six.moves.tkinter.END, '\n'.join(txt))
+		text.insert(tkinter.END, '\n'.join(txt))
 		scroll.config(command=text.yview)
 		button.config(text=_('Close'), command=win.destroy)
 		button.focus_set()
@@ -4806,7 +4806,7 @@ class Gui:
 		targets_menu = [TARGET_NAMES[x] for x in TARGETS]
 		
 		# Header
-		self.label("%s %s"%(string.upper(my_name), my_version),
+		self.label("%s %s"%(my_name.upper(), my_version),
 		     bg=self.bg2, fg=self.fg2).grid(columnspan=2, ipadx=10)
 		self.label(_("ONE source, MULTI targets")+'\n%s\n'%my_url,
 		     bg=self.bg1, fg=self.fg1).grid(columnspan=2)
