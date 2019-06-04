@@ -1587,7 +1587,7 @@ def Message(msg,level):
 def Debug(msg,id=0,linenr=None):
 	"Show debug messages, categorized (colored or not)"
 	if QUIET or not DEBUG: return
-	if int(id) not in list(range(8)): id = 0
+	if int(id) not in range(8): id = 0
 	# 0:black 1:red 2:green 3:yellow 4:blue 5:pink 6:cyan 7:white ;1:light
 	ids            = ['INI','CFG','SRC','BLK','HLD','GUI','OUT','DET']
 	colors_bgdark  = ['7;1','1;1','3;1','6;1','4;1','5;1','2;1','7;1']
@@ -1623,7 +1623,7 @@ def Readfile(file, remove_linebreaks=0, ignore_error=0):
 def Savefile(file, contents):
 	try: f = open(file, 'wb')
 	except: Error(_("Cannot open file for writing:")+" %s"%file)
-	if type(contents) == type([]):
+	if isinstance(contents, list):
 		doit = f.write
 		contents = ('\n'.join([s.rstrip('\n') for s in contents]) + '\n').encode('utf-8')
 	elif type(contents) == type([]): doit = f.writelines
