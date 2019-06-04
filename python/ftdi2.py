@@ -97,7 +97,7 @@ def ftExceptionDecorator(f):
         if status == None:
             status = 18
         if status != FT_OK:
-            raise FTDeviceError,status
+            raise FTDeviceError(status)
     return fn_wrap
 
 
@@ -206,7 +206,7 @@ def list_devices():
 
     if n.value:
         p_array = (c.c_char_p*(n.value + 1))()
-        for i in xrange(n.value):
+        for i in range(n.value):
             p_array[i] = c.cast(c.c_buffer(64), c.c_char_p)
         _PY_ListDevices(p_array, c.byref(n), c.c_ulong(FT_LIST_ALL|FT_OPEN_BY_SERIAL_NUMBER ))
         return [ser for ser in p_array[:n.value]]
@@ -259,7 +259,7 @@ def get_device_info_list():
         return_list.append({'Flags':i.Flags,'Type':i.Type,'LocID':i.LocID,'SerialNumber':i.SerialNumber,'Description':i.Description})
     return return_list[:-1]
 #------------------------------------------------------------------------------
-def open_ex(serial=''):
+def open_ex(serial=b''):
     '''open's FTDI-device by EEPROM-serial (prefered method).
     Serial fetched by the ListDevices fn'''
     ftHandle = c.c_ulong()
@@ -324,8 +324,8 @@ class FTD2XX(object):
         _PY_GetQueueStatus(self.ftHandle, c.byref(lpdwAmountInRxQueue))
         return lpdwAmountInRxQueue.value
 #------------------------------------------------------------------------------
-    def write(self, lpBuffer=''):
-        '''writes the string-type "data" to the opened port.'''
+    def write(self, lpBuffer=b''):
+        '''writes the bytes-type "data" to the opened port.'''
         lpdwBytesWritten = c.c_ulong()
         _PY_Write(self.ftHandle, lpBuffer, len(lpBuffer), c.byref(lpdwBytesWritten))
         return lpdwBytesWritten.value
