@@ -1621,8 +1621,8 @@ def Savefile(file, contents):
 	try: f = open(file, 'wb')
 	except: Error(_("Cannot open file for writing:")+" %s"%file)
 	if isinstance(contents, list):
-		doit = f.write
-		contents = (''.join(contents)).encode('utf-8')
+		doit = f.writelines
+		contents = [line.encode('utf-8') for line in contents]
 	else: doit = f.write
 	doit(contents) ; f.close()
 
