@@ -1622,7 +1622,7 @@ def Savefile(file, contents):
 	except: Error(_("Cannot open file for writing:")+" %s"%file)
 	if isinstance(contents, list):
 		doit = f.write
-		contents = ('\n'.join([s.rstrip('\n') for s in contents]) + '\n').encode('utf-8')
+		contents = (''.join([s for s in contents])).encode('utf-8')
 	else: doit = f.write
 	doit(contents) ; f.close()
 
