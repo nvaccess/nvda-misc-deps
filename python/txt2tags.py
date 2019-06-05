@@ -1623,7 +1623,6 @@ def Savefile(file, contents):
 	if isinstance(contents, list):
 		doit = f.write
 		contents = ('\n'.join([s.rstrip('\n') for s in contents]) + '\n').encode('utf-8')
-	elif type(contents) == type([]): doit = f.writelines
 	else: doit = f.write
 	doit(contents) ; f.close()
 
