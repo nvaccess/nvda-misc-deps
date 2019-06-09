@@ -3352,7 +3352,7 @@ def dumpConfig(source_raw, parsed_config):
 		if key in FLAGS or key in ACTIONS:
 			val = onoff.get(val) or val
 		# List beautifier
-		if type(val) == type([]):
+		if isinstance(val, list):
 			if key == 'options': sep = ' '
 			else               : sep = ', '
 			val = sep.join(val)
