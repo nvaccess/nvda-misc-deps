@@ -3126,7 +3126,7 @@ class BlockMaster:
 		
 		if open: result.append(tagindent+open)     # open block
 		for item in self.hold():
-			if type(item) == type([]):
+			if isinstance(item, list):
 				result.extend(item)        # subquotes
 			else:
 				item = myre.sub('', item)  # del TABs
@@ -3205,7 +3205,7 @@ class BlockMaster:
 			
 			# Process next lines for this item (if any)
 			for line in item:
-				if type(line) == type([]): # sublist inside
+				if isinstance(line, list): # sublist inside
 					result.extend(line)
 				else:
 					line = self._last_escapes(line)
@@ -3655,13 +3655,13 @@ def EscapeCharHandler(action, data):
 
 def maskEscapeChar(data):
 	"Replace any Escape Char \ with a text mask (Input: str or list)"
-	if type(data) == type([]):
+	if isinstance(data, list):
 		return [EscapeCharHandler('mask', x) for x in data]
 	return EscapeCharHandler('mask',data)
 
 def unmaskEscapeChar(data):
 	"Undo the Escape char \ masking (Input: str or list)"
-	if type(data) == type([]):
+	if isinstance(data, list):
 		return [EscapeCharHandler('unmask', x) for x in data]
 	return EscapeCharHandler('unmask',data)
 
@@ -3922,7 +3922,7 @@ def process_source_file(file='', noconf=0, contents=[]):
 		elif full_parsed.get('show-config-value'):
 			config_value = full_parsed.get(full_parsed['show-config-value'])
 			if config_value:
-				if type(config_value) == type([]):
+				if isinstance(config_value, list):
 					print('\n'.join(config_value))
 				else:
 					print(config_value)
