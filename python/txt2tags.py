@@ -1723,7 +1723,7 @@ class CommandLine:
 		ret = []
 		for opt in self.short_long.keys():
 			long = self.short_long[opt]
-			if int in self.all_options: # is flag or option?
+			if long in self.all_options: # is flag or option?
 				opt = opt+':'        # option: have param
 			ret.append(opt)
 		#Debug('Valid SHORT options: %s'%ret)
