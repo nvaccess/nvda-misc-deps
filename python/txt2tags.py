@@ -1762,7 +1762,7 @@ class CommandLine:
 		if not cmdline: return []
 		ret = []
 		# We need lists, not strings
-		if type(cmdline) in (type(''), type(u'')):
+		if isinstance(cmdline, str):
 			cmdline = self._tokenize(cmdline)
 		opts, args = self.parse(cmdline[:])
 		# Parse all options
@@ -2067,12 +2067,11 @@ class ConfigMaster:
 		"Turns OFF all the config/options/flags"
 		off = {}
 		for key in self.defaults.keys():
-			kind = type(self.defaults[key])
-			if kind == type(9):
+			if isinstance(self.defaults[key], int):
 				off[key] = 0
-			elif kind == type('') or kind == type(u''):
+			elif isinstance(self.defaults[key], str):
 				off[key] = ''
-			elif kind == type([]):
+			elif isinstance(self.defaults[key], list):
 				off[key] = []
 			else:
 				Error('ConfigMaster: %s: Unknown type'+key)
@@ -3032,14 +3031,13 @@ class BlockMaster:
 	def _get_escaped_hold(self):
 		ret = []
 		for line in self.hold():
-			linetype = type(line)
-			if linetype == type('') or linetype == type(u''):
+			if isinstance(line, str):
 				ret.append(self._last_escapes(line))
-			elif linetype == type([]):
+			elif isinstance(line, list):
 				ret.extend(line)
 			else:
 				Error("BlockMaster: Unknown HOLD item type:"
-				      " %s"%linetype)
+				      " %s"%type(line))
 		return ret
 	
 	def _remove_twoblanks(self, lastitem):
