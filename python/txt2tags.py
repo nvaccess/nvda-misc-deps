@@ -1628,7 +1628,7 @@ def Savefile(file, contents):
 
 def showdic(dic):
 	for k, v in dic.items():
-		print("%15s : %s" % (k,l))
+		print("%15s : %s" % (k,v))
 def dotted_spaces(txt=''):
 	return txt.replace(' ','.')
 
