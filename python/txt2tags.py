@@ -3342,7 +3342,7 @@ def dumpConfig(source_raw, parsed_config):
 		print()
 	# Then the parsed results of all of them
 	print(_('Full PARSED config'))
-	keys = list(parsed_config.keys()) ; keys.sort()  # sorted
+	keys = sorted(parsed_config.keys())
 	for key in keys:
 		val = parsed_config[key]
 		# Filters are the last
