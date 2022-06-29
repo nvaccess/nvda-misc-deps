@@ -40,9 +40,15 @@ import "oleacc.idl";		//ajc - get the real definition of IAccessible from Micros
 	helpstring("IAccID Interface"),
 	pointer_default(unique)
 ]
+
+
    interface IAccID : IUnknown
 {
-	[id(22), helpstring("method get_accID")] HRESULT get_accID([out, retval] long *pID);
+#if _WIN64
+	[id(22), helpstring("method get_accID")] HRESULT get_accID([out, retval] long long*pID);
+#else
+	[id(22), helpstring("method get_accID")] HRESULT get_accID([out, retval] long* pID);
+#endif
    };
 
 [
