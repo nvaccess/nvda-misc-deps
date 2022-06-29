@@ -1,13 +1,48 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is mozilla.org code.
+ *
+ * The Initial Developer of the Original Code is
+ * Netscape Communications Corporation.
+ * Portions created by the Initial Developer are Copyright (C) 1998
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *   Author: Aaron Leventhal (aaronl@netscape.com)
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either of the GNU General Public License Version 2 or later (the "GPL"),
+ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 cpp_quote("///////////////////////////////////////////////////////////////////////////////////////////////////////")
 cpp_quote("//")
 cpp_quote("// ISimpleDOMNode")
 cpp_quote("// ---------------------------------------------------------------------------------------------------=")
 cpp_quote("// An interface that extends MSAA's IAccessible to provide readonly DOM node information via cross-process COM.")
+cpp_quote("//")
+cpp_quote("// @STATUS UNDER_REVIEW")
 cpp_quote("//")
 cpp_quote("// get_nodeInfo(")
 cpp_quote("//  /* [out] */ BSTR  *nodeName,   // For elements, this is the tag name")
@@ -84,7 +119,7 @@ cpp_quote("//")
 cpp_quote("//")
 cpp_quote("// get_localInterface(/* [out] */ void **localInterface);")
 cpp_quote("// ---------------------------------------------------------------------------------------------------=")
-cpp_quote("// Only available in Gecko's process")
+cpp_quote("// Only available in Gecko's process - casts to an XPCOM nsIAccessNode interface pointer")
 cpp_quote("//")
 cpp_quote("//")
 cpp_quote("// get_language(/* [out] */ BSTR *htmlText);")
@@ -98,9 +133,13 @@ cpp_quote("")
 
 import "objidl.idl";
 import "oaidl.idl";
-
-import "ISimpleDOMText.idl";
-import "ISimpleDOMDocument.idl";
+        
+const long DISPID_NODE_NODEINFO   = -5900;
+const long DISPID_NODE_ATTRIBUTES = -5901;
+const long DISPID_NODE_ATTRIBUTESFORNAMES = -5902;
+const long DISPID_NODE_COMPSTYLE  = -5903;
+const long DISPID_NODE_COMPSTYLEFORPROPS = -5904;
+const long DISPID_NODE_LANGUAGE = -5905;
 
 [object, uuid(1814ceeb-49e2-407f-af99-fa755a7d2607)]
 interface ISimpleDOMNode : IUnknown
@@ -118,7 +157,7 @@ interface ISimpleDOMNode : IUnknown
   const unsigned short NODETYPE_DOCUMENT_FRAGMENT = 11;
   const unsigned short NODETYPE_NOTATION = 12;
 
-  [propget] HRESULT nodeInfo(
+  [propget, id(DISPID_NODE_NODEINFO)] HRESULT nodeInfo(
     [out] BSTR *nodeName,   // for performance returns NULL for text nodes (true nodeName would be "#text")
     [out] short *nameSpaceID,
     [out] BSTR *nodeValue,
@@ -127,7 +166,7 @@ interface ISimpleDOMNode : IUnknown
     [out, retval] unsigned short *nodeType
   );
 
-  [propget] HRESULT attributes(  
+  [propget, id(DISPID_NODE_ATTRIBUTES)] HRESULT attributes(  
     [in] unsigned short maxAttribs,
     [out, size_is(maxAttribs), length_is(*numAttribs)] BSTR *attribNames, 
     [out, size_is(maxAttribs), length_is(*numAttribs)] short *nameSpaceID,  
@@ -135,14 +174,14 @@ interface ISimpleDOMNode : IUnknown
     [out, retval] unsigned short *numAttribs
   );
 
-  [propget] HRESULT attributesForNames(  
+  [propget, id(DISPID_NODE_ATTRIBUTESFORNAMES)] HRESULT attributesForNames(  
     [in] unsigned short numAttribs,
     [in, size_is(numAttribs), length_is(numAttribs)] BSTR *attribNames, 
     [in, size_is(numAttribs), length_is(numAttribs)] short *nameSpaceID,  
     [out, retval, size_is(numAttribs), length_is(numAttribs)] BSTR *attribValues
   );
 
-  [propget] HRESULT computedStyle(  
+  [propget, id(DISPID_NODE_COMPSTYLE)] HRESULT computedStyle(  
     [in] unsigned short maxStyleProperties,
     [in] boolean useAlternateView,  // If TRUE, returns properites for media as set in nsIDOMDocument::set_alternateViewMediaTypes
     [out, size_is(maxStyleProperties), length_is(*numStyleProperties)] BSTR *styleProperties, 
@@ -150,7 +189,7 @@ interface ISimpleDOMNode : IUnknown
     [out, retval] unsigned short *numStyleProperties
   );
 
-  [propget] HRESULT computedStyleForProperties(  
+  [propget, id(DISPID_NODE_COMPSTYLEFORPROPS)] HRESULT computedStyleForProperties(  
     [in] unsigned short numStyleProperties, 
     [in] boolean useAlternateView,  // If TRUE, returns properites for media as set in nsIDOMDocument::set_alternateViewMediaTypes
     [in, size_is(numStyleProperties), length_is(numStyleProperties)] BSTR *styleProperties, 
@@ -171,18 +210,7 @@ interface ISimpleDOMNode : IUnknown
 
   [propget, local] HRESULT localInterface([out][retval] void **localInterface);
 
-  [propget] HRESULT language([out, retval] BSTR *language);
+  [propget, id(DISPID_NODE_LANGUAGE)] HRESULT language([out, retval] BSTR *language);
 }
 
-
-[
-    uuid(a6245497-9c0b-4449-85a5-bd6ad07df8ea), 
-    helpstring("ISimpleDOM Type Library")
-] 
-library ISimpleDOM 
-{
-  interface ISimpleDOMNode;
-  interface ISimpleDOMText;
-  interface ISimpleDOMDocument;
-};
 
