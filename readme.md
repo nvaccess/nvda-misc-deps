@@ -14,9 +14,10 @@ See also [NVDA git submodules documentation](https://github.com/nvaccess/nvda/bl
 
 ### iSimpleDOM
 
-MSAA interfaces for gecko / firefox.
+ISimpleDOM interfaces for gecko / firefox.
 
 Update from [here](https://github.com/mozilla/gecko-dev/tree/master/accessible/interfaces/msaa).
+The following files are required: ISimpleDOM.idl, ISimpleDOMNode.idl, iSimpleDOMDocument.idl and iSimpleDOMText.idl.
 
 Changes may require build script changes.
 
