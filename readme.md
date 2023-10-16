@@ -23,7 +23,7 @@ Changes may require build script changes.
 ### mathPlayer
 
 Project has been abandoned, updates are unlikely.
-In NVDA this will be abandoned after a transition period in favour of MathCAT.
+This will be abandoned in NVDA in favour of MathCAT, once MathCAT contains all functionality of MathPlayer. 
 
 ## python
 
