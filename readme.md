@@ -57,6 +57,7 @@ Use the following steps to build a version of the brlapi Python extension that i
 1. Move to the BRLTTY repository with the `cd` command
 1. Run `Windows/winsetup`. ***Important note:** This script installs several packages to your C drive. Investigate the winsetup script for more details
 1. Restart msys1 and go back to the repository.
+1. Run `./autogen`
 1. Run `Windows/mkwin ./`
 1. When the build has finished, there will be a zip file in the repository, e.g. "brltty-win-*-libusb.zip"
 1. Extract the zip.
