@@ -38,6 +38,17 @@ This will require a significant rewrite of the papenmeier display driver.
 
 Used for BrlTTY.
 
+This requires updating the following files:
+  - `brlapi.cp311-win32.pyd` from `brltty-win-X.X-0-libusb\Python\Lib\site-packages\brlapi.cp11-win32.pyd`
+  - `libgcc_s_dw2-1.dll` from `brltty-win-X.X-0-libusb\bin\libgcc_s_dw2-1.dll`
+  - `brlapi-*.dll` from `brltty-win-X.X-0-libusb\brltty-win-6.6-0-libusb\bin\brlapi-*.dll`
+
+To get `brltty-win-X.X-0-libusb` you must either build it from source or download it from the [BrlTTY website](https://brltty.app/download.html) (not the 1.0 variant).
+
+#### Building from source
+
+If BRLTTY doesn't have a public release compatible with NVDA's python version, you must build it from source.
+
 Use the following steps to build a version of the brlapi Python extension that is compatible with a particular version of Python:
 
 1. Download [mingw-get](https://sourceforge.net/projects/mingw/files/latest/download)
