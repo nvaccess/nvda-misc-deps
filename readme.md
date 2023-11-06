@@ -17,7 +17,7 @@ See also [NVDA git submodules documentation](https://github.com/nvaccess/nvda/bl
 ISimpleDOM interfaces for gecko / firefox.
 
 Update from [here](https://github.com/mozilla/gecko-dev/tree/master/accessible/interfaces/msaa).
-The following files are required: ISimpleDOM.idl, ISimpleDOMNode.idl, iSimpleDOMDocument.idl and iSimpleDOMText.idl.
+The `moz.build` file is not required, but can be used to inform updates to [our build script](..\nvdaHelper\ISimpleDOM_sconscript).
 
 Changes may require build script changes.
 
