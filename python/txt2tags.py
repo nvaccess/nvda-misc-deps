@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # txt2tags - generic text conversion tool
+
+# Note, modified version of txt2tag 3.9 (ctrl+f WARNING).
+# Currently only used for the transition from txt2tags to markdown.
+
 # https://txt2tags.org/
 # https://github.com/jendrikseipp/txt2tags
 #
@@ -387,10 +391,11 @@ _%(HEADER3)s_
 %(HEADER2)s
 %(HEADER3)s
 """,
+    # WARNING: modified by NV Access to add header formatting to titles
     "md": """\
-%(HEADER1)s
-%(HEADER2)s
-%(HEADER3)s
+# %(HEADER1)s
+## %(HEADER2)s
+### %(HEADER3)s
 """,
     "ctx": r"""\mainlanguage[en]
 \definecolor[linkcolor][h=0007F0]
@@ -1218,12 +1223,15 @@ def getTags(config):
         },
         # regular markdown: http://daringfireball.net/projects/markdown/syntax
         # markdown extra:   http://michelf.com/projects/php-markdown/extra/
+        # WARNING: This section has been modified by NV Access to add anchors and TOC
         "md": {
-            "title1": "# \a ",
-            "title2": "## \a ",
-            "title3": "### \a ",
-            "title4": "#### \a ",
-            "title5": "##### \a ",
+            "TOC": "[TOC]",
+            "anchor": "{#\a}",
+            "title1": "## \a ~A~",
+            "title2": "### \a ~A~",
+            "title3": "#### \a ~A~",
+            "title4": "##### \a ~A~",
+            "title5": "###### \a ~A~",
             "blockVerbLine": "    ",
             "blockQuoteLine": "> ",
             "fontMonoOpen": "`",
@@ -1256,7 +1264,6 @@ def getTags(config):
             "urlMark": "[\a](\a)",
             "email": "<\a>",
             "emailMark": "[\a](mailto:\a)",
-            "anchor": None,
             # Image markup
             "img": "![](\a)",
             "imgAlignLeft": None,
