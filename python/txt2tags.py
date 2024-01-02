@@ -1226,12 +1226,12 @@ def getTags(config):
         # WARNING: This section has been modified by NV Access to add anchors and TOC
         "md": {
             "TOC": "[TOC]",
-            "anchor": "{#\a}",
-            "title1": "## \a ~A~",
-            "title2": "### \a ~A~",
-            "title3": "#### \a ~A~",
-            "title4": "##### \a ~A~",
-            "title5": "###### \a ~A~",
+            "anchor": " {#\a}",
+            "title1": "## \a~A~",
+            "title2": "### \a~A~",
+            "title3": "#### \a~A~",
+            "title4": "##### \a~A~",
+            "title5": "###### \a~A~",
             "blockVerbLine": "    ",
             "blockQuoteLine": "> ",
             "fontMonoOpen": "`",
