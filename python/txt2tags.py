@@ -1227,11 +1227,18 @@ def getTags(config):
         "md": {
             "TOC": "[TOC]",
             "anchor": " {#\a}",
+            # "anchor": None,
             "title1": "## \a~A~",
             "title2": "### \a~A~",
             "title3": "#### \a~A~",
             "title4": "##### \a~A~",
             "title5": "###### \a~A~",
+            "numtitle1": "## \a~A~",
+            "numtitle2": "### \a~A~",
+            "numtitle3": "#### \a~A~",
+            "numtitle4": "##### \a~A~",
+            "numtitle5": "###### \a~A~",
+            # End modified
             "blockVerbLine": "    ",
             "blockQuoteLine": "> ",
             "fontMonoOpen": "`",
@@ -1776,6 +1783,8 @@ def getRules(config):
             "blanksaroundtitle": 1,
         },
         "md": {
+            # WARNING: modified by NV Access to strip numbered titles
+            "autonumbertitle": 1,
             "keeplistindent": 1,
             "linkable": 1,
             "labelbeforelink": 1,
