@@ -82,6 +82,14 @@ Use the following steps to build a version of the brlapi Python extension that i
 Used to generate and format NVDA documentation.
 Will be abandoned soon in favour of markdown formatting.
 
+### wxPython
+
+Generally release builds of wxPython should be used from pip.
+However, due to an issue in wxPython that has not made it to a release quality build, we are stuck on alpha snapshots.
+
+Windows x86 alpha builds can be found via Robin Dunn's build pipeline:
+https://alldunn.visualstudio.com/wxPython-CI/_build?view=runs
+
 ## lilli.dll
 
 A braille display driver dll.
