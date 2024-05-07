@@ -77,11 +77,6 @@ Use the following steps to build a version of the brlapi Python extension that i
     - `libgcc_s_dw2-1.dll` from `brltty-win-X.X-0-libusb\bin\libgcc_s_dw2-1.dll`
     - `brlapi-*.dll` from `brltty-win-X.X-0-libusb\brltty-win-6.6-0-libusb\bin\brlapi-*.dll`
 
-### txt2tags
-
-Used to generate and format NVDA documentation.
-Will be abandoned soon in favour of markdown formatting.
-
 ### wxPython
 
 Generally release builds of wxPython should be used from pip.
