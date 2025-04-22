@@ -1,12 +1,12 @@
 [project]
-name = "nvda-miscdeps"
+name = "nvda-misc-deps"
 version = "20250419"
 readme = "readme.md"
 requires-python = ">=3.11,<3.12"
 
 [project.urls]
 Homepage = "https://www.nvaccess.org/"
-Repository = "https://github.com/nvaccess/nvda-miscDeps.git"
+Repository = "https://github.com/nvaccess/nvda-misc-deps.git"
 
 [build-system]
 requires = ["setuptools~=72.0"]
