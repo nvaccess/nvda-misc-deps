@@ -1,4 +1,6 @@
+__pycache__
 *.pyc
 *.pyo
 python/comtypes/gen
 *.chw
+*.egg-info
