@@ -39,43 +39,16 @@ This will require a significant rewrite of the papenmeier display driver.
 Used for BrlTTY.
 
 This requires updating the following files:
-  - `brlapi.cp311-win32.pyd` from `brltty-win-X.X-0-libusb\Python\Lib\site-packages\brlapi.cp11-win32.pyd`
-  - `libgcc_s_dw2-1.dll` from `brltty-win-X.X-0-libusb\bin\libgcc_s_dw2-1.dll`
-  - `brlapi-*.dll` from `brltty-win-X.X-0-libusb\brltty-win-6.6-0-libusb\bin\brlapi-*.dll`
+  - `brlapi.cp3**-amd64.pyd`
+  - `brlapi-*.dll`
 
-To get `brltty-win-X.X-0-libusb` you must either build it from source or download it from the [BrlTTY website](https://brltty.app/download.html) (not the 1.0 variant).
+To get these files, you can extract them from the build artifact produced by [GitHub Actions in de brlTTY repository](https://github.com/brltty/brltty/actions).
 
 #### Building from source
 
 If BRLTTY doesn't have a public release compatible with NVDA's python version, you must build it from source.
 
-Use the following steps to build a version of the brlapi Python extension that is compatible with a particular version of Python:
-
-1. Download [mingw-get](https://sourceforge.net/projects/mingw/files/latest/download)
-1. Open the setup and choose "Install"
-1. Ensure support for the graphical interface is enabled, and choose "Continue"
-1. After the installation, choose "Continue" again
-1. In the tree view that is shown, select "Basic setup"
-1. Select the following mingw packages. Note that you might require object navigation and mouse routing to do this. You can select a package by right clicking it and choose "Mark for installation":
-	- mingw-developer-toolkit	
-	- mingw32-base
-	- mingw32-gcc-g++
-	- msys-base
-1. Open the installation menu from the menu bar and choose "Apply changes"
-1. Close mingw-get after installation
-1. Checkout [the BRLTTY repository](https://github.com/brltty/brltty)
-1. Start msys1 as administrator: `"C:\MinGW\msys\1.0\msys.bat"`
-1. Move to the BRLTTY repository with the `cd` command
-1. Run `Windows/winsetup`. ***Important note:** This script installs several packages to your C drive. Investigate the winsetup script for more details*
-1. Restart msys1 and go back to the repository.
-1. Run `./autogen`
-1. Run `Windows/mkwin ./`
-1. When the build has finished, there will be a zip file in the repository, e.g. "brltty-win-*-libusb.zip"
-1. Extract the zip.
-1. Update the following files
-    - `brlapi.cp311-win32.pyd` from `brltty-win-X.X-0-libusb\Python\Lib\site-packages\brlapi.cp11-win32.pyd`
-    - `libgcc_s_dw2-1.dll` from `brltty-win-X.X-0-libusb\bin\libgcc_s_dw2-1.dll`
-    - `brlapi-*.dll` from `brltty-win-X.X-0-libusb\brltty-win-6.6-0-libusb\bin\brlapi-*.dll`
+The GitHub actions workflow in the above mentioned repository can be adapted according to what's necessary to build a proper version.
 
 ## lilli.dll
 
