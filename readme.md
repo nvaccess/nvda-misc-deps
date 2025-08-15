@@ -38,17 +38,41 @@ This will require a significant rewrite of the papenmeier display driver.
 
 Used for BrlTTY.
 
-This requires updating the following files:
-  - `brlapi.cp3**-amd64.pyd`
-  - `brlapi-*.dll`
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in de brlTTY repository](https://github.com/brltty/brltty/actions).
+Note that as of August 2025, GitHub actions CI is not yet available on the upstream repository.
+Therefore the files were fetched from [a fork by Leonard de Ruijter](https://github.com/leonardder/brltty/actions).
 
-To get these files, you can extract them from the build artifact produced by [GitHub Actions in de brlTTY repository](https://github.com/brltty/brltty/actions).
+The following files should be updated:
+- `brlapi.cp3xx-amd64.pyd`
+  - Note: 3xx should be the actual Python version, e.g. 313)
+  - This file resides in the folder `python/Brlapi-0.8.x-py3.xx-win-amd64.egg`
+  - You don't need `brlapi.py`
+- `brlapi-*.dll`
+  - This file resides in the `bin` folder in the artifact
+  - Note: Former versions needed `libgcc_s_*.dll`, but this is no longer necessary on X64 builds
 
 #### Building from source
 
 If BRLTTY doesn't have a public release compatible with NVDA's python version, you must build it from source.
 
-The GitHub actions workflow in the above mentioned repository can be adapted according to what's necessary to build a proper version.
+Note: The GitHub actions workflow in the above mentioned repository can be adapted according to what's necessary to build a proper version.
+For example, you can change the python version to your needs.
+
+Below is a short build reference to get you started locally if desired:
+
+1. Install Python x64 and ensure it is on your PATH.
+  * Install Python build dependencies: `setuptools` and `cython`.
+1. Install [MSYS2](https://www.msys2.org/) (UCRT64) and update all packages.
+  * Install build tools and libraries: `autoconf`, `automake`, `make`, `awk`, `bison`, `git`, `groff`, `m4`, `patch`, `tcl`, `pdcurses`, `icu`, `libiconv`, `toolchain`, `libusb`.
+1. Clone the [BRLTTY repository](https://github.com/brltty/brltty).
+1. Open MSYS2 UCRT64 shell and go to the repository.
+1. Apply any patches if needed (`Windows/affinity.patch`).
+1. Run `./autogen`.
+1. Run `./cfg-windows --prefix=/ --enable-relocatable-install --with-usb-package=winusb`.
+1. Build BRLTTY with `make`.
+1. Isolate `brlapi.cp313-win_amd64.pyd` and `brlapi-*.dll` from the build to the `python` folder in this repository.
+  * The `pyd` file resides in `Bindings/Python/dist`.
+  * The `dll` file resides in `programs`.
 
 ## lilli.dll
 
