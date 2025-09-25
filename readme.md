@@ -38,9 +38,7 @@ This will require a significant rewrite of the papenmeier display driver.
 
 Used for BrlTTY.
 
-To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in de brlTTY repository](https://github.com/brltty/brltty/actions).
-Note that as of August 2025, GitHub actions CI is not yet available on the upstream repository.
-Therefore the files were fetched from [a fork by Leonard de Ruijter](https://github.com/leonardder/brltty/actions).
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in de NV Access fork of the brlTTY repository](https://github.com/nvaccess/brltty/actions).
 
 The following files should be updated:
 - `brlapi.cp3xx-amd64.pyd`

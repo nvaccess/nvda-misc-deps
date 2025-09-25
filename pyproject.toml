@@ -1,6 +1,6 @@
 [project]
 name = "nvda-misc-deps"
-version = "20250815"
+version = "20250925"
 readme = "readme.md"
 requires-python = ">=3.13,<3.14"
 
