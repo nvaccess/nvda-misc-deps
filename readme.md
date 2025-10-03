@@ -38,44 +38,39 @@ This will require a significant rewrite of the papenmeier display driver.
 
 Used for BrlTTY.
 
-This requires updating the following files:
-  - `brlapi.cp311-win32.pyd` from `brltty-win-X.X-0-libusb\Python\Lib\site-packages\brlapi.cp11-win32.pyd`
-  - `libgcc_s_dw2-1.dll` from `brltty-win-X.X-0-libusb\bin\libgcc_s_dw2-1.dll`
-  - `brlapi-*.dll` from `brltty-win-X.X-0-libusb\brltty-win-6.6-0-libusb\bin\brlapi-*.dll`
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in the NV Access fork of the brlTTY repository](https://github.com/nvaccess/brltty/actions).
 
-To get `brltty-win-X.X-0-libusb` you must either build it from source or download it from the [BrlTTY website](https://brltty.app/download.html) (not the 1.0 variant).
+The following files should be updated:
+
+* `brlapi.cp3xx-amd64.pyd`
+  * Note: 3xx should be the actual Python version, e.g. 313)
+  * This file resides in the folder `python/Brlapi-0.8.x-py3.xx-win-amd64.egg`
+  * You don't need `brlapi.py`
+* `brlapi-*.dll`
+  * This file resides in the `bin` folder in the artifact
 
 #### Building from source
 
 If BRLTTY doesn't have a public release compatible with NVDA's python version, you must build it from source.
 
-Use the following steps to build a version of the brlapi Python extension that is compatible with a particular version of Python:
+Note: The GitHub actions workflow in the above mentioned repository can be adapted according to what's necessary to build a proper version.
+For example, you can change the python version to your needs.
 
-1. Download [mingw-get](https://sourceforge.net/projects/mingw/files/latest/download)
-1. Open the setup and choose "Install"
-1. Ensure support for the graphical interface is enabled, and choose "Continue"
-1. After the installation, choose "Continue" again
-1. In the tree view that is shown, select "Basic setup"
-1. Select the following mingw packages. Note that you might require object navigation and mouse routing to do this. You can select a package by right clicking it and choose "Mark for installation":
-	- mingw-developer-toolkit	
-	- mingw32-base
-	- mingw32-gcc-g++
-	- msys-base
-1. Open the installation menu from the menu bar and choose "Apply changes"
-1. Close mingw-get after installation
-1. Checkout [the BRLTTY repository](https://github.com/brltty/brltty)
-1. Start msys1 as administrator: `"C:\MinGW\msys\1.0\msys.bat"`
-1. Move to the BRLTTY repository with the `cd` command
-1. Run `Windows/winsetup`. ***Important note:** This script installs several packages to your C drive. Investigate the winsetup script for more details*
-1. Restart msys1 and go back to the repository.
-1. Run `./autogen`
-1. Run `Windows/mkwin ./`
-1. When the build has finished, there will be a zip file in the repository, e.g. "brltty-win-*-libusb.zip"
-1. Extract the zip.
-1. Update the following files
-    - `brlapi.cp311-win32.pyd` from `brltty-win-X.X-0-libusb\Python\Lib\site-packages\brlapi.cp11-win32.pyd`
-    - `libgcc_s_dw2-1.dll` from `brltty-win-X.X-0-libusb\bin\libgcc_s_dw2-1.dll`
-    - `brlapi-*.dll` from `brltty-win-X.X-0-libusb\brltty-win-6.6-0-libusb\bin\brlapi-*.dll`
+Below is a short build reference to get you started locally if desired:
+
+1. Install Python x64 and ensure it is on your PATH.
+  * Install Python build dependencies: `setuptools` and `cython`.
+1. Install [MSYS2](https://www.msys2.org/) (UCRT64) and update all packages.
+  * Install build tools and libraries: `autoconf`, `automake`, `make`, `awk`, `bison`, `git`, `groff`, `m4`, `patch`, `tcl`, `pdcurses`, `icu`, `libiconv`, `toolchain`, `libusb`.
+1. Clone the [BRLTTY repository](https://github.com/brltty/brltty).
+1. Open MSYS2 UCRT64 shell and go to the repository.
+1. Apply any patches if needed (`Windows/affinity.patch`).
+1. Run `./autogen`.
+1. Run `./cfg-windows --prefix=/ --enable-relocatable-install --with-usb-package=winusb`.
+1. Build BRLTTY with `make`.
+1. Isolate `brlapi.cp313-win_amd64.pyd` and `brlapi-*.dll` from the build to the `python` folder in this repository.
+  * The `pyd` file resides in `Bindings/Python/dist`.
+  * The `dll` file resides in `programs`.
 
 ## lilli.dll
 

@@ -1,8 +1,8 @@
 [project]
 name = "nvda-misc-deps"
-version = "20250419"
+version = "20250925"
 readme = "readme.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.13,<3.14"
 
 [project.urls]
 Homepage = "https://www.nvaccess.org/"
