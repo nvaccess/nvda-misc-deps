@@ -38,16 +38,16 @@ This will require a significant rewrite of the papenmeier display driver.
 
 Used for BrlTTY.
 
-To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in de NV Access fork of the brlTTY repository](https://github.com/nvaccess/brltty/actions).
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in the NV Access fork of the brlTTY repository](https://github.com/nvaccess/brltty/actions).
 
 The following files should be updated:
-- `brlapi.cp3xx-amd64.pyd`
-  - Note: 3xx should be the actual Python version, e.g. 313)
-  - This file resides in the folder `python/Brlapi-0.8.x-py3.xx-win-amd64.egg`
-  - You don't need `brlapi.py`
-- `brlapi-*.dll`
-  - This file resides in the `bin` folder in the artifact
-  - Note: Former versions needed `libgcc_s_*.dll`, but this is no longer necessary on X64 builds
+
+* `brlapi.cp3xx-amd64.pyd`
+  * Note: 3xx should be the actual Python version, e.g. 313)
+  * This file resides in the folder `python/Brlapi-0.8.x-py3.xx-win-amd64.egg`
+  * You don't need `brlapi.py`
+* `brlapi-*.dll`
+  * This file resides in the `bin` folder in the artifact
 
 #### Building from source
 
