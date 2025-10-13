@@ -228,7 +228,7 @@ def get_device_info_detail(dev=0):
     lpdwLocId = c.c_ulong()
     pcSerialNumber = c.c_buffer(MAX_DESCRIPTION_SIZE)
     pcDescription = c.c_buffer(MAX_DESCRIPTION_SIZE)
-    ftHandle = c.c_ulong()
+    ftHandle = c.c_void_p()
     _PY_GetDeviceInfoDetail(dwIndex,
                                 c.byref(lpdwFlags),
                                 c.byref(lpdwType),
@@ -262,7 +262,7 @@ def get_device_info_list():
 def open_ex(serial=b''):
     '''open's FTDI-device by EEPROM-serial (prefered method).
     Serial fetched by the ListDevices fn'''
-    ftHandle = c.c_ulong()
+    ftHandle = c.c_void_p()
     dw_flags = c.c_ulong(FT_OPEN_BY_SERIAL_NUMBER)
     _PY_OpenEx(serial, dw_flags, c.byref(ftHandle))
     return FTD2XX(ftHandle)
