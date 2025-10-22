@@ -97,5 +97,5 @@ M4 is necessary to compile liblouis tables containing macros.
 
 ### symbols
 
-1. Download the latest [`dump_syms.exe`](https://github.com/mozilla/gecko-dev/blob/master/toolkit/crashreporter/google-breakpad/src/tools/windows/binaries/dump_syms.exe) ([last known version](https://github.com/mozilla/gecko-dev/blob/b0e9d95a41068be0f41f30e632ef93ab5999767a/toolkit/crashreporter/google-breakpad/src/tools/windows/binaries/dump_syms.exe))
-1. Replace `dump_syms.exe`
+1. [Build Firefox](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
+1. Copy `dump_syms.exe` from `%USERPROFILE\.mozbuild\dump_syms`
