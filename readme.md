@@ -38,7 +38,7 @@ This will require a significant rewrite of the papenmeier display driver.
 
 Used for BrlTTY.
 
-To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in the NV Access fork of the brlTTY repository](https://github.com/nvaccess/brltty/actions).
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions of the brlTTY repository](https://github.com/brltty/brltty/actions).
 
 The following files should be updated:
 
