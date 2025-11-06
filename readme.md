@@ -68,8 +68,8 @@ Below is a short build reference to get you started locally if desired:
 
 ## lilli.dll
 
-A braille display driver dll.
-Update process unknown.
+Braille display driver dll for the [Lilli display from MDV](https://www.mdvbologna.it/).
+For updates, contact [info@mdvbologna.it](mailto:info@mdvbologna.it).
 
 ## tools
 
