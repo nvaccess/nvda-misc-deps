@@ -28,12 +28,6 @@ This will be abandoned in NVDA in favour of MathCAT, once MathCAT contains all f
 
 ## python
 
-### ftdi2
-
-Needed for papenmeier displays.
-Should be replaced with [pyftdi](https://github.com/eblot/pyftdi) as a pip dependency.
-This will require a significant rewrite of the papenmeier display driver.
-
 ### brlapi
 
 Used for BrlTTY.
