@@ -28,12 +28,6 @@ This will be abandoned in NVDA in favour of MathCAT, once MathCAT contains all f
 
 ## python
 
-### ftdi2
-
-Needed for papenmeier displays.
-Should be replaced with [pyftdi](https://github.com/eblot/pyftdi) as a pip dependency.
-This will require a significant rewrite of the papenmeier display driver.
-
 ### brlapi
 
 Used for BrlTTY.
@@ -74,8 +68,8 @@ Below is a short build reference to get you started locally if desired:
 
 ## lilli.dll
 
-A braille display driver dll.
-Update process unknown.
+Braille display driver dll for the [Lilli display from MDV](https://www.mdvbologna.it/).
+For updates, contact [info@mdvbologna.it](mailto:info@mdvbologna.it).
 
 ## tools
 
@@ -94,8 +88,3 @@ M4 is necessary to compile liblouis tables containing macros.
 1. From [here](https://gnuwin32.sourceforge.net/packages/m4.htm), download the "Binaries" and "Dependencies" zip files
 1. From the "Binaries" zip, extract the file `m4.exe` from `bin`
 1. From the "Dependencies" zip, extract the `regex2.dll` file from `bin`
-
-### symbols
-
-1. Download the latest [`dump_syms.exe`](https://github.com/mozilla/gecko-dev/blob/master/toolkit/crashreporter/google-breakpad/src/tools/windows/binaries/dump_syms.exe) ([last known version](https://github.com/mozilla/gecko-dev/blob/b0e9d95a41068be0f41f30e632ef93ab5999767a/toolkit/crashreporter/google-breakpad/src/tools/windows/binaries/dump_syms.exe))
-1. Replace `dump_syms.exe`
