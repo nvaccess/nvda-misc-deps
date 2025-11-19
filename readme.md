@@ -21,11 +21,6 @@ The `moz.build` file is not required, but can be used to inform updates to [our 
 
 Changes may require build script changes.
 
-### mathPlayer
-
-Project has been abandoned, updates are unlikely.
-This will be abandoned in NVDA in favour of MathCAT, once MathCAT contains all functionality of MathPlayer. 
-
 ## python
 
 ### brlapi
