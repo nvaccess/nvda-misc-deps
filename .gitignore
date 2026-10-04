@@ -4,4 +4,3 @@ __pycache__
 python/comtypes/gen
 *.chw
 *.egg-info
-build/

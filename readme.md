@@ -57,7 +57,7 @@ Below is a short build reference to get you started locally if desired:
 1. Run `./autogen`.
 1. Run `./cfg-windows --prefix=/ --enable-relocatable-install --with-usb-package=winusb`.
 1. Build BRLTTY with `make`.
-1. Isolate `brlapi.cp313-win_amd64.pyd` and `brlapi-*.dll` from the build to the `python` folder in this repository.
+1. Isolate `brlapi.cp3xx-win_amd64.pyd` and `brlapi-*.dll` from the build to the `python` folder in this repository.
   * The `pyd` file resides in `Bindings/Python/dist`.
   * The `dll` file resides in `programs`.
 
@@ -83,27 +83,3 @@ M4 is necessary to compile liblouis tables containing macros.
 1. From [here](https://gnuwin32.sourceforge.net/packages/m4.htm), download the "Binaries" and "Dependencies" zip files
 1. From the "Binaries" zip, extract the file `m4.exe` from `bin`
 1. From the "Dependencies" zip, extract the `regex2.dll` file from `bin`
-
-## CPython 3.14 BrlAPI binding
-
-The additional `python/brlapi.cp314-win_amd64.pyd` targets standard CPython 3.14 x64.
-It uses the existing `brlapi-0.8.dll`; the CPython 3.13 binding remains available.
-The binding is built from `nvaccess/brltty` commit
-`06e44da90784505fc5d2869f75f02160d6855d03` (BrlAPI 0.8.7).
-
-To reproduce with MSVC and Git for Windows installed:
-
-```powershell
-python -m pip install cython==3.3.0 pefile setuptools
-git clone https://github.com/nvaccess/brltty.git ../brltty
-git -C ../brltty checkout 06e44da90784505fc5d2869f75f02160d6855d03
-python tools/buildBrlapi.py --brltty ../brltty
-```
-
-Use a standard 64-bit Python 3.14 interpreter. Generated sources go to
-`build/brlapi314`. The script adapts MSVC integer types and protocol headers,
-uses Windows FLS/InitOnce equivalents for the binding's pthread operations,
-and keeps failed connection initialization safe for cleanup.
-The BRLTTY checkout is not modified. A missing BRLTTY server should raise
-`ConnectionError`, and an invalid host argument should raise `TypeError`
-without crashing the interpreter. Physical braille hardware testing is still needed.

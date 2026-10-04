@@ -2,7 +2,7 @@
 name = "nvda-misc-deps"
 version = "20250925"
 readme = "readme.md"
-requires-python = ">=3.13,<3.15"
+requires-python = ">=3.14,<3.15"
 
 [project.urls]
 Homepage = "https://www.nvaccess.org/"
