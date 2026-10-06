@@ -27,20 +27,19 @@ Changes may require build script changes.
 
 Used for BrlTTY.
 
-To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions of the brlTTY repository](https://github.com/brltty/brltty/actions).
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in the BRLTTY repository](https://github.com/brltty/brltty/actions).
 
 The following files should be updated:
 
 * `brlapi.pyd`
-  * This file resides in the folder `python/Brlapi-0.8.x-py3.xx-win-amd64.egg`
-  * It is build against Pythons minimal API and therefore compatible with multiple Python versions
-  * You don't need `brlapi.py`
+  * This file is inside the wheel `python/brlapi-0.8.x-cp3xx-abi3-win_amd64.whl`, which is a zip archive
+  * It is built against Python's limited API and therefore compatible with multiple Python versions
 * `brlapi-*.dll`
   * This file resides in the `bin` folder in the artifact
 
 #### Building from source
 
-Note: The GitHub actions workflow in the above mentioned repository can also be adapted according to what's necessary to build a proper version.
+Note: The GitHub Actions workflow in the above-mentioned repository can also be adapted according to what's necessary to build a proper version.
 
 Below is a short build reference to get you started locally if desired:
 
