@@ -27,23 +27,19 @@ Changes may require build script changes.
 
 Used for BrlTTY.
 
-To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in the NV Access fork of the brlTTY repository](https://github.com/nvaccess/brltty/actions).
+To get the necessary files, you can extract them from a build artifact produced by [GitHub Actions in the BRLTTY repository](https://github.com/brltty/brltty/actions).
 
 The following files should be updated:
 
-* `brlapi.cp3xx-amd64.pyd`
-  * Note: 3xx should be the actual Python version, e.g. 313)
-  * This file resides in the folder `python/Brlapi-0.8.x-py3.xx-win-amd64.egg`
-  * You don't need `brlapi.py`
+* `brlapi.pyd`
+  * This file is inside the wheel `python/brlapi-0.8.x-cp3xx-abi3-win_amd64.whl`, which is a zip archive
+  * It is built against Python's limited API and therefore compatible with multiple Python versions
 * `brlapi-*.dll`
   * This file resides in the `bin` folder in the artifact
 
 #### Building from source
 
-If BRLTTY doesn't have a public release compatible with NVDA's python version, you must build it from source.
-
-Note: The GitHub actions workflow in the above mentioned repository can be adapted according to what's necessary to build a proper version.
-For example, you can change the python version to your needs.
+Note: The GitHub Actions workflow in the above-mentioned repository can also be adapted according to what's necessary to build a proper version.
 
 Below is a short build reference to get you started locally if desired:
 
@@ -55,9 +51,9 @@ Below is a short build reference to get you started locally if desired:
 1. Open MSYS2 UCRT64 shell and go to the repository.
 1. Apply any patches if needed (`Windows/affinity.patch`).
 1. Run `./autogen`.
-1. Run `./cfg-windows --prefix=/ --enable-relocatable-install --with-usb-package=winusb`.
+1. Run `./cfg-windows --prefix=/ --enable-relocatable-install --with-usb-package=winusb --with-python-limited-api=yes`.
 1. Build BRLTTY with `make`.
-1. Isolate `brlapi.cp313-win_amd64.pyd` and `brlapi-*.dll` from the build to the `python` folder in this repository.
+1. Isolate `brlapi.pyd` and `brlapi-*.dll` from the build to the `python` folder in this repository.
   * The `pyd` file resides in `Bindings/Python/dist`.
   * The `dll` file resides in `programs`.
 
